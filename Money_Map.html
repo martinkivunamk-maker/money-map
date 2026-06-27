@@ -683,7 +683,7 @@
       <div class="settings-section-title">Data</div>
       <div class="settings-list">
         <div class="settings-item" onclick="backupData()"><div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-inbox"/></svg></div><div><div class="s-label">Backup Data</div><div class="s-sub">Save all your data as a file</div></div></div><div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div></div>
-        <div class="settings-item" onclick="document.getElementById('restoreInput').click()"><div class="settings-item-left"><div class="settings-item-icon" style="color:var(--success)"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></div><div><div class="s-label">Restore Data</div><div class="s-sub">Load a previously saved backup</div></div></div><div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div></div>
+        <div class="settings-item" onclick="suppressNextLock();document.getElementById('restoreInput').click()"><div class="settings-item-left"><div class="settings-item-icon" style="color:var(--success)"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></div><div><div class="s-label">Restore Data</div><div class="s-sub">Load a previously saved backup</div></div></div><div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div></div>
         <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
         <div class="settings-item" onclick="exportData('csv')"><div class="settings-item-left"><div class="settings-item-icon" style="color:var(--success)"><svg viewBox="0 0 24 24"><use href="#i-spreadsheet"/></svg></div><div><div class="s-label">Export Spreadsheet</div><div class="s-sub">Download all data as CSV</div></div></div><div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div></div>
         <div class="settings-item" onclick="exportData('pdf')"><div class="settings-item-left"><div class="settings-item-icon" style="color:var(--danger)"><svg viewBox="0 0 24 24"><use href="#i-doc"/></svg></div><div><div class="s-label">Export Report</div><div class="s-sub">Download a summary report</div></div></div><div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div></div>
@@ -809,6 +809,7 @@ let _photoTarget=null;
 function openPhotoChoice(target){ _photoTarget=target; openModal('photoChoiceModal'); }
 function pickPhotoSource(source){
   closeModal('photoChoiceModal');
+  suppressNextLock();
   setTimeout(()=>{
     if(_photoTarget==='profile'){
       document.getElementById(source==='camera'?'photoCameraInput':'photoInput').click();
@@ -899,6 +900,7 @@ function tryFingerprint(){
   });
 }
 async function setupFingerprint(){
+  suppressNextLock();
   if(!window.PublicKeyCredential){showToast('Biometrics not supported on this device','var(--danger)');return;}
   try{
     const challenge=new Uint8Array(32); crypto.getRandomValues(challenge);
@@ -1781,6 +1783,23 @@ window.addEventListener('popstate',()=>{
 });
 document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay')&&e.target.classList.contains('open'))closeModal(e.target.id);
+});
+// ===== AUTO-LOCK ON BACKGROUND / SCREEN-OFF =====
+let _suppressLock=false, _bgHidden=false, _suppressTimer=null;
+function suppressNextLock(){ _suppressLock=true; clearTimeout(_suppressTimer); _suppressTimer=setTimeout(()=>{_suppressLock=false;},30000); }
+function relock(){
+  if(!DB.pin) return;
+  pinEntry=''; pinFirst=''; isSettingPin=false; updateDots();
+  const le=document.getElementById('lockError'); if(le) le.textContent='';
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('lockScreen').classList.remove('hidden');
+  if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
+  else { showPinPad(); }
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){ _bgHidden=true; return; }
+  if(_suppressLock){ _suppressLock=false; _bgHidden=false; clearTimeout(_suppressTimer); return; }
+  if(_bgHidden){ _bgHidden=false; if(DB.pin && document.getElementById('lockScreen').classList.contains('hidden')) relock(); }
 });
 loadDB(); applyTheme(); initLock();
 </script>
