@@ -419,6 +419,8 @@
   .btn-outline { width:100%; padding:14px; border-radius:var(--radius-sm); background:none; border:1px solid var(--glass-border);
     color:var(--text-dim); font-size:15px; cursor:pointer; margin-top:8px; font-weight:600; transition:background 0.15s; }
   .btn-outline:active { background:var(--glass); }
+  .btn-danger { width:100%; padding:16px; border-radius:var(--radius-sm); background:var(--danger); border:none; color:#fff; font-size:16px; font-weight:800; cursor:pointer; letter-spacing:0.3px; margin-top:8px; transition:transform 0.15s; }
+  .btn-danger:active { transform:scale(0.98); }
 
   .type-selector { display:flex; gap:8px; margin-bottom:16px; }
   .type-btn { flex:1; padding:12px 6px; border-radius:var(--radius-sm); border:1px solid var(--glass-border); background:var(--glass);
@@ -728,6 +730,7 @@
 <div class="modal-overlay" id="periodPickerModal"><div class="modal-sheet" style="max-height:62vh"><div class="modal-handle"></div><div class="modal-title" id="periodPickerTitle">Select Month</div><div id="periodPickerList"></div></div></div>
 
 <div class="modal-overlay" id="optionPickerModal"><div class="modal-sheet" style="max-height:62vh"><div class="modal-handle"></div><div class="modal-title" id="optionPickerTitle">Select</div><div id="optionPickerList"></div></div></div>
+<div class="modal-overlay" id="confirmModal" style="z-index:700"><div class="modal-sheet" style="max-width:400px"><div class="modal-handle"></div><div class="modal-title" id="confirmTitle">Are you sure?</div><div id="confirmMsg" style="font-size:14px;color:var(--text-dim);line-height:1.5;margin-bottom:22px"></div><button class="btn-gold" id="confirmOkBtn" onclick="_confirmProceed()">Confirm</button><button class="btn-outline" onclick="_confirmCancel()">Cancel</button></div></div>
 
 <div class="modal-overlay" id="photoChoiceModal"><div class="modal-sheet" style="max-height:45vh"><div class="modal-handle"></div><div class="modal-title">Add Photo</div>
   <div class="quick-actions" style="padding-bottom:4px">
@@ -789,19 +792,19 @@ function ic(id){ return `<svg viewBox="0 0 24 24" style="stroke:currentColor;fil
 function haptic(ms){ navigator.vibrate&&navigator.vibrate(ms||8); }
 
 // ===== OPTION PICKER (replaces <select> bottom sheets) =====
-let _optionPickerCallback=null;
+let _optionPickerCallback=null, _optionPickerOpts=[];
 function openOptionPicker(title,options,currentVal,onSelect){
   document.getElementById('optionPickerTitle').textContent=title;
-  _optionPickerCallback=onSelect;
-  document.getElementById('optionPickerList').innerHTML=options.map(opt=>
-    `<div class="picker-item${String(opt.value)===String(currentVal)?' picker-active':''}" onclick="_optPickSel(${JSON.stringify(String(opt.value))},${JSON.stringify(opt.label)})">${opt.label}</div>`
+  _optionPickerCallback=onSelect; _optionPickerOpts=options;
+  document.getElementById('optionPickerList').innerHTML=options.map((opt,i)=>
+    `<div class="picker-item${String(opt.value)===String(currentVal)?' picker-active':''}" onclick="_optPickSel(${i})">${opt.label}</div>`
   ).join('');
   openModal('optionPickerModal');
 }
-function _optPickSel(value,label){
+function _optPickSel(i){
+  const opt=_optionPickerOpts[i]; const cb=_optionPickerCallback; _optionPickerCallback=null;
   closeModal('optionPickerModal');
-  if(_optionPickerCallback) _optionPickerCallback(value,label);
-  _optionPickerCallback=null;
+  if(cb&&opt) cb(opt.value,opt.label);
 }
 
 // ===== PHOTO SOURCE CHOICE =====
@@ -843,6 +846,15 @@ function closeModal(id){
   el.classList.remove('open');
   _modalHistoryPushed=false;
 }
+let _confirmCallback=null;
+function askConfirm(title,message,onConfirm,confirmLabel,danger){
+  document.getElementById('confirmTitle').textContent=title;
+  const m=document.getElementById('confirmMsg'); m.textContent=message||''; m.style.display=message?'block':'none';
+  const b=document.getElementById('confirmOkBtn'); b.textContent=confirmLabel||'Confirm'; b.className=danger?'btn-danger':'btn-gold';
+  _confirmCallback=onConfirm; openModal('confirmModal');
+}
+function _confirmCancel(){ _confirmCallback=null; closeModal('confirmModal'); }
+function _confirmProceed(){ const cb=_confirmCallback; _confirmCallback=null; closeModal('confirmModal'); if(cb) setTimeout(cb,80); }
 
 // ===== THEME =====
 function applyTheme(){
@@ -1366,10 +1378,12 @@ function viewTransaction(id){
   openModal('viewTxModal');
 }
 function deleteTransaction(id){
-  const t=DB.transactions.find(x=>x.id===id); if(!t)return; if(!confirm('Delete this transaction?'))return;
-  if(t.type==='goal'&&t.goalId){const g=DB.goals.find(g=>g.id===t.goalId);if(g)g.saved=Math.max(0,g.saved-t.amount);}
-  DB.transactions=DB.transactions.filter(x=>x.id!==id); saveDB(); closeModal('viewTxModal'); showToast('Transaction deleted','var(--danger)');
-  if(currentPage==='transactions')renderTransactions(); else updateOverview();
+  const t=DB.transactions.find(x=>x.id===id); if(!t)return;
+  askConfirm('Delete this transaction?',"This can't be undone.",()=>{
+    if(t.type==='goal'&&t.goalId){const g=DB.goals.find(g=>g.id===t.goalId);if(g)g.saved=Math.max(0,g.saved-t.amount);}
+    DB.transactions=DB.transactions.filter(x=>x.id!==id); saveDB(); closeModal('viewTxModal'); showToast('Transaction deleted','var(--danger)');
+    if(currentPage==='transactions')renderTransactions(); else updateOverview();
+  },'Delete',true);
 }
 function openEditTransaction(id){ const t=DB.transactions.find(x=>x.id===id); if(t)openTransactionModal(t.type,t); }
 
@@ -1500,38 +1514,63 @@ function renderGoals(c){
   }).join('');
 }
 function openAddBudgetModal(){ if(budgetTab==='loans'){openAddLoanModal();return;} if(budgetTab==='goals'){openAddGoalModal();return;} buildBudgetForm(null); openModal('addBudgetModal'); }
+let _addCatForBudget=false;
 function buildBudgetForm(ex){
   document.getElementById('budgetModalTitle').textContent=ex?'Edit Budget':'Add Budget Line';
-  document.getElementById('budgetModalContent').innerHTML=`
-    ${budgetTab==='expenses'?`<div class="form-group"><label class="form-label">Category</label><select class="form-select" id="bCat">${DB.categories.map(c=>`<option value="${c.id}" ${ex&&ex.categoryId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div>`:`<div class="form-group"><label class="form-label">Name</label><input class="form-input" id="bName" value="${ex?ex.name:''}" placeholder="e.g. Monthly Savings"></div>`}
-    <div class="form-group"><label class="form-label">Budget Amount (UGX)</label><input type="number" inputmode="numeric" class="form-input" id="bAmount" value="${ex?ex.amount:''}" placeholder="0"></div>
+  let catField;
+  if(budgetTab==='expenses'){
+    const budgeted=new Set(DB.budgets.filter(b=>b.type==='expense'&&b.categoryId&&(!ex||b.id!==ex.id)).map(b=>b.categoryId));
+    const avail=DB.categories.filter(c=>!budgeted.has(c.id));
+    const curVal=ex&&ex.categoryId?ex.categoryId:(avail[0]?avail[0].id:'');
+    const curName=(DB.categories.find(c=>c.id===curVal)||{name:'Select category'}).name;
+    catField=`<div class="form-group"><label class="form-label">Category</label>
+      <div class="picker-box" onclick="openBudgetCatPicker()"><span class="picker-box-val" id="bCatDisp">${curName}</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+      <input type="hidden" id="bCat" value="${curVal}"></div>`;
+  } else {
+    catField=`<div class="form-group"><label class="form-label">Name</label><input class="form-input" id="bName" value="${ex?ex.name:''}" placeholder="e.g. Monthly Savings"></div>`;
+  }
+  document.getElementById('budgetModalContent').innerHTML=catField+`
+    <div class="form-group"><label class="form-label">Budget Amount (UGX)</label><input type="text" inputmode="numeric" class="form-input" id="bAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
     <button class="btn-gold" onclick="saveBudget('${ex?ex.id:''}')">Save</button><button class="btn-outline" onclick="closeModal('addBudgetModal')">Cancel</button>`;
 }
+function openBudgetCatPicker(){
+  const curVal=document.getElementById('bCat').value;
+  const budgeted=new Set(DB.budgets.filter(b=>b.type==='expense'&&b.categoryId&&b.categoryId!==curVal).map(b=>b.categoryId));
+  const avail=DB.categories.filter(c=>!budgeted.has(c.id));
+  const opts=avail.map(c=>({value:c.id,label:c.name}));
+  opts.push({value:'__addcat__',label:'+ Add new category'});
+  const title=avail.length?'Select Category':'No categories left — add one';
+  openOptionPicker(title,opts,curVal,(v,l)=>{
+    if(v==='__addcat__'){ openAddCategoryModal(null,true); return; }
+    document.getElementById('bCat').value=v;
+    document.getElementById('bCatDisp').textContent=l;
+  });
+}
 function saveBudget(id){
-  const amount=parseFloat(document.getElementById('bAmount').value); if(!amount||amount<=0){showToast('Enter a valid amount','var(--danger)');return;}
+  const amount=getRawAmount(document.getElementById('bAmount')); if(!amount||amount<=0){showToast('Enter a valid amount','var(--danger)');return;}
   if(id){const b=DB.budgets.find(x=>x.id===id); if(b){b.amount=amount; if(document.getElementById('bName'))b.name=document.getElementById('bName').value;}}
   else { const b={id:genId(),amount}; if(budgetTab==='expenses'){const cid=document.getElementById('bCat').value;const cat=DB.categories.find(c=>c.id===cid);b.categoryId=cid;b.name=cat?cat.name:'Expense';b.icon=cat?cat.icon:'i-cash';b.type='expense';} else {b.name=document.getElementById('bName').value||'Savings';b.icon='i-bank';b.type='savings';} DB.budgets.push(b); }
   saveDB(); closeModal('addBudgetModal'); renderBudget(); showToast('Budget saved','var(--success)');
 }
 function editBudget(id){ const b=DB.budgets.find(x=>x.id===id); if(b){buildBudgetForm(b);openModal('addBudgetModal');} }
-function deleteBudget(id){ if(!confirm('Delete this budget?'))return; DB.budgets=DB.budgets.filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Budget removed','var(--danger)'); }
+function deleteBudget(id){ askConfirm('Delete this budget?','',()=>{ DB.budgets=DB.budgets.filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Budget removed','var(--danger)'); },'Delete',true); }
 function openAddLoanModal(ex){
   document.getElementById('loanModalTitle').textContent=ex?'Edit Loan':'Add Loan';
   document.getElementById('loanModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Loan Name</label><input class="form-input" id="lName" value="${ex?ex.name:''}" placeholder="e.g. Bank Loan"></div>
     <div class="form-group"><label class="form-label">Source (who/where)</label><input class="form-input" id="lSource" value="${ex?ex.source:''}" placeholder="e.g. Stanbic Bank"></div>
-    <div class="form-group"><label class="form-label">Total Amount (UGX)</label><input type="number" inputmode="numeric" class="form-input" id="lAmount" value="${ex?ex.amount:''}" placeholder="0"></div>
+    <div class="form-group"><label class="form-label">Total Amount (UGX)</label><input type="text" inputmode="numeric" class="form-input" id="lAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
     <div class="form-group"><label class="form-label">Date Taken</label><input type="date" class="form-input" id="lDate" value="${ex?ex.date:today()}"></div>
     <button class="btn-gold" onclick="saveLoan('${ex?ex.id:''}')">Save Loan</button><button class="btn-outline" onclick="closeModal('addLoanModal')">Cancel</button>`;
   openModal('addLoanModal');
 }
 function saveLoan(id){
-  const name=document.getElementById('lName').value,source=document.getElementById('lSource').value,amount=parseFloat(document.getElementById('lAmount').value);
+  const name=document.getElementById('lName').value,source=document.getElementById('lSource').value,amount=getRawAmount(document.getElementById('lAmount'));
   if(!name||!amount){showToast('Fill all fields','var(--danger)');return;}
   if(id){const l=DB.loans.find(x=>x.id===id);if(l){l.name=name;l.source=source;l.amount=amount;}} else DB.loans.push({id:genId(),name,source,amount,date:document.getElementById('lDate').value});
   saveDB(); closeModal('addLoanModal'); renderBudget(); showToast('Loan saved','var(--success)');
 }
-function deleteLoan(id){ if(!confirm('Remove this loan?'))return; DB.loans=DB.loans.filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Loan removed','var(--danger)'); }
+function deleteLoan(id){ askConfirm('Remove this loan?','',()=>{ DB.loans=DB.loans.filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Loan removed','var(--danger)'); },'Remove',true); }
 function quickPayLoan(){
   const loans=(DB.loans||[]).map(l=>{
     const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0);
@@ -1551,7 +1590,7 @@ function payLoan(id){
   document.getElementById('txModalTitle').textContent='Loan Repayment';
   document.getElementById('txModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Loan</label><input class="form-input" value="${l?l.name:''}" disabled></div>
-    <div class="form-group"><label class="form-label">Amount (UGX)</label><input type="number" inputmode="numeric" class="form-input" id="txAmount" placeholder="0"></div>
+    <div class="form-group"><label class="form-label">Amount (UGX)</label><input type="text" inputmode="numeric" class="form-input" id="txAmount" placeholder="0" oninput="formatAmountInput(this)" data-raw=""></div>
     <div class="form-group"><label class="form-label">Pay From</label><select class="form-select" id="txLoanFrom"><option value="income">Income</option><option value="savings">Lifetime Savings</option><option value="emergency">Emergency Fund</option></select></div>
     <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="txDate" value="${today()}"></div>
     <div class="form-group"><label class="form-label">Note</label><input class="form-input" id="txNote" placeholder="Optional"></div>
@@ -1559,7 +1598,7 @@ function payLoan(id){
   openModal('transactionModal');
 }
 function saveLoanRepayment(loanId){
-  const amount=parseFloat(document.getElementById('txAmount').value); if(!amount||amount<=0){showToast('Enter amount','var(--danger)');return;}
+  const amount=getRawAmount(document.getElementById('txAmount')); if(!amount||amount<=0){showToast('Enter amount','var(--danger)');return;}
   DB.transactions.push({id:genId(),type:'loan_repay',loanId,amount,date:document.getElementById('txDate').value,note:document.getElementById('txNote').value,from:document.getElementById('txLoanFrom').value,image:null});
   saveDB(); closeModal('transactionModal'); showToast('Repayment recorded','var(--success)');
   if(currentPage==='overview')updateOverview(); else if(currentPage==='budget')renderBudget(); else updateOverview();
@@ -1569,7 +1608,7 @@ function openAddGoalModal(ex){
   document.getElementById('goalModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Goal Name</label><input class="form-input" id="gName" value="${ex?ex.name:''}" placeholder="e.g. Buy a Car"></div>
     <div class="form-group"><label class="form-label">Icon</label><div class="icon-grid" id="gIconGrid">${AVAIL_ICONS.map(i=>`<div class="icon-pick ${ex&&ex.icon===i?'selected':(!ex&&i==='i-target'?'selected':'')}" data-icon="${i}" onclick="pickIcon(this,'g')">${ic(i)}</div>`).join('')}</div></div>
-    <div class="form-group"><label class="form-label">Target Amount (UGX)</label><input type="number" inputmode="numeric" class="form-input" id="gTarget" value="${ex?ex.target:''}" placeholder="0"></div>
+    <div class="form-group"><label class="form-label">Target Amount (UGX)</label><input type="text" inputmode="numeric" class="form-input" id="gTarget" value="${ex?parseInt(ex.target).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.target:''}"></div>
     <div class="form-group"><label class="form-label">Target Date (when to close)</label><input type="date" class="form-input" id="gDate" value="${ex&&ex.targetDate?ex.targetDate:''}"></div>
     <button class="btn-gold" onclick="saveGoal('${ex?ex.id:''}')">Save Goal</button><button class="btn-outline" onclick="closeModal('addGoalModal')">Cancel</button>`;
   selectedIcon.g=ex?ex.icon:'i-target'; openModal('addGoalModal');
@@ -1577,13 +1616,13 @@ function openAddGoalModal(ex){
 let selectedIcon={g:'i-target',c:'i-tag',i:'i-cash'};
 function pickIcon(el,key){ el.parentElement.querySelectorAll('.icon-pick').forEach(x=>x.classList.remove('selected')); el.classList.add('selected'); selectedIcon[key]=el.dataset.icon; }
 function saveGoal(id){
-  const name=document.getElementById('gName').value,target=parseFloat(document.getElementById('gTarget').value);
+  const name=document.getElementById('gName').value,target=getRawAmount(document.getElementById('gTarget'));
   const targetDate=document.getElementById('gDate').value||null;
   if(!name||!target){showToast('Fill all fields','var(--danger)');return;}
   if(id){const g=DB.goals.find(x=>x.id===id);if(g){g.name=name;g.icon=selectedIcon.g;g.target=target;g.targetDate=targetDate;}} else DB.goals.push({id:genId(),name,icon:selectedIcon.g,target,saved:0,targetDate});
   saveDB(); closeModal('addGoalModal'); renderBudget(); showToast('Goal saved','var(--success)');
 }
-function deleteGoal(id){ if(!confirm('Remove this goal?'))return; DB.goals=DB.goals.filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Goal removed','var(--danger)'); }
+function deleteGoal(id){ askConfirm('Remove this goal?','',()=>{ DB.goals=DB.goals.filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Goal removed','var(--danger)'); },'Remove',true); }
 
 // ===== ANALYTICS =====
 function renderAnalytics(){
@@ -1697,7 +1736,8 @@ function editName(){ const d=document.getElementById('settingsNameDisplay'),i=do
 function saveName(){ const i=document.getElementById('settingsNameInput'),v=i.value.trim(); if(v){DB.userName=v;saveDB();} document.getElementById('settingsNameDisplay').innerHTML=DB.userName+ic('i-edit'); document.getElementById('settingsNameDisplay').style.display='inline-flex';i.style.display='none'; document.getElementById('headerName').textContent=DB.userName; renderAvatar(); }
 function changePhoto(){ openPhotoChoice('profile'); }
 function handlePhotoUpload(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{DB.userPhoto=ev.target.result;saveDB();renderAvatar();}; r.readAsDataURL(f); }
-function openAddCategoryModal(editId){
+function openAddCategoryModal(editId, forBudget){
+  _addCatForBudget=!!forBudget;
   const ex=editId?DB.categories.find(c=>c.id===editId):null;
   selectedIcon.c=ex?ex.icon:'i-tag';
   document.getElementById('catModalTitle').textContent=ex?'Edit Category':'Add Category';
@@ -1709,11 +1749,14 @@ function openAddCategoryModal(editId){
 }
 function saveCategory(editId){
   const name=document.getElementById('newCatName').value.trim(); if(!name){showToast('Enter a name','var(--danger)');return;}
+  let newId=null;
   if(editId){ const c=DB.categories.find(x=>x.id===editId); if(c){c.name=name;c.icon=selectedIcon.c;} const b=DB.budgets.find(x=>x.categoryId===editId); if(b){b.name=name;b.icon=selectedIcon.c;} showToast('Category updated','var(--success)'); }
-  else { DB.categories.push({id:genId(),name,icon:selectedIcon.c}); showToast('Category added','var(--success)'); }
-  saveDB(); closeModal('categoryModal'); renderSettings();
+  else { newId=genId(); DB.categories.push({id:newId,name,icon:selectedIcon.c}); showToast('Category added','var(--success)'); }
+  saveDB(); closeModal('categoryModal');
+  if(_addCatForBudget && newId){ _addCatForBudget=false; const bc=document.getElementById('bCat'),bd=document.getElementById('bCatDisp'); if(bc)bc.value=newId; if(bd)bd.textContent=name; }
+  else { renderSettings(); }
 }
-function deleteCategory(id){ if(!confirm('Remove this category?'))return; DB.categories=DB.categories.filter(x=>x.id!==id); DB.budgets=DB.budgets.filter(x=>x.categoryId!==id); saveDB(); renderSettings(); showToast('Category removed','var(--danger)'); }
+function deleteCategory(id){ askConfirm('Remove this category?','Its budget line will be removed too.',()=>{ DB.categories=DB.categories.filter(x=>x.id!==id); DB.budgets=DB.budgets.filter(x=>x.categoryId!==id); saveDB(); renderSettings(); showToast('Category removed','var(--danger)'); },'Remove',true); }
 function openAddIncomeTypeModal(editId){
   const ex=editId?DB.incomeTypes.find(i=>i.id===editId):null;
   selectedIcon.i=ex?ex.icon:'i-cash';
@@ -1730,7 +1773,7 @@ function saveIncomeType(editId){
   else { DB.incomeTypes.push({id:genId(),name,icon:selectedIcon.i}); showToast('Income source added','var(--success)'); }
   saveDB(); closeModal('incomeTypeModal'); renderSettings();
 }
-function deleteIncomeType(id){ if(!confirm('Remove this source?'))return; DB.incomeTypes=DB.incomeTypes.filter(x=>x.id!==id); saveDB(); renderSettings(); showToast('Source removed','var(--danger)'); }
+function deleteIncomeType(id){ askConfirm('Remove this source?','',()=>{ DB.incomeTypes=DB.incomeTypes.filter(x=>x.id!==id); saveDB(); renderSettings(); showToast('Source removed','var(--danger)'); },'Remove',true); }
 
 // ===== BACKUP & RESTORE =====
 function backupData(){
@@ -1746,10 +1789,11 @@ function restoreData(e){
     try{
       const data=JSON.parse(ev.target.result);
       if(!data.transactions||!data.budgets){showToast('Invalid backup file','var(--danger)');return;}
-      if(!confirm('This will replace ALL your current data with the backup. Are you sure?'))return;
-      DB=Object.assign(DB,data);saveDB();
-      showToast('Data restored successfully','var(--success)');
-      updateOverview();renderSettings();
+      askConfirm('Restore backup?','This will replace ALL your current data with the backup.',()=>{
+        DB=Object.assign(DB,data);saveDB();
+        showToast('Data restored successfully','var(--success)');
+        updateOverview();renderSettings();
+      },'Replace data',true);
     }catch(err){showToast('Could not read backup file','var(--danger)');}
   };
   reader.readAsText(file);
