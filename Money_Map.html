@@ -33,7 +33,7 @@
     --text: #f5f5f5;
     --text-dim: #8a8a8a;
     --text-muted: #555;
-    --nav-bg: rgba(18,18,18,0.72);
+    --nav-bg: rgba(18,18,18,0.93);
     --modal-bg: linear-gradient(180deg, #161616 0%, #0d0d0d 100%);
     --input-bg: rgba(255,255,255,0.06);
     --input-border: rgba(255,255,255,0.1);
@@ -57,7 +57,7 @@
     --text: #1a1a1a;
     --text-dim: #777;
     --text-muted: #aaa;
-    --nav-bg: rgba(255,255,255,0.78);
+    --nav-bg: rgba(255,255,255,0.94);
     --modal-bg: linear-gradient(180deg, #ffffff 0%, #faf8f3 100%);
     --input-bg: rgba(0,0,0,0.04);
     --input-border: rgba(0,0,0,0.1);
@@ -107,13 +107,20 @@
   .pin-pad { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; width:290px; animation:fadeUp 0.6s 0.3s both; }
   .pin-btn { height:68px; border-radius:50%; border:1px solid var(--glass-border); background:var(--glass);
     color:var(--text); font-size:24px; font-weight:300; cursor:pointer; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    align-items:center; justify-content:center;
     transition:all 0.15s; letter-spacing:1px; }
   .pin-btn:active { background:rgba(212,175,55,0.25); transform:scale(0.93); }
   .pin-btn .sub { font-size:9px; color:var(--text-dim); letter-spacing:2px; margin-top:1px; }
   .pin-btn.empty { border:none; background:transparent; cursor:default; }
   .pin-btn.fn svg { width:26px; height:26px; stroke:var(--gold); }
   .lock-error { color:var(--danger); font-size:13px; min-height:18px; animation:slideDown 0.3s; }
+  .fp-prompt { display:flex; flex-direction:column; align-items:center; gap:20px; animation:fadeUp 0.5s both; margin-top:8px; }
+  .fp-icon { width:92px; height:92px; border-radius:50%; border:2px solid var(--gold); display:flex; align-items:center; justify-content:center; cursor:pointer; background:var(--glass); transition:transform 0.18s; }
+  .fp-icon:active { transform:scale(0.9); transition:none; }
+  .fp-icon svg { width:48px; height:48px; stroke:var(--gold); stroke-width:1.6; fill:none; }
+  .fp-icon.scanning { animation:pulseGlow 1.4s infinite; }
+  .fp-hint { font-size:14px; color:var(--text-dim); text-align:center; }
+  .fp-usepin { font-size:13px; color:var(--gold); font-weight:700; cursor:pointer; padding:10px 16px; }
 
   #app { position:fixed; inset:0; display:flex; flex-direction:column; overflow:hidden; }
   #app.hidden { display:none; }
@@ -126,7 +133,7 @@
   .page::-webkit-scrollbar { display:none; }
 
   .glass-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius);
-    backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); padding:20px; position:relative; overflow:hidden;
+    padding:20px; position:relative; overflow:hidden;
     box-shadow:0 1px 1px var(--card-hi) inset, 0 10px 24px -8px var(--shadow), 0 2px 6px -2px var(--shadow); }
   .glass-card::before { content:''; position:absolute; top:0; left:8%; right:8%; height:1px;
     background:linear-gradient(90deg, transparent, var(--glass-line), transparent); }
@@ -142,7 +149,7 @@
   .greeting-text .hello { font-size:13px; color:var(--text-dim); }
   .greeting-text .name { font-size:19px; font-weight:800; color:var(--text); }
   .period-selector { display:flex; align-items:center; gap:6px; background:var(--glass); border:1px solid var(--glass-border);
-    border-radius:30px; padding:7px 12px; backdrop-filter:blur(20px); }
+    border-radius:30px; padding:7px 12px; }
   .period-selector select { background:none; border:none; color:var(--gold); font-size:13px; font-weight:700; cursor:pointer; outline:none; appearance:none; }
   .period-selector select option { background:var(--surface2); color:var(--text); }
 
@@ -360,7 +367,7 @@
 
   /* FLOATING BOTTOM NAV */
   #bottomNav { position:fixed; bottom:16px; left:16px; right:16px; height:var(--nav-height);
-    background:var(--nav-bg); backdrop-filter:blur(40px) saturate(180%); -webkit-backdrop-filter:blur(40px) saturate(180%);
+    background:var(--nav-bg);
     border:1px solid var(--glass-border); border-radius:28px; display:flex; align-items:center; justify-content:space-around;
     padding:0 6px; z-index:100; box-shadow:0 1px 1px var(--card-hi) inset, 0 12px 40px -6px var(--shadow), 0 4px 12px -4px var(--shadow);
     animation:fadeUp 0.6s 0.2s both; }
@@ -527,7 +534,7 @@
   <div class="lock-subtitle" id="lockSubtitle">Enter your PIN</div>
   <div class="pin-dots" id="pinDots"><div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div></div>
   <div class="lock-error" id="lockError"></div>
-  <div class="pin-pad">
+  <div class="pin-pad" id="pinPad">
     <button class="pin-btn" onclick="haptic();pinPress('1')">1</button>
     <button class="pin-btn" onclick="haptic();pinPress('2')">2<span class="sub">ABC</span></button>
     <button class="pin-btn" onclick="haptic();pinPress('3')">3<span class="sub">DEF</span></button>
@@ -540,6 +547,11 @@
     <button class="pin-btn fn" onclick="haptic();tryFingerprint()"><svg viewBox="0 0 24 24"><use href="#i-finger"/></svg></button>
     <button class="pin-btn" onclick="haptic();pinPress('0')">0</button>
     <button class="pin-btn" onclick="haptic();pinDel()"><svg class="icn-sm" viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:1.8"><path d="M21 5H8l-5 7 5 7h13a1 1 0 001-1V6a1 1 0 00-1-1z"/><path d="M18 9l-5 6M13 9l5 6"/></svg></button>
+  </div>
+  <div class="fp-prompt" id="fpPrompt" style="display:none">
+    <div class="fp-icon" id="fpIcon" onclick="haptic();tryFingerprint()"><svg viewBox="0 0 24 24"><use href="#i-finger"/></svg></div>
+    <div class="fp-hint" id="fpHint">Touch the sensor to unlock</div>
+    <div class="fp-usepin" onclick="haptic();showPinPad()">Use PIN instead</div>
   </div>
 </div>
 
@@ -841,7 +853,22 @@ if(window.matchMedia){ window.matchMedia('(prefers-color-scheme: light)').addEve
 
 // ===== LOCK =====
 let pinEntry='', isSettingPin=false, pinFirst='';
-function initLock(){ if(!DB.pin){ document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; isSettingPin=true; } }
+function initLock(){
+  if(!DB.pin){ document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; isSettingPin=true; return; }
+  if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
+}
+function showFpPrompt(){
+  document.getElementById('lockSubtitle').textContent='Unlock with fingerprint';
+  document.getElementById('pinDots').style.display='none';
+  document.getElementById('pinPad').style.display='none';
+  document.getElementById('fpPrompt').style.display='flex';
+}
+function showPinPad(){
+  document.getElementById('lockSubtitle').textContent='Enter your PIN';
+  const fp=document.getElementById('fpPrompt'); if(fp) fp.style.display='none';
+  document.getElementById('pinDots').style.display='flex';
+  document.getElementById('pinPad').style.display='grid';
+}
 function pinPress(n){ if(pinEntry.length>=4)return; pinEntry+=n; updateDots(); if(pinEntry.length===4) setTimeout(checkPin,150); }
 function pinDel(){ pinEntry=pinEntry.slice(0,-1); updateDots(); }
 function updateDots(){ for(let i=0;i<4;i++) document.getElementById('d'+i).classList.toggle('filled', i<pinEntry.length); }
@@ -855,13 +882,18 @@ function checkPin(){
 }
 function unlockApp(){ document.getElementById('lockScreen').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); initApp(); }
 function tryFingerprint(){
-  if(!window.PublicKeyCredential){showToast('Biometrics not available on this device','var(--text-dim)');return;}
-  if(!DB.fingerprintCredId){showToast('Enable fingerprint in Settings first','var(--text-dim)');return;}
+  if(!window.PublicKeyCredential){showPinPad();showToast('Biometrics not available on this device','var(--text-dim)');return;}
+  if(!DB.fingerprintCredId){showPinPad();showToast('Enable fingerprint in Settings first','var(--text-dim)');return;}
+  const icon=document.getElementById('fpIcon'), hint=document.getElementById('fpHint');
+  if(icon) icon.classList.add('scanning'); if(hint) hint.textContent='Scanning…';
   const challenge=new Uint8Array(32); crypto.getRandomValues(challenge);
   navigator.credentials.get({publicKey:{
     challenge, timeout:60000, userVerification:'required',
     allowCredentials:[{type:'public-key',id:new Uint8Array(DB.fingerprintCredId)}]
-  }}).then(()=>unlockApp()).catch(()=>showToast('Try PIN instead','var(--text-dim)'));
+  }}).then(()=>unlockApp()).catch(()=>{
+    if(icon) icon.classList.remove('scanning');
+    if(hint) hint.textContent="Couldn't read fingerprint — tap to retry";
+  });
 }
 async function setupFingerprint(){
   if(!window.PublicKeyCredential){showToast('Biometrics not supported on this device','var(--danger)');return;}
@@ -1800,7 +1832,7 @@ loadDB(); applyTheme(); initLock();
   .nav-item:active { transform:scale(0.88); transition:none; }
   .quick-action-btn:active { background:var(--glass-hover); transform:scale(0.97); transition:none; }
   .picker-item:active { background:var(--glass); transition:none; }
-  button:focus, div:focus { outline:none; }
+  *:focus, *:focus-visible { outline:none !important; }
 </style>
 
 <script>
