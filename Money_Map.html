@@ -69,7 +69,9 @@
   }
   --danger: #e05555; --success: #3fae5a; --warning: #f0a020;
 
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:rgba(0,0,0,0) !important; -webkit-touch-callout:none; }
+  button, a, [onclick], .nav-item, .pin-btn, .picker-item, .picker-box, .settings-item, .budget-tab, .quick-action-btn, .icon-btn, .fp-icon, .avatar {
+    -webkit-tap-highlight-color:rgba(0,0,0,0) !important; -webkit-touch-callout:none; }
   :root { --danger:#e05555; --success:#3fae5a; --warning:#f0a020; }
   html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;
