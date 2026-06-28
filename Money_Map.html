@@ -322,7 +322,55 @@
   .goal-pct { font-size:14px; font-weight:800; color:var(--gold); }
   .goal-amounts { display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); }
 
-  .analytics-content { padding:0 var(--gutter); display:flex; flex-direction:column; gap:16px; }
+  .analytics-content { padding:0 0 28px; }
+  .an-pad { padding:0 var(--gutter); }
+  .an-tag { display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--gold-dim); background:rgba(212,175,55,0.14); padding:3px 9px; border-radius:999px; margin-bottom:9px; }
+  .an-ttl { font-size:15px; font-weight:800; color:var(--text); }
+  .an-sub { font-size:11.5px; color:var(--text-dim); margin-bottom:12px; }
+  .an-kpi { display:flex; align-items:baseline; gap:8px; margin:2px 0 10px; }
+  .an-big { font-size:26px; font-weight:800; line-height:1; color:var(--text); }
+  .an-kpis { font-size:11.5px; color:var(--text-dim); }
+  .an-kpis.up { color:var(--success); font-weight:700; }
+  .an-kpis.down { color:var(--danger); font-weight:700; }
+  .an-chart { cursor:pointer; }
+  .an-donut-row { display:flex; align-items:center; gap:14px; }
+  .an-donut { position:relative; width:120px; height:120px; flex-shrink:0; }
+  .an-donut svg { width:120px; height:120px; }
+  .an-dc { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .an-dc-v { font-size:16px; font-weight:800; color:var(--text); }
+  .an-dc-l { font-size:9px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.04em; }
+  .an-leg { flex:1; display:flex; flex-direction:column; gap:8px; min-width:0; }
+  .an-lr { display:flex; align-items:center; gap:8px; font-size:12px; }
+  .an-lr2 { display:flex; align-items:center; gap:7px; font-size:11.5px; min-width:0; }
+  .an-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .an-dot.sq { border-radius:3px; width:10px; height:10px; }
+  .an-ln { color:var(--text); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .an-lv { color:var(--text-dim); font-size:11px; white-space:nowrap; flex-shrink:0; }
+  .an-flow { display:flex; height:24px; border-radius:8px; overflow:hidden; margin-bottom:14px; }
+  .an-flow div { height:100%; }
+  .an-leg2 { display:grid; grid-template-columns:1fr 1fr; gap:9px 12px; }
+  .an-note { margin-top:11px; font-size:12px; padding:9px 11px; border-radius:10px; line-height:1.4; }
+  .an-note.warn { background:rgba(224,85,85,0.1); color:var(--danger); }
+  .an-single { font-size:26px; font-weight:800; color:var(--text); text-align:center; margin:14px 0 4px; }
+  .an-single-sub { font-size:11.5px; color:var(--text-dim); text-align:center; }
+  .an-health-hdr { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .an-ring { position:relative; width:78px; height:78px; flex-shrink:0; }
+  .an-ring svg { width:78px; height:78px; transform:rotate(-90deg); }
+  .an-ring-c { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .an-ring-v { font-size:20px; font-weight:800; color:var(--text); line-height:1; }
+  .an-ring-l { font-size:8.5px; color:var(--text-dim); }
+  .an-badge { display:inline-block; font-size:11px; font-weight:800; padding:2px 9px; border-radius:999px; margin:3px 0; }
+  .an-tiles { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .an-tile { background:var(--glass); border:1px solid var(--card-border); border-radius:12px; padding:11px 12px; }
+  .an-tile-v { font-size:16px; font-weight:800; color:var(--text); }
+  .an-tile-l { font-size:10.5px; color:var(--text-dim); margin-top:2px; }
+  .an-foot { margin-top:12px; font-size:12px; color:var(--text-dim); text-align:center; }
+  #photoViewModal { position:fixed; inset:0; z-index:880; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.9); padding:24px; }
+  .pv-shell { position:relative; max-width:90vw; max-height:80vh; }
+  .pv-img { max-width:90vw; max-height:80vh; border-radius:18px; display:block; }
+  .pv-edit { position:absolute; right:12px; bottom:12px; display:flex; align-items:center; gap:6px; background:var(--gold); color:#1a1306; border:none; font-weight:800; font-size:13px; padding:9px 14px; border-radius:999px; cursor:pointer; }
+  .pv-edit svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.9; }
+  .pv-close { position:absolute; right:8px; top:8px; width:36px; height:36px; border-radius:50%; background:rgba(0,0,0,0.55); color:#fff; border:none; font-size:18px; cursor:pointer; }
   .chart-card { padding:20px; animation:fadeUp 0.5s both; }
   .chart-card svg { width:16px; height:16px; }
   .chart-title { font-size:15px; font-weight:800; margin-bottom:16px; }
@@ -530,8 +578,8 @@
   <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 7v5l9 9 7-7-9-9H3z"/><circle cx="7.5" cy="7.5" r="1"/></symbol>
   <symbol id="i-question" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5M12 17v.5"/></symbol>
   <symbol id="f-home" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></symbol>
-  <symbol id="f-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 9.5h20" stroke="var(--nav-bg)" stroke-width="1.6"/></symbol>
-  <symbol id="f-budget" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="var(--nav-bg)" stroke-width="1.6"/></symbol>
+  <symbol id="f-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 9.5h20" style="stroke:var(--nav-bg)" stroke-width="1.6"/></symbol>
+  <symbol id="f-budget" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5" style="stroke:var(--nav-bg)" stroke-width="1.6"/></symbol>
   <symbol id="f-chart" viewBox="0 0 24 24"><path d="M4 21a1 1 0 01-1-1v-9h4v10zM10 21V4h4v17zM17 21V11h4v9a1 1 0 01-1 1z"/></symbol>
   <symbol id="f-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></symbol>
 </svg>
@@ -641,7 +689,7 @@
   <div class="page" id="page-settings">
     <div class="page-header"><div class="page-title">Settings</div></div>
     <div class="settings-profile">
-      <div class="settings-avatar" id="settingsAvatar" onclick="openPhotoChoice('profile')" style="position:relative"></div>
+      <div class="settings-avatar" id="settingsAvatar" onclick="viewProfilePhoto()" style="position:relative"></div>
       <div style="margin-top:8px;font-size:12px;color:var(--gold);font-weight:700;cursor:pointer;letter-spacing:0.3px" onclick="openPhotoChoice('profile')">Change Photo</div>
       <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
       <input type="file" id="photoCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(event)">
@@ -765,6 +813,13 @@
       </div>
     </div>
     <div class="crop-actions"><button class="crop-cancel" onclick="cancelCrop()">Cancel</button><button class="crop-use" onclick="confirmCrop()">Use Photo</button></div>
+  </div>
+</div>
+<div id="photoViewModal" onclick="if(event.target===this)closePhotoView()">
+  <div class="pv-shell">
+    <img id="pvImg" class="pv-img" alt="">
+    <button class="pv-close" onclick="closePhotoView()">✕</button>
+    <button class="pv-edit" onclick="closePhotoView();openPhotoChoice('profile')"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg>Edit</button>
   </div>
 </div>
 
@@ -1287,7 +1342,8 @@ function expandCard(kind){
       const mx=Math.max.apply(null,ms.map(m=>Math.max(inc[m],exp[m])).concat([1]));
       const W=320,H=130,pad=14,xs=(W-pad*2)/(ms.length-1), yo=v=>(H-pad)-(v/mx)*(H-pad*2);
       const pa=arr=>'M'+ms.map((m,k)=>(pad+k*xs).toFixed(1)+','+yo(arr[m]).toFixed(1)).join(' L');
-      chart=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;margin:6px 0"><path d="${pa(inc)}" fill="none" style="stroke:var(--gold)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="${pa(exp)}" fill="none" style="stroke:var(--danger)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="iec-months">${ms.map(m=>`<span>${MONTHS[m].slice(0,3)}</span>`).join('')}</div>`;
+      const dt=(arr,cv)=>ms.map((m,k)=>{const cx=(pad+k*xs).toFixed(1),cy=yo(arr[m]).toFixed(1),last=k===ms.length-1;return last?`<circle cx="${cx}" cy="${cy}" r="5.5" fill="none" style="stroke:${cv}" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="2.6" style="fill:${cv}"/>`:`<circle cx="${cx}" cy="${cy}" r="3" style="fill:${cv}"/>`;}).join('');
+      chart=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;margin:6px 0"><path d="${pa(inc)}" fill="none" style="stroke:var(--gold)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="${pa(exp)}" fill="none" style="stroke:var(--danger)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>${dt(inc,'var(--gold)')}${dt(exp,'var(--danger)')}</svg><div class="iec-months">${ms.map(m=>`<span>${MONTHS[m].slice(0,3)}</span>`).join('')}</div>`;
     }
     const msg=kept>=0?`You kept ${fmtShort(kept)} this period — about ${keptPct}% of your income. You're living within your means.`:`You overspent by ${fmtShort(-kept)} this period — expenses were higher than income.`;
     body=`<div class="iec-leg" style="margin-bottom:2px"><span><i style="background:var(--gold)"></i>Income</span><span><i style="background:var(--danger)"></i>Expenses</span></div>${chart}
@@ -1350,6 +1406,48 @@ function expandCard(kind){
         <div class="exp-sub">From: ${l.source}</div></div>`;
     }).join('')||`<div class="exp-empty">No loans</div>`;
     body=`<div class="exp-sub" style="text-align:left;font-weight:700;color:var(--gold-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Goals</div>${goalsBody}<div class="exp-divider"></div><div class="exp-sub" style="text-align:left;font-weight:700;color:var(--gold-dim);text-transform:uppercase;letter-spacing:1px;margin:12px 0">Loans</div>${loansBody}`;
+  } else if(kind==='health'){
+    const d=anData(); title='Financial Health · '+periodLabel();
+    const rt=d.runway>=99?'plenty':Math.max(0,d.runway).toFixed(1)+' months';
+    body=`<div class="exp-total" style="color:${d.sColor}">${d.score}<span style="font-size:15px;color:var(--text-dim)"> / 100</span></div><div class="exp-sub">${d.sLabel} · ${periodLabel()}</div>
+      <div class="exp-row"><span>Savings rate</span><span>${d.savingsRate}%</span></div>
+      <div class="exp-row"><span>Emergency runway</span><span>${rt}</span></div>
+      <div class="exp-row"><span>Avg monthly surplus</span><span>${d.avgSurplus<0?'-':''}${fmtShort(d.avgSurplus)}</span></div>
+      <div class="exp-row"><span>Categories on budget</span><span>${d.totalBudgets?d.onBudget+' / '+d.totalBudgets:'—'}</span></div>
+      <div class="exp-row"><span>Loans vs income</span><span>${d.loanPct}%</span></div>
+      <div class="exp-divider"></div>
+      <div class="exp-sub" style="text-align:left;line-height:1.6">Your score blends savings rate (target 20%), emergency runway (target 6 months), staying on budget, and keeping loan pressure low.</div>`;
+  } else if(kind==='savingsrate'){
+    const d=anData(); title='Savings Rate · '+d.year;
+    const avg=d.rateSeries.length?Math.round(d.rateSeries.reduce((s,v)=>s+v,0)/d.rateSeries.length):0;
+    const best=d.rateSeries.length?Math.max.apply(null,d.rateSeries):0, worst=d.rateSeries.length?Math.min.apply(null,d.rateSeries):0;
+    body=`<div class="exp-total" style="color:var(--success)">${d.savingsRate}%</div><div class="exp-sub">set aside in ${periodLabel()}</div>
+      <div class="exp-row"><span>Year average</span><span>${avg}%</span></div>
+      <div class="exp-row"><span>Best month</span><span>${best}%</span></div>
+      <div class="exp-row"><span>Lowest month</span><span>${worst}%</span></div>
+      <div class="exp-divider"></div>`+
+      d.months.map((m,i)=>`<div class="exp-row"><span>${MONTHS[m]}</span><span style="color:${d.rateSeries[i]>=20?'var(--success)':'var(--text)'}">${d.rateSeries[i]}%</span></div>`).join('')+
+      `<div style="margin-top:12px;padding:11px 13px;border-radius:12px;font-size:13px;line-height:1.5;background:rgba(63,174,90,0.1);color:var(--success)">${d.savingsRate>=20?'You are hitting the 20% benchmark — strong habit.':'Aim for 20%+. Automating a transfer each payday makes it effortless.'}</div>`;
+  } else if(kind==='networth'){
+    const d=anData(); title='Net Worth · '+d.year;
+    const sB=getPotBalance('savings'), eB=getPotBalance('emergency'), gB=DB.transactions.filter(t=>t.type==='goal').reduce((s,t)=>s+t.amount,0);
+    body=`<div class="exp-total">${fmtShort(d.endNW)}</div><div class="exp-sub">savings + emergency + goals</div>
+      <div class="exp-row"><span>Life Savings</span><span>${fmtShort(sB)}</span></div>
+      <div class="exp-row"><span>Emergency Fund</span><span>${fmtShort(eB)}</span></div>
+      <div class="exp-row"><span>Goals saved</span><span>${fmtShort(gB)}</span></div>
+      <div class="exp-divider"></div>
+      <div class="exp-row"><span style="font-weight:800">Growth in ${d.year}</span><span style="color:${d.yearGrowth>=0?'var(--success)':'var(--danger)'};font-weight:800">${d.yearGrowth>=0?'+':'-'}${fmtShort(d.yearGrowth)}</span></div>`;
+  } else if(kind==='moneyflow'){
+    const d=anData(); title='Where Your Income Goes · '+periodLabel();
+    const kept=d.income-(d.expFromInc+d.savAdd+d.emgAdd+d.goalAdd+d.loanPaid);
+    const rows=[['Expenses',d.expFromInc],['Life Savings',d.savAdd],['Emergency',d.emgAdd],['Goals',d.goalAdd],['Loan repaid',d.loanPaid]];
+    body=`<div class="exp-total" style="color:var(--success)">${fmtShort(d.income)}</div><div class="exp-sub">income in ${periodLabel()}</div>`+
+      rows.filter(r=>r[1]>0).map(r=>`<div class="exp-row"><span>${r[0]}</span><span>${fmtShort(r[1])} · ${pct(r[1],d.income)}%</span></div>`).join('')+
+      `<div class="exp-divider"></div><div class="exp-row"><span style="font-weight:800">${kept>=0?'Kept / unallocated':'Overspent'}</span><span style="color:${kept>=0?'var(--success)':'var(--danger)'};font-weight:800">${kept<0?'-':''}${fmtShort(kept)}</span></div>`;
+  } else if(kind==='spending'){
+    const d=anData(); title='Spending Breakdown · '+periodLabel();
+    body=`<div class="exp-total" style="color:var(--danger)">${fmtShort(d.totalExp)}</div><div class="exp-sub">total spent in ${periodLabel()}</div>`+
+      (d.totalExp>0?d.catFull.map(x=>`<div class="exp-row"><span style="display:flex;align-items:center;gap:8px">${ic(x.icon)}${x.name}</span><span>${fmtShort(x.v)} · ${pct(x.v,d.totalExp)}%</span></div>`).join(''):`<div class="exp-empty">No spending logged</div>`);
   }
   c.innerHTML=`<div class="modal-title">${title}</div>${body}<button class="btn-outline" onclick="closeModal('expandModal')" style="margin-top:16px">Close</button>`;
   openModal('expandModal');
@@ -1773,7 +1871,159 @@ function saveGoal(id){
 function deleteGoal(id){ askConfirm('Remove this goal?','',()=>{ DB.goals=DB.goals.filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Goal removed','var(--danger)'); },'Remove',true); }
 
 // ===== ANALYTICS =====
-function renderAnalytics(){
+// ===== ANALYTICS (rebuilt dashboard) =====
+function potsAsOf(cutoff){
+  let s=0,e=0,g=0;
+  DB.transactions.forEach(t=>{ if(!t.date) return; const d=new Date(t.date); if(d>cutoff) return;
+    if(t.type==='savings') s+=t.amount; else if(t.type==='emergency') e+=t.amount; else if(t.type==='goal') g+=t.amount;
+    else if(t.type==='expense'){ if(t.source==='savings') s-=t.amount; else if(t.source==='emergency') e-=t.amount; }
+    else if(t.type==='loan_repay'){ if(t.from==='savings') s-=t.amount; else if(t.from==='emergency') e-=t.amount; }
+  });
+  return {s:s,e:e,g:g,total:s+e+g};
+}
+function anData(){
+  const {month,year}=getSelectedPeriod();
+  const txs=getTxForPeriod(month,year);
+  const f=(p)=>txs.filter(p).reduce((s,t)=>s+t.amount,0);
+  const income=f(t=>t.type==='income'), totalExp=f(t=>t.type==='expense');
+  const expFromInc=f(t=>t.type==='expense'&&(!t.source||t.source==='income'));
+  const savAdd=f(t=>t.type==='savings'), emgAdd=f(t=>t.type==='emergency'), goalAdd=f(t=>t.type==='goal');
+  const loanPaid=f(t=>t.type==='loan_repay'); const setAside=savAdd+emgAdd+goalAdd;
+  const savingsRate=income>0?Math.round(setAside/income*100):0;
+  const loanPct=income>0?Math.round(loanPaid/income*100):0;
+  const catMap={};
+  txs.filter(t=>t.type==='expense').forEach(t=>{const k=t.categoryId||'__un';catMap[k]=(catMap[k]||0)+t.amount;});
+  const palette=['#C9A227','#E0554F','#E8A33D','#6BA368','#B388C9','#5BA0C9','#D98C6A'];
+  let catList=Object.keys(catMap).map(k=>{const cat=k==='__un'?{name:'Unbudgeted',icon:'i-question'}:(DB.categories.find(x=>x.id===k)||{name:'Other',icon:'i-tag'});return {name:cat.name,icon:cat.icon,v:catMap[k]};}).sort((a,b)=>b.v-a.v);
+  const catFull=catList.slice();
+  if(catList.length>6){const head=catList.slice(0,6);const rest=catList.slice(6).reduce((s,x)=>s+x.v,0);head.push({name:'Other',icon:'i-tag',v:rest});catList=head;}
+  catList.forEach((x,i)=>x.c=palette[i%palette.length]);
+  const incM=Array(12).fill(0), setMo=Array(12).fill(0), expMo=Array(12).fill(0);
+  DB.transactions.forEach(t=>{if(!t.date)return;const d=new Date(t.date);if(d.getFullYear()!==year)return;const m=d.getMonth();if(t.type==='income')incM[m]+=t.amount;else if(t.type==='expense')expMo[m]+=t.amount;else if(t.type==='savings'||t.type==='emergency'||t.type==='goal')setMo[m]+=t.amount;});
+  let aF=-1,aL=-1;for(let m=0;m<12;m++){if(incM[m]||expMo[m]||setMo[m]){if(aF<0)aF=m;aL=m;}}
+  const months=[];if(aF>=0)for(let m=aF;m<=aL;m++)months.push(m);
+  const rateSeries=months.map(m=>incM[m]>0?Math.round(setMo[m]/incM[m]*100):0);
+  const S=[],E=[],G=[];
+  months.forEach(m=>{const p=potsAsOf(new Date(year,m+1,0,23,59,59));S.push(p.s);E.push(p.e);G.push(p.g);});
+  const nwSeries=months.map((m,i)=>S[i]+E[i]+G[i]);
+  const startNW=potsAsOf(new Date(year-1,11,31,23,59,59)).total;
+  const endNW=nwSeries.length?nwSeries[nwSeries.length-1]:potsAsOf(new Date()).total;
+  const curNW=potsAsOf(new Date()).total; const yearGrowth=endNW-startNW;
+  const activeN=months.length||1;
+  const yearExp=expMo.reduce((s,v)=>s+v,0), yearInc=incM.reduce((s,v)=>s+v,0);
+  const avgMonthExp=Math.round(yearExp/activeN), avgSurplus=Math.round((yearInc-yearExp)/activeN);
+  const emgBal=getPotBalance('emergency');
+  const emgBalYE=potsAsOf(new Date(year,11,31,23,59,59)).e;
+  const runway=avgMonthExp>0?emgBalYE/avgMonthExp:(emgBalYE>0?99:0);
+  const mult=periodMonths(); const expBudgets=DB.budgets.filter(b=>b.type==='expense'); let onBudget=0;
+  expBudgets.forEach(b=>{const sp=txs.filter(t=>t.type==='expense'&&t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);if(b.amount*mult>0&&sp<=b.amount*mult)onBudget++;});
+  const totalBudgets=expBudgets.length; const biggest=catFull[0]||null;
+  let score=0; score+=Math.max(0,Math.min(savingsRate/20,1))*30; score+=Math.max(0,Math.min(runway/6,1))*25; score+=(totalBudgets>0?onBudget/totalBudgets:0.6)*25; score+=Math.max(0,1-Math.min(loanPct/50,1))*20; score=Math.round(score);
+  const sLabel=score>=80?'Strong':score>=60?'Good':score>=40?'Fair':'Needs work';
+  const sColor=score>=80?'var(--success)':score>=60?'#7aa84a':score>=40?'var(--warning)':'var(--danger)';
+  const sBg=score>=80?'rgba(63,174,90,0.15)':score>=60?'rgba(122,168,74,0.15)':score>=40?'rgba(240,160,32,0.15)':'rgba(224,85,85,0.15)';
+  return {month,year,txs,income,totalExp,expFromInc,savAdd,emgAdd,goalAdd,loanPaid,setAside,savingsRate,loanPct,catList,catFull,months,rateSeries,nwSeries,S,E,G,curNW,endNW,startNW,yearGrowth,avgMonthExp,avgSurplus,emgBal,runway,onBudget,totalBudgets,biggest,score,sLabel,sColor,sBg,yearInc,yearExp};
+}
+function an_money(v){ return fmtShort(v).replace('UGX ',''); }
+function an_donut(list,total){
+  const C=2*Math.PI*46; let off=0;
+  const segs=list.map(d=>{const len=d.v/total*C;const s='<circle cx="60" cy="60" r="46" fill="none" stroke="'+d.c+'" stroke-width="15" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 60 60)"></circle>';off+=len;return s;}).join('');
+  const leg=list.map(d=>'<div class="an-lr"><span class="an-dot" style="background:'+d.c+'"></span><span class="an-ln">'+d.name+'</span><span class="an-lv">'+pct(d.v,total)+'% · '+fmtShort(d.v)+'</span></div>').join('');
+  return '<div class="an-donut-row"><div class="an-donut"><svg viewBox="0 0 120 120">'+segs+'</svg><div class="an-dc"><div class="an-dc-v">'+an_money(total)+'</div><div class="an-dc-l">spent</div></div></div><div class="an-leg">'+leg+'</div></div>';
+}
+function an_flow(income,d){
+  const parts=[{n:'Expenses',v:d.expFromInc,c:'#E0554F'},{n:'Goals',v:d.goalAdd,c:'#6BA368'},{n:'Life Savings',v:d.savAdd,c:'#C9A227'},{n:'Emergency',v:d.emgAdd,c:'#E8A33D'},{n:'Loan repaid',v:d.loanPaid,c:'#B388C9'}].filter(p=>p.v>0);
+  const allocated=parts.reduce((s,p)=>s+p.v,0); const kept=income-allocated;
+  let denom=income, show=parts.slice();
+  if(kept>=0.5){ show.push({n:'Kept',v:kept,c:'#D8CFB4'}); denom=income; } else { denom=allocated||1; }
+  const bar=show.map(p=>'<div style="width:'+(p.v/denom*100).toFixed(2)+'%;background:'+p.c+'"></div>').join('');
+  const leg=show.map(p=>'<div class="an-lr2"><span class="an-dot sq" style="background:'+p.c+'"></span><span class="an-ln">'+p.n+'</span><span class="an-lv">'+pct(p.v,denom)+'% · '+fmtShort(p.v)+'</span></div>').join('');
+  const note=kept<-0.5?'<div class="an-note warn">⚠ You spent '+fmtShort(-kept)+' more than you earned this period.</div>':'';
+  return '<div class="an-flow">'+bar+'</div><div class="an-leg2">'+leg+'</div>'+note;
+}
+function an_line(months,series,opts){
+  if(months.length<2){ const v=series[series.length-1]||0; return '<div class="an-single">'+opts.fmtVal(v)+'</div><div class="an-single-sub">'+(opts.singleSub||'')+'</div>'; }
+  const W=300,H=110,pad=8,n=months.length,xstep=(W-2*pad)/(n-1);
+  const mx=Math.max.apply(null,series.concat(opts.target?[opts.target]:[]).concat([1]));
+  const X=i=>pad+i*xstep, Y=v=>(H-14)-(v/mx)*(H-26);
+  const pts=series.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+  const area='M'+X(0).toFixed(1)+','+(H-14)+' L'+pts.split(' ').join(' L')+' L'+X(n-1).toFixed(1)+','+(H-14)+' Z';
+  const tgt=opts.target?'<line x1="'+pad+'" y1="'+Y(opts.target).toFixed(1)+'" x2="'+(W-pad)+'" y2="'+Y(opts.target).toFixed(1)+'" style="stroke:var(--text-dim)" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"/><text x="'+(W-pad)+'" y="'+(Y(opts.target)-4).toFixed(1)+'" text-anchor="end" font-size="9" style="fill:var(--text-dim)">'+(opts.targetLabel||'')+'</text>':'';
+  const dots=series.map((v,i)=>{const last=i===n-1,cx=X(i).toFixed(1),cy=Y(v).toFixed(1);return last?'<circle cx="'+cx+'" cy="'+cy+'" r="5.5" fill="none" style="stroke:'+opts.color+'" stroke-width="2"/><circle cx="'+cx+'" cy="'+cy+'" r="2.6" style="fill:'+opts.color+'"/>':'<circle cx="'+cx+'" cy="'+cy+'" r="3" style="fill:'+opts.color+'"/>';}).join('');
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+(opts.fill?'<path d="'+area+'" style="fill:'+opts.fill+'"/>':'')+tgt+'<polyline points="'+pts+'" fill="none" style="stroke:'+opts.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+dots+'</svg><div class="iec-months">'+months.map(m=>'<span>'+MONTHS[m].slice(0,3)+'</span>').join('')+'</div>';
+}
+function an_stack(months,S,E,G){
+  if(months.length<2) return {single:true};
+  const n=months.length,W=300,H=110,pad=8,xstep=(W-2*pad)/(n-1);
+  const tops=months.map((_,i)=>S[i]+E[i]+G[i]); const mx=Math.max.apply(null,tops.concat([1]));
+  const X=i=>pad+i*xstep, Y=v=>(H-6)-(v/mx)*(H-16);
+  const c1=G.slice(), c2=months.map((_,i)=>G[i]+E[i]), c3=tops, zero=months.map(()=>0);
+  function band(lo,up,color){let p='M';for(let i=0;i<n;i++)p+=(i?'L':'')+X(i).toFixed(1)+','+Y(up[i]).toFixed(1)+' ';for(let j=n-1;j>=0;j--)p+='L'+X(j).toFixed(1)+','+Y(lo[j]).toFixed(1)+' ';return '<path d="'+p+'Z" style="fill:'+color+'" opacity="0.9"/>';}
+  const dots=c3.map((v,i)=>{const last=i===n-1,cx=X(i).toFixed(1),cy=Y(v).toFixed(1);return last?'<circle cx="'+cx+'" cy="'+cy+'" r="5" fill="none" style="stroke:var(--gold-dim)" stroke-width="2"/><circle cx="'+cx+'" cy="'+cy+'" r="2.4" style="fill:var(--gold-dim)"/>':'<circle cx="'+cx+'" cy="'+cy+'" r="2.6" style="fill:var(--gold-dim)"/>';}).join('');
+  return {svg:'<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+band(zero,c1,'#6BA368')+band(c1,c2,'#E8A33D')+band(c2,c3,'#C9A227')+dots+'</svg><div class="iec-months">'+months.map(m=>'<span>'+MONTHS[m].slice(0,3)+'</span>').join('')+'</div>'};
+}
+function an_health(d){
+  const C=2*Math.PI*34, fill=d.score/100*C;
+  const ring='<svg viewBox="0 0 78 78"><circle cx="39" cy="39" r="34" fill="none" stroke="rgba(127,127,127,0.18)" stroke-width="8"/><circle cx="39" cy="39" r="34" fill="none" style="stroke:'+d.sColor+'" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+fill.toFixed(1)+' '+(C-fill).toFixed(1)+'"/></svg>';
+  const rt=d.runway>=99?'plenty':Math.max(0,d.runway).toFixed(1)+' mo';
+  const surplus=(d.avgSurplus<0?'-':'')+fmtShort(d.avgSurplus);
+  return '<div class="an-tag">Financial health</div><div class="an-health-hdr"><div class="an-ring">'+ring+'<div class="an-ring-c"><div class="an-ring-v">'+d.score+'</div><div class="an-ring-l">/ 100</div></div></div><div><div class="an-ttl">Financial Health</div><div class="an-badge" style="color:'+d.sColor+';background:'+d.sBg+'">'+d.sLabel+'</div><div class="an-sub" style="margin:0">'+periodLabel()+' snapshot</div></div></div><div class="an-tiles"><div class="an-tile"><div class="an-tile-v">'+d.savingsRate+'%</div><div class="an-tile-l">Savings rate</div></div><div class="an-tile"><div class="an-tile-v">'+rt+'</div><div class="an-tile-l">Emergency runway</div></div><div class="an-tile"><div class="an-tile-v">'+surplus+'</div><div class="an-tile-l">Avg monthly surplus</div></div><div class="an-tile"><div class="an-tile-v">'+(d.totalBudgets?d.onBudget+' / '+d.totalBudgets:'—')+'</div><div class="an-tile-l">Categories on budget</div></div></div>'+(d.biggest&&d.totalExp>0?'<div class="an-foot">Biggest expense: <b>'+d.biggest.name+'</b> · '+pct(d.biggest.v,d.totalExp)+'% of spending</div>':'');
+}
+function an_insights(d){
+  const out=[];
+  if(d.income>0){
+    if(d.savingsRate>=20) out.push({icon:'i-star',title:'Strong savings rate',body:'You set aside '+d.savingsRate+'% of your income — above the 20% benchmark. Consider funnelling extra into a goal.',color:'var(--success)'});
+    else if(d.savingsRate>0) out.push({icon:'i-bulb',title:'Lift your savings a little',body:'You set aside '+d.savingsRate+'% this period. Reaching 20% means about '+fmtShort(Math.max(0,Math.round(d.income*0.2)-d.setAside))+' more set aside.',color:'var(--gold)'});
+    else out.push({icon:'i-bulb',title:'Start setting money aside',body:'Nothing went to savings, emergency or goals this period. Even '+fmtShort(Math.round(d.income*0.1))+' (10%) starts the habit.',color:'var(--gold)'});
+  }
+  if(d.avgMonthExp>0){
+    if(d.runway<3) out.push({icon:'i-shield',title:'Thin safety net',body:'Your emergency fund covers about '+Math.max(0,d.runway).toFixed(1)+' month'+(d.runway<1.05?'':'s')+' of spending. Aim for 3–6 — about '+fmtShort(Math.max(0,Math.round(d.avgMonthExp*3-d.emgBal)))+' more reaches 3 months.',color:'var(--warning)'});
+    else if(d.runway<6) out.push({icon:'i-shield',title:'Decent safety net',body:'Your emergency fund covers ~'+d.runway.toFixed(1)+' months. Push toward 6 for full peace of mind.',color:'var(--gold)'});
+    else out.push({icon:'i-check',title:'Well protected',body:'Your emergency fund covers '+(d.runway>=99?'plenty of':d.runway.toFixed(1)+'+')+' months of expenses. Excellent buffer.',color:'var(--success)'});
+  }
+  if(d.loanPct>=50) out.push({icon:'i-warn',title:'Heavy loan load',body:d.loanPct+'% of your income ('+fmtShort(d.loanPaid)+') went to loan repayments. Clearing the smallest loan first frees monthly cash.',color:'var(--danger)'});
+  else if(d.loanPct>=30) out.push({icon:'i-warn',title:'Watch your loans',body:d.loanPct+'% of income went to loans this period. Avoid new debt until this drops below 30%.',color:'var(--warning)'});
+  if(d.biggest&&d.totalExp>0){const bp=pct(d.biggest.v,d.totalExp); if(bp>=40) out.push({icon:'i-search',title:d.biggest.name+' dominates spending',body:d.biggest.name+' is '+bp+'% of spending ('+fmtShort(d.biggest.v)+'). If it is flexible, a 10% trim saves '+fmtShort(Math.round(d.biggest.v*0.1))+'.',color:'var(--gold)'});}
+  const unb=(d.catFull.find(x=>x.name==='Unbudgeted')||{}).v||0;
+  if(unb>0) out.push({icon:'i-search',title:'Unbudgeted spending',body:fmtShort(unb)+' went to expenses with no category. Tag these so they show in your budget and breakdowns.',color:'var(--gold)'});
+  const mult=periodMonths();
+  const over=DB.budgets.filter(b=>b.type==='expense').map(b=>{const cat=DB.categories.find(c=>c.id===b.categoryId)||{};const sp=d.txs.filter(t=>t.type==='expense'&&t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);return {name:cat.name||'a category',sp:sp,bud:b.amount*mult};}).filter(x=>x.bud>0&&x.sp>x.bud);
+  if(over.length) out.push({icon:'i-warn',title:'Over budget',body:'You went over budget on '+over.slice(0,3).map(o=>o.name).join(', ')+'. Adjust the limit or trim there next period.',color:'var(--warning)'});
+  if(d.income>0&&d.totalExp<d.income*0.65) out.push({icon:'i-trophy',title:'Living within your means',body:'Expenses were '+pct(d.totalExp,d.income)+'% of income — comfortably under 65%. Great control.',color:'var(--success)'});
+  if(!out.length) out.push({icon:'i-check',title:'Looking balanced',body:'Your finances look steady this period. Keep it up.',color:'var(--success)'});
+  return out;
+}
+function setupAnSwipe(stackId,dotsId,titleId,moreId,titles,kinds){
+  const sw=document.getElementById(stackId); if(!sw) return;
+  const dots=document.querySelectorAll('#'+dotsId+' .sdot'), tEl=document.getElementById(titleId), mEl=document.getElementById(moreId);
+  dots.forEach((dd,j)=>dd.onclick=function(){ sw.scrollTo({left:j*sw.clientWidth,behavior:'smooth'}); });
+  sw.onscroll=function(){ const i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); if(tEl)tEl.textContent=titles[i]||titles[0]; if(mEl)mEl.onclick=function(){expandCard(kinds[i]);}; dots.forEach((dd,j)=>dd.classList.toggle('active',j===i)); };
+  const cards=sw.querySelectorAll('.glass-card'); cards.forEach(cc=>cc.style.height='');
+  let h=0; cards.forEach(cc=>{ if(cc.offsetHeight>h)h=cc.offsetHeight; }); if(h>0)cards.forEach(cc=>cc.style.height=h+'px');
+}
+function renderAnalyticsV2(){
+  const c=document.getElementById('analyticsContent'); if(!c) return;
+  const d=anData();
+  if(d.txs.length===0){ c.innerHTML='<div class="an-pad"><div class="glass-card chart-card" style="text-align:center"><div style="font-size:14px;font-weight:700;color:var(--text)">No data for '+periodLabel()+'</div><div style="font-size:12.5px;margin-top:6px;color:var(--text-dim)">Add income and expenses to unlock your analytics.</div></div></div>'; return; }
+  const healthCard='<div class="an-pad" style="margin-bottom:4px"><div class="glass-card chart-card an-chart" onclick="expandCard(\'health\')">'+an_health(d)+'</div></div>';
+  const savingsInner='<div class="an-tag">Savings rate</div><div class="an-kpi"><span class="an-big" style="color:var(--success)">'+d.savingsRate+'%</span><span class="an-kpis">set aside in '+periodLabel()+'</span></div>'+an_line(d.months,d.rateSeries,{color:'var(--success)',fill:'rgba(63,174,90,0.12)',target:20,targetLabel:'20%',fmtVal:function(v){return v+'%';},singleSub:'A trend appears with 2+ months of data'});
+  const st=an_stack(d.months,d.S,d.E,d.G);
+  let nwInner='<div class="an-tag">Net worth</div><div class="an-kpi"><span class="an-big">'+fmtShort(d.endNW)+'</span><span class="an-kpis '+(d.yearGrowth>=0?'up':'down')+'">'+(d.yearGrowth>=0?'▲':'▼')+' '+fmtShort(d.yearGrowth)+' in '+d.year+'</span></div>';
+  nwInner+= st.svg?st.svg:'<div class="an-single">'+fmtShort(d.endNW)+'</div><div class="an-single-sub">A trend appears with 2+ months of data</div>';
+  nwInner+='<div class="iec-leg" style="margin-top:8px"><span><i style="background:#C9A227"></i>Savings</span><span><i style="background:#E8A33D"></i>Emergency</span><span><i style="background:#6BA368"></i>Goals</span></div>';
+  const flowInner='<div class="an-tag">Money flow</div><div class="an-ttl">Where your income goes</div><div class="an-sub">of your '+fmtShort(d.income)+' income · '+periodLabel()+'</div>'+(d.income>0?an_flow(d.income,d):'<div class="an-single-sub" style="padding:18px 0">No income logged for this period</div>');
+  const spendInner='<div class="an-tag">Spending</div><div class="an-ttl">Where your money went</div><div class="an-sub">'+periodLabel()+'</div>'+(d.totalExp>0?an_donut(d.catList,d.totalExp):'<div class="an-single-sub" style="padding:18px 0">No spending logged for this period</div>');
+  const ins=an_insights(d);
+  const insightsBlock='<div class="section-header"><div class="section-title">Smart Insights</div></div><div class="an-pad" style="display:flex;flex-direction:column;gap:12px">'+ins.map(i=>'<div class="glass-card insight-card" style="border-color:'+i.color+'40"><div class="insight-icon" style="color:'+i.color+'">'+ic(i.icon)+'</div><div><div class="insight-title" style="color:'+i.color+'">'+i.title+'</div><div class="insight-body">'+i.body+'</div></div></div>').join('')+'</div>';
+  c.innerHTML=healthCard+
+    '<div class="section-header"><div class="section-title" id="anSw1Title">Savings Rate</div><div class="see-more" id="anSw1More" onclick="expandCard(\'savingsrate\')">Details</div></div><div class="swipe-stack" id="anSw1"><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'savingsrate\')">'+savingsInner+'</div></div><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'networth\')">'+nwInner+'</div></div></div><div class="swipe-dots" id="anDots1"><span class="sdot active"></span><span class="sdot"></span></div>'+
+    '<div class="section-header"><div class="section-title" id="anSw2Title">Where Income Goes</div><div class="see-more" id="anSw2More" onclick="expandCard(\'moneyflow\')">Details</div></div><div class="swipe-stack" id="anSw2"><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'moneyflow\')">'+flowInner+'</div></div><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'spending\')">'+spendInner+'</div></div></div><div class="swipe-dots" id="anDots2"><span class="sdot active"></span><span class="sdot"></span></div>'+
+    insightsBlock;
+  setupAnSwipe('anSw1','anDots1','anSw1Title','anSw1More',['Savings Rate','Net Worth'],['savingsrate','networth']);
+  setupAnSwipe('anSw2','anDots2','anSw2Title','anSw2More',['Where Income Goes','Spending Breakdown'],['moneyflow','spending']);
+}
+function renderAnalytics(){ return renderAnalyticsV2(); }
+function _renderAnalyticsLegacyUnused(){
   const {month,year}=getSelectedPeriod(); const txs=getTxForPeriod(month,year);
   const income=txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const c=document.getElementById('analyticsContent');
@@ -1951,6 +2201,8 @@ function confirmCrop(){
 }
 function cancelCrop(){ closeCropper(); }
 function closeCropper(){ const m=document.getElementById('cropModal'); if(m)m.style.display='none'; const img=document.getElementById('cropImg'); if(img){img.onload=null;img.src='';} _cropState=null; }
+function viewProfilePhoto(){ if(!DB.userPhoto){ openPhotoChoice('profile'); return; } document.getElementById('pvImg').src=DB.userPhoto; document.getElementById('photoViewModal').style.display='flex'; }
+function closePhotoView(){ const m=document.getElementById('photoViewModal'); if(m)m.style.display='none'; }
 function openAddCategoryModal(editId, forBudget){
   _addCatForBudget=!!forBudget;
   const ex=editId?DB.categories.find(c=>c.id===editId):null;
