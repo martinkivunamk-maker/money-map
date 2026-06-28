@@ -1099,13 +1099,28 @@ function updateOverview(){
   document.getElementById('balCards').innerHTML=`
     <div class="bal-card" onclick="expandCard('savings')" style="--accent:rgba(212,175,55,0.6);--accent-soft:rgba(212,175,55,0.12)"><div class="bal-icon" style="color:var(--gold)">${ic('i-bank')}</div><div><div class="bal-label">Savings Balance</div><div class="bal-sub">Currently available</div></div><div class="bal-amount" style="color:var(--gold)">${fmtShort(balS)}</div></div>
     <div class="bal-card" onclick="expandCard('emergency')" style="--accent:rgba(240,160,32,0.5);--accent-soft:rgba(240,160,32,0.1)"><div class="bal-icon" style="color:var(--warning)">${ic('i-shield')}</div><div><div class="bal-label">Emergency Balance</div><div class="bal-sub">Currently available</div></div><div class="bal-amount" style="color:var(--warning)">${fmtShort(balE)}</div></div>`;
-  // Misc line: show only when there's leftover AND it hasn't been posted forward yet
+  // Misc line: leftover still unallocated (and, for the year view, not already carried forward)
   const miscEl=document.getElementById('miscLine');
-  if(leftover<=0 || (month!=='all' && alreadyPosted)){ miscEl.style.display='none'; }
+  if(month==='all'){
+    const monthLeftover=(m)=>{
+      const mTx=DB.transactions.filter(t=>{const d=new Date(t.date);return d.getMonth()===m&&d.getFullYear()===year;});
+      const mi=mTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+      const mx=mTx.filter(t=>t.type==='expense'&&(!t.source||t.source==='income')).reduce((s,t)=>s+t.amount,0);
+      const ms=mTx.filter(t=>t.type==='savings').reduce((s,t)=>s+t.amount,0);
+      const me=mTx.filter(t=>t.type==='emergency').reduce((s,t)=>s+t.amount,0);
+      const mg=mTx.filter(t=>t.type==='goal').reduce((s,t)=>s+t.amount,0);
+      const ml=mTx.filter(t=>t.type==='loan_repay'&&(!t.from||t.from==='income')).reduce((s,t)=>s+t.amount,0);
+      return mi-mx-ms-me-mg-ml;
+    };
+    const monthPosted=(m)=>{ const nm=m===11?0:m+1, ny=m===11?year+1:year; return DB.transactions.some(t=>t.incomeType==='i5'&&new Date(t.date).getMonth()===nm&&new Date(t.date).getFullYear()===ny); };
+    let unpostedMisc=0;
+    for(let m=0;m<12;m++){ const lo=monthLeftover(m); if(lo>0 && !monthPosted(m)) unpostedMisc+=lo; }
+    if(unpostedMisc<=0){ miscEl.style.display='none'; }
+    else { miscEl.style.display='flex'; miscEl.innerHTML=`<div class="misc-left">${ic('i-recycle')}<span>Miscellaneous Income <small>(unallocated · excludes carried-forward)</small></span></div><div class="misc-val" style="color:var(--gold)">${fmtShort(unpostedMisc)}</div>`; }
+  } else if(leftover<=0 || alreadyPosted){ miscEl.style.display='none'; }
   else {
     miscEl.style.display='flex';
-    const miscLabel=month==='all'?'(leftover this year)':'(leftover this month)';
-    miscEl.innerHTML=`<div class="misc-left">${ic('i-recycle')}<span>Miscellaneous Income <small>${miscLabel}</small></span></div><div class="misc-val" style="color:var(--gold)">${fmtShort(leftover)}</div>`;
+    miscEl.innerHTML=`<div class="misc-left">${ic('i-recycle')}<span>Miscellaneous Income <small>(leftover this month)</small></span></div><div class="misc-val" style="color:var(--gold)">${fmtShort(leftover)}</div>`;
   }
   renderGoalsCard();
   if(month==='all'){ document.getElementById('cfBanner').style.display='none'; }
@@ -1335,11 +1350,13 @@ function renderIncomeExpCard(){
   const inc=Array(12).fill(0), exp=Array(12).fill(0);
   DB.transactions.forEach(t=>{ if(!t.date) return; const d=new Date(t.date); if(d.getFullYear()!==year) return; const m=d.getMonth(); if(t.type==='income') inc[m]+=t.amount; else if(t.type==='expense') exp[m]+=t.amount; });
   const bars=(m)=>{ const i=inc[m],e=exp[m],mx=Math.max(i,e,1); return `<div class="iec-hbars"><div class="iec-hrow"><span class="iec-hl">Income</span><div class="iec-ht"><div class="iec-hf" style="width:${Math.round(i/mx*100)}%;background:var(--gold)"></div></div><span class="iec-hv" style="color:var(--gold-dim)">${fmtShort(i)}</span></div><div class="iec-hrow"><span class="iec-hl">Expenses</span><div class="iec-ht"><div class="iec-hf" style="width:${Math.round(e/mx*100)}%;background:var(--danger)"></div></div><span class="iec-hv" style="color:var(--danger)">${fmtShort(e)}</span></div></div>`; };
-  if(selMonth!=='all'){ el.innerHTML=`<div class="iec-per">${MONTHS[selMonth]} ${year}</div>`+bars(selMonth); return; }
+  const verdict=(m)=>{ const i=inc[m],e=exp[m]; if(i<=0){ return e>0?`<div class="iec-verdict bad">⚠ Expenses logged but no income recorded this month.</div>`:''; } const r=Math.round(e/i*100); let cls,txt; if(r<65){ cls='good'; txt=`✓ Good job — your expenses are ${r}% of your income, below your 65% target.`; } else if(r<=70){ cls='mid'; txt=`Not bad — expenses are ${r}% of income. Try to keep them below 65%.`; } else { cls='bad'; txt=`⚠ You're overspending — expenses are ${r}% of your income.`; } return `<div class="iec-verdict ${cls}">${txt}</div>`; };
+  const singleView=(m,note)=>`<div class="iec-per">${MONTHS[m]} ${year}</div><div class="iec-sm">${bars(m)}${verdict(m)}${note?`<div class="iec-note">${note}</div>`:''}</div>`;
+  if(selMonth!=='all'){ el.innerHTML=singleView(selMonth); return; }
   let first=-1,last=-1;
   for(let m=0;m<12;m++){ if(inc[m]||exp[m]){ if(first<0)first=m; last=m; } }
   if(first<0){ el.innerHTML=`<div class="iec-per">${year}</div><div class="iec-chart" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px">No income or expenses logged yet</div>`; return; }
-  if(first===last){ el.innerHTML=`<div class="iec-per">${MONTHS[first]} ${year}</div>`+bars(first)+`<div class="iec-note">A trend curve appears once you have 2+ months of data</div>`; return; }
+  if(first===last){ el.innerHTML=singleView(first,'A trend curve appears once you have 2+ months of data'); return; }
   const months=[]; for(let m=first;m<=last;m++) months.push(m);
   const mx=Math.max.apply(null,months.map(m=>Math.max(inc[m],exp[m])).concat([1]));
   const W=300,H=100,pad=6, xstep=(W-pad*2)/(months.length-1);
@@ -1359,22 +1376,40 @@ function renderBudgetStatus(txs){
   const unbudgetedSpent=expTxs.filter(t=>!t.categoryId).reduce((s,t)=>s+t.amount,0);
   const budgetedPct=pct(budgetedSpent,totalExp);
   const unbudgetedPct=pct(unbudgetedSpent,totalExp);
-  // overspend categories, scaled by period
-  const mult=periodMonths();
-  const over=[];
-  DB.budgets.filter(b=>b.type==='expense').forEach(b=>{
-    const spent=expTxs.filter(t=>t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);
-    const budget=b.amount*mult;
-    if(budget>0&&spent>budget) over.push({name:b.name,icon:b.icon,over:spent-budget});
-  });
-  over.sort((a,b)=>b.over-a.over);
-  const topOver=over.slice(0,2);
+  // overspend detection — per-month when viewing the whole year, else for the single period
+  const {month:selM}=getSelectedPeriod();
+  const catOf=id=>DB.categories.find(c=>c.id===id)||{};
+  let overTitle, topOver;
+  if(selM==='all'){
+    const events=[];
+    for(let m=0;m<12;m++){
+      const mTx=expTxs.filter(t=>new Date(t.date).getMonth()===m);
+      DB.budgets.filter(b=>b.type==='expense').forEach(b=>{
+        const spent=mTx.filter(t=>t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);
+        if(b.amount>0&&spent>b.amount){ const cat=catOf(b.categoryId); events.push({label:`In ${MONTHS[m]} — ${b.name||cat.name||'a category'}`,icon:b.icon||cat.icon||'i-question',over:spent-b.amount}); }
+      });
+    }
+    events.sort((a,b)=>b.over-a.over);
+    topOver=events.slice(0,2);
+    overTitle='Where you overspent most:';
+  } else {
+    const mult=periodMonths();
+    const over=[];
+    DB.budgets.filter(b=>b.type==='expense').forEach(b=>{
+      const spent=expTxs.filter(t=>t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);
+      const budget=b.amount*mult;
+      if(budget>0&&spent>budget){ const cat=catOf(b.categoryId); over.push({label:b.name||cat.name||'a category',icon:b.icon||cat.icon||'i-question',over:spent-budget}); }
+    });
+    over.sort((a,b)=>b.over-a.over);
+    topOver=over.slice(0,2);
+    overTitle='Overspending beyond budget:';
+  }
   const allBudgeted=unbudgetedSpent===0;
   card.innerHTML=`
     <div class="bs-bar"><div class="bs-bar-budgeted" style="width:${budgetedPct}%"></div><div class="bs-bar-unbudgeted" style="width:${unbudgetedPct}%"></div></div>
     <div class="bs-legend"><span><i style="background:var(--success)"></i>Budgeted ${budgetedPct}%</span><span><i style="background:var(--danger)"></i>Unbudgeted ${unbudgetedPct}%</span></div>
     ${allBudgeted?`<div class="bs-msg good">${ic('i-check')} Everything was budgeted. You are on track with great budgeting!</div>`:`<div class="bs-msg warn">${ic('i-warn')} ${fmtShort(unbudgetedSpent)} went to unbudgeted spending. Try assigning categories to tighten control.</div>`}
-    ${topOver.length>0?`<div class="bs-over"><div class="bs-over-title">Overspending beyond budget:</div>${topOver.map(o=>`<div class="bs-over-row">${ic(o.icon)}<span>${o.name}</span><span class="bs-over-amt">+${fmtShort(o.over)} over</span></div>`).join('')}</div>`:''}`;
+    ${topOver.length>0?`<div class="bs-over"><div class="bs-over-title">${overTitle}</div>${topOver.map(o=>`<div class="bs-over-row">${ic(o.icon)}<span>${o.label}</span><span class="bs-over-amt">+${fmtShort(o.over)} over</span></div>`).join('')}</div>`:''}`;
 }
 function txItemHTML(t){
   const sign=t.type==='income'?'+':'-';
@@ -1975,7 +2010,12 @@ loadDB(); applyTheme(); initLock();
   .iec-note { font-size:10.5px; color:var(--text-muted); text-align:center; margin-top:10px; }
   .iec-empty { font-size:13px; color:var(--text-muted); text-align:center; padding:24px 0; }
   #incomeExpCard { display:flex; flex-direction:column; box-sizing:border-box; }
-  .iec-hbars { flex:1; min-height:0; display:flex; flex-direction:column; justify-content:space-around; gap:6px; }
+  .iec-hbars { display:flex; flex-direction:column; gap:9px; }
+  .iec-sm { flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center; gap:14px; }
+  .iec-verdict { padding:10px 12px; border-radius:11px; font-size:12px; line-height:1.45; }
+  .iec-verdict.good { background:rgba(46,160,90,0.12); color:var(--success); }
+  .iec-verdict.mid { background:rgba(240,160,32,0.13); color:var(--warning); }
+  .iec-verdict.bad { background:rgba(224,85,85,0.12); color:var(--danger); }
   .iec-hrow { display:flex; align-items:center; gap:8px; }
   .iec-hl { font-size:11px; color:var(--text-dim); width:64px; flex-shrink:0; }
   .iec-ht { flex:1; height:9px; background:var(--input-bg); border-radius:5px; overflow:hidden; }
