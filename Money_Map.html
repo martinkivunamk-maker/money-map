@@ -1358,8 +1358,8 @@ function equalizeOvCards(){
   var bc=document.getElementById('budgetStatusCard'), ic2=document.getElementById('incomeExpCard');
   if(!bc||!ic2) return;
   bc.style.minHeight=''; bc.style.height=''; ic2.style.height='';
-  var h=bc.offsetHeight;
-  if(h>0) ic2.style.height=h+'px';
+  var h=Math.max(bc.offsetHeight, ic2.offsetHeight);
+  if(h>0){ bc.style.height=h+'px'; ic2.style.height=h+'px'; }
 }
 function renderIncomeExpCard(){
   const el=document.getElementById('incomeExpCard'); if(!el) return;
@@ -2143,7 +2143,7 @@ loadDB(); applyTheme(); initLock();
   .picker-item:active { background:var(--glass); }
   .picker-active { color:var(--gold); font-weight:800; }
   /* Card animations */
-  #budgetStatusCard { animation:fadeUp 0.5s 0.1s both; }
+  #budgetStatusCard { animation:fadeUp 0.5s 0.1s both; display:flex; flex-direction:column; justify-content:center; box-sizing:border-box; }
   .gl-card { animation:fadeUp 0.5s 0.15s both; }
   .settings-section { animation:fadeUp 0.5s both; }
   .settings-section:nth-of-type(1){ animation-delay:0.05s; }
