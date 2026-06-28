@@ -142,7 +142,7 @@
     background:linear-gradient(90deg, transparent, var(--glass-line), transparent); }
 
   /* OVERVIEW */
-  .overview-header { padding:30px var(--gutter) 16px; display:flex; align-items:center; justify-content:space-between; animation:fadeUp 0.5s both; position:sticky; top:0; z-index:20; background:var(--bg); }
+  .overview-header { padding:16px var(--gutter) 14px; display:flex; align-items:center; justify-content:space-between; animation:fadeUp 0.5s both; position:sticky; top:0; z-index:20; background:var(--bg); }
   .profile-row { display:flex; align-items:center; gap:12px; }
   .avatar { width:46px; height:46px; border-radius:50%; border:2px solid var(--gold); background:var(--surface2);
     overflow:hidden; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px;
@@ -279,7 +279,7 @@
   .budget-bar-fill { height:100%; border-radius:4px; transition:width 0.8s var(--ease); }
   .budget-pct-label { font-size:11px; width:38px; text-align:right; font-weight:600; }
 
-  .page-header { padding:30px var(--gutter) 16px; display:flex; align-items:center; gap:12px; animation:fadeUp 0.5s both; position:sticky; top:0; z-index:20; background:var(--bg); }
+  .page-header { padding:16px var(--gutter) 14px; display:flex; align-items:center; gap:12px; animation:fadeUp 0.5s both; position:sticky; top:0; z-index:20; background:var(--bg); }
   .sticky-head { position:sticky; top:0; z-index:20; background:var(--bg); }
   #page-budget .page-header { position:static; z-index:auto; background:none; }
   .page-title { font-size:26px; font-weight:800; color:var(--text); flex:1; letter-spacing:-0.5px; }
@@ -600,7 +600,7 @@
     <div class="section-header"><div class="section-title" id="ovSwipeTitle">Budgeting Discipline</div><div class="see-more" id="ovSwipeDetails" onclick="expandCard('budgetstatus')">Details</div></div>
     <div class="swipe-stack" id="ovSwipe">
       <div class="swipe-card"><div class="glass-card" id="budgetStatusCard" onclick="expandCard('budgetstatus')"></div></div>
-      <div class="swipe-card"><div class="glass-card" id="incomeExpCard"></div></div>
+      <div class="swipe-card"><div class="glass-card" id="incomeExpCard" onclick="expandCard('incomeexp')"></div></div>
     </div>
     <div class="swipe-dots" id="ovDots"><span class="sdot active"></span><span class="sdot"></span></div>
     <div class="misc-line" id="miscLine"></div>
@@ -645,11 +645,11 @@
       <div style="margin-top:8px;font-size:12px;color:var(--gold);font-weight:700;cursor:pointer;letter-spacing:0.3px" onclick="openPhotoChoice('profile')">Change Photo</div>
       <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
       <input type="file" id="photoCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(event)">
-      <div style="width:100%;margin-top:10px">
-        <div class="profile-row-item" onclick="editName()">
-          <div style="flex:1"><div class="profile-row-label">Display Name</div><div class="settings-name" id="settingsNameDisplay" style="font-size:16px;font-weight:700;color:var(--text)"></div><input class="settings-name-input" id="settingsNameInput" onblur="saveName()" onkeydown="if(event.key==='Enter')saveName()"></div>
-          <div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg></div>
-        </div>
+      <div style="width:100%;margin-top:8px;text-align:center">
+        <div class="profile-row-label">Display Name</div>
+        <div class="settings-name" id="settingsNameDisplay" style="font-size:18px;font-weight:700;color:var(--text);display:block"></div>
+        <input class="settings-name-input" id="settingsNameInput" onblur="saveName()" onkeydown="if(event.key==='Enter')saveName()" style="text-align:center;margin:4px auto 0">
+        <div onclick="editName()" style="margin-top:6px;font-size:12px;color:var(--gold);font-weight:700;cursor:pointer;letter-spacing:0.3px">Edit</div>
       </div>
     </div>
     <div class="settings-section">
@@ -739,7 +739,7 @@
 <div class="modal-overlay" id="incomeTypeModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Add Income Source</div><div id="incomeTypeContent"></div></div></div>
 <div class="modal-overlay" id="periodPickerModal"><div class="modal-sheet" style="max-height:62vh"><div class="modal-handle"></div><div class="modal-title" id="periodPickerTitle">Select Month</div><div id="periodPickerList"></div></div></div>
 
-<div class="modal-overlay" id="optionPickerModal"><div class="modal-sheet" style="max-height:62vh"><div class="modal-handle"></div><div class="modal-title" id="optionPickerTitle">Select</div><div id="optionPickerList"></div></div></div>
+<div class="modal-overlay" id="optionPickerModal" style="z-index:650"><div class="modal-sheet" style="max-height:62vh"><div class="modal-handle"></div><div class="modal-title" id="optionPickerTitle">Select</div><div id="optionPickerList"></div></div></div>
 <div class="modal-overlay" id="confirmModal" style="z-index:700"><div class="modal-sheet" style="max-width:400px"><div class="modal-handle"></div><div class="modal-title" id="confirmTitle">Are you sure?</div><div id="confirmMsg" style="font-size:14px;color:var(--text-dim);line-height:1.5;margin-bottom:22px"></div><button class="btn-gold" id="confirmOkBtn" onclick="_confirmProceed()">Confirm</button><button class="btn-outline" onclick="_confirmCancel()">Cancel</button></div></div>
 
 <div class="modal-overlay" id="photoChoiceModal"><div class="modal-sheet" style="max-height:45vh"><div class="modal-handle"></div><div class="modal-title">Add Photo</div>
@@ -752,9 +752,9 @@
 <input type="file" id="txImgCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleTxImage(event)">
 
 <div class="modal-overlay" id="filterModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Filter Transactions</div>
-  <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="filterType"><option value="all">All Types</option><option value="income">Income</option><option value="expense">Expense</option><option value="transfer">Transfers</option></select></div>
-  <div class="form-group"><label class="form-label">Month</label><select class="form-select" id="filterMonth"></select></div>
-  <div class="form-group"><label class="form-label">Year</label><select class="form-select" id="filterYear"></select></div>
+  <div class="form-group"><label class="form-label">Type</label><div class="picker-box" onclick="openFilterPicker('Type')"><span class="picker-box-val" id="filterTypeDisp">All Types</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterType" value="all"></div>
+  <div class="form-group"><label class="form-label">Month</label><div class="picker-box" onclick="openFilterPicker('Month')"><span class="picker-box-val" id="filterMonthDisp">All Months</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterMonth" value="all"></div>
+  <div class="form-group"><label class="form-label">Year</label><div class="picker-box" onclick="openFilterPicker('Year')"><span class="picker-box-val" id="filterYearDisp">All Years</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterYear" value="all"></div>
   <button class="btn-gold" onclick="applyFilter()">Apply Filter</button><button class="btn-outline" onclick="clearFilter()">Clear</button><button class="btn-outline" onclick="closeModal('filterModal')">Cancel</button>
 </div></div>
 
@@ -1017,17 +1017,8 @@ function selectPeriod(mode,val){
 function initPeriodSelectors(){
   selMonth=new Date().getMonth();selYear=new Date().getFullYear();
   updatePeriodBtns();
-  const years=getYearList();
-  document.getElementById('filterMonth').innerHTML='<option value="all">All Months</option>'+MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
-  document.getElementById('filterYear').innerHTML='<option value="all">All Years</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join('');
 }
-function refreshYearOptions(){
-  const fy=document.getElementById('filterYear');
-  const years=getYearList();
-  const fcur=fy.value;
-  fy.innerHTML='<option value="all">All Years</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join('');
-  fy.value=fcur;
-}
+function refreshYearOptions(){}
 function getTxForPeriod(m,y){ return DB.transactions.filter(t=>{const d=new Date(t.date);return (m==='all'||d.getMonth()===m)&&d.getFullYear()===y;}); }
 
 // Current actual pot balances across all time (in minus out)
@@ -1102,6 +1093,7 @@ function updateOverview(){
   rtl.innerHTML=recent.length===0?`<div class="empty-state">${ic('i-card')}<div class="e-text">No transactions yet</div><div class="e-sub">Tap + to add your first one</div></div>`:recent.map(t=>txItemHTML(t)).join('');
   renderBudgetStatus(txs);
   renderIncomeExpCard();
+  equalizeOvCards();
   // Current balance cards (running totals) - tappable
   const balS=getPotBalance('savings'), balE=getPotBalance('emergency');
   document.getElementById('balCards').innerHTML=`
@@ -1249,6 +1241,29 @@ function expandCard(kind){
     exp.forEach(t=>{const n=t.categoryId?(DB.categories.find(c=>c.id===t.categoryId)||{}).name||'Other':'Not Budgeted';byCat[n]=(byCat[n]||0)+t.amount;});
     body=`<div class="exp-total" style="color:var(--danger)">${fmtUGX(total)}</div><div class="exp-sub">Total spent this period</div>`+
       (total>0?Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`<div class="exp-row"><span>${n}</span><span>${fmtShort(v)} · ${pct(v,total)}%</span></div>`).join(''):`<div class="exp-empty">No expenses logged</div>`);
+  } else if(kind==='incomeexp'){
+    title='Income vs Expenses · '+periodLabel();
+    const pInc=txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const pExp=txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    const kept=pInc-pExp, keptPct=pInc>0?Math.round(kept/pInc*100):0;
+    const inc=Array(12).fill(0),exp=Array(12).fill(0);
+    DB.transactions.forEach(t=>{if(!t.date)return;const d=new Date(t.date);if(d.getFullYear()!==selYear)return;const m=d.getMonth();if(t.type==='income')inc[m]+=t.amount;else if(t.type==='expense')exp[m]+=t.amount;});
+    let f=-1,l=-1;for(let m=0;m<12;m++){if(inc[m]||exp[m]){if(f<0)f=m;l=m;}}
+    let chart='<div class="exp-empty">Add data across 2+ months to see the trend line</div>';
+    if(f>=0&&l>f){
+      const ms=[];for(let m=f;m<=l;m++)ms.push(m);
+      const mx=Math.max.apply(null,ms.map(m=>Math.max(inc[m],exp[m])).concat([1]));
+      const W=320,H=130,pad=14,xs=(W-pad*2)/(ms.length-1), yo=v=>(H-pad)-(v/mx)*(H-pad*2);
+      const pa=arr=>'M'+ms.map((m,k)=>(pad+k*xs).toFixed(1)+','+yo(arr[m]).toFixed(1)).join(' L');
+      chart=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;margin:6px 0"><path d="${pa(inc)}" fill="none" style="stroke:var(--gold)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="${pa(exp)}" fill="none" style="stroke:var(--danger)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="iec-months">${ms.map(m=>`<span>${MONTHS[m].slice(0,3)}</span>`).join('')}</div>`;
+    }
+    const msg=kept>=0?`You kept ${fmtShort(kept)} this period — about ${keptPct}% of your income. You're living within your means.`:`You overspent by ${fmtShort(-kept)} this period — expenses were higher than income.`;
+    body=`<div class="iec-leg" style="margin-bottom:2px"><span><i style="background:var(--gold)"></i>Income</span><span><i style="background:var(--danger)"></i>Expenses</span></div>${chart}
+      <div class="exp-row"><span>Total income</span><span style="color:var(--success)">${fmtShort(pInc)}</span></div>
+      <div class="exp-row"><span>Total expenses</span><span style="color:var(--danger)">${fmtShort(pExp)}</span></div>
+      <div class="exp-divider"></div>
+      <div class="exp-row"><span style="font-weight:800">Kept (income − expenses)</span><span style="color:${kept>=0?'var(--success)':'var(--danger)'};font-weight:800">${fmtShort(kept)}</span></div>
+      <div style="margin-top:14px;padding:11px 13px;border-radius:12px;font-size:13px;line-height:1.5;background:${kept>=0?'rgba(63,174,90,0.1)':'rgba(224,85,85,0.1)'};color:${kept>=0?'var(--success)':'var(--danger)'}">${msg}</div>`;
   } else if(kind==='savings'||kind==='emergency'){
     const pot=kind;
     title=(pot==='savings'?'Life Savings':'Emergency Fund')+' Detail';
@@ -1307,12 +1322,21 @@ function expandCard(kind){
   c.innerHTML=`<div class="modal-title">${title}</div>${body}<button class="btn-outline" onclick="closeModal('expandModal')" style="margin-top:16px">Close</button>`;
   openModal('expandModal');
 }
+function equalizeOvCards(){
+  var bc=document.getElementById('budgetStatusCard'), ic2=document.getElementById('incomeExpCard');
+  if(!bc||!ic2) return;
+  var pb=bc.style.minHeight, pi=ic2.style.minHeight;
+  bc.style.minHeight=''; ic2.style.minHeight='';
+  var h=Math.max(bc.offsetHeight, ic2.offsetHeight);
+  if(h<=0){ bc.style.minHeight=pb; ic2.style.minHeight=pi; return; }
+  bc.style.minHeight=h+'px'; ic2.style.minHeight=h+'px';
+}
 function renderIncomeExpCard(){
   const el=document.getElementById('incomeExpCard'); if(!el) return;
   const year=selYear;
   const inc=Array(12).fill(0), exp=Array(12).fill(0);
   DB.transactions.forEach(t=>{ if(!t.date) return; const d=new Date(t.date); if(d.getFullYear()!==year) return; const m=d.getMonth(); if(t.type==='income') inc[m]+=t.amount; else if(t.type==='expense') exp[m]+=t.amount; });
-  const bars=(m)=>{ const i=inc[m],e=exp[m],mx=Math.max(i,e,1); return `<div class="iec-bars"><div class="iec-barcol"><div class="iec-barval" style="color:var(--gold)">${fmtShort(i)}</div><div class="iec-bar" style="height:${Math.round(i/mx*96)+8}px;background:var(--gold)"></div><div class="iec-barlbl">Income</div></div><div class="iec-barcol"><div class="iec-barval" style="color:var(--danger)">${fmtShort(e)}</div><div class="iec-bar" style="height:${Math.round(e/mx*96)+8}px;background:var(--danger)"></div><div class="iec-barlbl">Expenses</div></div></div>`; };
+  const bars=(m)=>{ const i=inc[m],e=exp[m],mx=Math.max(i,e,1); return `<div class="iec-bars"><div class="iec-barcol"><div class="iec-barval" style="color:var(--gold)">${fmtShort(i)}</div><div class="iec-bar" style="height:${Math.round(i/mx*64)+6}px;background:var(--gold)"></div><div class="iec-barlbl">Income</div></div><div class="iec-barcol"><div class="iec-barval" style="color:var(--danger)">${fmtShort(e)}</div><div class="iec-bar" style="height:${Math.round(e/mx*64)+6}px;background:var(--danger)"></div><div class="iec-barlbl">Expenses</div></div></div>`; };
   if(selMonth!=='all'){ el.innerHTML=`<div class="iec-per">${MONTHS[selMonth]} ${year}</div>`+bars(selMonth); return; }
   let first=-1,last=-1;
   for(let m=0;m<12;m++){ if(inc[m]||exp[m]){ if(first<0)first=m; last=m; } }
@@ -1320,7 +1344,7 @@ function renderIncomeExpCard(){
   if(first===last){ el.innerHTML=`<div class="iec-per">${MONTHS[first]} ${year}</div>`+bars(first)+`<div class="iec-note">A trend curve appears once you have 2+ months of data</div>`; return; }
   const months=[]; for(let m=first;m<=last;m++) months.push(m);
   const mx=Math.max.apply(null,months.map(m=>Math.max(inc[m],exp[m])).concat([1]));
-  const W=300,H=80,pad=12, xstep=(W-pad*2)/(months.length-1);
+  const W=300,H=58,pad=10, xstep=(W-pad*2)/(months.length-1);
   const yof=v=>(H-pad)-(v/mx)*(H-pad*2);
   const path=arr=>'M'+months.map((m,k)=>(pad+k*xstep).toFixed(1)+','+yof(arr[m]).toFixed(1)).join(' L');
   const lx=(pad+(months.length-1)*xstep).toFixed(1);
@@ -1391,7 +1415,22 @@ function renderTransactions(){
   const g={}; txs.forEach(t=>{const d=new Date(t.date);const k=`${MONTHS[d.getMonth()]} ${d.getFullYear()}`;if(!g[k])g[k]=[];g[k].push(t);});
   c.innerHTML=Object.entries(g).map(([k,l])=>`<div class="tx-group-label">${k}</div>${l.map(t=>txItemHTML(t)).join('')}`).join('');
 }
-function openFilterModal(){ document.getElementById('filterType').value=activeFilter.type; if(activeFilter.month!=='all')document.getElementById('filterMonth').value=activeFilter.month; if(activeFilter.year!=='all')document.getElementById('filterYear').value=activeFilter.year; openModal('filterModal'); }
+function openFilterPicker(which){
+  var cur=document.getElementById('filter'+which).value, opts;
+  if(which==='Type') opts=[{value:'all',label:'All Types'},{value:'income',label:'Income'},{value:'expense',label:'Expense'},{value:'transfer',label:'Transfers'}];
+  else if(which==='Month') opts=[{value:'all',label:'All Months'}].concat(MONTHS.map(function(m,i){return {value:i,label:m};}));
+  else opts=[{value:'all',label:'All Years'}].concat(getYearList().map(function(y){return {value:y,label:''+y};}));
+  openOptionPicker(which,opts,cur,function(v,l){ document.getElementById('filter'+which).value=v; document.getElementById('filter'+which+'Disp').textContent=l; });
+}
+function openFilterModal(){
+  document.getElementById('filterType').value=activeFilter.type;
+  document.getElementById('filterTypeDisp').textContent=({all:'All Types',income:'Income',expense:'Expense',transfer:'Transfers'})[activeFilter.type]||'All Types';
+  document.getElementById('filterMonth').value=activeFilter.month;
+  document.getElementById('filterMonthDisp').textContent=activeFilter.month==='all'?'All Months':MONTHS[activeFilter.month];
+  document.getElementById('filterYear').value=activeFilter.year;
+  document.getElementById('filterYearDisp').textContent=activeFilter.year==='all'?'All Years':(''+activeFilter.year);
+  openModal('filterModal');
+}
 function applyFilter(){ activeFilter={type:document.getElementById('filterType').value,month:document.getElementById('filterMonth').value,year:document.getElementById('filterYear').value}; closeModal('filterModal'); renderTransactions(); }
 function clearFilter(){ activeFilter={type:'all',month:'all',year:'all'}; closeModal('filterModal'); renderTransactions(); }
 function viewTransaction(id){
@@ -1784,7 +1823,7 @@ function renderAvatar(){
   else {document.getElementById('headerAvatar').textContent=init; document.getElementById('settingsAvatar').textContent=init;}
 }
 function editName(){ const d=document.getElementById('settingsNameDisplay'),i=document.getElementById('settingsNameInput'); d.style.display='none';i.style.display='block';i.value=DB.userName;i.focus(); }
-function saveName(){ const i=document.getElementById('settingsNameInput'),v=i.value.trim(); if(v){DB.userName=v;saveDB();} document.getElementById('settingsNameDisplay').innerHTML=DB.userName+ic('i-edit'); document.getElementById('settingsNameDisplay').style.display='inline-flex';i.style.display='none'; document.getElementById('headerName').textContent=DB.userName; renderAvatar(); }
+function saveName(){ const i=document.getElementById('settingsNameInput'),v=i.value.trim(); if(v){DB.userName=v;saveDB();} document.getElementById('settingsNameDisplay').textContent=DB.userName; document.getElementById('settingsNameDisplay').style.display='block';i.style.display='none'; document.getElementById('headerName').textContent=DB.userName; renderAvatar(); }
 function changePhoto(){ openPhotoChoice('profile'); }
 function handlePhotoUpload(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{DB.userPhoto=ev.target.result;saveDB();renderAvatar();}; r.readAsDataURL(f); }
 function openAddCategoryModal(editId, forBudget){
@@ -1879,7 +1918,7 @@ function setupOvSwipe(){
   sw.onscroll=function(){
     const i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1));
     if(tEl) tEl.textContent=titles[i]||titles[0];
-    if(dEl) dEl.style.visibility=(i===0?'visible':'hidden');
+    if(dEl){ dEl.style.visibility='visible'; dEl.onclick=function(){ expandCard(i===0?'budgetstatus':'incomeexp'); }; }
     dots.forEach((d,j)=>d.classList.toggle('active',j===i));
   };
 }
@@ -1922,7 +1961,7 @@ loadDB(); applyTheme(); initLock();
   .swipe-stack { display:flex; align-items:flex-start; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
   .swipe-stack::-webkit-scrollbar { display:none; }
   .swipe-card { flex:0 0 100%; scroll-snap-align:start; padding:0 var(--gutter); box-sizing:border-box; }
-  .swipe-dots { display:flex; gap:7px; justify-content:center; margin-top:11px; }
+  .swipe-dots { display:flex; gap:7px; justify-content:center; margin:13px 0 8px; }
   .sdot { width:7px; height:7px; border-radius:50%; background:var(--gold-dim); opacity:0.45; transition:all 0.25s var(--ease); cursor:pointer; }
   .sdot.active { opacity:1; width:20px; border-radius:4px; background:var(--gold); }
   .iec-per { font-size:11px; color:var(--text-dim); margin-bottom:10px; }
