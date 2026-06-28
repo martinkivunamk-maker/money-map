@@ -750,12 +750,29 @@
   <button class="btn-outline" onclick="closeModal('photoChoiceModal')">Cancel</button>
 </div></div>
 <input type="file" id="txImgCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleTxImage(event)">
+<div id="cropModal">
+  <div class="crop-shell">
+    <div class="crop-title" id="cropTitle">Crop photo</div>
+    <div class="crop-stage" id="cropStage">
+      <img id="cropImg" alt="">
+      <div class="crop-frame" id="cropFrame" onpointerdown="_cropDown(event,'move')">
+        <div class="cf-grid-v" style="left:33.33%"></div><div class="cf-grid-v" style="left:66.66%"></div>
+        <div class="cf-grid-h" style="top:33.33%"></div><div class="cf-grid-h" style="top:66.66%"></div>
+        <div class="cf-handle tl" onpointerdown="_cropDown(event,'tl')"></div>
+        <div class="cf-handle tr" onpointerdown="_cropDown(event,'tr')"></div>
+        <div class="cf-handle bl" onpointerdown="_cropDown(event,'bl')"></div>
+        <div class="cf-handle br" onpointerdown="_cropDown(event,'br')"></div>
+      </div>
+    </div>
+    <div class="crop-actions"><button class="crop-cancel" onclick="cancelCrop()">Cancel</button><button class="crop-use" onclick="confirmCrop()">Use Photo</button></div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="filterModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Filter Transactions</div>
   <div class="form-group"><label class="form-label">Type</label><div class="picker-box" onclick="openFilterPicker('Type')"><span class="picker-box-val" id="filterTypeDisp">All Types</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterType" value="all"></div>
   <div class="form-group"><label class="form-label">Month</label><div class="picker-box" onclick="openFilterPicker('Month')"><span class="picker-box-val" id="filterMonthDisp">All Months</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterMonth" value="all"></div>
   <div class="form-group"><label class="form-label">Year</label><div class="picker-box" onclick="openFilterPicker('Year')"><span class="picker-box-val" id="filterYearDisp">All Years</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterYear" value="all"></div>
-  <button class="btn-gold" onclick="applyFilter()">Apply Filter</button><button class="btn-outline" onclick="clearFilter()">Clear</button><button class="btn-outline" onclick="closeModal('filterModal')">Cancel</button>
+  <button class="btn-gold" onclick="applyFilter()">Apply Filter</button><button class="btn-outline" onclick="closeModal('filterModal')">Cancel</button>
 </div></div>
 
 <script>
@@ -1362,10 +1379,20 @@ function renderIncomeExpCard(){
   const W=300,H=100,pad=6, xstep=(W-pad*2)/(months.length-1);
   const yof=v=>(H-pad)-(v/mx)*(H-pad*2);
   const path=arr=>'M'+months.map((m,k)=>(pad+k*xstep).toFixed(1)+','+yof(arr[m]).toFixed(1)).join(' L');
+  const dotsFor=(arr,col)=>months.map((m,k)=>{ const xp=((pad+k*xstep)/W*100).toFixed(2), yp=(yof(arr[m])/H*100).toFixed(2), last=k===months.length-1; return last?`<span class="iec-dot iec-dot-last" style="left:${xp}%;top:${yp}%;border-color:${col}"></span>`:`<span class="iec-dot" style="left:${xp}%;top:${yp}%;background:${col}"></span>`; }).join('');
+  const totI=months.reduce((s,m)=>s+inc[m],0), totE=months.reduce((s,m)=>s+exp[m],0);
+  let brief='';
+  if(totI>0){
+    const r=Math.round(totE/totI*100), kept=totI-totE, keptPct=Math.max(0,100-r), rangeLbl=`${MONTHS[first].slice(0,3)}–${MONTHS[last].slice(0,3)}`;
+    const lm=months[months.length-1], pm=months.length>1?months[months.length-2]:lm;
+    let tr=''; if(exp[pm]>0&&lm!==pm){ if(exp[lm]<exp[pm]) tr=` Spending eased in ${MONTHS[lm]}.`; else if(exp[lm]>exp[pm]) tr=` Spending rose in ${MONTHS[lm]}.`; }
+    if(kept>=0){ const cls=r<65?'good':(r<=70?'mid':'bad'), icon=r<65?'✓':(r<=70?'•':'⚠'); brief=`<div class="iec-verdict ${cls} iec-brief">${icon} ${rangeLbl}: expenses were ${r}% of income — you kept ${fmtShort(kept)} (${keptPct}%).${tr}</div>`; }
+    else brief=`<div class="iec-verdict bad iec-brief">⚠ ${rangeLbl}: you spent ${fmtShort(-kept)} more than you earned (${r}% of income).${tr}</div>`;
+  }
   el.innerHTML=`<div class="iec-per">${MONTHS[first].slice(0,3)}–${MONTHS[last].slice(0,3)} ${year}</div>
     <div class="iec-leg"><span><i style="background:var(--gold)"></i>Income</span><span><i style="background:var(--danger)"></i>Expenses</span></div>
-    <div class="iec-chart"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:100%"><path d="${path(inc)}" fill="none" style="stroke:var(--gold)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="${path(exp)}" fill="none" style="stroke:var(--danger)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg></div>
-    <div class="iec-months">${months.map(m=>`<span>${MONTHS[m].slice(0,3)}</span>`).join('')}</div>`;
+    <div class="iec-chart"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:100%"><path d="${path(inc)}" fill="none" style="stroke:var(--gold)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="${path(exp)}" fill="none" style="stroke:var(--danger)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>${dotsFor(inc,'var(--gold)')}${dotsFor(exp,'var(--danger)')}</div>
+    <div class="iec-months">${months.map(m=>`<span>${MONTHS[m].slice(0,3)}</span>`).join('')}</div>${brief}`;
 }
 function renderBudgetStatus(txs){
   const card=document.getElementById('budgetStatusCard');
@@ -1464,7 +1491,6 @@ function openFilterModal(){
   openModal('filterModal');
 }
 function applyFilter(){ activeFilter={type:document.getElementById('filterType').value,month:document.getElementById('filterMonth').value,year:document.getElementById('filterYear').value}; closeModal('filterModal'); renderTransactions(); }
-function clearFilter(){ activeFilter={type:'all',month:'all',year:'all'}; closeModal('filterModal'); renderTransactions(); }
 function viewTransaction(id){
   const t=DB.transactions.find(x=>x.id===id); if(!t)return;
   const d=new Date(t.date);
@@ -1573,7 +1599,7 @@ function buildTxForm(type,existing){
     <button class="btn-outline" onclick="closeModal('transactionModal')">Cancel</button>`;
 }
 function rebuildTxForm(type){ buildTxForm(type,null); }
-function handleTxImage(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{txImageData=ev.target.result; const p=document.getElementById('txImgPreview'); if(p)p.innerHTML=`<img src="${txImageData}">`;}; r.readAsDataURL(f); }
+function handleTxImage(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ openCropper(ev.target.result,'receipt',cropped=>{ txImageData=cropped; const p=document.getElementById('txImgPreview'); if(p)p.innerHTML=`<img src="${txImageData}">`; }); }; r.readAsDataURL(f); e.target.value=''; }
 function saveTx(type){
   const amount=getRawAmount(document.getElementById('txAmount'));
   if(!amount||amount<=0){showToast('Enter a valid amount','var(--danger)');return;}
@@ -1857,7 +1883,74 @@ function renderAvatar(){
 function editName(){ const d=document.getElementById('settingsNameDisplay'),i=document.getElementById('settingsNameInput'); d.style.display='none';i.style.display='block';i.value=DB.userName;i.focus(); }
 function saveName(){ const i=document.getElementById('settingsNameInput'),v=i.value.trim(); if(v){DB.userName=v;saveDB();} document.getElementById('settingsNameDisplay').textContent=DB.userName; document.getElementById('settingsNameDisplay').style.display='block';i.style.display='none'; document.getElementById('headerName').textContent=DB.userName; renderAvatar(); }
 function changePhoto(){ openPhotoChoice('profile'); }
-function handlePhotoUpload(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{DB.userPhoto=ev.target.result;saveDB();renderAvatar();}; r.readAsDataURL(f); }
+function handlePhotoUpload(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ openCropper(ev.target.result,'avatar',cropped=>{ DB.userPhoto=cropped; saveDB(); renderAvatar(); showToast('Photo updated','var(--success)'); }); }; r.readAsDataURL(f); e.target.value=''; }
+// ===== IN-APP PHOTO CROPPER =====
+let _cropState=null;
+function openCropper(dataURL, mode, cb){
+  const modal=document.getElementById('cropModal');
+  document.getElementById('cropTitle').textContent = mode==='avatar'?'Crop profile photo':'Crop receipt';
+  _cropState={mode:mode, cb:cb, drag:null};
+  const img=document.getElementById('cropImg');
+  modal.style.display='flex';
+  img.onload=function(){ _cropInit(); };
+  img.src=dataURL;
+}
+function _cropInit(){
+  const stage=document.getElementById('cropStage'), img=document.getElementById('cropImg');
+  const sw=stage.clientWidth, sh=stage.clientHeight, nw=img.naturalWidth||1, nh=img.naturalHeight||1;
+  const scale=Math.min(sw/nw, sh/nh), dispW=nw*scale, dispH=nh*scale, offX=(sw-dispW)/2, offY=(sh-dispH)/2;
+  _cropState.img=img; _cropState.scale=scale; _cropState.nw=nw; _cropState.nh=nh; _cropState.imgRect={x:offX,y:offY,w:dispW,h:dispH};
+  let fw,fh;
+  if(_cropState.mode==='avatar'){ fw=fh=Math.min(dispW,dispH)*0.82; } else { fw=dispW*0.88; fh=dispH*0.88; }
+  _cropState.frame={x:offX+(dispW-fw)/2, y:offY+(dispH-fh)/2, w:fw, h:fh};
+  _cropApply();
+}
+function _cropApply(){ const f=_cropState.frame, el=document.getElementById('cropFrame'); el.style.left=f.x+'px'; el.style.top=f.y+'px'; el.style.width=f.w+'px'; el.style.height=f.h+'px'; }
+function _cropPt(e){ const r=document.getElementById('cropStage').getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+function _cropDown(e, type){ e.preventDefault(); e.stopPropagation(); const p=_cropPt(e); _cropState.drag={type:type, sx:p.x, sy:p.y, f:Object.assign({},_cropState.frame)}; window.addEventListener('pointermove',_cropMove); window.addEventListener('pointerup',_cropUp); }
+function _cropMove(e){
+  const s=_cropState; if(!s||!s.drag) return;
+  const p=_cropPt(e), d=s.drag, ir=s.imgRect, minS=40;
+  let f=Object.assign({},d.f);
+  if(d.type==='move'){
+    f.x=Math.max(ir.x, Math.min(d.f.x+(p.x-d.sx), ir.x+ir.w-d.f.w));
+    f.y=Math.max(ir.y, Math.min(d.f.y+(p.y-d.sy), ir.y+ir.h-d.f.h));
+  } else {
+    let ax,ay;
+    if(d.type==='br'){ax=d.f.x;ay=d.f.y;} else if(d.type==='tl'){ax=d.f.x+d.f.w;ay=d.f.y+d.f.h;} else if(d.type==='tr'){ax=d.f.x;ay=d.f.y+d.f.h;} else {ax=d.f.x+d.f.w;ay=d.f.y;}
+    let px=Math.max(ir.x, Math.min(p.x, ir.x+ir.w)), py=Math.max(ir.y, Math.min(p.y, ir.y+ir.h));
+    if(s.mode==='avatar'){
+      const sgX=px>=ax?1:-1, sgY=py>=ay?1:-1;
+      const maxX=sgX>0?(ir.x+ir.w-ax):(ax-ir.x), maxY=sgY>0?(ir.y+ir.h-ay):(ay-ir.y);
+      let sz=Math.max(Math.abs(px-ax), Math.abs(py-ay)); sz=Math.min(sz, maxX, maxY); sz=Math.max(sz, minS);
+      px=ax+sgX*sz; py=ay+sgY*sz; f.x=Math.min(ax,px); f.y=Math.min(ay,py); f.w=sz; f.h=sz;
+    } else {
+      let left=Math.min(ax,px), right=Math.max(ax,px), top=Math.min(ay,py), bottom=Math.max(ay,py);
+      if(right-left<minS){ if(px<ax) left=ax-minS; else right=ax+minS; }
+      if(bottom-top<minS){ if(py<ay) top=ay-minS; else bottom=ay+minS; }
+      left=Math.max(ir.x,left); top=Math.max(ir.y,top); right=Math.min(ir.x+ir.w,right); bottom=Math.min(ir.y+ir.h,bottom);
+      f.x=left; f.y=top; f.w=right-left; f.h=bottom-top;
+    }
+  }
+  s.frame=f; _cropApply();
+}
+function _cropUp(){ if(_cropState)_cropState.drag=null; window.removeEventListener('pointermove',_cropMove); window.removeEventListener('pointerup',_cropUp); }
+function confirmCrop(){
+  const s=_cropState; if(!s){ closeCropper(); return; }
+  const ir=s.imgRect, f=s.frame, sc=s.scale;
+  let sx=(f.x-ir.x)/sc, sy=(f.y-ir.y)/sc, sw=f.w/sc, sh=f.h/sc;
+  sx=Math.max(0,sx); sy=Math.max(0,sy); sw=Math.min(s.nw-sx,sw); sh=Math.min(s.nh-sy,sh);
+  let outW=sw, outH=sh; const cap=s.mode==='avatar'?512:1400, lng=Math.max(outW,outH);
+  if(lng>cap){ const k=cap/lng; outW*=k; outH*=k; }
+  outW=Math.max(1,Math.round(outW)); outH=Math.max(1,Math.round(outH));
+  const cv=document.createElement('canvas'); cv.width=outW; cv.height=outH; const ctx=cv.getContext('2d');
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,outW,outH);
+  ctx.drawImage(s.img, sx,sy,sw,sh, 0,0,outW,outH);
+  let out; try{ out=cv.toDataURL('image/jpeg',0.85); }catch(err){ out=cv.toDataURL(); }
+  const cb=s.cb; closeCropper(); if(cb) cb(out);
+}
+function cancelCrop(){ closeCropper(); }
+function closeCropper(){ const m=document.getElementById('cropModal'); if(m)m.style.display='none'; const img=document.getElementById('cropImg'); if(img){img.onload=null;img.src='';} _cropState=null; }
 function openAddCategoryModal(editId, forBudget){
   _addCatForBudget=!!forBudget;
   const ex=editId?DB.categories.find(c=>c.id===editId):null;
@@ -1996,7 +2089,7 @@ loadDB(); applyTheme(); initLock();
   .swipe-dots { display:flex; gap:7px; justify-content:center; margin:13px 0 8px; }
   .sdot { width:7px; height:7px; border-radius:50%; background:var(--gold-dim); opacity:0.45; transition:all 0.25s var(--ease); cursor:pointer; }
   .sdot.active { opacity:1; width:20px; border-radius:4px; background:var(--gold); }
-  .iec-per { font-size:11px; color:var(--text-dim); margin-bottom:10px; }
+  .iec-per { align-self:flex-end; font-size:10.5px; font-weight:800; letter-spacing:0.02em; color:var(--gold-dim); background:rgba(212,175,55,0.16); padding:4px 11px; border-radius:999px; margin-bottom:10px; }
   .iec-leg { display:flex; gap:14px; margin-bottom:6px; }
   .iec-leg span { font-size:11px; color:var(--text-dim); display:flex; align-items:center; gap:5px; }
   .iec-leg i { width:9px; height:9px; border-radius:50%; display:inline-block; }
@@ -2009,7 +2102,7 @@ loadDB(); applyTheme(); initLock();
   .iec-barlbl { font-size:11px; color:var(--text-dim); margin-top:7px; }
   .iec-note { font-size:10.5px; color:var(--text-muted); text-align:center; margin-top:10px; }
   .iec-empty { font-size:13px; color:var(--text-muted); text-align:center; padding:24px 0; }
-  #incomeExpCard { display:flex; flex-direction:column; box-sizing:border-box; }
+  #incomeExpCard { display:flex; flex-direction:column; box-sizing:border-box; position:relative; }
   .iec-hbars { display:flex; flex-direction:column; gap:9px; }
   .iec-sm { flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center; gap:14px; }
   .iec-verdict { padding:10px 12px; border-radius:11px; font-size:12px; line-height:1.45; }
@@ -2021,7 +2114,29 @@ loadDB(); applyTheme(); initLock();
   .iec-ht { flex:1; height:9px; background:var(--input-bg); border-radius:5px; overflow:hidden; }
   .iec-hf { height:100%; border-radius:5px; }
   .iec-hv { font-size:12px; font-weight:700; width:78px; text-align:right; flex-shrink:0; }
-  .iec-chart { flex:1; min-height:0; }
+  .iec-chart { flex:1; min-height:0; position:relative; }
+  .iec-dot { position:absolute; width:6px; height:6px; border-radius:50%; transform:translate(-50%,-50%); pointer-events:none; }
+  .iec-dot-last { width:11px; height:11px; background:var(--card-bg); border:2.4px solid var(--gold); }
+  .iec-brief { flex-shrink:0; margin-top:9px; font-size:11.5px; line-height:1.42; }
+  /* photo cropper */
+  #cropModal { position:fixed; inset:0; z-index:900; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.86); padding:16px; }
+  .crop-shell { width:100%; max-width:460px; display:flex; flex-direction:column; }
+  .crop-title { color:#fff; font-size:15px; font-weight:800; text-align:center; margin-bottom:12px; }
+  .crop-stage { position:relative; width:100%; height:62vh; max-height:560px; overflow:hidden; border-radius:12px; background:#000; touch-action:none; }
+  #cropImg { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; -webkit-user-select:none; }
+  .crop-frame { position:absolute; border:2px solid #fff; box-shadow:0 0 0 9999px rgba(0,0,0,0.5); box-sizing:border-box; cursor:move; touch-action:none; }
+  .cf-grid-v, .cf-grid-h { position:absolute; background:rgba(255,255,255,0.3); pointer-events:none; }
+  .cf-grid-v { top:0; bottom:0; width:1px; } .cf-grid-h { left:0; right:0; height:1px; }
+  .cf-handle { position:absolute; width:26px; height:26px; touch-action:none; z-index:2; }
+  .cf-handle::after { content:''; position:absolute; width:15px; height:15px; border:3px solid #fff; }
+  .cf-handle.tl { left:-5px; top:-5px; } .cf-handle.tl::after { left:5px; top:5px; border-right:none; border-bottom:none; }
+  .cf-handle.tr { right:-5px; top:-5px; } .cf-handle.tr::after { right:5px; top:5px; border-left:none; border-bottom:none; }
+  .cf-handle.bl { left:-5px; bottom:-5px; } .cf-handle.bl::after { left:5px; bottom:5px; border-right:none; border-top:none; }
+  .cf-handle.br { right:-5px; bottom:-5px; } .cf-handle.br::after { right:5px; bottom:5px; border-left:none; border-top:none; }
+  .crop-actions { display:flex; gap:10px; margin-top:14px; }
+  .crop-actions button { flex:1; padding:13px; border-radius:14px; font-weight:800; font-size:14px; border:none; cursor:pointer; }
+  .crop-cancel { background:rgba(255,255,255,0.14); color:#fff; }
+  .crop-use { background:var(--gold); color:#1a1306; }
   #optionPickerList, #periodPickerList { max-height:52vh; overflow-y:auto; overscroll-behavior:contain; }
   #optionPickerList::-webkit-scrollbar, #periodPickerList::-webkit-scrollbar { display:none; }
   .picker-item:last-child { border-bottom:none; }
