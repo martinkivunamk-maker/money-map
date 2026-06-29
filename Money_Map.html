@@ -272,6 +272,16 @@
   .exp-row { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--input-border); font-size:14px; }
   .exp-row span:last-child { font-weight:700; }
   .exp-divider { height:1px; background:var(--glass-line); margin:8px 0; opacity:0.5; }
+  .gl-sec { font-size:10.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold-dim); margin-bottom:10px; }
+  .gl-x { margin-bottom:15px; }
+  .gl-top { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  .gl-ic { width:26px; height:26px; border-radius:8px; background:rgba(212,175,55,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--gold-dim); }
+  .gl-ic svg { width:15px; height:15px; }
+  .gl-nm { font-size:14px; font-weight:700; color:var(--text); flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .gl-pct { font-size:13px; font-weight:800; flex-shrink:0; }
+  .gl-pill { font-size:10px; font-weight:700; color:var(--gold-dim); background:rgba(212,175,55,0.16); padding:2px 8px; border-radius:999px; flex-shrink:0; white-space:nowrap; }
+  .gl-sub { display:flex; justify-content:space-between; font-size:11.5px; color:var(--text-dim); margin-top:5px; }
+  .gl-subc { font-size:11px; color:var(--text-muted); margin-top:2px; }
   .exp-empty { text-align:center; color:var(--text-muted); padding:20px; font-size:14px; }
   .budget-row { display:flex; justify-content:space-between; align-items:center; }
   .budget-cat { font-size:13px; color:var(--text); display:flex; align-items:center; gap:8px; min-width:120px; }
@@ -333,7 +343,13 @@
   .an-kpis { font-size:11.5px; color:var(--text-dim); }
   .an-kpis.up { color:var(--success); font-weight:700; }
   .an-kpis.down { color:var(--danger); font-weight:700; }
-  .an-chart { cursor:pointer; position:relative; }
+  .an-chart { cursor:pointer; position:relative; display:flex; flex-direction:column; }
+  .an-fill { flex:1; min-height:78px; position:relative; }
+  .an-fill-c { flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center; }
+  .an-pt { position:absolute; width:6px; height:6px; border-radius:50%; transform:translate(-50%,-50%); pointer-events:none; }
+  .an-pt.last { width:11px; height:11px; background:var(--card-bg); border:2.4px solid; }
+  .an-tlbl { position:absolute; right:2px; font-size:9px; color:var(--text-dim); transform:translateY(-115%); pointer-events:none; }
+  .section-header.an-sh { padding-top:8px; }
   .an-bigwrap { margin:12px 0 2px; }
   .an-bigwrap .an-big { font-size:34px; }
   .an-cmp { font-size:12.5px; font-weight:700; margin-top:9px; }
@@ -409,7 +425,9 @@
   .settings-section-title { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:var(--gold-dim); margin-bottom:10px; padding-left:4px; font-weight:700; }
   .settings-list { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius-sm); overflow:hidden;
     box-shadow:0 1px 1px var(--card-hi) inset, 0 8px 20px -8px var(--shadow), 0 2px 5px -2px var(--shadow); }
-  .settings-item { display:flex; align-items:center; justify-content:space-between; padding:15px 16px; border-bottom:1px solid var(--input-border); cursor:pointer; transition:background 0.2s; }
+  .settings-item { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--input-border); cursor:pointer; transition:background 0.2s; }
+  .fp-state { font-size:11px; font-weight:800; padding:3px 12px; border-radius:999px; background:var(--input-bg); color:var(--text-dim); flex-shrink:0; }
+  .fp-state.on { background:rgba(63,174,90,0.15); color:var(--success); }
   .settings-item:active { background:var(--glass-hover); }
   .settings-item:last-child { border-bottom:none; }
   .settings-item-left { display:flex; align-items:center; gap:13px; }
@@ -454,16 +472,16 @@
     display:flex; align-items:flex-end; justify-content:center; padding:12px 12px 16px; opacity:0; pointer-events:none; transition:opacity 0.3s; }
   .modal-overlay.open { opacity:1; pointer-events:all; }
   .modal-sheet { width:100%; max-width:480px; max-height:100%; background:var(--modal-bg); border:1px solid var(--glass-border);
-    border-radius:28px; overflow-y:auto; overflow-x:hidden; transform:translateY(110%);
+    border-radius:28px; overflow-y:auto; overflow-x:hidden; transform:translateY(110%); -webkit-overflow-scrolling:touch; touch-action:pan-y; overscroll-behavior:contain;
     transition:transform 0.4s var(--ease); padding:0 var(--gutter) 24px; }
   .modal-sheet::-webkit-scrollbar { display:none; }
   .modal-overlay.open .modal-sheet { transform:translateY(0); }
   .modal-handle { width:38px; height:4px; background:var(--text-muted); border-radius:2px; margin:12px auto 22px; opacity:0.5; }
-  .modal-title { font-size:21px; font-weight:800; color:var(--text); margin-bottom:8px; letter-spacing:-0.3px; position:sticky; top:0; z-index:5; background:var(--modal-bg); padding:4px 0 14px; }
+  .modal-title { font-size:21px; font-weight:800; color:var(--text); margin-bottom:8px; letter-spacing:-0.3px; position:sticky; top:0; z-index:5; background:var(--modal-bg); padding:4px 0 14px; touch-action:pan-y; }
 
-  .form-group { margin-bottom:16px; }
-  .form-label { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--gold-dim); margin-bottom:7px; display:block; font-weight:700; }
-  .form-input, .form-select { width:100%; max-width:100%; box-sizing:border-box; -webkit-appearance:none; appearance:none; padding:15px 16px; border-radius:var(--radius-sm); background:var(--input-bg);
+  .form-group { margin-bottom:11px; }
+  .form-label { font-size:11.5px; text-transform:uppercase; letter-spacing:1px; color:var(--gold-dim); margin-bottom:4px; display:block; font-weight:700; }
+  .form-input, .form-select { width:100%; max-width:100%; box-sizing:border-box; -webkit-appearance:none; appearance:none; padding:11px 14px; border-radius:var(--radius-sm); background:var(--input-bg);
     border:1px solid var(--input-border); color:var(--text); font-size:15px; outline:none; transition:border-color 0.2s; }
   .form-input:focus, .form-select:focus { border-color:var(--gold); }
   .form-input::placeholder { color:var(--text-muted); }
@@ -657,7 +675,7 @@
       <div class="swipe-card"><div class="glass-card" id="incomeExpCard" onclick="expandCard('incomeexp')"></div></div>
     </div>
     <div class="swipe-dots" id="ovDots"><span class="sdot active"></span><span class="sdot"></span></div>
-    <div class="misc-line" id="miscLine"></div>
+    <div class="misc-line" id="miscLine" onclick="expandCard('misc')" style="cursor:pointer"></div>
     <div class="bal-cards" id="balCards"></div>
     <div id="goalsCard"></div>
     <div class="section-header"><div class="section-title">Recent Transactions</div><div class="see-more" onclick="navTo('transactions')">See all</div></div>
@@ -724,9 +742,9 @@
           <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-lock"/></svg></div><div><div class="s-label">Change PIN</div><div class="s-sub">Update your app PIN</div></div></div>
           <div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div>
         </div>
-        <div class="settings-item" onclick="setupFingerprint()">
+        <div class="settings-item" onclick="toggleFingerprint()">
           <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-finger"/></svg></div><div><div class="s-label">Fingerprint</div><div class="s-sub" id="fingerprintSub">Tap to enable</div></div></div>
-          <div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div>
+          <span class="fp-state" id="fpState">Off</span>
         </div>
       </div>
     </div>
@@ -998,6 +1016,12 @@ function tryFingerprint(){
     if(icon) icon.classList.remove('scanning');
     if(hint) hint.textContent="Couldn't read fingerprint — tap to retry";
   });
+}
+function toggleFingerprint(){
+  if(!window.PublicKeyCredential){ showToast('This device has no fingerprint support','var(--text-dim)'); return; }
+  if(DB.fingerprintCredId){
+    askConfirm('Turn off fingerprint?','You will unlock with your PIN only. Your PIN stays on, so the app stays locked.',function(){ DB.fingerprintCredId=null; saveDB(); renderSettings(); showToast('Fingerprint off — PIN only','var(--text-dim)'); },'Turn off',false);
+  } else { setupFingerprint(); }
 }
 async function setupFingerprint(){
   suppressNextLock();
@@ -1366,13 +1390,16 @@ function expandCard(kind){
     const outLoan=DB.transactions.filter(t=>t.type==='loan_repay'&&t.from===pot).reduce((s,t)=>s+t.amount,0);
     const outSpent=DB.transactions.filter(t=>t.type==='expense'&&t.source===pot).reduce((s,t)=>s+t.amount,0);
     const periodIn=txs.filter(t=>t.type===pot).reduce((s,t)=>s+t.amount,0);
+    const periodSpent=txs.filter(t=>t.type==='expense'&&t.source===pot).reduce((s,t)=>s+t.amount,0);
+    const periodLoan=txs.filter(t=>t.type==='loan_repay'&&t.from===pot).reduce((s,t)=>s+t.amount,0);
+    const periodNet=periodIn-periodSpent-periodLoan;
     const col=pot==='savings'?'var(--gold)':'var(--warning)';
-    body=`<div class="exp-total" style="color:${col}">${fmtUGX(bal)}</div><div class="exp-sub">Current balance available</div>
-      <div class="exp-row"><span>Total put in (all time)</span><span>${fmtShort(inAll)}</span></div>
-      <div class="exp-row"><span>Spent from it</span><span>-${fmtShort(outSpent)}</span></div>
-      <div class="exp-row"><span>Used for loans</span><span>-${fmtShort(outLoan)}</span></div>
+    body=`<div class="exp-total" style="color:${periodNet>0?col:(periodNet<0?'var(--danger)':'var(--text-dim)')}">${periodNet>0?'+':(periodNet<0?'-':'')}${fmtUGX(Math.abs(periodNet))}</div><div class="exp-sub">Net change in ${periodLabel()}</div>
+      <div class="exp-row"><span>Added in ${periodLabel()}</span><span style="color:var(--success)">+${fmtShort(periodIn)}</span></div>
+      ${periodSpent>0?`<div class="exp-row"><span>Spent from it</span><span style="color:var(--danger)">-${fmtShort(periodSpent)}</span></div>`:''}
+      ${periodLoan>0?`<div class="exp-row"><span>Used for loans</span><span style="color:var(--danger)">-${fmtShort(periodLoan)}</span></div>`:''}
       <div class="exp-divider"></div>
-      <div class="exp-row"><span>Added in ${periodLabel()}</span><span>${fmtShort(periodIn)}</span></div>`;
+      <div class="exp-row"><span>Current balance (all time)</span><span style="color:${col};font-weight:800">${fmtShort(bal)}</span></div>`;
   } else if(kind==='budgetstatus'){
     title='Budgeting Detail · '+periodLabel();
     const exp=txs.filter(t=>t.type==='expense');
@@ -1391,27 +1418,27 @@ function expandCard(kind){
       }).join('')+
       (unb>0?`<div class="exp-divider"></div><div class="exp-row"><span>Unbudgeted spending</span><span style="color:var(--danger)">${fmtShort(unb)}</span></div>`:'');
   } else if(kind==='goals'){
-    title='Goals & Loans Status';
+    title='Goals & Loans';
+    const pcol=(p)=>p>=100?'var(--success)':p>=80?'var(--gold)':'var(--gold-dim)';
     const goalsBody=DB.goals.map(g=>{
       const p=g.target>0?Math.min((g.saved/g.target)*100,100):0;
       const ttg=timeToGo(g.targetDate);
       const remain=Math.max(0,g.target-g.saved);
       const done=g.saved>=g.target&&g.target>0;
-      return `<div style="margin-bottom:18px"><div class="exp-row" style="border:none;padding-bottom:4px"><span style="display:flex;align-items:center;gap:8px;font-weight:700">${ic(g.icon)}${g.name}${done?' · achieved':''}</span><span class="goal-pct">${Math.round(p)}%</span></div>
-        <div class="goal-bar"><div class="goal-fill" style="width:${p}%"></div></div>
-        <div class="exp-row" style="border:none"><span>${fmtShort(g.saved)} saved</span><span>${fmtShort(remain)} to go</span></div>
-        <div class="exp-sub" style="color:${ttg&&ttg.overdue?'var(--danger)':'var(--text-dim)'}">${ttg?ttg.text:'No target date set'}${g.targetDate?' · by '+new Date(g.targetDate).toLocaleDateString():''}</div></div>`;
+      return `<div class="gl-x"><div class="gl-top"><div class="gl-ic">${ic(g.icon)}</div><span class="gl-nm">${g.name}${done?' · done':''}</span><span class="gl-pct" style="color:${pcol(p)}">${Math.round(p)}%</span></div>
+        <div class="goal-bar"><div class="goal-fill" style="width:${p}%;background:${pcol(p)}"></div></div>
+        <div class="gl-sub"><span>${fmtShort(g.saved)} saved</span><span>${fmtShort(remain)} to go</span></div>
+        <div class="gl-subc" style="color:${ttg&&ttg.overdue?'var(--danger)':'var(--text-muted)'}">${ttg?ttg.text:'No target date'}${g.targetDate?' · by '+new Date(g.targetDate).toLocaleDateString():''}</div></div>`;
     }).join('')||`<div class="exp-empty">No goals yet</div>`;
     const loansBody=(DB.loans||[]).map(l=>{
       const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0);
       const rem=Math.max(0,l.amount-repaid);
       const p=l.amount>0?Math.min((repaid/l.amount)*100,100):0;
-      return `<div style="margin-bottom:18px"><div class="exp-row" style="border:none;padding-bottom:4px"><span style="display:flex;align-items:center;gap:8px;font-weight:700">${ic('i-bank')}${l.name}</span><span class="goal-pct">${Math.round(p)}%</span></div>
-        <div class="goal-bar"><div class="goal-fill" style="width:${p}%"></div></div>
-        <div class="exp-row" style="border:none"><span>${fmtShort(repaid)} repaid</span><span>${fmtShort(rem)} pending</span></div>
-        <div class="exp-sub">From: ${l.source}</div></div>`;
+      return `<div class="gl-x"><div class="gl-top"><div class="gl-ic">${ic('i-bank')}</div><span class="gl-nm">${l.name}</span>${l.source?`<span class="gl-pill">From ${l.source}</span>`:''}<span class="gl-pct" style="color:${pcol(p)}">${Math.round(p)}%</span></div>
+        <div class="goal-bar"><div class="goal-fill" style="width:${p}%;background:${pcol(p)}"></div></div>
+        <div class="gl-sub"><span>${fmtShort(repaid)} repaid</span><span>${fmtShort(rem)} pending</span></div></div>`;
     }).join('')||`<div class="exp-empty">No loans</div>`;
-    body=`<div class="exp-sub" style="text-align:left;font-weight:700;color:var(--gold-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Goals</div>${goalsBody}<div class="exp-divider"></div><div class="exp-sub" style="text-align:left;font-weight:700;color:var(--gold-dim);text-transform:uppercase;letter-spacing:1px;margin:12px 0">Loans</div>${loansBody}`;
+    body=`<div class="gl-sec">Goals</div>${goalsBody}<div class="gl-sec" style="margin-top:16px">Loans</div>${loansBody}`;
   } else if(kind==='health'){
     const d=anData(); title='Financial Health · '+periodLabel();
     const rt=d.runway>=99?'plenty':Math.max(0,d.runway).toFixed(1)+' months';
@@ -1453,17 +1480,22 @@ function expandCard(kind){
   } else if(kind==='spending'){
     const d=anData(); title='Spending Breakdown · '+periodLabel();
     body=`<div class="exp-total" style="color:var(--danger)">${fmtShort(d.totalExp)}</div><div class="exp-sub">total spent in ${periodLabel()}</div>`+
-      (d.totalExp>0?d.catFull.map(x=>`<div class="exp-row"><span style="display:flex;align-items:center;gap:8px">${ic(x.icon)}${x.name}</span><span>${fmtShort(x.v)} · ${pct(x.v,d.totalExp)}%</span></div>`).join(''):`<div class="exp-empty">No spending logged</div>`);
+      (d.totalExp>0?d.catFull.map(x=>`<div class="exp-row"><span>${x.name}</span><span>${fmtShort(x.v)} · ${pct(x.v,d.totalExp)}%</span></div>`).join(''):`<div class="exp-empty">No spending logged</div>`);
+  } else if(kind==='misc'){
+    title='Miscellaneous Income';
+    body=`<div class="exp-sub" style="text-align:left;line-height:1.7;font-size:14px;color:var(--text)"><b>Miscellaneous Income</b> is money you've earned but haven't assigned anywhere yet — what's left after your expenses, savings, emergency fund, goals and loan repayments.<br><br>You can move it into <b>Life Savings</b>, your <b>Emergency Fund</b>, a <b>Goal</b>, or carry it forward to next month so it isn't forgotten.</div>`;
   }
   c.innerHTML=`<div class="modal-title">${title}</div>${body}<button class="btn-outline" onclick="closeModal('expandModal')" style="margin-top:16px">Close</button>`;
   openModal('expandModal');
 }
 function equalizeOvCards(){
+  var sw=document.getElementById('ovSwipe'); if(!sw) return;
   var bc=document.getElementById('budgetStatusCard'), ic2=document.getElementById('incomeExpCard');
-  if(!bc||!ic2) return;
-  bc.style.minHeight=''; bc.style.height=''; ic2.style.height='';
-  var h=Math.max(bc.offsetHeight, ic2.offsetHeight);
-  if(h>0){ bc.style.height=h+'px'; ic2.style.height=h+'px'; }
+  if(bc){ bc.style.minHeight=''; bc.style.height=''; } if(ic2){ ic2.style.height=''; }
+  sw.style.overflowY='hidden'; sw.style.transition='height 0.2s var(--ease)';
+  var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1));
+  var card=sw.querySelectorAll('.swipe-card')[i];
+  if(card&&card.offsetHeight>0) sw.style.height=card.offsetHeight+'px';
 }
 function renderIncomeExpCard(){
   const el=document.getElementById('incomeExpCard'); if(!el) return;
@@ -1942,7 +1974,7 @@ function an_donut(list,total){
   const C=2*Math.PI*46; let off=0;
   const segs=list.map(d=>{const len=d.v/total*C;const s='<circle cx="60" cy="60" r="46" fill="none" stroke="'+d.c+'" stroke-width="15" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 60 60)"></circle>';off+=len;return s;}).join('');
   const leg=list.map(d=>'<div class="an-lr"><span class="an-dot" style="background:'+d.c+'"></span><span class="an-ln">'+d.name+'</span><span class="an-lv">'+pct(d.v,total)+'% · '+fmtShort(d.v)+'</span></div>').join('');
-  return '<div class="an-donut-row"><div class="an-donut"><svg viewBox="0 0 120 120" style="width:120px;height:120px">'+segs+'</svg><div class="an-dc"><div class="an-dc-v">'+an_money(total)+'</div><div class="an-dc-l">spent</div></div></div><div class="an-leg">'+leg+'</div></div>';
+  return '<div class="an-fill-c"><div class="an-donut-row"><div class="an-donut"><svg viewBox="0 0 120 120" style="width:120px;height:120px">'+segs+'</svg><div class="an-dc"><div class="an-dc-v">'+an_money(total)+'</div><div class="an-dc-l">spent</div></div></div><div class="an-leg">'+leg+'</div></div></div>';
 }
 function an_flow(income,d){
   const parts=[{n:'Expenses',v:d.expFromInc,c:'#E0554F'},{n:'Goals',v:d.goalAdd,c:'#6BA368'},{n:'Life Savings',v:d.savAdd,c:'#C9A227'},{n:'Emergency',v:d.emgAdd,c:'#E8A33D'},{n:'Loan repaid',v:d.loanPaid,c:'#B388C9'}].filter(p=>p.v>0);
@@ -1952,7 +1984,7 @@ function an_flow(income,d){
   const bar=show.map(p=>'<div style="width:'+(p.v/denom*100).toFixed(2)+'%;background:'+p.c+'"></div>').join('');
   const leg=show.map(p=>'<div class="an-lr2"><span class="an-dot sq" style="background:'+p.c+'"></span><span class="an-ln">'+p.n+'</span><span class="an-lv">'+pct(p.v,denom)+'% · '+fmtShort(p.v)+'</span></div>').join('');
   const note=kept<-0.5?'<div class="an-note warn">⚠ You spent '+fmtShort(-kept)+' more than you earned this period.</div>':'';
-  return '<div class="an-flow">'+bar+'</div><div class="an-leg2">'+leg+'</div>'+note;
+  return '<div class="an-flow">'+bar+'</div><div class="an-fill-c"><div class="an-leg2">'+leg+'</div>'+note+'</div>';
 }
 function an_line(months,series,opts){
   if(months.length<2){ const v=series[series.length-1]||0; return '<div class="an-single">'+opts.fmtVal(v)+'</div><div class="an-single-sub">'+(opts.singleSub||'')+'</div>'; }
@@ -1961,9 +1993,10 @@ function an_line(months,series,opts){
   const X=i=>pad+i*xstep, Y=v=>(H-14)-(v/mx)*(H-26);
   const pts=series.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
   const area='M'+X(0).toFixed(1)+','+(H-14)+' L'+pts.split(' ').join(' L')+' L'+X(n-1).toFixed(1)+','+(H-14)+' Z';
-  const tgt=opts.target?'<line x1="'+pad+'" y1="'+Y(opts.target).toFixed(1)+'" x2="'+(W-pad)+'" y2="'+Y(opts.target).toFixed(1)+'" style="stroke:var(--text-dim)" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"/><text x="'+(W-pad)+'" y="'+(Y(opts.target)-4).toFixed(1)+'" text-anchor="end" font-size="9" style="fill:var(--text-dim)">'+(opts.targetLabel||'')+'</text>':'';
-  const dots=series.map((v,i)=>{const last=i===n-1,cx=X(i).toFixed(1),cy=Y(v).toFixed(1);return last?'<circle cx="'+cx+'" cy="'+cy+'" r="5.5" fill="none" style="stroke:'+opts.color+'" stroke-width="2"/><circle cx="'+cx+'" cy="'+cy+'" r="2.6" style="fill:'+opts.color+'"/>':'<circle cx="'+cx+'" cy="'+cy+'" r="3" style="fill:'+opts.color+'"/>';}).join('');
-  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+(opts.fill?'<path d="'+area+'" style="fill:'+opts.fill+'"/>':'')+tgt+'<polyline points="'+pts+'" fill="none" style="stroke:'+opts.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+dots+'</svg><div class="iec-months">'+months.map(m=>'<span>'+MONTHS[m].slice(0,3)+'</span>').join('')+'</div>';
+  const tgt=opts.target?'<line x1="'+pad+'" y1="'+Y(opts.target).toFixed(1)+'" x2="'+(W-pad)+'" y2="'+Y(opts.target).toFixed(1)+'" style="stroke:var(--text-dim)" stroke-width="1" stroke-dasharray="4 4" opacity="0.6" vector-effect="non-scaling-stroke"/>':'';
+  const dots=series.map((v,i)=>{const last=i===n-1,xp=(X(i)/W*100).toFixed(2),yp=(Y(v)/H*100).toFixed(2);return last?'<span class="an-pt last" style="left:'+xp+'%;top:'+yp+'%;border-color:'+opts.color+'"></span>':'<span class="an-pt" style="left:'+xp+'%;top:'+yp+'%;background:'+opts.color+'"></span>';}).join('');
+  const tlbl=opts.target?'<span class="an-tlbl" style="top:'+(Y(opts.target)/H*100).toFixed(1)+'%">'+(opts.targetLabel||'')+'</span>':'';
+  return '<div class="an-fill"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="width:100%;height:100%">'+(opts.fill?'<path d="'+area+'" style="fill:'+opts.fill+'"/>':'')+tgt+'<polyline points="'+pts+'" fill="none" style="stroke:'+opts.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>'+dots+tlbl+'</div><div class="iec-months">'+months.map(m=>'<span>'+MONTHS[m].slice(0,3)+'</span>').join('')+'</div>';
 }
 function an_stack(months,S,E,G){
   if(months.length<2) return {single:true};
@@ -1972,8 +2005,8 @@ function an_stack(months,S,E,G){
   const X=i=>pad+i*xstep, Y=v=>(H-6)-(v/mx)*(H-16);
   const c1=G.slice(), c2=months.map((_,i)=>G[i]+E[i]), c3=tops, zero=months.map(()=>0);
   function band(lo,up,color){let p='M';for(let i=0;i<n;i++)p+=(i?'L':'')+X(i).toFixed(1)+','+Y(up[i]).toFixed(1)+' ';for(let j=n-1;j>=0;j--)p+='L'+X(j).toFixed(1)+','+Y(lo[j]).toFixed(1)+' ';return '<path d="'+p+'Z" style="fill:'+color+'" opacity="0.9"/>';}
-  const dots=c3.map((v,i)=>{const last=i===n-1,cx=X(i).toFixed(1),cy=Y(v).toFixed(1);return last?'<circle cx="'+cx+'" cy="'+cy+'" r="5" fill="none" style="stroke:var(--gold-dim)" stroke-width="2"/><circle cx="'+cx+'" cy="'+cy+'" r="2.4" style="fill:var(--gold-dim)"/>':'<circle cx="'+cx+'" cy="'+cy+'" r="2.6" style="fill:var(--gold-dim)"/>';}).join('');
-  return {svg:'<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+band(zero,c1,'#6BA368')+band(c1,c2,'#E8A33D')+band(c2,c3,'#C9A227')+dots+'</svg><div class="iec-months">'+months.map(m=>'<span>'+MONTHS[m].slice(0,3)+'</span>').join('')+'</div>'};
+  const dots=c3.map((v,i)=>{const last=i===n-1,xp=(X(i)/W*100).toFixed(2),yp=(Y(v)/H*100).toFixed(2);return last?'<span class="an-pt last" style="left:'+xp+'%;top:'+yp+'%;border-color:var(--gold-dim)"></span>':'<span class="an-pt" style="left:'+xp+'%;top:'+yp+'%;background:var(--gold-dim)"></span>';}).join('');
+  return {svg:'<div class="an-fill"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="width:100%;height:100%">'+band(zero,c1,'#6BA368')+band(c1,c2,'#E8A33D')+band(c2,c3,'#C9A227')+'</svg>'+dots+'</div><div class="iec-months">'+months.map(m=>'<span>'+MONTHS[m].slice(0,3)+'</span>').join('')+'</div>'};
 }
 function an_health(d){
   const C=2*Math.PI*34, fill=d.score/100*C;
@@ -2009,12 +2042,10 @@ function an_insights(d){
 function setupAnSwipe(stackId,dotsId,titleId,moreId,titles,kinds){
   const sw=document.getElementById(stackId); if(!sw) return;
   const dots=document.querySelectorAll('#'+dotsId+' .sdot'), tEl=document.getElementById(titleId), mEl=document.getElementById(moreId);
-  sw.style.overflowY='hidden'; sw.style.transition='height 0.2s var(--ease)';
-  sw.querySelectorAll('.swipe-card .glass-card').forEach(function(cc){cc.style.height='';});
-  function fitH(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); var sc=sw.querySelectorAll('.swipe-card')[i]; if(sc&&sc.offsetHeight>0) sw.style.height=sc.offsetHeight+'px'; }
   dots.forEach((dd,j)=>dd.onclick=function(){ sw.scrollTo({left:j*sw.clientWidth,behavior:'smooth'}); });
-  sw.onscroll=function(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); if(tEl)tEl.textContent=titles[i]||titles[0]; if(mEl)mEl.onclick=function(){expandCard(kinds[i]);}; dots.forEach((dd,j)=>dd.classList.toggle('active',j===i)); fitH(); };
-  fitH();
+  sw.onscroll=function(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); if(tEl)tEl.textContent=titles[i]||titles[0]; if(mEl)mEl.onclick=function(){expandCard(kinds[i]);}; dots.forEach((dd,j)=>dd.classList.toggle('active',j===i)); };
+  var cards=sw.querySelectorAll('.swipe-card .glass-card'); cards.forEach(function(cc){cc.style.height='';});
+  var h=0; cards.forEach(function(cc){ if(cc.offsetHeight>h)h=cc.offsetHeight; }); if(h>0)cards.forEach(function(cc){cc.style.height=h+'px';});
 }
 function renderAnalyticsV2(){
   const c=document.getElementById('analyticsContent'); if(!c) return;
@@ -2023,21 +2054,22 @@ function renderAnalyticsV2(){
   const healthCard='<div class="an-pad" style="margin-bottom:4px"><div class="glass-card chart-card an-chart" onclick="expandCard(\'health\')">'+an_health(d)+'</div></div>';
   let savingsInner, nwInner;
   if(d.month==='all'){
-    savingsInner='<div class="an-tag">Savings rate</div><div class="an-kpi"><span class="an-big" style="color:var(--success)">'+d.savingsRate+'%</span><span class="an-kpis">set aside in '+periodLabel()+'</span></div>'+an_line(d.months,d.rateSeries,{color:'var(--success)',fill:'rgba(63,174,90,0.12)',target:20,targetLabel:'20%',fmtVal:function(v){return v+'%';},singleSub:'A trend appears with 2+ months of data'});
+    var trendMsg='<div class="an-fill-c"><div class="an-single-sub">A trend appears once you log 2+ months of data</div></div>';
+    savingsInner='<div class="an-tag">Savings rate</div><div class="an-kpi"><span class="an-big" style="color:var(--success)">'+d.savingsRate+'%</span><span class="an-kpis">set aside in '+periodLabel()+'</span></div>'+(d.months.length>=2?an_line(d.months,d.rateSeries,{color:'var(--success)',fill:'rgba(63,174,90,0.12)',target:20,targetLabel:'20%',fmtVal:function(v){return v+'%';},singleSub:''}):trendMsg);
     var st=an_stack(d.months,d.S,d.E,d.G);
-    nwInner='<div class="an-tag">Net worth</div><div class="an-kpi"><span class="an-big">'+fmtShort(d.endNW)+'</span><span class="an-kpis '+(d.yearGrowth>=0?'up':'down')+'">'+(d.yearGrowth>=0?'▲':'▼')+' '+fmtShort(d.yearGrowth)+' in '+d.year+'</span></div>'+(st.svg?st.svg:'<div class="an-single">'+fmtShort(d.endNW)+'</div><div class="an-single-sub">A trend appears with 2+ months of data</div>')+'<div class="iec-leg" style="margin-top:8px"><span><i style="background:#C9A227"></i>Savings</span><span><i style="background:#E8A33D"></i>Emergency</span><span><i style="background:#6BA368"></i>Goals</span></div>';
+    nwInner='<div class="an-tag">Net worth</div><div class="an-kpi"><span class="an-big">'+fmtShort(d.endNW)+'</span><span class="an-kpis '+(d.yearGrowth>=0?'up':'down')+'">'+(d.yearGrowth>=0?'▲':'▼')+' '+fmtShort(d.yearGrowth)+' in '+d.year+'</span></div>'+(st.svg?st.svg:trendMsg)+'<div class="iec-leg" style="margin-top:8px"><span><i style="background:#C9A227"></i>Savings</span><span><i style="background:#E8A33D"></i>Emergency</span><span><i style="background:#6BA368"></i>Goals</span></div>';
   } else {
     savingsInner='<div class="an-tag">Savings rate</div><div class="an-bigwrap"><span class="an-big" style="color:var(--success)">'+d.savingsRate+'%</span></div><div class="an-sub" style="margin:0">set aside in '+periodLabel()+'</div>'+(d.prevRate!==null?'<div class="an-cmp '+(d.savingsRate>=d.prevRate?'up':'down')+'">'+(d.savingsRate>=d.prevRate?'▲':'▼')+' '+Math.abs(d.savingsRate-d.prevRate)+'% vs '+d.prevMonthName+'</div>':'');
     var nwDelta=d.nwSel-d.nwPrev;
     nwInner='<div class="an-tag">Net worth</div><div class="an-bigwrap"><span class="an-big">'+fmtShort(d.nwSel)+'</span></div><div class="an-sub" style="margin:0">balance at end of '+periodLabel()+'</div><div class="an-cmp '+(nwDelta>=0?'up':'down')+'">'+(nwDelta>=0?'▲':'▼')+' '+fmtShort(Math.abs(nwDelta))+' vs '+d.prevMonthName+'</div>';
   }
-  const flowInner='<div class="an-tag">Money flow</div><div class="an-ttl">Where your income goes</div><div class="an-sub">of your '+fmtShort(d.income)+' income · '+periodLabel()+'</div>'+(d.income>0?an_flow(d.income,d):'<div class="an-single-sub" style="padding:18px 0">No income logged for this period</div>');
-  const spendInner='<div class="an-tag">Spending</div><div class="an-ttl">Where your money went</div><div class="an-sub">'+periodLabel()+'</div>'+(d.totalExp>0?an_donut(d.catList,d.totalExp):'<div class="an-single-sub" style="padding:18px 0">No spending logged for this period</div>');
+  const flowInner='<div class="an-tag">Money flow</div><div class="an-ttl">Where your income goes</div><div class="an-sub">of your '+fmtShort(d.income)+' income · '+periodLabel()+'</div>'+(d.income>0?an_flow(d.income,d):'<div class="an-fill-c"><div class="an-single-sub">No income logged for this period</div></div>');
+  const spendInner='<div class="an-tag">Spending</div><div class="an-ttl">Where your money went</div><div class="an-sub">'+periodLabel()+'</div>'+(d.totalExp>0?an_donut(d.catList,d.totalExp):'<div class="an-fill-c"><div class="an-single-sub">No spending logged for this period</div></div>');
   const ins=an_insights(d);
-  const insightsBlock='<div class="section-header"><div class="section-title">Smart Insights</div></div><div class="an-pad" style="display:flex;flex-direction:column;gap:12px">'+ins.map(i=>'<div class="glass-card insight-card" style="border-color:'+i.color+'40"><div class="insight-icon" style="color:'+i.color+'">'+ic(i.icon)+'</div><div><div class="insight-title" style="color:'+i.color+'">'+i.title+'</div><div class="insight-body">'+i.body+'</div></div></div>').join('')+'</div>';
+  const insightsBlock='<div class="section-header an-sh"><div class="section-title">Smart Insights</div></div><div class="an-pad" style="display:flex;flex-direction:column;gap:12px">'+ins.map(i=>'<div class="glass-card insight-card" style="border-color:'+i.color+'40"><div class="insight-icon" style="color:'+i.color+'">'+ic(i.icon)+'</div><div><div class="insight-title" style="color:'+i.color+'">'+i.title+'</div><div class="insight-body">'+i.body+'</div></div></div>').join('')+'</div>';
   c.innerHTML=healthCard+
-    '<div class="section-header"><div class="section-title" id="anSw1Title">Savings Rate</div><div class="see-more" id="anSw1More" onclick="expandCard(\'savingsrate\')">Details</div></div><div class="swipe-stack" id="anSw1"><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'savingsrate\')">'+savingsInner+'</div></div><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'networth\')">'+nwInner+'</div></div></div><div class="swipe-dots" id="anDots1"><span class="sdot active"></span><span class="sdot"></span></div>'+
-    '<div class="section-header"><div class="section-title" id="anSw2Title">Where Income Goes</div><div class="see-more" id="anSw2More" onclick="expandCard(\'moneyflow\')">Details</div></div><div class="swipe-stack" id="anSw2"><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'moneyflow\')">'+flowInner+'</div></div><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'spending\')">'+spendInner+'</div></div></div><div class="swipe-dots" id="anDots2"><span class="sdot active"></span><span class="sdot"></span></div>'+
+    '<div class="section-header an-sh"><div class="section-title" id="anSw1Title">Savings Rate</div><div class="see-more" id="anSw1More" onclick="expandCard(\'savingsrate\')">Details</div></div><div class="swipe-stack" id="anSw1"><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'savingsrate\')">'+savingsInner+'</div></div><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'networth\')">'+nwInner+'</div></div></div><div class="swipe-dots" id="anDots1"><span class="sdot active"></span><span class="sdot"></span></div>'+
+    '<div class="section-header an-sh"><div class="section-title" id="anSw2Title">Where Income Goes</div><div class="see-more" id="anSw2More" onclick="expandCard(\'moneyflow\')">Details</div></div><div class="swipe-stack" id="anSw2"><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'moneyflow\')">'+flowInner+'</div></div><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'spending\')">'+spendInner+'</div></div></div><div class="swipe-dots" id="anDots2"><span class="sdot active"></span><span class="sdot"></span></div>'+
     insightsBlock;
   setupAnSwipe('anSw1','anDots1','anSw1Title','anSw1More',['Savings Rate','Net Worth'],['savingsrate','networth']);
   setupAnSwipe('anSw2','anDots2','anSw2Title','anSw2More',['Where Income Goes','Spending Breakdown'],['moneyflow','spending']);
@@ -2139,7 +2171,9 @@ function renderSettings(){
   renderAvatar();
   applyTheme();
   const fsub=document.getElementById('fingerprintSub');
-  if(fsub) fsub.textContent=DB.fingerprintCredId?'Enabled — tap to re-register':'Tap to enable fingerprint unlock';
+  if(fsub) fsub.textContent=DB.fingerprintCredId?'On — tap to turn off':'Off — tap to turn on (PIN stays)';
+  const fst=document.getElementById('fpState');
+  if(fst){ fst.textContent=DB.fingerprintCredId?'On':'Off'; fst.classList.toggle('on',!!DB.fingerprintCredId); }
   const cl=document.getElementById('categoriesList');
   cl.innerHTML=DB.categories.map(cat=>`<div class="settings-item"><div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)">${ic(cat.icon)}</div><div class="s-label">${cat.name}</div></div><div style="display:flex;gap:6px"><button class="icon-btn edit" onclick="openAddCategoryModal('${cat.id}')">${ic('i-edit')}</button><button class="icon-btn del" onclick="deleteCategory('${cat.id}')">${ic('i-trash')}</button></div></div>`).join('');
   const il=document.getElementById('incomeTypesList');
@@ -2317,6 +2351,7 @@ function setupOvSwipe(){
     if(tEl) tEl.textContent=titles[i]||titles[0];
     if(dEl){ dEl.style.visibility='visible'; dEl.onclick=function(){ expandCard(i===0?'budgetstatus':'incomeexp'); }; }
     dots.forEach((d,j)=>d.classList.toggle('active',j===i));
+    equalizeOvCards();
   };
 }
 function initApp(){ initPeriodSelectors(); updateOverview(); renderSettings(); setupOvSwipe(); }
@@ -2344,6 +2379,7 @@ document.addEventListener('visibilitychange',()=>{
   if(_suppressLock){ _suppressLock=false; _bgHidden=false; clearTimeout(_suppressTimer); return; }
   if(_bgHidden){ _bgHidden=false; if(DB.pin && document.getElementById('lockScreen').classList.contains('hidden')) relock(); }
 });
+var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anResizeT); _anResizeT=setTimeout(function(){ try{ if(currentPage==='analytics') renderAnalytics(); else if(currentPage==='overview') equalizeOvCards(); }catch(e){} },220); });
 loadDB(); applyTheme(); initLock();
 // Ask Android/Chrome to keep our data (mark storage persistent so it isn't evicted under storage pressure)
 try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ if(!p) navigator.storage.persist().catch(function(){}); }).catch(function(){}); } }catch(e){}
@@ -2368,7 +2404,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .iec-leg { display:flex; gap:14px; margin-bottom:6px; }
   .iec-leg span { font-size:11px; color:var(--text-dim); display:flex; align-items:center; gap:5px; }
   .iec-leg i { width:9px; height:9px; border-radius:50%; display:inline-block; }
-  .iec-months { display:flex; justify-content:space-between; margin-top:6px; }
+  .iec-months { display:flex; justify-content:space-between; margin-top:2px; }
   .iec-months span { font-size:9px; color:var(--text-muted); }
   .iec-bars { display:flex; align-items:flex-end; justify-content:center; gap:34px; padding-top:6px; }
   .iec-barcol { display:flex; flex-direction:column; align-items:center; }
@@ -2389,7 +2425,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .iec-ht { flex:1; height:9px; background:var(--input-bg); border-radius:5px; overflow:hidden; }
   .iec-hf { height:100%; border-radius:5px; }
   .iec-hv { font-size:12px; font-weight:700; width:78px; text-align:right; flex-shrink:0; }
-  .iec-chart { flex:1; min-height:0; position:relative; }
+  .iec-chart { height:118px; min-height:0; position:relative; }
   .iec-dot { position:absolute; width:6px; height:6px; border-radius:50%; transform:translate(-50%,-50%); pointer-events:none; }
   .iec-dot-last { width:11px; height:11px; background:var(--card-bg); border:2.4px solid var(--gold); }
   .iec-brief { flex-shrink:0; margin-top:9px; font-size:11.5px; line-height:1.42; }
