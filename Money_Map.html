@@ -2345,6 +2345,8 @@ document.addEventListener('visibilitychange',()=>{
   if(_bgHidden){ _bgHidden=false; if(DB.pin && document.getElementById('lockScreen').classList.contains('hidden')) relock(); }
 });
 loadDB(); applyTheme(); initLock();
+// Ask Android/Chrome to keep our data (mark storage persistent so it isn't evicted under storage pressure)
+try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ if(!p) navigator.storage.persist().catch(function(){}); }).catch(function(){}); } }catch(e){}
 </script>
 
 <style>
