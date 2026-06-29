@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#D4AF37">
+<meta name="theme-color" content="#faf8f3">
+<script>try{var _d=JSON.parse(localStorage.getItem('moneymap_v2')||'{}');var _t=_d.theme||'auto';if(_t==='auto')_t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.querySelector('meta[name=theme-color]').setAttribute('content',_t==='dark'?'#060606':'#faf8f3');}catch(e){}</script>
 <link rel="manifest" href="manifest.json">
 <title>Money Map</title>
 <style>
@@ -324,7 +325,7 @@
 
   .analytics-content { padding:0 0 28px; }
   .an-pad { padding:0 var(--gutter); }
-  .an-tag { display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--gold-dim); background:rgba(212,175,55,0.14); padding:3px 9px; border-radius:999px; margin-bottom:9px; }
+  .an-tag { position:absolute; top:14px; right:15px; z-index:2; font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--gold-dim); background:rgba(212,175,55,0.14); padding:3px 9px; border-radius:999px; }
   .an-ttl { font-size:15px; font-weight:800; color:var(--text); }
   .an-sub { font-size:11.5px; color:var(--text-dim); margin-bottom:12px; }
   .an-kpi { display:flex; align-items:baseline; gap:8px; margin:2px 0 10px; }
@@ -332,7 +333,12 @@
   .an-kpis { font-size:11.5px; color:var(--text-dim); }
   .an-kpis.up { color:var(--success); font-weight:700; }
   .an-kpis.down { color:var(--danger); font-weight:700; }
-  .an-chart { cursor:pointer; }
+  .an-chart { cursor:pointer; position:relative; }
+  .an-bigwrap { margin:12px 0 2px; }
+  .an-bigwrap .an-big { font-size:34px; }
+  .an-cmp { font-size:12.5px; font-weight:700; margin-top:9px; }
+  .an-cmp.up { color:var(--success); }
+  .an-cmp.down { color:var(--danger); }
   .an-donut-row { display:flex; align-items:center; gap:14px; }
   .an-donut { position:relative; width:120px; height:120px; flex-shrink:0; }
   .an-donut svg { width:120px; height:120px; }
@@ -1922,7 +1928,14 @@ function anData(){
   const sLabel=score>=80?'Strong':score>=60?'Good':score>=40?'Fair':'Needs work';
   const sColor=score>=80?'var(--success)':score>=60?'#7aa84a':score>=40?'var(--warning)':'var(--danger)';
   const sBg=score>=80?'rgba(63,174,90,0.15)':score>=60?'rgba(122,168,74,0.15)':score>=40?'rgba(240,160,32,0.15)':'rgba(224,85,85,0.15)';
-  return {month,year,txs,income,totalExp,expFromInc,savAdd,emgAdd,goalAdd,loanPaid,setAside,savingsRate,loanPct,catList,catFull,months,rateSeries,nwSeries,S,E,G,curNW,endNW,startNW,yearGrowth,avgMonthExp,avgSurplus,emgBal,runway,onBudget,totalBudgets,biggest,score,sLabel,sColor,sBg,yearInc,yearExp};
+  var prevRate=null, nwSel=endNW, nwPrev=null, prevMonthName='';
+  if(month!=='all'){
+    nwSel=potsAsOf(new Date(year,month+1,0,23,59,59)).total;
+    nwPrev=potsAsOf(new Date(year,month,0,23,59,59)).total;
+    prevMonthName=MONTHS[(month+11)%12].slice(0,3);
+    if(month>0){ var pe=incM[month-1]; prevRate=pe>0?Math.round(setMo[month-1]/pe*100):0; }
+  }
+  return {month,year,txs,income,totalExp,expFromInc,savAdd,emgAdd,goalAdd,loanPaid,setAside,savingsRate,loanPct,catList,catFull,months,rateSeries,nwSeries,S,E,G,curNW,endNW,startNW,yearGrowth,avgMonthExp,avgSurplus,emgBal,runway,onBudget,totalBudgets,biggest,score,sLabel,sColor,sBg,yearInc,yearExp,prevRate,nwSel,nwPrev,prevMonthName};
 }
 function an_money(v){ return fmtShort(v).replace('UGX ',''); }
 function an_donut(list,total){
@@ -1967,7 +1980,7 @@ function an_health(d){
   const ring='<svg viewBox="0 0 78 78" style="width:78px;height:78px;transform:rotate(-90deg)"><circle cx="39" cy="39" r="34" fill="none" stroke="rgba(127,127,127,0.18)" stroke-width="8"/><circle cx="39" cy="39" r="34" fill="none" style="stroke:'+d.sColor+'" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+fill.toFixed(1)+' '+(C-fill).toFixed(1)+'"/></svg>';
   const rt=d.runway>=99?'plenty':Math.max(0,d.runway).toFixed(1)+' mo';
   const surplus=(d.avgSurplus<0?'-':'')+fmtShort(d.avgSurplus);
-  return '<div class="an-tag">Financial health</div><div class="an-health-hdr"><div class="an-ring">'+ring+'<div class="an-ring-c"><div class="an-ring-v">'+d.score+'</div><div class="an-ring-l">/ 100</div></div></div><div><div class="an-ttl">Financial Health</div><div class="an-badge" style="color:'+d.sColor+';background:'+d.sBg+'">'+d.sLabel+'</div><div class="an-sub" style="margin:0">'+periodLabel()+' snapshot</div></div></div><div class="an-tiles"><div class="an-tile"><div class="an-tile-v">'+d.savingsRate+'%</div><div class="an-tile-l">Savings rate</div></div><div class="an-tile"><div class="an-tile-v">'+rt+'</div><div class="an-tile-l">Emergency runway</div></div><div class="an-tile"><div class="an-tile-v">'+surplus+'</div><div class="an-tile-l">Avg monthly surplus</div></div><div class="an-tile"><div class="an-tile-v">'+(d.totalBudgets?d.onBudget+' / '+d.totalBudgets:'—')+'</div><div class="an-tile-l">Categories on budget</div></div></div>'+(d.biggest&&d.totalExp>0?'<div class="an-foot">Biggest expense: <b>'+d.biggest.name+'</b> · '+pct(d.biggest.v,d.totalExp)+'% of spending</div>':'');
+  return '<div class="an-health-hdr"><div class="an-ring">'+ring+'<div class="an-ring-c"><div class="an-ring-v">'+d.score+'</div><div class="an-ring-l">/ 100</div></div></div><div><div class="an-ttl">Financial Health</div><div class="an-badge" style="color:'+d.sColor+';background:'+d.sBg+'">'+d.sLabel+'</div><div class="an-sub" style="margin:0">'+periodLabel()+' snapshot</div></div></div><div class="an-tiles"><div class="an-tile"><div class="an-tile-v">'+d.savingsRate+'%</div><div class="an-tile-l">Savings rate</div></div><div class="an-tile"><div class="an-tile-v">'+rt+'</div><div class="an-tile-l">Emergency runway</div></div><div class="an-tile"><div class="an-tile-v">'+surplus+'</div><div class="an-tile-l">Avg monthly surplus</div></div><div class="an-tile"><div class="an-tile-v">'+(d.totalBudgets?d.onBudget+' / '+d.totalBudgets:'—')+'</div><div class="an-tile-l">Categories on budget</div></div></div>'+(d.biggest&&d.totalExp>0?'<div class="an-foot">Biggest expense: <b>'+d.biggest.name+'</b> · '+pct(d.biggest.v,d.totalExp)+'% of spending</div>':'');
 }
 function an_insights(d){
   const out=[];
@@ -1996,22 +2009,26 @@ function an_insights(d){
 function setupAnSwipe(stackId,dotsId,titleId,moreId,titles,kinds){
   const sw=document.getElementById(stackId); if(!sw) return;
   const dots=document.querySelectorAll('#'+dotsId+' .sdot'), tEl=document.getElementById(titleId), mEl=document.getElementById(moreId);
-  sw.style.overflowY='hidden'; sw.style.transition='height 0.25s var(--ease)';
-  function fitH(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); var card=sw.querySelectorAll('.swipe-card')[i]; var gc=card&&card.querySelector('.glass-card'); if(gc&&gc.offsetHeight>0) sw.style.height=gc.offsetHeight+'px'; }
   dots.forEach((dd,j)=>dd.onclick=function(){ sw.scrollTo({left:j*sw.clientWidth,behavior:'smooth'}); });
-  sw.onscroll=function(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); if(tEl)tEl.textContent=titles[i]||titles[0]; if(mEl)mEl.onclick=function(){expandCard(kinds[i]);}; dots.forEach((dd,j)=>dd.classList.toggle('active',j===i)); fitH(); };
-  fitH();
+  sw.onscroll=function(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); if(tEl)tEl.textContent=titles[i]||titles[0]; if(mEl)mEl.onclick=function(){expandCard(kinds[i]);}; dots.forEach((dd,j)=>dd.classList.toggle('active',j===i)); };
+  var cards=sw.querySelectorAll('.swipe-card .glass-card'); cards.forEach(function(cc){cc.style.height='';});
+  var h=0; cards.forEach(function(cc){ if(cc.offsetHeight>h)h=cc.offsetHeight; }); if(h>0)cards.forEach(function(cc){cc.style.height=h+'px';});
 }
 function renderAnalyticsV2(){
   const c=document.getElementById('analyticsContent'); if(!c) return;
   const d=anData();
   if(d.txs.length===0){ c.innerHTML='<div class="an-pad"><div class="glass-card chart-card" style="text-align:center"><div style="font-size:14px;font-weight:700;color:var(--text)">No data for '+periodLabel()+'</div><div style="font-size:12.5px;margin-top:6px;color:var(--text-dim)">Add income and expenses to unlock your analytics.</div></div></div>'; return; }
   const healthCard='<div class="an-pad" style="margin-bottom:4px"><div class="glass-card chart-card an-chart" onclick="expandCard(\'health\')">'+an_health(d)+'</div></div>';
-  const savingsInner='<div class="an-tag">Savings rate</div><div class="an-kpi"><span class="an-big" style="color:var(--success)">'+d.savingsRate+'%</span><span class="an-kpis">set aside in '+periodLabel()+'</span></div>'+an_line(d.months,d.rateSeries,{color:'var(--success)',fill:'rgba(63,174,90,0.12)',target:20,targetLabel:'20%',fmtVal:function(v){return v+'%';},singleSub:'A trend appears with 2+ months of data'});
-  const st=an_stack(d.months,d.S,d.E,d.G);
-  let nwInner='<div class="an-tag">Net worth</div><div class="an-kpi"><span class="an-big">'+fmtShort(d.endNW)+'</span><span class="an-kpis '+(d.yearGrowth>=0?'up':'down')+'">'+(d.yearGrowth>=0?'▲':'▼')+' '+fmtShort(d.yearGrowth)+' in '+d.year+'</span></div>';
-  nwInner+= st.svg?st.svg:'<div class="an-single">'+fmtShort(d.endNW)+'</div><div class="an-single-sub">A trend appears with 2+ months of data</div>';
-  nwInner+='<div class="iec-leg" style="margin-top:8px"><span><i style="background:#C9A227"></i>Savings</span><span><i style="background:#E8A33D"></i>Emergency</span><span><i style="background:#6BA368"></i>Goals</span></div>';
+  let savingsInner, nwInner;
+  if(d.month==='all'){
+    savingsInner='<div class="an-tag">Savings rate</div><div class="an-kpi"><span class="an-big" style="color:var(--success)">'+d.savingsRate+'%</span><span class="an-kpis">set aside in '+periodLabel()+'</span></div>'+an_line(d.months,d.rateSeries,{color:'var(--success)',fill:'rgba(63,174,90,0.12)',target:20,targetLabel:'20%',fmtVal:function(v){return v+'%';},singleSub:'A trend appears with 2+ months of data'});
+    var st=an_stack(d.months,d.S,d.E,d.G);
+    nwInner='<div class="an-tag">Net worth</div><div class="an-kpi"><span class="an-big">'+fmtShort(d.endNW)+'</span><span class="an-kpis '+(d.yearGrowth>=0?'up':'down')+'">'+(d.yearGrowth>=0?'▲':'▼')+' '+fmtShort(d.yearGrowth)+' in '+d.year+'</span></div>'+(st.svg?st.svg:'<div class="an-single">'+fmtShort(d.endNW)+'</div><div class="an-single-sub">A trend appears with 2+ months of data</div>')+'<div class="iec-leg" style="margin-top:8px"><span><i style="background:#C9A227"></i>Savings</span><span><i style="background:#E8A33D"></i>Emergency</span><span><i style="background:#6BA368"></i>Goals</span></div>';
+  } else {
+    savingsInner='<div class="an-tag">Savings rate</div><div class="an-bigwrap"><span class="an-big" style="color:var(--success)">'+d.savingsRate+'%</span></div><div class="an-sub" style="margin:0">set aside in '+periodLabel()+'</div>'+(d.prevRate!==null?'<div class="an-cmp '+(d.savingsRate>=d.prevRate?'up':'down')+'">'+(d.savingsRate>=d.prevRate?'▲':'▼')+' '+Math.abs(d.savingsRate-d.prevRate)+'% vs '+d.prevMonthName+'</div>':'');
+    var nwDelta=d.nwSel-d.nwPrev;
+    nwInner='<div class="an-tag">Net worth</div><div class="an-bigwrap"><span class="an-big">'+fmtShort(d.nwSel)+'</span></div><div class="an-sub" style="margin:0">balance at end of '+periodLabel()+'</div><div class="an-cmp '+(nwDelta>=0?'up':'down')+'">'+(nwDelta>=0?'▲':'▼')+' '+fmtShort(Math.abs(nwDelta))+' vs '+d.prevMonthName+'</div>';
+  }
   const flowInner='<div class="an-tag">Money flow</div><div class="an-ttl">Where your income goes</div><div class="an-sub">of your '+fmtShort(d.income)+' income · '+periodLabel()+'</div>'+(d.income>0?an_flow(d.income,d):'<div class="an-single-sub" style="padding:18px 0">No income logged for this period</div>');
   const spendInner='<div class="an-tag">Spending</div><div class="an-ttl">Where your money went</div><div class="an-sub">'+periodLabel()+'</div>'+(d.totalExp>0?an_donut(d.catList,d.totalExp):'<div class="an-single-sub" style="padding:18px 0">No spending logged for this period</div>');
   const ins=an_insights(d);
@@ -2338,7 +2355,7 @@ loadDB(); applyTheme(); initLock();
   .pi-left { color:var(--text-dim); font-weight:500; }
   .swipe-stack { display:flex; align-items:flex-start; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
   .swipe-stack::-webkit-scrollbar { display:none; }
-  .swipe-card { flex:0 0 100%; scroll-snap-align:start; padding:0 var(--gutter); box-sizing:border-box; }
+  .swipe-card { flex:0 0 100%; scroll-snap-align:start; padding:0 var(--gutter) 18px; box-sizing:border-box; }
   .swipe-dots { display:flex; gap:7px; justify-content:center; margin:13px 0 8px; }
   .sdot { width:7px; height:7px; border-radius:50%; background:var(--gold-dim); opacity:0.45; transition:all 0.25s var(--ease); cursor:pointer; }
   .sdot.active { opacity:1; width:20px; border-radius:4px; background:var(--gold); }
