@@ -2009,10 +2009,12 @@ function an_insights(d){
 function setupAnSwipe(stackId,dotsId,titleId,moreId,titles,kinds){
   const sw=document.getElementById(stackId); if(!sw) return;
   const dots=document.querySelectorAll('#'+dotsId+' .sdot'), tEl=document.getElementById(titleId), mEl=document.getElementById(moreId);
+  sw.style.overflowY='hidden'; sw.style.transition='height 0.2s var(--ease)';
+  sw.querySelectorAll('.swipe-card .glass-card').forEach(function(cc){cc.style.height='';});
+  function fitH(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); var sc=sw.querySelectorAll('.swipe-card')[i]; if(sc&&sc.offsetHeight>0) sw.style.height=sc.offsetHeight+'px'; }
   dots.forEach((dd,j)=>dd.onclick=function(){ sw.scrollTo({left:j*sw.clientWidth,behavior:'smooth'}); });
-  sw.onscroll=function(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); if(tEl)tEl.textContent=titles[i]||titles[0]; if(mEl)mEl.onclick=function(){expandCard(kinds[i]);}; dots.forEach((dd,j)=>dd.classList.toggle('active',j===i)); };
-  var cards=sw.querySelectorAll('.swipe-card .glass-card'); cards.forEach(function(cc){cc.style.height='';});
-  var h=0; cards.forEach(function(cc){ if(cc.offsetHeight>h)h=cc.offsetHeight; }); if(h>0)cards.forEach(function(cc){cc.style.height=h+'px';});
+  sw.onscroll=function(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); if(tEl)tEl.textContent=titles[i]||titles[0]; if(mEl)mEl.onclick=function(){expandCard(kinds[i]);}; dots.forEach((dd,j)=>dd.classList.toggle('active',j===i)); fitH(); };
+  fitH();
 }
 function renderAnalyticsV2(){
   const c=document.getElementById('analyticsContent'); if(!c) return;
@@ -2355,8 +2357,9 @@ loadDB(); applyTheme(); initLock();
   .pi-left { color:var(--text-dim); font-weight:500; }
   .swipe-stack { display:flex; align-items:flex-start; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
   .swipe-stack::-webkit-scrollbar { display:none; }
-  .swipe-card { flex:0 0 100%; scroll-snap-align:start; padding:0 var(--gutter) 18px; box-sizing:border-box; }
-  .swipe-dots { display:flex; gap:7px; justify-content:center; margin:13px 0 8px; }
+  .swipe-card { flex:0 0 100%; scroll-snap-align:start; padding:0 var(--gutter) 12px; box-sizing:border-box; }
+  .swipe-card > .glass-card { box-shadow:0 1px 1px var(--card-hi) inset, 0 6px 13px -7px var(--shadow), 0 2px 5px -2px var(--shadow); }
+  .swipe-dots { display:flex; gap:7px; justify-content:center; margin:8px 0 8px; }
   .sdot { width:7px; height:7px; border-radius:50%; background:var(--gold-dim); opacity:0.45; transition:all 0.25s var(--ease); cursor:pointer; }
   .sdot.active { opacity:1; width:20px; border-radius:4px; background:var(--gold); }
   .iec-per { align-self:flex-end; font-size:10.5px; font-weight:800; letter-spacing:0.02em; color:var(--gold-dim); background:rgba(212,175,55,0.16); padding:4px 11px; border-radius:999px; margin-bottom:10px; }
