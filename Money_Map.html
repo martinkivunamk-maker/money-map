@@ -317,6 +317,21 @@
   .budget-full-bar, .goal-bar { height:9px; background:var(--track); border-radius:5px; overflow:hidden; margin:10px 0 8px; }
   .budget-full-fill, .goal-fill { height:100%; border-radius:5px; transition:width 0.8s var(--ease); }
   .goal-fill { background:linear-gradient(90deg,var(--gold-dim),var(--gold-light)); }
+  .bd-head { text-align:center; margin-bottom:6px; }
+  .bd-head .exp-total { font-size:34px; line-height:1.05; }
+  .bd-cap2 { font-size:12px; color:var(--text-dim); text-align:center; margin-top:2px; }
+  .bd-hbar { margin:10px 0 6px !important; }
+  .bd-verdict { font-size:13px; font-weight:700; margin-top:2px; }
+  .bd-chips { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:6px; margin-top:6px; font-size:12px; font-weight:700; }
+  .bd-dot { color:var(--text-muted); font-weight:400; }
+  .bd-item { margin-bottom:11px; }
+  .bd-line { display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
+  .bd-name { display:flex; align-items:center; gap:7px; font-size:14px; font-weight:600; color:var(--text); min-width:0; overflow:hidden; }
+  .bd-name svg { width:15px; height:15px; color:var(--text-dim); flex:none; }
+  .bd-nm { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bd-pct { font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; flex:none; padding-left:8px; }
+  .bd-bar { margin:2px 0 !important; height:7px !important; }
+  .bd-cap { font-size:11.5px; color:var(--text-dim); margin-top:3px; }
   .budget-card-status { font-size:12px; font-weight:700; }
   .status-good { color:var(--success); } .status-warn { color:var(--warning); } .status-over { color:var(--danger); }
   .icon-btn { background:none; border:none; cursor:pointer; padding:4px; display:flex; color:var(--text-dim); transition:color 0.2s; }
@@ -343,8 +358,8 @@
   .an-kpis { font-size:11.5px; color:var(--text-dim); }
   .an-kpis.up { color:var(--success); font-weight:700; }
   .an-kpis.down { color:var(--danger); font-weight:700; }
-  .an-chart { cursor:pointer; position:relative; display:flex; flex-direction:column; }
-  .an-fill { flex:1; min-height:78px; position:relative; }
+  .an-chart { cursor:pointer; position:relative; display:flex; flex-direction:column; justify-content:center; }
+  .an-fill { height:96px; position:relative; }
   .an-fill-c { flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center; }
   .an-pt { position:absolute; width:6px; height:6px; border-radius:50%; transform:translate(-50%,-50%); pointer-events:none; }
   .an-pt.last { width:11px; height:11px; background:var(--card-bg); border:2.4px solid; }
@@ -506,13 +521,13 @@
   .type-btn.active { border-color:var(--gold); color:var(--gold); background:rgba(212,175,55,0.12); transform:translateY(-2px); }
 
   .quick-actions { display:flex; flex-direction:column; gap:11px; padding-bottom:10px; }
-  .quick-action-btn { display:flex; align-items:center; gap:15px; padding:16px; border-radius:var(--radius-sm); background:var(--glass);
+  .quick-action-btn { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:var(--radius-sm); background:var(--glass);
     border:1px solid var(--glass-border); cursor:pointer; transition:all 0.2s var(--ease); animation:fadeUp 0.4s both; }
   .quick-action-btn:active { background:var(--glass-hover); transform:scale(0.98); }
   .quick-action-btn:nth-child(1){animation-delay:0.04s;} .quick-action-btn:nth-child(2){animation-delay:0.08s;}
   .quick-action-btn:nth-child(3){animation-delay:0.12s;} .quick-action-btn:nth-child(4){animation-delay:0.16s;} .quick-action-btn:nth-child(5){animation-delay:0.2s;}
-  .qa-icon { width:44px; height:44px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .qa-icon svg { width:27px; height:27px; stroke-width:1.7; }
+  .qa-icon { width:34px; height:34px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .qa-icon svg { width:22px; height:22px; stroke-width:1.7; }
   .qa-title { font-size:15px; font-weight:800; color:var(--text); }
   .qa-sub { font-size:12px; color:var(--text-dim); margin-top:2px; }
 
@@ -1405,18 +1420,60 @@ function expandCard(kind){
     const exp=txs.filter(t=>t.type==='expense');
     const total=exp.reduce((s,t)=>s+t.amount,0);
     const mult=periodMonths();
+    const annual=mult>1;
     const rows=DB.budgets.filter(b=>b.type==='expense').map(b=>{
+      const cat=DB.categories.find(c=>c.id===b.categoryId)||{};
       const spent=exp.filter(t=>t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);
       const budget=b.amount*mult;
-      const p=budget>0?Math.round((spent/budget)*100):0;
-      return {name:b.name,icon:b.icon,spent,budget,p};
+      return {name:b.name||cat.name||'Untitled',icon:b.icon||cat.icon||'i-cash',spent,budget,p:budget>0?Math.round((spent/budget)*100):0};
     }).filter(x=>x.spent>0||x.budget>0).sort((a,b)=>b.p-a.p);
-    const unb=exp.filter(t=>!t.categoryId).reduce((s,t)=>s+t.amount,0);
-    body=`<div class="exp-sub" style="margin-bottom:12px">How each budget performed this period</div>`+
-      rows.map(x=>{const col=x.p>=100?'var(--danger)':x.p>=80?'var(--warning)':'var(--success)';
-        return `<div style="margin-bottom:12px"><div class="exp-row" style="border:none;padding-bottom:4px"><span>${x.name}</span><span style="color:${col}">${x.p}%</span></div><div class="goal-bar"><div class="goal-fill" style="width:${Math.min(x.p,100)}%;background:${col}"></div></div><div class="exp-sub" style="margin-top:3px">${fmtShort(x.spent)} of ${fmtShort(x.budget)}</div></div>`;
-      }).join('')+
-      (unb>0?`<div class="exp-divider"></div><div class="exp-row"><span>Unbudgeted spending</span><span style="color:var(--danger)">${fmtShort(unb)}</span></div>`:'');
+    // accurate decomposition: total = onBudget + untracked (exhaustive, mutually exclusive)
+    const onBudget=rows.reduce((s,x)=>s+x.spent,0);
+    const totalBudget=rows.reduce((s,x)=>s+x.budget,0);
+    const untracked=total-onBudget;
+    const overallP=pct(total,totalBudget);
+    const left=totalBudget-total;
+    const hasBudget=rows.some(x=>x.budget>0);
+    const over=rows.filter(x=>x.budget>0&&x.p>=100).length;
+    const near=rows.filter(x=>x.budget>0&&x.p>=80&&x.p<100).length;
+    const ok=rows.filter(x=>x.budget>0&&x.p<80).length;
+    if(rows.length===0||!hasBudget){
+      body=`<div class="exp-empty">No budgets set for ${periodLabel()}.`+
+        (total>0?`<div class="exp-sub" style="margin:6px 0 0">You spent ${fmtShort(total)} this period — add a budget to track it against a plan.</div>`:'')+
+        `</div>`;
+    } else {
+      const hcol=overallP>=100?'danger':overallP>=80?'warning':'success';
+      const verdict=left<0?`Over budget by ${fmtShort(-left)}`:overallP>=80?`On the edge · ${fmtShort(left)} left`:`On track · ${fmtShort(left)} left`;
+      const chips=[
+        over?`<span style="color:var(--danger)">${over} over</span>`:'',
+        near?`<span style="color:var(--warning)">${near} nearing</span>`:'',
+        ok?`<span style="color:var(--success)">${ok} on track</span>`:''
+      ].filter(Boolean).join('<span class="bd-dot">·</span>');
+      const head=`<div class="bd-head">`+
+        `<div class="exp-total" style="color:var(--${hcol})">${overallP}%</div>`+
+        `<div class="bd-cap2">${fmtShort(total)} of ${fmtShort(totalBudget)} budget used${annual?' (annual)':''}</div>`+
+        `<div class="goal-bar bd-hbar"><div class="goal-fill" style="width:${Math.min(overallP,100)}%;background:var(--${hcol})"></div></div>`+
+        `<div class="bd-verdict" style="color:var(--${hcol})">${verdict}</div>`+
+        (chips?`<div class="bd-chips">${chips}</div>`:'')+
+        `</div><div class="exp-divider"></div>`;
+      const list=rows.map(x=>{
+        const noBud=x.budget<=0;
+        const col=noBud?'danger':x.p>=100?'danger':x.p>=80?'warning':'success';
+        const lbl=noBud?'—':x.p+'%';
+        const diff=x.budget-x.spent;
+        const cap=noBud?`${fmtShort(x.spent)} spent · no budget set`:diff>=0?`${fmtShort(x.spent)} of ${fmtShort(x.budget)} · ${fmtShort(diff)} left`:`${fmtShort(x.spent)} of ${fmtShort(x.budget)} · ${fmtShort(-diff)} over`;
+        return `<div class="bd-item"><div class="bd-line">`+
+          `<span class="bd-name">${ic(x.icon)}<span class="bd-nm">${x.name}</span></span>`+
+          `<span class="bd-pct" style="color:var(--${col})">${lbl}</span></div>`+
+          `<div class="goal-bar bd-bar"><div class="goal-fill" style="width:${noBud?100:Math.min(x.p,100)}%;background:var(--${col})"></div></div>`+
+          `<div class="bd-cap">${cap}</div></div>`;
+      }).join('');
+      const foot=untracked>0?`<div class="exp-divider"></div>`+
+         `<div class="exp-row" style="border:none;padding-bottom:0"><span>Untracked spending</span><span style="color:var(--warning)">${fmtShort(untracked)}</span></div>`+
+         `<div class="bd-cap">${pct(untracked,total)}% of spending fell outside any budget — tag it to a budgeted category to see it here.</div>`:`<div class="exp-divider"></div><div class="bd-cap" style="text-align:center">Every shilling is inside a budget. Clean books.</div>`;
+      const note=annual?`<div class="bd-cap" style="margin-top:10px;opacity:.8">Budgets are shown ×12 (annual). % may read low if you've logged only part of the year.</div>`:'';
+      body=head+list+foot+note;
+    }
   } else if(kind==='goals'){
     title='Goals & Loans';
     const pcol=(p)=>p>=100?'var(--success)':p>=80?'var(--gold)':'var(--gold-dim)';
@@ -1491,11 +1548,11 @@ function expandCard(kind){
 function equalizeOvCards(){
   var sw=document.getElementById('ovSwipe'); if(!sw) return;
   var bc=document.getElementById('budgetStatusCard'), ic2=document.getElementById('incomeExpCard');
-  if(bc){ bc.style.minHeight=''; bc.style.height=''; } if(ic2){ ic2.style.height=''; }
-  sw.style.overflowY='hidden'; sw.style.transition='height 0.2s var(--ease)';
-  var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1));
-  var card=sw.querySelectorAll('.swipe-card')[i];
-  if(card&&card.offsetHeight>0) sw.style.height=card.offsetHeight+'px';
+  if(!bc||!ic2) return;
+  sw.style.height=''; sw.style.overflowY='';
+  bc.style.minHeight=''; bc.style.height=''; ic2.style.height='';
+  var h=Math.max(bc.offsetHeight, ic2.offsetHeight);
+  if(h>0){ bc.style.height=h+'px'; ic2.style.height=h+'px'; }
 }
 function renderIncomeExpCard(){
   const el=document.getElementById('incomeExpCard'); if(!el) return;
@@ -1522,8 +1579,8 @@ function renderIncomeExpCard(){
     const r=Math.round(totE/totI*100), kept=totI-totE, keptPct=Math.max(0,100-r), rangeLbl=`${MONTHS[first].slice(0,3)}–${MONTHS[last].slice(0,3)}`;
     const lm=months[months.length-1], pm=months.length>1?months[months.length-2]:lm;
     let tr=''; if(exp[pm]>0&&lm!==pm){ if(exp[lm]<exp[pm]) tr=` Spending eased in ${MONTHS[lm]}.`; else if(exp[lm]>exp[pm]) tr=` Spending rose in ${MONTHS[lm]}.`; }
-    if(kept>=0){ const cls=r<65?'good':(r<=70?'mid':'bad'), icon=r<65?'✓':(r<=70?'•':'⚠'); brief=`<div class="iec-verdict ${cls} iec-brief">${icon} ${rangeLbl}: expenses were ${r}% of income — you kept ${fmtShort(kept)} (${keptPct}%).${tr}</div>`; }
-    else brief=`<div class="iec-verdict bad iec-brief">⚠ ${rangeLbl}: you spent ${fmtShort(-kept)} more than you earned (${r}% of income).${tr}</div>`;
+    if(kept>=0){ const cls=r<65?'good':(r<=70?'mid':'bad'), icon=r<65?'✓':(r<=70?'•':'⚠'); brief=`<div class="iec-verdict ${cls} iec-brief">${icon} Kept ${fmtShort(kept)} (${keptPct}%) of income.${tr}</div>`; }
+    else brief=`<div class="iec-verdict bad iec-brief">⚠ Overspent by ${fmtShort(-kept)} (${r}% of income).${tr}</div>`;
   }
   el.innerHTML=`<div class="iec-per">${MONTHS[first].slice(0,3)}–${MONTHS[last].slice(0,3)} ${year}</div>
     <div class="iec-leg"><span><i style="background:var(--gold)"></i>Income</span><span><i style="background:var(--danger)"></i>Expenses</span></div>
@@ -1534,7 +1591,7 @@ function renderBudgetStatus(txs){
   const card=document.getElementById('budgetStatusCard');
   const expTxs=txs.filter(t=>t.type==='expense');
   const totalExp=expTxs.reduce((s,t)=>s+t.amount,0);
-  if(totalExp===0){ card.innerHTML=`<div style="text-align:center;padding:6px 0;color:var(--text-dim);font-size:13px">${ic('i-budget')}<div style="margin-top:6px">No spending logged for this period yet</div></div>`; return; }
+  if(totalExp===0){ card.innerHTML=`<div class="empty-state" style="padding:30px 16px"><div class="e-icon">${ic('i-budget')}</div><div class="e-text">No spending logged for this period yet</div></div>`; return; }
   const budgetedSpent=expTxs.filter(t=>t.categoryId).reduce((s,t)=>s+t.amount,0);
   const unbudgetedSpent=expTxs.filter(t=>!t.categoryId).reduce((s,t)=>s+t.amount,0);
   const budgetedPct=pct(budgetedSpent,totalExp);
@@ -2351,7 +2408,6 @@ function setupOvSwipe(){
     if(tEl) tEl.textContent=titles[i]||titles[0];
     if(dEl){ dEl.style.visibility='visible'; dEl.onclick=function(){ expandCard(i===0?'budgetstatus':'incomeexp'); }; }
     dots.forEach((d,j)=>d.classList.toggle('active',j===i));
-    equalizeOvCards();
   };
 }
 function initApp(){ initPeriodSelectors(); updateOverview(); renderSettings(); setupOvSwipe(); }
@@ -2383,6 +2439,17 @@ var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anRes
 loadDB(); applyTheme(); initLock();
 // Ask Android/Chrome to keep our data (mark storage persistent so it isn't evicted under storage pressure)
 try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ if(!p) navigator.storage.persist().catch(function(){}); }).catch(function(){}); } }catch(e){}
+// ===== DRAG POPUP DOWN TO CLOSE =====
+(function(){
+  function wire(sheet){
+    var sy=0, drag=false, dy=0;
+    sheet.addEventListener('touchstart',function(e){ if(sheet.scrollTop>0){ drag=false; return; } sy=e.touches[0].clientY; drag=true; dy=0; },{passive:true});
+    sheet.addEventListener('touchmove',function(e){ if(!drag) return; dy=e.touches[0].clientY-sy; if(dy>0 && sheet.scrollTop<=0){ sheet.style.transition='none'; sheet.style.transform='translateY('+dy+'px)'; } else if(dy<0){ sheet.style.transform=''; } },{passive:true});
+    sheet.addEventListener('touchend',function(){ if(!drag) return; drag=false; sheet.style.transition=''; sheet.style.transform=''; if(dy>110){ var ov=sheet.parentElement; if(ov && ov.classList.contains('modal-overlay')) closeModal(ov.id); } });
+  }
+  var sheets=document.querySelectorAll('.modal-sheet');
+  for(var i=0;i<sheets.length;i++) wire(sheets[i]);
+})();
 </script>
 
 <style>
@@ -2395,9 +2462,9 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .pi-left { color:var(--text-dim); font-weight:500; }
   .swipe-stack { display:flex; align-items:flex-start; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
   .swipe-stack::-webkit-scrollbar { display:none; }
-  .swipe-card { flex:0 0 100%; scroll-snap-align:start; padding:0 var(--gutter) 12px; box-sizing:border-box; }
+  .swipe-card { flex:0 0 100%; scroll-snap-align:start; padding:0 var(--gutter) 6px; box-sizing:border-box; }
   .swipe-card > .glass-card { box-shadow:0 1px 1px var(--card-hi) inset, 0 6px 13px -7px var(--shadow), 0 2px 5px -2px var(--shadow); }
-  .swipe-dots { display:flex; gap:7px; justify-content:center; margin:8px 0 8px; }
+  .swipe-dots { display:flex; gap:7px; justify-content:center; margin:3px 0 3px; }
   .sdot { width:7px; height:7px; border-radius:50%; background:var(--gold-dim); opacity:0.45; transition:all 0.25s var(--ease); cursor:pointer; }
   .sdot.active { opacity:1; width:20px; border-radius:4px; background:var(--gold); }
   .iec-per { align-self:flex-end; font-size:10.5px; font-weight:800; letter-spacing:0.02em; color:var(--gold-dim); background:rgba(212,175,55,0.16); padding:4px 11px; border-radius:999px; margin-bottom:10px; }
@@ -2413,7 +2480,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .iec-barlbl { font-size:11px; color:var(--text-dim); margin-top:7px; }
   .iec-note { font-size:10.5px; color:var(--text-muted); text-align:center; margin-top:10px; }
   .iec-empty { font-size:13px; color:var(--text-muted); text-align:center; padding:24px 0; }
-  #incomeExpCard { display:flex; flex-direction:column; box-sizing:border-box; position:relative; }
+  #incomeExpCard { display:flex; flex-direction:column; box-sizing:border-box; position:relative; justify-content:center; }
   .iec-hbars { display:flex; flex-direction:column; gap:9px; }
   .iec-sm { flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center; gap:14px; }
   .iec-verdict { padding:10px 12px; border-radius:11px; font-size:12px; line-height:1.45; }
@@ -2425,7 +2492,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .iec-ht { flex:1; height:9px; background:var(--input-bg); border-radius:5px; overflow:hidden; }
   .iec-hf { height:100%; border-radius:5px; }
   .iec-hv { font-size:12px; font-weight:700; width:78px; text-align:right; flex-shrink:0; }
-  .iec-chart { height:118px; min-height:0; position:relative; }
+  .iec-chart { height:96px; min-height:0; position:relative; }
   .iec-dot { position:absolute; width:6px; height:6px; border-radius:50%; transform:translate(-50%,-50%); pointer-events:none; }
   .iec-dot-last { width:11px; height:11px; background:var(--card-bg); border:2.4px solid var(--gold); }
   .iec-brief { flex-shrink:0; margin-top:9px; font-size:11.5px; line-height:1.42; }
