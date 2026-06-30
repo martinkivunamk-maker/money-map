@@ -1561,27 +1561,28 @@ function expandCard(kind){
       const ml=mTx.filter(t=>t.type==='loan_repay'&&(!t.from||t.from==='income')).reduce((s,t)=>s+t.amount,0);
       return {lo:mi-mx-ms-me-mg-ml, inc:mi};
     };
+    const monthPosted=(m)=>{ const nm=m===11?0:m+1, ny=m===11?year+1:year; return DB.transactions.some(t=>t.incomeType==='i5'&&new Date(t.date).getMonth()===nm&&new Date(t.date).getFullYear()===ny); };
     let fM=-1,lM=-1;
     for(let m=0;m<12;m++){ if(DB.transactions.some(t=>{const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===year;})){ if(fM<0)fM=m; lM=m; } }
     const monthsArr=[]; if(fM>=0)for(let m=fM;m<=lM;m++)monthsArr.push(m);
-    const series=monthsArr.map(m=>Math.max(0,lo(m).lo));
+    // "pending" = still-unallocated for that month (positive leftover, not yet carried forward) — matches the overview card
+    const pend=monthsArr.map(m=>{ const v=lo(m).lo; return (v>0 && !monthPosted(m))?v:0; });
     const totalInc=monthsArr.reduce((s,m)=>s+lo(m).inc,0);
-    const monthsWith=series.filter(v=>v>0).length;
-    const totalMisc=series.reduce((s,v)=>s+v,0);
-    const avgMisc=monthsWith>0?Math.round(totalMisc/monthsWith):0;
-    let biggestV=0,biggestM=-1; series.forEach((v,i)=>{if(v>biggestV){biggestV=v;biggestM=monthsArr[i];}});
-    const sharePct=totalInc>0?Math.round(totalMisc/totalInc*100):0;
-    const periodMisc=month==='all'?totalMisc:Math.max(0,lo(month).lo);
-    const periodLbl=month==='all'?('across '+year):('in '+MONTHS[month]+' '+year);
-    const mxBar=Math.max.apply(null,series.concat([1]));
-    const bars=monthsArr.map((m,i)=>{const h=Math.max(3,Math.round(series[i]/mxBar*48));const cur=(month!=='all'&&m===month);return '<div style="flex:1;text-align:center"><div style="display:flex;align-items:flex-end;justify-content:center;height:48px"><div style="width:68%;height:'+h+'px;background:'+(cur?'var(--gold)':'rgba(212,175,55,0.3)')+';border-radius:4px 4px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);margin-top:3px">'+MONTHS[m].slice(0,1)+'</div></div>';}).join('');
-    const chart=monthsArr.length>=2?'<div style="display:flex;gap:4px;margin:10px 0 8px">'+bars+'</div>':'';
-    const tip=sharePct>=10?'You leave a fair bit unassigned — sweeping it into Life Savings or your Emergency Fund keeps it working for you.':'Small amounts add up. Move leftovers into a pot or carry them forward so none slips away.';
-    body=`<div class="exp-total" style="color:var(--gold)">${fmtShort(periodMisc)}</div><div class="exp-sub">unallocated ${periodLbl}</div>`+
+    const monthsPending=pend.filter(v=>v>0).length;
+    const unpostedMisc=pend.reduce((s,v)=>s+v,0);
+    const avgPend=monthsPending>0?Math.round(unpostedMisc/monthsPending):0;
+    let biggestV=0,biggestM=-1; pend.forEach((v,i)=>{if(v>biggestV){biggestV=v;biggestM=monthsArr[i];}});
+    const sharePct=totalInc>0?Math.round(unpostedMisc/totalInc*100):0;
+    const periodMisc=month==='all'?unpostedMisc:Math.max(0,lo(month).lo);
+    const periodLbl=month==='all'?('still unallocated · '+year):('still unallocated in '+MONTHS[month]+' '+year);
+    const mxBar=Math.max.apply(null,pend.concat([1]));
+    const bars=monthsArr.map((m,i)=>{const h=Math.max(3,Math.round(pend[i]/mxBar*48));const on=pend[i]>0;return '<div style="flex:1;text-align:center"><div style="display:flex;align-items:flex-end;justify-content:center;height:48px"><div style="width:68%;height:'+h+'px;background:'+(on?'var(--gold)':'rgba(212,175,55,0.22)')+';border-radius:4px 4px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);margin-top:3px">'+MONTHS[m].slice(0,1)+'</div></div>';}).join('');
+    const chart=monthsArr.length>=2?'<div style="display:flex;gap:4px;margin:12px 0 8px">'+bars+'</div>':'';
+    const tip=sharePct>=10?'Don’t let it sit idle — sweeping it into Life Savings or your Emergency Fund puts it to work.':'Small amounts add up. Move it to a pot or carry it forward so none slips away.';
+    body=`<div class="exp-total" style="color:var(--gold)">${fmtUGX(periodMisc)}</div><div class="exp-sub">${periodLbl}</div>`+
       chart+
-      `<div class="exp-row"><span>Months with leftover</span><span>${monthsWith} of ${monthsArr.length||0}</span></div>`+
-      `<div class="exp-row"><span>Total this year</span><span>${fmtShort(totalMisc)}</span></div>`+
-      `<div class="exp-row"><span>Average per active month</span><span>${fmtShort(avgMisc)}</span></div>`+
+      `<div class="exp-row"><span>Months still unallocated</span><span>${monthsPending} of ${monthsArr.length||0}</span></div>`+
+      (monthsPending>0?`<div class="exp-row"><span>Average per month</span><span>${fmtShort(avgPend)}</span></div>`:'')+
       (biggestM>=0?`<div class="exp-row"><span>Biggest</span><span>${fmtShort(biggestV)} · ${MONTHS[biggestM].slice(0,3)}</span></div>`:'')+
       `<div class="exp-row"><span>Share of income</span><span>${sharePct}%</span></div>`+
       `<div style="margin-top:14px;padding:11px 13px;border-radius:12px;background:rgba(212,175,55,0.1);font-size:12.5px;line-height:1.5;color:var(--text)">${tip}</div>`+
