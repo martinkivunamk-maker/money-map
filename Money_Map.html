@@ -1528,9 +1528,7 @@ function expandCard(kind){
       <div class="exp-row"><span>Year average</span><span>${avg}%</span></div>
       <div class="exp-row"><span>Best month</span><span>${best}%</span></div>
       <div class="exp-row"><span>Lowest month</span><span>${worst}%</span></div>
-      <div class="exp-divider"></div>`+
-      d.months.map((m,i)=>`<div class="exp-row"><span>${MONTHS[m]}</span><span style="color:${d.rateSeries[i]>=20?'var(--success)':'var(--text)'}">${d.rateSeries[i]}%</span></div>`).join('')+
-      `<div style="margin-top:12px;padding:11px 13px;border-radius:12px;font-size:13px;line-height:1.5;background:rgba(63,174,90,0.1);color:var(--success)">${d.savingsRate>=20?'You are hitting the 20% benchmark — strong habit.':'Aim for 20%+. Automating a transfer each payday makes it effortless.'}</div>`;
+      <div style="margin-top:14px;padding:11px 13px;border-radius:12px;font-size:13px;line-height:1.5;background:rgba(63,174,90,0.1);color:var(--success)">${d.savingsRate>=20?'You are hitting the 20% benchmark — strong habit.':'Aim for 20%+. Automating a transfer each payday makes it effortless.'}</div>`;
   } else if(kind==='networth'){
     const d=anData(); title='Net Worth · '+d.year;
     const sB=getPotBalance('savings'), eB=getPotBalance('emergency'), gB=DB.transactions.filter(t=>t.type==='goal').reduce((s,t)=>s+t.amount,0);
@@ -2162,10 +2160,12 @@ function an_insights(d){
 function setupAnSwipe(stackId,dotsId,titleId,moreId,titles,kinds){
   const sw=document.getElementById(stackId); if(!sw) return;
   const dots=document.querySelectorAll('#'+dotsId+' .sdot'), tEl=document.getElementById(titleId), mEl=document.getElementById(moreId);
-  dots.forEach((dd,j)=>dd.onclick=function(){ sw.scrollTo({left:j*sw.clientWidth,behavior:'smooth'}); });
-  sw.onscroll=function(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); if(tEl)tEl.textContent=titles[i]||titles[0]; if(mEl)mEl.onclick=function(){expandCard(kinds[i]);}; dots.forEach((dd,j)=>dd.classList.toggle('active',j===i)); };
   var cards=sw.querySelectorAll('.swipe-card .glass-card'); cards.forEach(function(cc){cc.style.height='';});
-  var h=0; cards.forEach(function(cc){ if(cc.offsetHeight>h)h=cc.offsetHeight; }); if(h>0)cards.forEach(function(cc){cc.style.height=h+'px';});
+  sw.style.overflowY='hidden'; sw.style.transition='height 0.25s var(--ease)';
+  function fit(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); var card=cards[i]; if(card&&card.offsetHeight>0) sw.style.height=card.offsetHeight+'px'; }
+  dots.forEach((dd,j)=>dd.onclick=function(){ sw.scrollTo({left:j*sw.clientWidth,behavior:'smooth'}); });
+  sw.onscroll=function(){ var i=Math.round(sw.scrollLeft/Math.max(sw.clientWidth,1)); if(tEl)tEl.textContent=titles[i]||titles[0]; if(mEl)mEl.onclick=function(){expandCard(kinds[i]);}; dots.forEach((dd,j)=>dd.classList.toggle('active',j===i)); fit(); };
+  fit();
 }
 function renderAnalyticsV2(){
   const c=document.getElementById('analyticsContent'); if(!c) return;
