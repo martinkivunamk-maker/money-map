@@ -388,6 +388,19 @@
   .an-leg2 { display:grid; grid-template-columns:1fr 1fr; gap:9px 12px; }
   .an-note { margin-top:11px; font-size:12px; padding:9px 11px; border-radius:10px; line-height:1.4; }
   .an-note.warn { background:rgba(224,85,85,0.1); color:var(--danger); }
+  .an-numhead { text-align:center; margin-top:22px; }
+  .an-numbig { font-size:34px; font-weight:800; line-height:1; color:var(--text); }
+  .an-numsub { font-size:11.5px; color:var(--text-dim); margin-top:8px; }
+  .an-numcmp { font-size:12.5px; font-weight:700; margin-top:7px; }
+  .an-numcmp.up { color:var(--success); } .an-numcmp.down { color:var(--danger); }
+  .an-band { display:grid; grid-template-columns:repeat(3,1fr); margin-top:15px; padding:12px 4px; background:rgba(212,175,55,0.07); border-radius:12px; }
+  .an-bc { text-align:center; } .an-bc.br { border-right:1px solid var(--input-border); }
+  .an-bv { font-size:14px; font-weight:800; color:var(--text); white-space:nowrap; }
+  .an-bl { font-size:10.5px; color:var(--text-dim); margin-top:3px; }
+  .an-fillcol { flex:1; display:flex; flex-direction:column; justify-content:space-between; }
+  .an-foot { display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:11px; border-top:1px solid var(--glass-line); font-size:11.5px; color:var(--text-dim); }
+  .an-foot-v { font-weight:700; color:var(--gold-dim); }
+  #ovDots { margin:5px 0 14px; }
   .an-single { font-size:26px; font-weight:800; color:var(--text); text-align:center; margin:14px 0 4px; }
   .an-single-sub { font-size:11.5px; color:var(--text-dim); text-align:center; }
   .an-health-hdr { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
@@ -1511,7 +1524,7 @@ function expandCard(kind){
     const d=anData(); title='Savings Rate · '+d.year;
     const avg=d.rateSeries.length?Math.round(d.rateSeries.reduce((s,v)=>s+v,0)/d.rateSeries.length):0;
     const best=d.rateSeries.length?Math.max.apply(null,d.rateSeries):0, worst=d.rateSeries.length?Math.min.apply(null,d.rateSeries):0;
-    body=`<div class="exp-total" style="color:var(--success)">${d.savingsRate}%</div><div class="exp-sub">set aside in ${periodLabel()}</div>
+    body=`<div class="exp-total" style="color:var(--success)">${d.savingsRate}%</div><div class="exp-sub">set aside in ${periodLabel()}</div>${ovStyleCurve(d.months,d.rateSeries,'var(--success)',20)}
       <div class="exp-row"><span>Year average</span><span>${avg}%</span></div>
       <div class="exp-row"><span>Best month</span><span>${best}%</span></div>
       <div class="exp-row"><span>Lowest month</span><span>${worst}%</span></div>
@@ -1521,7 +1534,7 @@ function expandCard(kind){
   } else if(kind==='networth'){
     const d=anData(); title='Net Worth · '+d.year;
     const sB=getPotBalance('savings'), eB=getPotBalance('emergency'), gB=DB.transactions.filter(t=>t.type==='goal').reduce((s,t)=>s+t.amount,0);
-    body=`<div class="exp-total">${fmtShort(d.endNW)}</div><div class="exp-sub">savings + emergency + goals</div>
+    body=`<div class="exp-total">${fmtShort(d.endNW)}</div><div class="exp-sub">savings + emergency + goals</div>${ovStyleCurve(d.months,d.nwSeries,'var(--gold)')}
       <div class="exp-row"><span>Life Savings</span><span>${fmtShort(sB)}</span></div>
       <div class="exp-row"><span>Emergency Fund</span><span>${fmtShort(eB)}</span></div>
       <div class="exp-row"><span>Goals saved</span><span>${fmtShort(gB)}</span></div>
@@ -1540,7 +1553,41 @@ function expandCard(kind){
       (d.totalExp>0?d.catFull.map(x=>`<div class="exp-row"><span>${x.name}</span><span>${fmtShort(x.v)} · ${pct(x.v,d.totalExp)}%</span></div>`).join(''):`<div class="exp-empty">No spending logged</div>`);
   } else if(kind==='misc'){
     title='Miscellaneous Income';
-    body=`<div class="exp-sub" style="text-align:left;line-height:1.7;font-size:14px;color:var(--text)"><b>Miscellaneous Income</b> is money you've earned but haven't assigned anywhere yet — what's left after your expenses, savings, emergency fund, goals and loan repayments.<br><br>You can move it into <b>Life Savings</b>, your <b>Emergency Fund</b>, a <b>Goal</b>, or carry it forward to next month so it isn't forgotten.</div>`;
+    const lo=(m)=>{
+      const mTx=DB.transactions.filter(t=>{const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===year;});
+      const mi=mTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+      const mx=mTx.filter(t=>t.type==='expense'&&(!t.source||t.source==='income')).reduce((s,t)=>s+t.amount,0);
+      const ms=mTx.filter(t=>t.type==='savings').reduce((s,t)=>s+t.amount,0);
+      const me=mTx.filter(t=>t.type==='emergency').reduce((s,t)=>s+t.amount,0);
+      const mg=mTx.filter(t=>t.type==='goal').reduce((s,t)=>s+t.amount,0);
+      const ml=mTx.filter(t=>t.type==='loan_repay'&&(!t.from||t.from==='income')).reduce((s,t)=>s+t.amount,0);
+      return {lo:mi-mx-ms-me-mg-ml, inc:mi};
+    };
+    let fM=-1,lM=-1;
+    for(let m=0;m<12;m++){ if(DB.transactions.some(t=>{const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===year;})){ if(fM<0)fM=m; lM=m; } }
+    const monthsArr=[]; if(fM>=0)for(let m=fM;m<=lM;m++)monthsArr.push(m);
+    const series=monthsArr.map(m=>Math.max(0,lo(m).lo));
+    const totalInc=monthsArr.reduce((s,m)=>s+lo(m).inc,0);
+    const monthsWith=series.filter(v=>v>0).length;
+    const totalMisc=series.reduce((s,v)=>s+v,0);
+    const avgMisc=monthsWith>0?Math.round(totalMisc/monthsWith):0;
+    let biggestV=0,biggestM=-1; series.forEach((v,i)=>{if(v>biggestV){biggestV=v;biggestM=monthsArr[i];}});
+    const sharePct=totalInc>0?Math.round(totalMisc/totalInc*100):0;
+    const periodMisc=month==='all'?totalMisc:Math.max(0,lo(month).lo);
+    const periodLbl=month==='all'?('across '+year):('in '+MONTHS[month]+' '+year);
+    const mxBar=Math.max.apply(null,series.concat([1]));
+    const bars=monthsArr.map((m,i)=>{const h=Math.max(3,Math.round(series[i]/mxBar*48));const cur=(month!=='all'&&m===month);return '<div style="flex:1;text-align:center"><div style="display:flex;align-items:flex-end;justify-content:center;height:48px"><div style="width:68%;height:'+h+'px;background:'+(cur?'var(--gold)':'rgba(212,175,55,0.3)')+';border-radius:4px 4px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);margin-top:3px">'+MONTHS[m].slice(0,1)+'</div></div>';}).join('');
+    const chart=monthsArr.length>=2?'<div style="display:flex;gap:4px;margin:10px 0 8px">'+bars+'</div>':'';
+    const tip=sharePct>=10?'You leave a fair bit unassigned — sweeping it into Life Savings or your Emergency Fund keeps it working for you.':'Small amounts add up. Move leftovers into a pot or carry them forward so none slips away.';
+    body=`<div class="exp-total" style="color:var(--gold)">${fmtShort(periodMisc)}</div><div class="exp-sub">unallocated ${periodLbl}</div>`+
+      chart+
+      `<div class="exp-row"><span>Months with leftover</span><span>${monthsWith} of ${monthsArr.length||0}</span></div>`+
+      `<div class="exp-row"><span>Total this year</span><span>${fmtShort(totalMisc)}</span></div>`+
+      `<div class="exp-row"><span>Average per active month</span><span>${fmtShort(avgMisc)}</span></div>`+
+      (biggestM>=0?`<div class="exp-row"><span>Biggest</span><span>${fmtShort(biggestV)} · ${MONTHS[biggestM].slice(0,3)}</span></div>`:'')+
+      `<div class="exp-row"><span>Share of income</span><span>${sharePct}%</span></div>`+
+      `<div style="margin-top:14px;padding:11px 13px;border-radius:12px;background:rgba(212,175,55,0.1);font-size:12.5px;line-height:1.5;color:var(--text)">${tip}</div>`+
+      `<div class="exp-sub" style="text-align:left;line-height:1.6;font-size:11.5px;margin-top:12px">What's left after expenses, savings, emergency, goals and loan repayments — move it to a pot or carry it forward so it isn't forgotten.</div>`;
   }
   c.innerHTML=`<div class="modal-title">${title}</div>${body}<button class="btn-outline" onclick="closeModal('expandModal')" style="margin-top:16px">Close</button>`;
   openModal('expandModal');
@@ -2017,21 +2064,36 @@ function anData(){
   const sLabel=score>=80?'Strong':score>=60?'Good':score>=40?'Fair':'Needs work';
   const sColor=score>=80?'var(--success)':score>=60?'#7aa84a':score>=40?'var(--warning)':'var(--danger)';
   const sBg=score>=80?'rgba(63,174,90,0.15)':score>=60?'rgba(122,168,74,0.15)':score>=40?'rgba(240,160,32,0.15)':'rgba(224,85,85,0.15)';
-  var prevRate=null, nwSel=endNW, nwPrev=null, prevMonthName='';
+  var prevRate=null, nwSel=endNW, nwPrev=null, prevMonthName='', comp;
   if(month!=='all'){
-    nwSel=potsAsOf(new Date(year,month+1,0,23,59,59)).total;
+    var pEnd=potsAsOf(new Date(year,month+1,0,23,59,59));
+    nwSel=pEnd.total; comp={s:pEnd.s,e:pEnd.e,g:pEnd.g};
     nwPrev=potsAsOf(new Date(year,month,0,23,59,59)).total;
     prevMonthName=MONTHS[(month+11)%12].slice(0,3);
     if(month>0){ var pe=incM[month-1]; prevRate=pe>0?Math.round(setMo[month-1]/pe*100):0; }
+  } else {
+    var li=months.length-1;
+    comp = li>=0?{s:S[li],e:E[li],g:G[li]}:{s:getPotBalance('savings'),e:getPotBalance('emergency'),g:0};
   }
-  return {month,year,txs,income,totalExp,expFromInc,savAdd,emgAdd,goalAdd,loanPaid,setAside,savingsRate,loanPct,catList,catFull,months,rateSeries,nwSeries,S,E,G,curNW,endNW,startNW,yearGrowth,avgMonthExp,avgSurplus,emgBal,runway,onBudget,totalBudgets,biggest,score,sLabel,sColor,sBg,yearInc,yearExp,prevRate,nwSel,nwPrev,prevMonthName};
+  return {month,year,txs,income,totalExp,expFromInc,savAdd,emgAdd,goalAdd,loanPaid,setAside,savingsRate,loanPct,catList,catFull,months,rateSeries,nwSeries,S,E,G,curNW,endNW,startNW,yearGrowth,avgMonthExp,avgSurplus,emgBal,runway,onBudget,totalBudgets,biggest,score,sLabel,sColor,sBg,yearInc,yearExp,prevRate,nwSel,nwPrev,prevMonthName,comp};
 }
 function an_money(v){ return fmtShort(v).replace('UGX ',''); }
+function ovStyleCurve(months,series,color,target){
+  if(!months||months.length<2) return '<div class="exp-empty" style="padding:16px">Log 2+ months to see the trend.</div>';
+  var W=320,H=130,pad=14,n=months.length,xs=(W-pad*2)/(n-1);
+  var mx=Math.max.apply(null,series.concat(target?[target]:[]).concat([1]));
+  var yo=function(v){return (H-pad)-(v/mx)*(H-pad*2);};
+  var pa='M'+months.map(function(m,k){return (pad+k*xs).toFixed(1)+','+yo(series[k]).toFixed(1);}).join(' L');
+  var dt=months.map(function(m,k){var cx=(pad+k*xs).toFixed(1),cy=yo(series[k]).toFixed(1),last=k===n-1;return last?'<circle cx="'+cx+'" cy="'+cy+'" r="5.5" fill="none" style="stroke:'+color+'" stroke-width="2"/><circle cx="'+cx+'" cy="'+cy+'" r="2.6" style="fill:'+color+'"/>':'<circle cx="'+cx+'" cy="'+cy+'" r="3" style="fill:'+color+'"/>';}).join('');
+  var tgt=target?'<line x1="'+pad+'" y1="'+yo(target).toFixed(1)+'" x2="'+(W-pad)+'" y2="'+yo(target).toFixed(1)+'" style="stroke:var(--text-dim)" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"/>':'';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;margin:8px 0 2px">'+tgt+'<path d="'+pa+'" fill="none" style="stroke:'+color+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'+dt+'</svg><div class="iec-months">'+months.map(function(m){return '<span>'+MONTHS[m].slice(0,3)+'</span>';}).join('')+'</div>';
+}
 function an_donut(list,total){
   const C=2*Math.PI*46; let off=0;
   const segs=list.map(d=>{const len=d.v/total*C;const s='<circle cx="60" cy="60" r="46" fill="none" stroke="'+d.c+'" stroke-width="15" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 60 60)"></circle>';off+=len;return s;}).join('');
   const leg=list.map(d=>'<div class="an-lr"><span class="an-dot" style="background:'+d.c+'"></span><span class="an-ln">'+d.name+'</span><span class="an-lv">'+pct(d.v,total)+'% · '+fmtShort(d.v)+'</span></div>').join('');
-  return '<div class="an-fill-c"><div class="an-donut-row"><div class="an-donut"><svg viewBox="0 0 120 120" style="width:120px;height:120px">'+segs+'</svg><div class="an-dc"><div class="an-dc-v">'+an_money(total)+'</div><div class="an-dc-l">spent</div></div></div><div class="an-leg">'+leg+'</div></div></div>';
+  const big=list[0];
+  return '<div class="an-fillcol"><div class="an-donut-row"><div class="an-donut"><svg viewBox="0 0 120 120" style="width:120px;height:120px">'+segs+'</svg><div class="an-dc"><div class="an-dc-v">'+an_money(total)+'</div><div class="an-dc-l">spent</div></div></div><div class="an-leg">'+leg+'</div></div>'+(big?'<div class="an-foot"><span>Biggest category</span><span class="an-foot-v">'+big.name+' · '+pct(big.v,total)+'%</span></div>':'')+'</div>';
 }
 function an_flow(income,d){
   const parts=[{n:'Expenses',v:d.expFromInc,c:'#E0554F'},{n:'Goals',v:d.goalAdd,c:'#6BA368'},{n:'Life Savings',v:d.savAdd,c:'#C9A227'},{n:'Emergency',v:d.emgAdd,c:'#E8A33D'},{n:'Loan repaid',v:d.loanPaid,c:'#B388C9'}].filter(p=>p.v>0);
@@ -2040,8 +2102,9 @@ function an_flow(income,d){
   if(kept>=0.5){ show.push({n:'Kept',v:kept,c:'#D8CFB4'}); denom=income; } else { denom=allocated||1; }
   const bar=show.map(p=>'<div style="width:'+(p.v/denom*100).toFixed(2)+'%;background:'+p.c+'"></div>').join('');
   const leg=show.map(p=>'<div class="an-lr2"><span class="an-dot sq" style="background:'+p.c+'"></span><span class="an-ln">'+p.n+'</span><span class="an-lv">'+pct(p.v,denom)+'% · '+fmtShort(p.v)+'</span></div>').join('');
-  const note=kept<-0.5?'<div class="an-note warn">⚠ You spent '+fmtShort(-kept)+' more than you earned this period.</div>':'';
-  return '<div class="an-flow">'+bar+'</div><div class="an-fill-c"><div class="an-leg2">'+leg+'</div>'+note+'</div>';
+  const allocPct=income>0?pct(allocated,income):0;
+  const foot=kept<-0.5?'<div class="an-note warn">⚠ You spent '+fmtShort(-kept)+' more than you earned this period.</div>':'<div class="an-foot"><span>'+allocPct+'% of income had a job</span><span class="an-foot-v">'+fmtShort(Math.max(0,kept))+' free</span></div>';
+  return '<div class="an-flow">'+bar+'</div><div class="an-fillcol"><div class="an-leg2">'+leg+'</div>'+foot+'</div>';
 }
 function an_line(months,series,opts){
   if(months.length<2){ const v=series[series.length-1]||0; return '<div class="an-single">'+opts.fmtVal(v)+'</div><div class="an-single-sub">'+(opts.singleSub||'')+'</div>'; }
@@ -2110,16 +2173,27 @@ function renderAnalyticsV2(){
   if(d.txs.length===0){ c.innerHTML='<div class="an-pad"><div class="glass-card chart-card" style="text-align:center"><div style="font-size:14px;font-weight:700;color:var(--text)">No data for '+periodLabel()+'</div><div style="font-size:12.5px;margin-top:6px;color:var(--text-dim)">Add income and expenses to unlock your analytics.</div></div></div>'; return; }
   const healthCard='<div class="an-pad" style="margin-bottom:4px"><div class="glass-card chart-card an-chart" onclick="expandCard(\'health\')">'+an_health(d)+'</div></div>';
   let savingsInner, nwInner;
-  if(d.month==='all'){
-    var trendMsg='<div class="an-fill-c"><div class="an-single-sub">A trend appears once you log 2+ months of data</div></div>';
-    savingsInner='<div class="an-tag">Savings rate</div><div class="an-kpi"><span class="an-big" style="color:var(--success)">'+d.savingsRate+'%</span><span class="an-kpis">set aside in '+periodLabel()+'</span></div>'+(d.months.length>=2?an_line(d.months,d.rateSeries,{color:'var(--success)',fill:'rgba(63,174,90,0.12)',target:20,targetLabel:'20%',fmtVal:function(v){return v+'%';},singleSub:''}):trendMsg);
-    var st=an_stack(d.months,d.S,d.E,d.G);
-    nwInner='<div class="an-tag">Net worth</div><div class="an-kpi"><span class="an-big">'+fmtShort(d.endNW)+'</span><span class="an-kpis '+(d.yearGrowth>=0?'up':'down')+'">'+(d.yearGrowth>=0?'▲':'▼')+' '+fmtShort(d.yearGrowth)+' in '+d.year+'</span></div>'+(st.svg?st.svg:trendMsg)+'<div class="iec-leg" style="margin-top:8px"><span><i style="background:#C9A227"></i>Savings</span><span><i style="background:#E8A33D"></i>Emergency</span><span><i style="background:#6BA368"></i>Goals</span></div>';
-  } else {
-    savingsInner='<div class="an-tag">Savings rate</div><div class="an-bigwrap"><span class="an-big" style="color:var(--success)">'+d.savingsRate+'%</span></div><div class="an-sub" style="margin:0">set aside in '+periodLabel()+'</div>'+(d.prevRate!==null?'<div class="an-cmp '+(d.savingsRate>=d.prevRate?'up':'down')+'">'+(d.savingsRate>=d.prevRate?'▲':'▼')+' '+Math.abs(d.savingsRate-d.prevRate)+'% vs '+d.prevMonthName+'</div>':'');
-    var nwDelta=d.nwSel-d.nwPrev;
-    nwInner='<div class="an-tag">Net worth</div><div class="an-bigwrap"><span class="an-big">'+fmtShort(d.nwSel)+'</span></div><div class="an-sub" style="margin:0">balance at end of '+periodLabel()+'</div><div class="an-cmp '+(nwDelta>=0?'up':'down')+'">'+(nwDelta>=0?'▲':'▼')+' '+fmtShort(Math.abs(nwDelta))+' vs '+d.prevMonthName+'</div>';
-  }
+  // ---- Savings Rate: numbers in every view; the trend curve lives in expanded Details ----
+  var srBest=d.rateSeries.length?Math.max.apply(null,d.rateSeries):d.savingsRate;
+  var srTo20=Math.max(0,Math.round(d.income*0.2)-d.setAside);
+  var srDelta;
+  if(d.month==='all'){ var srGap=d.savingsRate-20; srDelta='<div class="an-numcmp '+(srGap>=0?'up':'down')+'">'+(srGap>=0?'▲ '+srGap+' pts above target':'▼ '+(-srGap)+' pts to 20% target')+'</div>'; }
+  else { srDelta=d.prevRate!==null?'<div class="an-numcmp '+(d.savingsRate>=d.prevRate?'up':'down')+'">'+(d.savingsRate>=d.prevRate?'▲':'▼')+' '+Math.abs(d.savingsRate-d.prevRate)+'% vs '+d.prevMonthName+'</div>':''; }
+  var srC2=srTo20>0?['+'+fmtShort(srTo20),'to 20%','var(--gold-dim)']:['✓','20% met','var(--success)'];
+  savingsInner='<div class="an-tag">Savings rate</div>'+
+    '<div class="an-numhead"><div class="an-numbig" style="color:var(--success)">'+d.savingsRate+'%</div><div class="an-numsub">set aside in '+periodLabel()+'</div>'+srDelta+'</div>'+
+    '<div class="an-band"><div class="an-bc br"><div class="an-bv">'+fmtShort(d.setAside)+'</div><div class="an-bl">set aside</div></div>'+
+    '<div class="an-bc br"><div class="an-bv" style="color:'+srC2[2]+'">'+srC2[0]+'</div><div class="an-bl">'+srC2[1]+'</div></div>'+
+    '<div class="an-bc"><div class="an-bv">'+srBest+'%</div><div class="an-bl">best month</div></div></div>';
+  // ---- Net Worth ----
+  var comp=d.comp||{s:0,e:0,g:0}, nwBig, nwSub, nwDeltaH;
+  if(d.month==='all'){ nwBig=fmtShort(d.endNW); nwSub='balance at end of '+periodLabel(); nwDeltaH='<div class="an-numcmp '+(d.yearGrowth>=0?'up':'down')+'">'+(d.yearGrowth>=0?'▲':'▼')+' '+fmtShort(Math.abs(d.yearGrowth))+' in '+d.year+'</div>'; }
+  else { var nwd=d.nwSel-d.nwPrev; nwBig=fmtShort(d.nwSel); nwSub='balance at end of '+periodLabel(); nwDeltaH='<div class="an-numcmp '+(nwd>=0?'up':'down')+'">'+(nwd>=0?'▲':'▼')+' '+fmtShort(Math.abs(nwd))+' vs '+d.prevMonthName+'</div>'; }
+  nwInner='<div class="an-tag">Net worth</div>'+
+    '<div class="an-numhead"><div class="an-numbig" style="font-size:31px">'+nwBig+'</div><div class="an-numsub">'+nwSub+'</div>'+nwDeltaH+'</div>'+
+    '<div class="an-band"><div class="an-bc br"><div class="an-bv" style="color:#C9A227">'+fmtShort(comp.s)+'</div><div class="an-bl">Life Savings</div></div>'+
+    '<div class="an-bc br"><div class="an-bv" style="color:#E8A33D">'+fmtShort(comp.e)+'</div><div class="an-bl">Emergency</div></div>'+
+    '<div class="an-bc"><div class="an-bv" style="color:#6BA368">'+fmtShort(comp.g)+'</div><div class="an-bl">Goals</div></div></div>';
   const flowInner='<div class="an-tag">Money flow</div><div class="an-ttl">Where your income goes</div><div class="an-sub">of your '+fmtShort(d.income)+' income · '+periodLabel()+'</div>'+(d.income>0?an_flow(d.income,d):'<div class="an-fill-c"><div class="an-single-sub">No income logged for this period</div></div>');
   const spendInner='<div class="an-tag">Spending</div><div class="an-ttl">Where your money went</div><div class="an-sub">'+periodLabel()+'</div>'+(d.totalExp>0?an_donut(d.catList,d.totalExp):'<div class="an-fill-c"><div class="an-single-sub">No spending logged for this period</div></div>');
   const ins=an_insights(d);
