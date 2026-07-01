@@ -535,15 +535,16 @@
   .type-btn svg { width:20px; height:20px; }
   .type-btn.active { border-color:var(--gold); color:var(--gold); background:rgba(212,175,55,0.12); transform:translateY(-2px); }
 
-  .quick-actions { display:flex; flex-direction:column; gap:11px; padding-bottom:10px; }
-  .quick-action-btn { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:var(--radius-sm); background:var(--glass);
+  .quick-actions { display:flex; flex-direction:column; gap:8px; padding-bottom:10px; }
+  .quick-action-btn { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:var(--radius-sm); background:var(--glass);
     border:1px solid var(--glass-border); cursor:pointer; transition:all 0.2s var(--ease); animation:fadeUp 0.4s both; }
   .quick-action-btn:active { background:var(--glass-hover); transform:scale(0.98); }
   .quick-action-btn:nth-child(1){animation-delay:0.04s;} .quick-action-btn:nth-child(2){animation-delay:0.08s;}
   .quick-action-btn:nth-child(3){animation-delay:0.12s;} .quick-action-btn:nth-child(4){animation-delay:0.16s;} .quick-action-btn:nth-child(5){animation-delay:0.2s;}
-  .qa-icon { width:34px; height:34px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .qa-icon svg { width:22px; height:22px; stroke-width:1.7; }
-  .qa-title { font-size:15px; font-weight:800; color:var(--text); }
+  .qa-icon { width:30px; height:30px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .qa-icon svg { width:21px; height:21px; stroke-width:1.8; }
+  .qa-title { font-size:15px; font-weight:700; color:var(--text); }
+  .qa-hint { font-size:12px; color:var(--text-dim); margin-left:auto; padding-left:10px; text-align:right; }
   .qa-sub { font-size:12px; color:var(--text-dim); margin-top:2px; }
 
   .img-preview { width:100%; max-width:100%; box-sizing:border-box; border-radius:var(--radius-sm); background:var(--input-bg); border:1px dashed var(--glass-border);
@@ -589,6 +590,8 @@
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-income" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
   <symbol id="i-expense" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></symbol>
+  <symbol id="i-in" viewBox="0 0 24 24"><path d="M17 7 7 17"/><path d="M7 10v7h7"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M10 7h7v7"/></symbol>
   <symbol id="i-transfer" viewBox="0 0 24 24"><path d="M7 10l-4 4 4 4"/><path d="M3 14h12a4 4 0 004-4V6"/></symbol>
   <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h13a1 1 0 011 1v2"/><path d="M3 7v10a2 2 0 002 2h14a1 1 0 001-1v-3"/><path d="M21 11h-5a2 2 0 000 4h5z"/></symbol>
   <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8"/><path d="M3 21h18"/></symbol>
@@ -820,12 +823,12 @@
 <!-- MODALS -->
 <div class="modal-overlay" id="quickAddModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Quick Add</div>
   <div class="quick-actions">
-    <div class="quick-action-btn" onclick="closeModal('quickAddModal');openTransactionModal('income')"><div class="qa-icon" style="color:var(--success)"><svg viewBox="0 0 24 24"><use href="#i-income"/></svg></div><div><div class="qa-title">Add Income</div><div class="qa-sub">Salary, gig, gift, investment</div></div></div>
-    <div class="quick-action-btn" onclick="closeModal('quickAddModal');openTransactionModal('expense')"><div class="qa-icon" style="color:var(--danger)"><svg viewBox="0 0 24 24"><use href="#i-expense"/></svg></div><div><div class="qa-title">Log Expense</div><div class="qa-sub">Track what you spent</div></div></div>
-    <div class="quick-action-btn" onclick="closeModal('quickAddModal');openTransactionModal('savings')"><div class="qa-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-bank"/></svg></div><div><div class="qa-title">Transfer to Savings</div><div class="qa-sub">Move to lifetime savings</div></div></div>
-    <div class="quick-action-btn" onclick="closeModal('quickAddModal');openTransactionModal('emergency')"><div class="qa-icon" style="color:var(--warning)"><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg></div><div><div class="qa-title">Transfer to Emergency</div><div class="qa-sub">Build your safety net</div></div></div>
-    <div class="quick-action-btn" onclick="closeModal('quickAddModal');openTransactionModal('goal')"><div class="qa-icon" style="color:#8a6ff0"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg></div><div><div class="qa-title">Allocate to Goal</div><div class="qa-sub">Save toward a target</div></div></div>
-    <div class="quick-action-btn" onclick="closeModal('quickAddModal');quickPayLoan()"><div class="qa-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-bank"/></svg></div><div><div class="qa-title">Pay a Loan</div><div class="qa-sub">Record a loan repayment</div></div></div>
+    <div class="quick-action-btn" onclick="openTransactionModal('income')"><div class="qa-icon" style="color:var(--success)"><svg viewBox="0 0 24 24"><use href="#i-in"/></svg></div><span class="qa-title">Add income</span><span class="qa-hint">Salary, gigs, gifts</span></div>
+    <div class="quick-action-btn" onclick="openTransactionModal('expense')"><div class="qa-icon" style="color:var(--danger)"><svg viewBox="0 0 24 24"><use href="#i-out"/></svg></div><span class="qa-title">Log expense</span><span class="qa-hint">What you spent</span></div>
+    <div class="quick-action-btn" onclick="openTransactionModal('savings')"><div class="qa-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-bank"/></svg></div><span class="qa-title">To savings</span><span class="qa-hint">Lifetime savings</span></div>
+    <div class="quick-action-btn" onclick="openTransactionModal('emergency')"><div class="qa-icon" style="color:var(--warning)"><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg></div><span class="qa-title">To emergency</span><span class="qa-hint">Safety net</span></div>
+    <div class="quick-action-btn" onclick="openTransactionModal('goal')"><div class="qa-icon" style="color:#8a6ff0"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg></div><span class="qa-title">To a goal</span><span class="qa-hint">Toward a target</span></div>
+    <div class="quick-action-btn" onclick="quickPayLoan()"><div class="qa-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-cash"/></svg></div><span class="qa-title">Pay a loan</span><span class="qa-hint">Repayment</span></div>
   </div>
   <button class="btn-outline" onclick="closeModal('quickAddModal')">Cancel</button>
 </div></div>
@@ -939,7 +942,7 @@ function openOptionPicker(title,options,currentVal,onSelect){
 }
 function _optPickSel(i){
   const opt=_optionPickerOpts[i]; const cb=_optionPickerCallback; _optionPickerCallback=null;
-  closeModal('optionPickerModal');
+  closeModalQuiet('optionPickerModal');
   if(cb&&opt) cb(opt.value,opt.label);
 }
 
@@ -971,7 +974,8 @@ function genId(){ return '_'+Math.random().toString(36).substr(2,9); }
 function today(){ return new Date().toISOString().split('T')[0]; }
 function pct(a,b){ return b>0?Math.round((a/b)*100):0; }
 function showToast(m,c){ const t=document.getElementById('toast'); t.textContent=m; t.style.color=c||'var(--text)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
-let _modalStack=[], _modalHistDepth=0;
+let _modalStack=[], _modalHistDepth=0, _resettingHistory=false;
+function _resetModalHist(){ if(_modalHistDepth>0){ const n=_modalHistDepth; _modalHistDepth=0; _resettingHistory=true; history.go(-n); } }
 function openModal(id){
   const el=document.getElementById(id);if(!el||el.classList.contains('open'))return;
   el.classList.add('open');
@@ -982,6 +986,16 @@ function closeModal(id){
   const el=document.getElementById(id);if(!el||!el.classList.contains('open'))return;
   el.classList.remove('open');
   const i=_modalStack.lastIndexOf(id); if(i!==-1) _modalStack.splice(i,1);
+  if(_modalStack.length===0) _resetModalHist();
+}
+function closeModalQuiet(id){
+  const el=document.getElementById(id);if(!el||!el.classList.contains('open'))return;
+  el.classList.remove('open');
+  const i=_modalStack.lastIndexOf(id); if(i!==-1) _modalStack.splice(i,1);
+}
+function closeAllModals(){
+  for(var k=_modalStack.length-1;k>=0;k--){ const el=document.getElementById(_modalStack[k]); if(el)el.classList.remove('open'); }
+  _modalStack=[]; _resetModalHist();
 }
 let _confirmCallback=null;
 function askConfirm(title,message,onConfirm,confirmLabel,danger){
@@ -1514,7 +1528,7 @@ function expandCard(kind){
     const eRow=(title,sub,pct,col)=>'<div style="display:flex;align-items:center;gap:13px;padding:11px 0;border-bottom:1px solid var(--input-border)"><div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600;color:var(--text)">'+title+'</div><div style="font-size:12px;color:var(--text-dim);margin-top:6px">'+sub+'</div></div>'+glRing(pct,col,44)+'</div>';
     const eStat=(v,l,bg)=>'<div style="flex:1;background:'+bg+';border-radius:12px;padding:10px 12px"><div style="font-size:19px;font-weight:800;color:var(--text)">'+v+'</div><div style="font-size:11px;color:var(--text-dim)">'+l+'</div></div>';
     const eLab='font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--gold-dim)';
-    const eDone=(t)=>'<div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--success);font-weight:600;padding:10px 0 2px">'+ic('i-check')+'<span>'+t+'</span></div>';
+    const eDone=(t)=>'<div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--success);font-weight:700;padding:10px 0 2px"><span style="font-size:14px;line-height:1">✓</span><span>'+t+'</span></div>';
     body=`<div style="${eLab}">Loans</div>`+
       `<div style="display:flex;gap:9px;margin:8px 0 4px">${eStat(loansAll.length,'received','rgba(157,111,184,0.12)')}${eStat(loanDone.length,'fully repaid','rgba(63,174,90,0.12)')}${eStat(fmtShort(owed),'still owed',NEU)}</div>`+
       (loanPend.length?loanPend.map(l=>eRow(l.name+(l.source?eChip(l.source):''),'Paid '+fmtShort(l.repaid)+' · '+fmtShort(l.rem)+' left',l.p,GLP)).join(''):'<div class="exp-empty" style="padding:12px">No loans in progress</div>')+
@@ -1756,7 +1770,7 @@ function viewTransaction(id){
     ${t.type==='expense'?`<div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap"><span class="tx-tag">${t.categoryId?'Budgeted':'Not Budgeted'}</span><span class="tx-tag">From: ${t.source==='savings'?'Life Savings':t.source==='emergency'?'Emergency Fund':'Income'}</span></div>`:''}
     ${t.note?`<div style="color:var(--text-dim);font-size:13px;margin-top:8px;">${t.note}</div>`:''}
     ${t.image?`<img src="${t.image}" style="width:100%;border-radius:14px;margin-top:16px;">`:''}</div>
-    <div class="action-row"><button class="btn-sm btn-sm-edit" onclick="closeModal('viewTxModal');openEditTransaction('${id}')">${ic('i-edit')}Edit</button><button class="btn-sm btn-sm-del" onclick="deleteTransaction('${id}')">${ic('i-trash')}Delete</button></div>
+    <div class="action-row"><button class="btn-sm btn-sm-edit" onclick="closeModalQuiet('viewTxModal');openEditTransaction('${id}')">${ic('i-edit')}Edit</button><button class="btn-sm btn-sm-del" onclick="deleteTransaction('${id}')">${ic('i-trash')}Delete</button></div>
     <button class="btn-outline" onclick="closeModal('viewTxModal')">Close</button>`;
   openModal('viewTxModal');
 }
@@ -1849,7 +1863,7 @@ function buildTxForm(type,existing){
     <div class="form-group"><label class="form-label">Note (optional)</label><input type="text" class="form-input" id="txNote" value="${note}" placeholder="Add a note..."></div>
     <div class="form-group"><label class="form-label">Receipt / Image (optional)</label><div class="img-preview" id="txImgPreview" onclick="openPhotoChoice('tx')">${txImageData?`<img src="${txImageData}">`:`<div class="img-placeholder">${ic('i-camera')}<span>Tap to add photo</span></div>`}</div><input type="file" id="txImgInput" accept="image/*" style="display:none" onchange="handleTxImage(event)"></div>
     <button class="btn-gold" onclick="saveTx('${type}')">${editingTxId?'Update':'Save'} Transaction</button>
-    <button class="btn-outline" onclick="closeModal('transactionModal')">Cancel</button>`;
+    <button class="btn-outline" onclick="closeAllModals()">Cancel</button>`;
 }
 function rebuildTxForm(type){ buildTxForm(type,null); }
 function handleTxImage(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ openCropper(ev.target.result,'receipt',cropped=>{ txImageData=cropped; const p=document.getElementById('txImgPreview'); if(p)p.innerHTML=`<img src="${txImageData}">`; }); }; r.readAsDataURL(f); e.target.value=''; }
@@ -1864,7 +1878,7 @@ function saveTx(type){
   else if(['savings','emergency','goal'].includes(type)){const d=document.getElementById('txTransferTo').value; if(d.startsWith('goal_')){tx.type='goal';tx.goalId=d.replace('goal_','');}else tx.type=d;}
   if(tx.type==='goal'&&tx.goalId){const g=DB.goals.find(g=>g.id===tx.goalId); if(g){ if(editingTxId){const o=DB.transactions.find(x=>x.id===editingTxId); if(o&&o.type==='goal'&&o.goalId===tx.goalId)g.saved=Math.max(0,g.saved-o.amount);} g.saved=(g.saved||0)+amount; }}
   if(editingTxId){const i=DB.transactions.findIndex(x=>x.id===editingTxId); if(i>-1)DB.transactions[i]=tx;} else DB.transactions.push(tx);
-  saveDB(); closeModal('transactionModal'); showToast(editingTxId?'Transaction updated':'Transaction saved','var(--success)');
+  saveDB(); closeAllModals(); showToast(editingTxId?'Transaction updated':'Transaction saved','var(--success)');
   refreshYearOptions();
   if(currentPage==='transactions')renderTransactions(); else updateOverview();
 }
@@ -1982,8 +1996,8 @@ function quickPayLoan(){
   // multiple: show picker
   document.getElementById('txModalTitle').textContent='Pay a Loan';
   document.getElementById('txModalContent').innerHTML=`<div class="form-group"><label class="form-label">Choose Loan</label></div>`+
-    loans.map(l=>`<div class="quick-action-btn" onclick="closeModal('transactionModal');payLoan('${l.id}')"><div class="qa-icon" style="color:var(--gold)">${ic('i-bank')}</div><div><div class="qa-title">${l.name}</div><div class="qa-sub">${fmtShort(l.rem)} pending</div></div></div>`).join('')+
-    `<button class="btn-outline" onclick="closeModal('transactionModal')" style="margin-top:10px">Cancel</button>`;
+    loans.map(l=>`<div class="quick-action-btn" onclick="payLoan('${l.id}')"><div class="qa-icon" style="color:var(--gold)">${ic('i-bank')}</div><div><div class="qa-title">${l.name}</div><div class="qa-sub">${fmtShort(l.rem)} pending</div></div></div>`).join('')+
+    `<button class="btn-outline" onclick="closeAllModals()" style="margin-top:10px">Cancel</button>`;
   openModal('transactionModal');
 }
 function payLoan(id){
@@ -1995,13 +2009,13 @@ function payLoan(id){
     <div class="form-group"><label class="form-label">Pay From</label><select class="form-select" id="txLoanFrom"><option value="income">Income</option><option value="savings">Lifetime Savings</option><option value="emergency">Emergency Fund</option></select></div>
     <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="txDate" value="${today()}"></div>
     <div class="form-group"><label class="form-label">Note</label><input class="form-input" id="txNote" placeholder="Optional"></div>
-    <button class="btn-gold" onclick="saveLoanRepayment('${id}')">Save Repayment</button><button class="btn-outline" onclick="closeModal('transactionModal')">Cancel</button>`;
+    <button class="btn-gold" onclick="saveLoanRepayment('${id}')">Save Repayment</button><button class="btn-outline" onclick="closeAllModals()">Cancel</button>`;
   openModal('transactionModal');
 }
 function saveLoanRepayment(loanId){
   const amount=getRawAmount(document.getElementById('txAmount')); if(!amount||amount<=0){showToast('Enter amount','var(--danger)');return;}
   DB.transactions.push({id:genId(),type:'loan_repay',loanId,amount,date:document.getElementById('txDate').value,note:document.getElementById('txNote').value,from:document.getElementById('txLoanFrom').value,image:null});
-  saveDB(); closeModal('transactionModal'); showToast('Repayment recorded','var(--success)');
+  saveDB(); closeAllModals(); showToast('Repayment recorded','var(--success)');
   if(currentPage==='overview')updateOverview(); else if(currentPage==='budget')renderBudget(); else updateOverview();
 }
 function openAddGoalModal(ex){
@@ -2499,6 +2513,7 @@ function setupOvSwipe(){
 }
 function initApp(){ initPeriodSelectors(); updateOverview(); renderSettings(); setupOvSwipe(); }
 window.addEventListener('popstate',()=>{
+  if(_resettingHistory){ _resettingHistory=false; return; }
   if(_modalHistDepth>0)_modalHistDepth--;
   while(_modalStack.length>_modalHistDepth){
     const id=_modalStack.pop();
