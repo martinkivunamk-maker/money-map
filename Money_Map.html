@@ -454,8 +454,10 @@
   .settings-list { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius-sm); overflow:hidden;
     box-shadow:0 1px 1px var(--card-hi) inset, 0 8px 20px -8px var(--shadow), 0 2px 5px -2px var(--shadow); }
   .settings-item { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--input-border); cursor:pointer; transition:background 0.2s; }
-  .fp-state { font-size:11px; font-weight:800; padding:3px 12px; border-radius:999px; background:var(--input-bg); color:var(--text-dim); flex-shrink:0; }
-  .fp-state.on { background:rgba(63,174,90,0.15); color:var(--success); }
+  .fp-sw { width:50px; height:30px; border-radius:15px; background:var(--gold); position:relative; flex-shrink:0; transition:background 0.22s var(--ease); cursor:pointer; }
+  .fp-sw::after { content:''; position:absolute; top:2px; left:2px; width:26px; height:26px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.35); transition:left 0.22s var(--ease); }
+  .fp-sw.on { background:var(--success); }
+  .fp-sw.on::after { left:22px; }
   .settings-item:active { background:var(--glass-hover); }
   .settings-item:last-child { border-bottom:none; }
   .settings-item-left { display:flex; align-items:center; gap:13px; }
@@ -507,9 +509,9 @@
   .modal-handle { width:38px; height:4px; background:var(--text-muted); border-radius:2px; margin:12px auto 22px; opacity:0.5; }
   .modal-title { font-size:21px; font-weight:800; color:var(--text); margin-bottom:8px; letter-spacing:-0.3px; position:sticky; top:0; z-index:5; background:var(--modal-bg); padding:4px 0 14px; touch-action:pan-y; }
 
-  .form-group { margin-bottom:11px; }
-  .form-label { font-size:11.5px; text-transform:uppercase; letter-spacing:1px; color:var(--gold-dim); margin-bottom:4px; display:block; font-weight:700; }
-  .form-input, .form-select { width:100%; max-width:100%; box-sizing:border-box; -webkit-appearance:none; appearance:none; padding:11px 14px; border-radius:var(--radius-sm); background:var(--input-bg);
+  .form-group { margin-bottom:15px; }
+  .form-label { font-size:11.5px; text-transform:uppercase; letter-spacing:1px; color:var(--gold-dim); margin-bottom:5px; display:block; font-weight:700; }
+  .form-input, .form-select { width:100%; max-width:100%; box-sizing:border-box; -webkit-appearance:none; appearance:none; padding:14px 15px; border-radius:var(--radius-sm); background:var(--input-bg);
     border:1px solid var(--input-border); color:var(--text); font-size:15px; outline:none; transition:border-color 0.2s; }
   .form-input:focus, .form-select:focus { border-color:var(--gold); }
   .form-input::placeholder { color:var(--text-muted); }
@@ -771,8 +773,8 @@
           <div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div>
         </div>
         <div class="settings-item" onclick="toggleFingerprint()">
-          <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-finger"/></svg></div><div><div class="s-label">Fingerprint</div><div class="s-sub" id="fingerprintSub">Tap to enable</div></div></div>
-          <span class="fp-state" id="fpState">Off</span>
+          <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-finger"/></svg></div><div><div class="s-label">Fingerprint</div><div class="s-sub" id="fingerprintSub">Unlock with your fingerprint</div></div></div>
+          <span class="fp-sw" id="fpSwitch"></span>
         </div>
       </div>
     </div>
@@ -969,16 +971,17 @@ function genId(){ return '_'+Math.random().toString(36).substr(2,9); }
 function today(){ return new Date().toISOString().split('T')[0]; }
 function pct(a,b){ return b>0?Math.round((a/b)*100):0; }
 function showToast(m,c){ const t=document.getElementById('toast'); t.textContent=m; t.style.color=c||'var(--text)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
-let _modalHistoryPushed=false;
+let _modalStack=[], _modalHistDepth=0;
 function openModal(id){
-  const el=document.getElementById(id);if(!el)return;
+  const el=document.getElementById(id);if(!el||el.classList.contains('open'))return;
   el.classList.add('open');
-  if(!_modalHistoryPushed){history.pushState({mmModal:true},'');_modalHistoryPushed=true;}
+  _modalStack.push(id);
+  if(_modalStack.length>_modalHistDepth){ history.pushState({mmModal:true},''); _modalHistDepth++; }
 }
 function closeModal(id){
   const el=document.getElementById(id);if(!el||!el.classList.contains('open'))return;
   el.classList.remove('open');
-  _modalHistoryPushed=false;
+  const i=_modalStack.lastIndexOf(id); if(i!==-1) _modalStack.splice(i,1);
 }
 let _confirmCallback=null;
 function askConfirm(title,message,onConfirm,confirmLabel,danger){
@@ -1047,9 +1050,8 @@ function tryFingerprint(){
 }
 function toggleFingerprint(){
   if(!window.PublicKeyCredential){ showToast('This device has no fingerprint support','var(--text-dim)'); return; }
-  if(DB.fingerprintCredId){
-    askConfirm('Turn off fingerprint?','You will unlock with your PIN only. Your PIN stays on, so the app stays locked.',function(){ DB.fingerprintCredId=null; saveDB(); renderSettings(); showToast('Fingerprint off — PIN only','var(--text-dim)'); },'Turn off',false);
-  } else { setupFingerprint(); }
+  if(DB.fingerprintCredId){ DB.fingerprintCredId=null; saveDB(); renderSettings(); showToast('Fingerprint off — PIN only','var(--text-dim)'); }
+  else { setupFingerprint(); }
 }
 async function setupFingerprint(){
   suppressNextLock();
@@ -1269,6 +1271,10 @@ function timeToGo(targetDate){
   const years=(days/365).toFixed(1);
   return {overdue:false, text:`${years} year${years==='1.0'?'':'s'} left`};
 }
+function glRing(pct,col,size){
+  var p=Math.max(0,Math.min(100,pct))||0, sw=Math.max(3,size*0.12), r=size/2-sw/2-1, C=2*Math.PI*r, off=C*(1-p/100);
+  return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex:none"><svg width="'+size+'" height="'+size+'" style="transform:rotate(-90deg)"><circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="var(--track)" stroke-width="'+sw+'"/><circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/></svg><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:'+Math.round(size*0.30)+'px;font-weight:800;color:var(--text)">'+Math.round(p)+'</div></div>';
+}
 function renderGoalsCard(){
   const el=document.getElementById('goalsCard');
   const goals=DB.goals||[];
@@ -1298,40 +1304,44 @@ function renderGoalsCard(){
     </div>`;
   }
 
-  // GOALS block
-  let goalsBlock='', goalsCount='';
-  if(goals.length===0||pendingGoals.length===0){
-    goalsBlock=`<div class="gl-prompt" onclick="event.stopPropagation();openAddGoalModal()">${ic('i-target')}<span>All goals completed. Nothing pending. Want to chase a new goal?</span></div>`;
-    goalsCount=goals.length===0?'':`${doneGoals.length} completed`;
-  } else {
-    goalsBlock=pendingGoals.slice(0,2).map(g=>{
-      const p=g.target>0?Math.round((g.saved/g.target)*100):0;
-      const toGo=100-p;
-      const remain=Math.max(0,g.target-g.saved);
-      return `<div class="gl-row"><div class="gl-name">${ic(g.icon)}${g.name}</div><div class="gl-meta"><span class="gl-pct">${toGo}% to go</span><span class="gl-amt">${fmtShort(remain)} left</span></div></div>`;
-    }).join('');
-    const cnt=pendingGoals.length;
-    goalsCount=`${cnt} in progress${doneGoals.length>0?` · ${doneGoals.length} done`:''}`;
+  const GLP='#9d6fb8', GLG='#C9A227';
+  function glRow(title,sub,pct,col){
+    return '<div style="display:flex;align-items:center;gap:11px;padding:10px 0">'+
+      '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--text)">'+title+'</div><div style="font-size:11.5px;color:var(--text-dim);margin-top:5px">'+sub+'</div></div>'+
+      glRing(pct,col,36)+'</div>';
   }
-
-  // LOANS block
+  // LOANS block (first)
   let loansBlock='', loansCount='';
   if(pendingLoans.length===0){
-    loansBlock=`<div class="gl-good">${ic('i-check')}<span>No pending loans, keep it up</span></div>`;
+    loansBlock=`<div class="gl-good">${ic('i-check')}<span>No pending loans — nicely done</span></div>`;
   } else {
-    loansBlock=pendingLoans.slice(0,2).map(l=>`<div class="gl-row"><div class="gl-name">${ic('i-bank')}${l.name}</div><div class="gl-meta"><span class="gl-pct">${Math.round(l.p)}% cleared</span><span class="gl-amt">${fmtShort(l.rem)} pending</span></div></div>`).join('');
-    const cnt=pendingLoans.length;
-    loansCount=`${cnt} pending`;
+    loansBlock=pendingLoans.slice(0,2).map(function(l){
+      var nm=l.name+(l.source?' <span style="font-size:10px;font-weight:700;color:var(--gold-dim);background:rgba(212,175,55,0.18);padding:2px 8px;border-radius:999px">'+l.source+'</span>':'');
+      return glRow(nm, fmtShort(l.rem)+' left', l.p, GLP);
+    }).join('');
+    loansCount=`${pendingLoans.length} pending`;
+  }
+  // GOALS block
+  let goalsBlock='', goalsCount='';
+  if(pendingGoals.length===0){
+    goalsBlock=`<div class="gl-prompt" onclick="event.stopPropagation();openAddGoalModal()">${ic('i-target')}<span>No active goals — want to set one?</span></div>`;
+    goalsCount=doneGoals.length?`${doneGoals.length} done`:'';
+  } else {
+    goalsBlock=pendingGoals.slice(0,2).map(function(g){
+      var p=g.target>0?Math.round((g.saved/g.target)*100):0;
+      var remain=Math.max(0,g.target-g.saved);
+      return glRow(g.name, fmtShort(remain)+' left', p, GLG);
+    }).join('');
+    goalsCount=`${pendingGoals.length} active${doneGoals.length>0?` · ${doneGoals.length} done`:''}`;
   }
 
   el.innerHTML=`<div class="section-header"><div class="section-title">Goals &amp; Loans Status</div><div class="see-more" onclick="expandCard('goals')">Details</div></div>
   <div class="gl-card" onclick="expandCard('goals')">
-    <div class="gl-section-label">Goals${goalsCount?` <span class="gl-inline-count">· ${goalsCount}</span>`:''}</div>
-    ${goalsBlock}
-    <div class="gl-divider"></div>
     <div class="gl-section-label">Loans${loansCount?` <span class="gl-inline-count">· ${loansCount}</span>`:''}</div>
     ${loansBlock}
-    ${loanPressureBanner}
+    <div class="gl-divider"></div>
+    <div class="gl-section-label">Goals${goalsCount?` <span class="gl-inline-count">· ${goalsCount}</span>`:''}</div>
+    ${goalsBlock}
   </div>`;
 }
 function checkCarryForward(month,year){
@@ -1422,12 +1432,12 @@ function expandCard(kind){
     const periodLoan=txs.filter(t=>t.type==='loan_repay'&&t.from===pot).reduce((s,t)=>s+t.amount,0);
     const periodNet=periodIn-periodSpent-periodLoan;
     const col=pot==='savings'?'var(--gold)':'var(--warning)';
-    body=`<div class="exp-total" style="color:${periodNet>0?col:(periodNet<0?'var(--danger)':'var(--text-dim)')}">${periodNet>0?'+':(periodNet<0?'-':'')}${fmtUGX(Math.abs(periodNet))}</div><div class="exp-sub">Net change in ${periodLabel()}</div>
-      <div class="exp-row"><span>Added in ${periodLabel()}</span><span style="color:var(--success)">+${fmtShort(periodIn)}</span></div>
-      ${periodSpent>0?`<div class="exp-row"><span>Spent from it</span><span style="color:var(--danger)">-${fmtShort(periodSpent)}</span></div>`:''}
-      ${periodLoan>0?`<div class="exp-row"><span>Used for loans</span><span style="color:var(--danger)">-${fmtShort(periodLoan)}</span></div>`:''}
+    body=`<div class="exp-total" style="color:${col}">${fmtUGX(bal)}</div><div class="exp-sub">available balance · all time</div>
+      <div class="exp-row"><span>Total put in (all time)</span><span style="color:var(--success)">+${fmtShort(inAll)}</span></div>
+      ${outSpent>0?`<div class="exp-row"><span>Spent from it (all time)</span><span style="color:var(--danger)">-${fmtShort(outSpent)}</span></div>`:''}
+      ${outLoan>0?`<div class="exp-row"><span>Used for loans (all time)</span><span style="color:var(--danger)">-${fmtShort(outLoan)}</span></div>`:''}
       <div class="exp-divider"></div>
-      <div class="exp-row"><span>Current balance (all time)</span><span style="color:${col};font-weight:800">${fmtShort(bal)}</span></div>`;
+      <div class="exp-row"><span>Change in ${periodLabel()}</span><span style="color:${periodNet>=0?'var(--success)':'var(--danger)'};font-weight:700">${periodNet>=0?'+':'-'}${fmtShort(Math.abs(periodNet))}</span></div>`;
   } else if(kind==='budgetstatus'){
     title='Budgeting Detail · '+periodLabel();
     const exp=txs.filter(t=>t.type==='expense');
@@ -1489,26 +1499,30 @@ function expandCard(kind){
     }
   } else if(kind==='goals'){
     title='Goals & Loans';
-    const pcol=(p)=>p>=100?'var(--success)':p>=80?'var(--gold)':'var(--gold-dim)';
-    const goalsBody=DB.goals.map(g=>{
-      const p=g.target>0?Math.min((g.saved/g.target)*100,100):0;
-      const ttg=timeToGo(g.targetDate);
-      const remain=Math.max(0,g.target-g.saved);
-      const done=g.saved>=g.target&&g.target>0;
-      return `<div class="gl-x"><div class="gl-top"><div class="gl-ic">${ic(g.icon)}</div><span class="gl-nm">${g.name}${done?' · done':''}</span><span class="gl-pct" style="color:${pcol(p)}">${Math.round(p)}%</span></div>
-        <div class="goal-bar"><div class="goal-fill" style="width:${p}%;background:${pcol(p)}"></div></div>
-        <div class="gl-sub"><span>${fmtShort(g.saved)} saved</span><span>${fmtShort(remain)} to go</span></div>
-        <div class="gl-subc" style="color:${ttg&&ttg.overdue?'var(--danger)':'var(--text-muted)'}">${ttg?ttg.text:'No target date'}${g.targetDate?' · by '+new Date(g.targetDate).toLocaleDateString():''}</div></div>`;
-    }).join('')||`<div class="exp-empty">No goals yet</div>`;
-    const loansBody=(DB.loans||[]).map(l=>{
+    const loansAll=(DB.loans||[]).map(l=>{
       const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0);
       const rem=Math.max(0,l.amount-repaid);
       const p=l.amount>0?Math.min((repaid/l.amount)*100,100):0;
-      return `<div class="gl-x"><div class="gl-top"><div class="gl-ic">${ic('i-bank')}</div><span class="gl-nm">${l.name}</span>${l.source?`<span class="gl-pill">From ${l.source}</span>`:''}<span class="gl-pct" style="color:${pcol(p)}">${Math.round(p)}%</span></div>
-        <div class="goal-bar"><div class="goal-fill" style="width:${p}%;background:${pcol(p)}"></div></div>
-        <div class="gl-sub"><span>${fmtShort(repaid)} repaid</span><span>${fmtShort(rem)} pending</span></div></div>`;
-    }).join('')||`<div class="exp-empty">No loans</div>`;
-    body=`<div class="gl-sec">Goals</div>${goalsBody}<div class="gl-sec" style="margin-top:16px">Loans</div>${loansBody}`;
+      return {name:l.name,source:l.source,repaid,rem,p,amount:l.amount};
+    });
+    const loanPend=loansAll.filter(l=>l.rem>0), loanDone=loansAll.filter(l=>l.amount>0&&l.rem<=0);
+    const owed=loanPend.reduce((s,l)=>s+l.rem,0);
+    const gPend=DB.goals.filter(g=>g.saved<g.target), gDone=DB.goals.filter(g=>g.saved>=g.target&&g.target>0);
+    const toGo=gPend.reduce((s,g)=>s+Math.max(0,g.target-g.saved),0);
+    const GLP='#9d6fb8', GLG='#C9A227', NEU='rgba(128,128,128,0.12)';
+    const eChip=(t)=>' <span style="font-size:10px;font-weight:700;color:var(--gold-dim);background:rgba(212,175,55,0.18);padding:2px 8px;border-radius:999px">'+t+'</span>';
+    const eRow=(title,sub,pct,col)=>'<div style="display:flex;align-items:center;gap:13px;padding:11px 0;border-bottom:1px solid var(--input-border)"><div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600;color:var(--text)">'+title+'</div><div style="font-size:12px;color:var(--text-dim);margin-top:6px">'+sub+'</div></div>'+glRing(pct,col,44)+'</div>';
+    const eStat=(v,l,bg)=>'<div style="flex:1;background:'+bg+';border-radius:12px;padding:10px 12px"><div style="font-size:19px;font-weight:800;color:var(--text)">'+v+'</div><div style="font-size:11px;color:var(--text-dim)">'+l+'</div></div>';
+    const eLab='font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--gold-dim)';
+    const eDone=(t)=>'<div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--success);font-weight:600;padding:10px 0 2px">'+ic('i-check')+'<span>'+t+'</span></div>';
+    body=`<div style="${eLab}">Loans</div>`+
+      `<div style="display:flex;gap:9px;margin:8px 0 4px">${eStat(loansAll.length,'received','rgba(157,111,184,0.12)')}${eStat(loanDone.length,'fully repaid','rgba(63,174,90,0.12)')}${eStat(fmtShort(owed),'still owed',NEU)}</div>`+
+      (loanPend.length?loanPend.map(l=>eRow(l.name+(l.source?eChip(l.source):''),'Paid '+fmtShort(l.repaid)+' · '+fmtShort(l.rem)+' left',l.p,GLP)).join(''):'<div class="exp-empty" style="padding:12px">No loans in progress</div>')+
+      (loanDone.length?eDone(loanDone.length+(loanDone.length===1?' loan fully repaid':' loans fully repaid')):'')+
+      `<div style="height:16px"></div><div style="${eLab}">Goals</div>`+
+      `<div style="display:flex;gap:9px;margin:8px 0 4px">${eStat(gPend.length,'in progress','rgba(212,175,55,0.14)')}${eStat(gDone.length,'completed','rgba(63,174,90,0.12)')}${eStat(fmtShort(toGo),'to go',NEU)}</div>`+
+      (gPend.length?gPend.map(g=>{var p=g.target>0?Math.round((g.saved/g.target)*100):0;return eRow(g.name,'Saved '+fmtShort(g.saved)+' · '+fmtShort(Math.max(0,g.target-g.saved))+' to go',p,GLG);}).join(''):'<div class="exp-empty" style="padding:12px">No goals in progress</div>')+
+      (gDone.length?eDone(gDone.length+(gDone.length===1?' goal completed':' goals completed')):'');
   } else if(kind==='health'){
     const d=anData(); title='Financial Health · '+periodLabel();
     const rt=d.runway>=99?'plenty':Math.max(0,d.runway).toFixed(1)+' months';
@@ -2301,9 +2315,9 @@ function renderSettings(){
   renderAvatar();
   applyTheme();
   const fsub=document.getElementById('fingerprintSub');
-  if(fsub) fsub.textContent=DB.fingerprintCredId?'On — tap to turn off':'Off — tap to turn on (PIN stays)';
-  const fst=document.getElementById('fpState');
-  if(fst){ fst.textContent=DB.fingerprintCredId?'On':'Off'; fst.classList.toggle('on',!!DB.fingerprintCredId); }
+  if(fsub) fsub.textContent='Unlock with your fingerprint';
+  const fsw=document.getElementById('fpSwitch');
+  if(fsw) fsw.classList.toggle('on',!!DB.fingerprintCredId);
   const cl=document.getElementById('categoriesList');
   cl.innerHTML=DB.categories.map(cat=>`<div class="settings-item"><div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)">${ic(cat.icon)}</div><div class="s-label">${cat.name}</div></div><div style="display:flex;gap:6px"><button class="icon-btn edit" onclick="openAddCategoryModal('${cat.id}')">${ic('i-edit')}</button><button class="icon-btn del" onclick="deleteCategory('${cat.id}')">${ic('i-trash')}</button></div></div>`).join('');
   const il=document.getElementById('incomeTypesList');
@@ -2485,8 +2499,12 @@ function setupOvSwipe(){
 }
 function initApp(){ initPeriodSelectors(); updateOverview(); renderSettings(); setupOvSwipe(); }
 window.addEventListener('popstate',()=>{
-  const open=document.querySelector('.modal-overlay.open');
-  if(open){_closingViaHistory=true;open.classList.remove('open');_closingViaHistory=false;_modalHistoryPushed=false;}
+  if(_modalHistDepth>0)_modalHistDepth--;
+  while(_modalStack.length>_modalHistDepth){
+    const id=_modalStack.pop();
+    const el=document.getElementById(id);
+    if(el)el.classList.remove('open');
+  }
 });
 document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay')&&e.target.classList.contains('open'))closeModal(e.target.id);
