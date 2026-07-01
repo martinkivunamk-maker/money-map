@@ -1020,7 +1020,10 @@ if(window.matchMedia){ window.matchMedia('(prefers-color-scheme: light)').addEve
 let pinEntry='', isSettingPin=false, pinFirst='';
 function initLock(){
   if(!DB.pin){ document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; isSettingPin=true; return; }
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('lockScreen').classList.remove('hidden');
   if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
+  else { showPinPad(); }
 }
 function showFpPrompt(){
   document.getElementById('lockSubtitle').textContent='Unlock with fingerprint';
@@ -1047,15 +1050,18 @@ function checkPin(){
 }
 function unlockApp(){ _justUnlocked=Date.now(); document.getElementById('lockScreen').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); initApp(); }
 function tryFingerprint(){
+  if(_fpBusy) return;
   if(!window.PublicKeyCredential){showPinPad();showToast('Biometrics not available on this device','var(--text-dim)');return;}
   if(!DB.fingerprintCredId){showPinPad();showToast('Enable fingerprint in Settings first','var(--text-dim)');return;}
   const icon=document.getElementById('fpIcon'), hint=document.getElementById('fpHint');
   if(icon) icon.classList.add('scanning'); if(hint) hint.textContent='Scanning…';
+  _fpBusy=true;
   const challenge=new Uint8Array(32); crypto.getRandomValues(challenge);
   navigator.credentials.get({publicKey:{
     challenge, timeout:60000, userVerification:'required',
     allowCredentials:[{type:'public-key',id:new Uint8Array(DB.fingerprintCredId)}]
-  }}).then(()=>unlockApp()).catch(()=>{
+  }}).then(()=>{_fpBusy=false;unlockApp();}).catch(()=>{
+    _fpBusy=false;
     if(icon) icon.classList.remove('scanning');
     if(hint) hint.textContent="Couldn't read fingerprint — tap to retry";
   });
@@ -2523,35 +2529,38 @@ document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay')&&e.target.classList.contains('open'))closeModal(e.target.id);
 });
 // ===== AUTO-LOCK ON BACKGROUND / SCREEN-OFF =====
-let _suppressLock=false, _wasHidden=false, _suppressTimer=null, _justUnlocked=0;
+let _suppressLock=false, _suppressTimer=null, _justUnlocked=0, _fpBusy=false, _fpTimer=null;
 function suppressNextLock(){ _suppressLock=true; clearTimeout(_suppressTimer); _suppressTimer=setTimeout(()=>{_suppressLock=false;},30000); }
-function relock(){
+// Put up the lock screen (without triggering the biometric prompt).
+function _lockNow(){
   if(!DB.pin) return;
   pinEntry=''; pinFirst=''; isSettingPin=false; updateDots();
   const le=document.getElementById('lockError'); if(le) le.textContent='';
   document.getElementById('app').classList.add('hidden');
   document.getElementById('lockScreen').classList.remove('hidden');
-  if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
-  else { showPinPad(); }
+  if(DB.fingerprintCredId && window.PublicKeyCredential) showFpPrompt(); else showPinPad();
 }
-// Robust auto-lock (standard finance-app behavior): any signal that we LEFT the app arms
-// a relock; any signal that we RETURNED triggers it. Listening to all of these covers
-// cases where a TWA/WebView is frozen and restored without firing visibilitychange, so
-// the lock is never silently skipped.
-function _armLock(){ _wasHidden=true; }
-function _maybeRelock(){
-  if(!_wasHidden) return;                 // only after a genuine background — ignores spurious focus events
-  _wasHidden=false;
+function relock(){ _lockNow(); if(DB.pin && DB.fingerprintCredId && window.PublicKeyCredential) setTimeout(tryFingerprint,400); }
+// Standard finance-app locking: lock the MOMENT the app goes to the background, so however
+// Android brings it back (fresh load, frozen resume, or state restore) it is ALREADY locked —
+// no reliance on a "you returned" event firing. On return, (re)trigger the fingerprint prompt.
+function _onAppLeave(){
+  if(_suppressLock) return;
+  if(Date.now()-_justUnlocked < 800) return;                        // ignore the biometric sheet's own hide right after unlocking
+  if(DB.pin && document.getElementById('lockScreen').classList.contains('hidden')) _lockNow();
+}
+function _onAppReturn(){
   if(_suppressLock){ _suppressLock=false; clearTimeout(_suppressTimer); return; }
-  if(Date.now()-_justUnlocked < 1500) return;   // ignore the focus/visible event the biometric sheet fires right after unlocking
-  if(DB.pin && document.getElementById('lockScreen').classList.contains('hidden')) relock();
+  if(DB.pin && DB.fingerprintCredId && window.PublicKeyCredential && !document.getElementById('lockScreen').classList.contains('hidden')){
+    clearTimeout(_fpTimer); _fpTimer=setTimeout(tryFingerprint,300);  // debounced so several return events fire only one prompt
+  }
 }
-document.addEventListener('visibilitychange',()=>{ if(document.hidden) _armLock(); else _maybeRelock(); });
-window.addEventListener('pagehide', _armLock);
-window.addEventListener('pageshow', _maybeRelock);
-document.addEventListener('freeze', _armLock);
-document.addEventListener('resume', _maybeRelock);
-window.addEventListener('focus', _maybeRelock);
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) _onAppLeave(); else _onAppReturn(); });
+window.addEventListener('pagehide', _onAppLeave);
+document.addEventListener('freeze', _onAppLeave);
+window.addEventListener('pageshow', _onAppReturn);
+window.addEventListener('focus', _onAppReturn);
+document.addEventListener('resume', _onAppReturn);
 var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anResizeT); _anResizeT=setTimeout(function(){ try{ if(currentPage==='analytics') renderAnalytics(); else if(currentPage==='overview') equalizeOvCards(); }catch(e){} },220); });
 loadDB(); applyTheme(); initLock();
 // Ask Android/Chrome to keep our data (mark storage persistent so it isn't evicted under storage pressure)
