@@ -1045,7 +1045,7 @@ function checkPin(){
     if(pinEntry===DB.pin){ unlockApp(); } else { document.getElementById('lockError').textContent='Incorrect PIN. Try again.'; pinEntry=''; setTimeout(()=>{updateDots(); document.getElementById('lockError').textContent='';},600); }
   }
 }
-function unlockApp(){ document.getElementById('lockScreen').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); initApp(); }
+function unlockApp(){ _justUnlocked=Date.now(); document.getElementById('lockScreen').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); initApp(); }
 function tryFingerprint(){
   if(!window.PublicKeyCredential){showPinPad();showToast('Biometrics not available on this device','var(--text-dim)');return;}
   if(!DB.fingerprintCredId){showPinPad();showToast('Enable fingerprint in Settings first','var(--text-dim)');return;}
@@ -2523,7 +2523,7 @@ document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay')&&e.target.classList.contains('open'))closeModal(e.target.id);
 });
 // ===== AUTO-LOCK ON BACKGROUND / SCREEN-OFF =====
-let _suppressLock=false, _bgHidden=false, _suppressTimer=null;
+let _suppressLock=false, _wasHidden=false, _suppressTimer=null, _justUnlocked=0;
 function suppressNextLock(){ _suppressLock=true; clearTimeout(_suppressTimer); _suppressTimer=setTimeout(()=>{_suppressLock=false;},30000); }
 function relock(){
   if(!DB.pin) return;
@@ -2534,11 +2534,24 @@ function relock(){
   if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
   else { showPinPad(); }
 }
-document.addEventListener('visibilitychange',()=>{
-  if(document.hidden){ _bgHidden=true; return; }
-  if(_suppressLock){ _suppressLock=false; _bgHidden=false; clearTimeout(_suppressTimer); return; }
-  if(_bgHidden){ _bgHidden=false; if(DB.pin && document.getElementById('lockScreen').classList.contains('hidden')) relock(); }
-});
+// Robust auto-lock (standard finance-app behavior): any signal that we LEFT the app arms
+// a relock; any signal that we RETURNED triggers it. Listening to all of these covers
+// cases where a TWA/WebView is frozen and restored without firing visibilitychange, so
+// the lock is never silently skipped.
+function _armLock(){ _wasHidden=true; }
+function _maybeRelock(){
+  if(!_wasHidden) return;                 // only after a genuine background — ignores spurious focus events
+  _wasHidden=false;
+  if(_suppressLock){ _suppressLock=false; clearTimeout(_suppressTimer); return; }
+  if(Date.now()-_justUnlocked < 1500) return;   // ignore the focus/visible event the biometric sheet fires right after unlocking
+  if(DB.pin && document.getElementById('lockScreen').classList.contains('hidden')) relock();
+}
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) _armLock(); else _maybeRelock(); });
+window.addEventListener('pagehide', _armLock);
+window.addEventListener('pageshow', _maybeRelock);
+document.addEventListener('freeze', _armLock);
+document.addEventListener('resume', _maybeRelock);
+window.addEventListener('focus', _maybeRelock);
 var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anResizeT); _anResizeT=setTimeout(function(){ try{ if(currentPage==='analytics') renderAnalytics(); else if(currentPage==='overview') equalizeOvCards(); }catch(e){} },220); });
 loadDB(); applyTheme(); initLock();
 // Ask Android/Chrome to keep our data (mark storage persistent so it isn't evicted under storage pressure)
