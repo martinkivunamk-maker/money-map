@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#faf8f3">
@@ -17,7 +17,7 @@
     --gold-dim: #A0822A;
     --radius: 22px;
     --radius-sm: 14px;
-    --nav-height: 66px;
+    --nav-height: 76px;
     --gutter: 24px;
     --ease: cubic-bezier(0.32, 0.72, 0, 1);
   }
@@ -134,7 +134,7 @@
     background: radial-gradient(ellipse at 15% 8%, var(--bg-glow1) 0%, transparent 50%),
                 radial-gradient(ellipse at 88% 90%, var(--bg-glow2) 0%, transparent 45%), var(--bg); }
 
-  .page { position:absolute; inset:0; bottom:0; overflow-y:auto; overflow-x:hidden; display:none; padding-bottom:calc(var(--nav-height) + 30px); }
+  .page { position:absolute; inset:0; bottom:0; overflow-y:auto; overflow-x:hidden; display:none; padding-bottom:calc(var(--nav-height) + 24px + env(safe-area-inset-bottom, 0px)); }
   .page.active { display:block; animation:fadeIn 0.35s; }
   .page::-webkit-scrollbar { display:none; }
 
@@ -477,23 +477,23 @@
   .theme-opt.active { background:var(--gold); color:#0a0a0a; }
 
   /* FLOATING BOTTOM NAV */
-  #bottomNav { position:fixed; bottom:16px; left:0; right:0; margin:0 auto; width:fit-content; max-width:calc(100% - 28px);
+  #bottomNav { position:fixed; bottom:calc(6px + env(safe-area-inset-bottom, 0px)); left:8px; right:8px;
     background:var(--nav-glass); -webkit-backdrop-filter:blur(18px) saturate(1.35); backdrop-filter:blur(18px) saturate(1.35);
-    border:1px solid var(--glass-border); border-radius:30px; display:flex; align-items:center; gap:6px;
-    padding:7px 10px; z-index:100; box-shadow:0 1px 1px var(--card-hi) inset, 0 12px 34px -8px var(--shadow), 0 5px 14px -6px var(--shadow);
+    border:1px solid var(--glass-border); border-radius:26px; display:flex; align-items:center; justify-content:space-around;
+    padding:6px 4px; z-index:100; box-shadow:0 1px 1px var(--card-hi) inset, 0 12px 34px -8px var(--shadow), 0 5px 14px -6px var(--shadow);
     animation:fadeUp 0.6s 0.2s both; }
-  .nav-item { display:flex; align-items:center; justify-content:center; padding:9px 12px; border-radius:15px; cursor:pointer; flex:none; position:relative; transition:transform 0.2s, background 0.22s; }
-  .nav-item:active { transform:scale(0.9); }
-  .nav-icon { color:var(--text-dim); transition:color 0.25s var(--ease); position:relative; display:flex; }
-  .nav-icon svg { width:25px; height:25px; stroke-width:1.7; }
+  .nav-item { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; flex:1; padding:4px 2px; border-radius:15px; cursor:pointer; position:relative; transition:transform 0.2s; }
+  .nav-item:active { transform:scale(0.92); }
+  .nav-icon { color:var(--text-dim); transition:color 0.25s var(--ease), background 0.22s var(--ease); position:relative; display:flex; align-items:center; justify-content:center; padding:5px 15px; border-radius:16px; }
+  .nav-icon svg { width:24px; height:24px; stroke-width:1.7; }
   .nav-icon .fl { display:none; fill:var(--gold); stroke:none; }
-  .nav-label { display:none; }
-  .nav-item.active { background:rgba(212,175,55,0.16); }
-  .nav-item.active .nav-icon { color:var(--gold); }
+  .nav-label { display:block; font-size:10px; font-weight:500; color:var(--text-dim); letter-spacing:-0.1px; white-space:nowrap; transition:color 0.25s var(--ease); }
+  .nav-item.active .nav-icon { background:rgba(212,175,55,0.18); color:var(--gold); }
+  .nav-item.active .nav-label { color:var(--gold); }
   .nav-item.active .nav-icon .ol { display:none; }
   .nav-item.active .nav-icon .fl { display:block; }
 
-  #fab { position:fixed; bottom:calc(var(--nav-height) + 28px); right:24px; width:58px; height:58px; border-radius:50%;
+  #fab { position:fixed; bottom:calc(var(--nav-height) + 20px + env(safe-area-inset-bottom, 0px)); right:24px; width:58px; height:58px; border-radius:50%;
     background:linear-gradient(135deg, var(--gold-light), var(--gold)); border:none; cursor:pointer; z-index:200;
     display:flex; align-items:center; justify-content:center; animation:pulseGlow 3s infinite, fadeUp 0.6s 0.3s both;
     transition:transform 0.2s var(--ease); }
