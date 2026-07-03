@@ -96,6 +96,17 @@
   @keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
   @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+  /* ===== Soft iOS-style entrance animations (re-triggered per page by navTo → _animatePage) ===== */
+  @keyframes riseIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes avIn { from { opacity:0; transform:translateX(-50%) scale(0.86); } to { opacity:1; transform:translateX(-50%) scale(1); } }
+  .txd-dayhead, .txd-row, .set-tile, .budget-card, .loan-card, .overview-card, .settings-item { animation:riseIn 0.48s var(--ease) both; }
+  .set-av { animation:avIn 0.55s var(--ease) both; }
+  .txd-row:nth-child(2), .set-tile:nth-child(2), .budget-card:nth-child(2), .loan-card:nth-child(2), .overview-card:nth-child(2), .settings-item:nth-child(2){animation-delay:0.05s}
+  .txd-row:nth-child(3), .set-tile:nth-child(3), .budget-card:nth-child(3), .loan-card:nth-child(3), .overview-card:nth-child(3), .settings-item:nth-child(3){animation-delay:0.10s}
+  .txd-row:nth-child(4), .budget-card:nth-child(4), .loan-card:nth-child(4), .overview-card:nth-child(4), .settings-item:nth-child(4){animation-delay:0.15s}
+  .txd-row:nth-child(5), .budget-card:nth-child(5), .settings-item:nth-child(5){animation-delay:0.20s}
+  .txd-row:nth-child(6), .settings-item:nth-child(6){animation-delay:0.25s}
+  .txd-row:nth-child(n+7), .settings-item:nth-child(n+7){animation-delay:0.30s}
 
   /* LOCK SCREEN */
   #lockScreen { position:fixed; inset:0; z-index:9999;
@@ -1181,6 +1192,14 @@ function navTo(page){
   currentPage=page;
   if(page==='overview')updateOverview(); if(page==='transactions')renderTransactions();
   if(page==='budget')renderBudget(); if(page==='analytics')renderAnalytics(); if(page==='settings')renderSettings();
+  _animatePage(page);
+}
+function _animatePage(page){
+  var pg=document.getElementById('page-'+page); if(!pg)return;
+  var els=pg.querySelectorAll('.txd-dayhead,.txd-row,.set-tile,.set-av,.budget-card,.loan-card,.overview-card,.settings-item');
+  for(var i=0;i<els.length;i++) els[i].style.animation='none';
+  void pg.offsetWidth;                     // one reflow so the animations restart
+  for(var j=0;j<els.length;j++) els[j].style.animation='';
 }
 function goSettings(){ navTo('settings'); }
 
