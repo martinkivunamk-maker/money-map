@@ -991,6 +991,9 @@ function closeModal(id){
   el.classList.remove('open');
   const i=_modalStack.lastIndexOf(id); if(i!==-1) _modalStack.splice(i,1);
   if(_modalStack.length===0) _resetModalHist();
+  // Closing a modal that leaves OTHERS open (e.g. drag/backdrop-dismiss a 2nd-level popup):
+  // consume this modal's owed history entry so the next Back isn't wasted peeling a ghost entry.
+  else if(_modalHistDepth>_modalStack.length){ _modalHistDepth--; _resettingHistory=true; history.go(-1); }
 }
 function closeModalQuiet(id){
   const el=document.getElementById(id);if(!el||!el.classList.contains('open'))return;
@@ -2647,7 +2650,10 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .crop-actions button { flex:1; padding:13px; border-radius:14px; font-weight:800; font-size:14px; border:none; cursor:pointer; }
   .crop-cancel { background:rgba(255,255,255,0.14); color:#fff; }
   .crop-use { background:var(--gold); color:#1a1306; }
-  #optionPickerList, #periodPickerList { max-height:52vh; overflow-y:auto; overscroll-behavior:contain; }
+  /* No inner scroller — let the .modal-sheet be the SINGLE scroll container, so drag-to-dismiss
+     (which reads sheet.scrollTop) and list scrolling don't fight. Nested scrollers made scroll
+     swipes drag the whole card and hid the first item. */
+  #optionPickerList, #periodPickerList { overscroll-behavior:contain; }
   #optionPickerList::-webkit-scrollbar, #periodPickerList::-webkit-scrollbar { display:none; }
   .picker-item:last-child { border-bottom:none; }
   .picker-item:active { background:var(--glass); }
