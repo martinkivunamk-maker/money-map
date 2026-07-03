@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v3';
+const CACHE = 'moneymap-v4';
 
 self.addEventListener('install', () => self.skipWaiting());
 
@@ -12,9 +12,12 @@ self.addEventListener('activate', e => e.waitUntil((async () => {
 // refresh the cache from the network in the background so the next open is current. This
 // makes opens fast even on weak signal; the trade-off is that an upload shows on the
 // SECOND open after deploying (first open serves the old copy + downloads the new one).
+// The background refresh uses {cache:'reload'} so it BYPASSES the browser's 10-minute
+// HTTP cache (GitHub Pages max-age=600) and always pulls the genuine latest file —
+// otherwise the revalidation just re-cached the stale copy for 10 min after every deploy.
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  const network = fetch(e.request).then(async resp => {
+  const network = fetch(e.request, { cache: 'reload' }).then(async resp => {
     try { const c = await caches.open(CACHE); await c.put(e.request, resp.clone()); } catch (_) {}
     return resp;
   }).catch(() => null);
