@@ -99,7 +99,7 @@
   /* ===== Soft iOS-style entrance animations (re-triggered per page by navTo → _animatePage) ===== */
   @keyframes riseIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
   @keyframes avIn { from { opacity:0; transform:translateX(-50%) scale(0.86); } to { opacity:1; transform:translateX(-50%) scale(1); } }
-  .txd-dayhead, .txd-row, .set-tile, .budget-card, .loan-card, .overview-card, .settings-item { animation:riseIn 0.48s var(--ease) both; }
+  .txd-dayhead, .txd-row, .set-tile, .bgt-card, .loan-card, .overview-card, .settings-item { animation:riseIn 0.48s var(--ease) both; }
   .set-av { animation:avIn 0.55s var(--ease) both; }
   .txd-row:nth-child(2), .set-tile:nth-child(2), .budget-card:nth-child(2), .loan-card:nth-child(2), .overview-card:nth-child(2), .settings-item:nth-child(2){animation-delay:0.05s}
   .txd-row:nth-child(3), .set-tile:nth-child(3), .budget-card:nth-child(3), .loan-card:nth-child(3), .overview-card:nth-child(3), .settings-item:nth-child(3){animation-delay:0.10s}
@@ -604,6 +604,56 @@
     display:flex; flex-direction:column; align-items:center; gap:5px; }
   .type-btn svg { width:20px; height:20px; }
   .type-btn.active { border-color:var(--gold); color:var(--gold); background:rgba(212,175,55,0.12); transform:translateY(-2px); }
+  /* Form C transaction form */
+  .txc-hdr { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .txc-chip { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .txc-chip svg { width:21px; height:21px; }
+  .txc-chip.txc-i { background:rgba(63,174,90,0.14); color:var(--success); }
+  .txc-chip.txc-e { background:rgba(224,85,85,0.12); color:var(--danger); }
+  .txc-chip.txc-g { background:rgba(212,175,55,0.16); color:var(--gold); }
+  .txc-chip.txc-w { background:rgba(240,160,32,0.15); color:var(--warning); }
+  .txc-chip.txc-p { background:rgba(138,111,240,0.15); color:#8a6ff0; }
+  .txc-title { font-size:19px; font-weight:800; color:var(--text); letter-spacing:-0.3px; }
+  .txc-amtlab { font-size:12px; font-weight:600; color:var(--text-dim); margin-bottom:6px; }
+  .txc-amt { text-align:center; font-size:23px !important; font-weight:800 !important; letter-spacing:-0.4px; margin-bottom:14px; }
+  .txc-grp { border:1px solid var(--input-border); border-radius:var(--radius-sm); overflow:hidden; background:var(--input-bg); margin-bottom:15px; }
+  .txc-row { display:flex; align-items:center; gap:10px; padding:14px 15px; border-bottom:1px solid var(--input-border); cursor:pointer; }
+  .txc-row:last-child { border-bottom:none; }
+  .txc-row .txc-k { font-size:14px; color:var(--text-dim); }
+  .txc-row .txc-v { margin-left:auto; font-size:14px; font-weight:600; color:var(--text); display:flex; align-items:center; gap:6px; }
+  .txc-row .txc-v svg { width:16px; height:16px; stroke:var(--text-muted); }
+  .txc-date { border:none; background:none; color:var(--text); font-size:14px; font-weight:600; text-align:right; font-family:inherit; margin-left:auto; padding:0; }
+  .txc-rcpt { display:flex; align-items:center; gap:10px; padding:14px 15px; border-top:1px dashed var(--glass-border); cursor:pointer; color:var(--text-dim); font-size:14px; }
+  .txc-rcpt > svg { width:18px; height:18px; stroke:var(--gold); flex-shrink:0; }
+  .txc-rcpt img { width:34px; height:34px; border-radius:8px; object-fit:cover; }
+  .txc-note { min-height:64px; resize:none; font-family:inherit; }
+  .gl-chip { width:38px; height:38px; border-radius:11px; background:rgba(212,175,55,0.15); color:var(--gold); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .gl-chip svg { width:19px; height:19px; stroke-width:1.8; }
+  .filter-chips { display:flex; flex-wrap:wrap; gap:7px; padding:0 0 6px; }
+  .fchip { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--gold-dim); background:rgba(212,175,55,0.16); padding:6px 12px; border-radius:16px; cursor:pointer; }
+  .fchip svg { width:13px; height:13px; stroke:currentColor; stroke-width:2.6; fill:none; }
+  .fchip.fchip-clear { color:var(--text-dim); background:var(--glass); }
+  /* Budget layout #3 — collapsible chip + ring cards */
+  .bgt-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius-sm); overflow:hidden; box-shadow:0 1px 1px var(--card-hi) inset, 0 6px 16px -12px var(--shadow); }
+  .bgt-head { display:flex; align-items:center; gap:12px; padding:14px; cursor:pointer; }
+  .bgt-chip { width:38px; height:38px; border-radius:11px; background:rgba(212,175,55,0.15); color:var(--gold); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .bgt-chip svg { width:19px; height:19px; stroke-width:1.8; }
+  .bgt-info { flex:1; min-width:0; }
+  .bgt-name { font-size:14px; font-weight:800; color:var(--text); }
+  .bgt-sub { font-size:11.5px; color:var(--text-dim); margin-top:3px; }
+  .bgt-chev { color:var(--text-muted); flex-shrink:0; transition:transform 0.25s var(--ease); }
+  .bgt-chev svg { width:18px; height:18px; }
+  .bgt-card.open .bgt-chev { transform:rotate(90deg); }
+  .bgt-detail { padding:2px 14px 14px; animation:slideDown 0.25s; }
+  .bgt-stats { display:flex; gap:8px; margin-bottom:11px; }
+  .bgt-stats > div { flex:1; background:var(--input-bg); border-radius:10px; padding:9px 6px; text-align:center; }
+  .bgt-sl { font-size:10px; color:var(--text-dim); }
+  .bgt-sv { font-size:14px; font-weight:800; color:var(--text); margin-top:2px; white-space:nowrap; }
+  .bgt-txlabel { font-size:10px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-dim); margin:6px 0 8px; }
+  .bgt-empty { font-size:12.5px; color:var(--text-muted); padding:4px 0 8px; }
+  .bgt-actions { display:flex; gap:8px; margin-top:12px; }
+  .bgt-actions button { flex:1; margin-top:0; padding:11px; }
+  .bgt-del { color:var(--danger) !important; border-color:rgba(224,85,85,0.4) !important; }
 
   .quick-actions { display:flex; flex-direction:column; gap:8px; padding-bottom:10px; }
   .quick-action-btn { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:var(--radius-sm); background:var(--glass);
@@ -611,7 +661,7 @@
   .quick-action-btn:active { background:var(--glass-hover); transform:scale(0.98); }
   .quick-action-btn:nth-child(1){animation-delay:0.04s;} .quick-action-btn:nth-child(2){animation-delay:0.08s;}
   .quick-action-btn:nth-child(3){animation-delay:0.12s;} .quick-action-btn:nth-child(4){animation-delay:0.16s;} .quick-action-btn:nth-child(5){animation-delay:0.2s;}
-  .qa-icon { width:30px; height:30px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .qa-icon { width:40px; height:40px; border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .qa-icon svg { width:21px; height:21px; stroke-width:1.8; }
   .qa-title { font-size:15px; font-weight:700; color:var(--text); }
   .qa-hint { font-size:12px; color:var(--text-dim); margin-left:auto; padding-left:10px; text-align:right; }
@@ -888,17 +938,17 @@
 <!-- MODALS -->
 <div class="modal-overlay" id="quickAddModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Quick Add</div>
   <div class="quick-actions">
-    <div class="quick-action-btn" onclick="openTransactionModal('income')"><div class="qa-icon" style="color:var(--success)"><svg viewBox="0 0 24 24"><use href="#i-income"/></svg></div><span class="qa-title">Add income</span><span class="qa-hint">Salary, gigs, gifts</span></div>
-    <div class="quick-action-btn" onclick="openTransactionModal('expense')"><div class="qa-icon" style="color:var(--danger)"><svg viewBox="0 0 24 24"><use href="#i-expense"/></svg></div><span class="qa-title">Log expense</span><span class="qa-hint">What you spent</span></div>
-    <div class="quick-action-btn" onclick="openTransactionModal('savings')"><div class="qa-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-bank"/></svg></div><span class="qa-title">To savings</span><span class="qa-hint">Lifetime savings</span></div>
-    <div class="quick-action-btn" onclick="openTransactionModal('emergency')"><div class="qa-icon" style="color:var(--warning)"><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg></div><span class="qa-title">To emergency</span><span class="qa-hint">Safety net</span></div>
-    <div class="quick-action-btn" onclick="openTransactionModal('goal')"><div class="qa-icon" style="color:#8a6ff0"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg></div><span class="qa-title">To a goal</span><span class="qa-hint">Toward a target</span></div>
-    <div class="quick-action-btn" onclick="quickPayLoan()"><div class="qa-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-cash"/></svg></div><span class="qa-title">Pay a loan</span><span class="qa-hint">Repayment</span></div>
+    <div class="quick-action-btn" onclick="openTransactionModal('income')"><div class="qa-icon" style="color:var(--success);background:rgba(63,174,90,0.14)"><svg viewBox="0 0 24 24"><use href="#i-income"/></svg></div><span class="qa-title">Add income</span><span class="qa-hint">Salary, gigs, gifts</span></div>
+    <div class="quick-action-btn" onclick="openTransactionModal('expense')"><div class="qa-icon" style="color:var(--danger);background:rgba(224,85,85,0.12)"><svg viewBox="0 0 24 24"><use href="#i-expense"/></svg></div><span class="qa-title">Log expense</span><span class="qa-hint">What you spent</span></div>
+    <div class="quick-action-btn" onclick="openTransactionModal('savings')"><div class="qa-icon" style="color:var(--gold);background:rgba(212,175,55,0.16)"><svg viewBox="0 0 24 24"><use href="#i-bank"/></svg></div><span class="qa-title">To savings</span><span class="qa-hint">Lifetime savings</span></div>
+    <div class="quick-action-btn" onclick="openTransactionModal('emergency')"><div class="qa-icon" style="color:var(--warning);background:rgba(240,160,32,0.15)"><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg></div><span class="qa-title">To emergency</span><span class="qa-hint">Safety net</span></div>
+    <div class="quick-action-btn" onclick="openTransactionModal('goal')"><div class="qa-icon" style="color:#8a6ff0;background:rgba(138,111,240,0.15)"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg></div><span class="qa-title">To a goal</span><span class="qa-hint">Toward a target</span></div>
+    <div class="quick-action-btn" onclick="quickPayLoan()"><div class="qa-icon" style="color:var(--gold);background:rgba(212,175,55,0.16)"><svg viewBox="0 0 24 24"><use href="#i-cash"/></svg></div><span class="qa-title">Pay a loan</span><span class="qa-hint">Repayment</span></div>
   </div>
   <button class="btn-outline" onclick="closeModal('quickAddModal')">Cancel</button>
 </div></div>
 
-<div class="modal-overlay" id="transactionModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="txModalTitle">Add Transaction</div><div id="txModalContent"></div></div></div>
+<div class="modal-overlay" id="transactionModal"><div class="modal-sheet"><div class="modal-handle"></div><div id="txModalContent"></div></div></div>
 <div class="modal-overlay" id="viewTxModal"><div class="modal-sheet"><div class="modal-handle"></div><div id="viewTxContent"></div></div></div>
 <div class="modal-overlay" id="expandModal"><div class="modal-sheet"><div class="modal-handle"></div><div id="expandContent"></div></div></div>
 <div class="modal-overlay" id="addBudgetModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="budgetModalTitle">Add Budget Line</div><div id="budgetModalContent"></div></div></div>
@@ -956,7 +1006,7 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="filterModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Filter Transactions</div>
+<div class="modal-overlay" id="filterModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" style="display:flex;align-items:center;justify-content:space-between;gap:12px">Filter Transactions<span onclick="clearFilterFields()" style="font-size:13px;font-weight:700;color:var(--danger);cursor:pointer">Clear filters</span></div>
   <div class="form-group"><label class="form-label">Type</label><div class="picker-box" onclick="openFilterPicker('Type')"><span class="picker-box-val" id="filterTypeDisp">All Types</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterType" value="all"></div>
   <div class="form-group"><label class="form-label">Month</label><div class="picker-box" onclick="openFilterPicker('Month')"><span class="picker-box-val" id="filterMonthDisp">All Months</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterMonth" value="all"></div>
   <div class="form-group"><label class="form-label">Year</label><div class="picker-box" onclick="openFilterPicker('Year')"><span class="picker-box-val" id="filterYearDisp">All Years</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterYear" value="all"></div>
@@ -1196,7 +1246,7 @@ function navTo(page){
 }
 function _animatePage(page){
   var pg=document.getElementById('page-'+page); if(!pg)return;
-  var els=pg.querySelectorAll('.txd-dayhead,.txd-row,.set-tile,.set-av,.budget-card,.loan-card,.overview-card,.settings-item');
+  var els=pg.querySelectorAll('.txd-dayhead,.txd-row,.set-tile,.set-av,.bgt-card,.loan-card,.overview-card,.settings-item');
   for(var i=0;i<els.length;i++) els[i].style.animation='none';
   void pg.offsetWidth;                     // one reflow so the animations restart
   for(var j=0;j<els.length;j++) els[j].style.animation='';
@@ -1412,8 +1462,9 @@ function renderGoalsCard(){
   }
 
   const GLP='#9d6fb8', GLG='#C9A227';
-  function glRow(title,sub,pct,col){
-    return '<div style="display:flex;align-items:center;gap:11px;padding:10px 0">'+
+  function glRow(icon,title,sub,pct,col){
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0">'+
+      '<div class="gl-chip">'+ic(icon)+'</div>'+
       '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--text)">'+title+'</div><div style="font-size:11.5px;color:var(--text-dim);margin-top:5px">'+sub+'</div></div>'+
       glRing(pct,col,36)+'</div>';
   }
@@ -1424,7 +1475,7 @@ function renderGoalsCard(){
   } else {
     loansBlock=pendingLoans.slice(0,2).map(function(l){
       var nm=l.name+(l.source?' <span style="font-size:10px;font-weight:700;color:var(--gold-dim);background:rgba(212,175,55,0.18);padding:2px 8px;border-radius:999px">'+l.source+'</span>':'');
-      return glRow(nm, fmtShort(l.rem)+' left', l.p, GLP);
+      return glRow('i-cash', nm, fmtShort(l.rem)+' left', l.p, GLP);
     }).join('');
     loansCount=`${pendingLoans.length} pending`;
   }
@@ -1437,7 +1488,7 @@ function renderGoalsCard(){
     goalsBlock=pendingGoals.slice(0,2).map(function(g){
       var p=g.target>0?Math.round((g.saved/g.target)*100):0;
       var remain=Math.max(0,g.target-g.saved);
-      return glRow(g.name, fmtShort(remain)+' left', p, GLG);
+      return glRow(g.icon||'i-target', g.name, fmtShort(remain)+' left', p, GLG);
     }).join('');
     goalsCount=`${pendingGoals.length} active${doneGoals.length>0?` · ${doneGoals.length} done`:''}`;
   }
@@ -1844,15 +1895,25 @@ function txDigestRowHTML(t){
   const amt=(t.type==='income'?'+':'−')+fmtShort(t.amount).replace('UGX ','');
   return `<div class="txd-row" onclick="viewTransaction('${t.id}')"><div class="txd-ic ${tint}">${ic(getTxIcon(t))}</div><div class="txd-info"><div class="txd-nm">${primary}</div><div class="txd-tag">${tag}</div></div><div class="txd-amt ${amtcls}">${amt}</div></div>`;
 }
+function _filterChipsHTML(){
+  const X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const parts=[];
+  if(activeFilter.type!=='all')parts.push(['type',({income:'Income',expense:'Expense',transfer:'Transfers'})[activeFilter.type]||activeFilter.type]);
+  if(activeFilter.month!=='all')parts.push(['month',MONTHS[activeFilter.month]]);
+  if(activeFilter.year!=='all')parts.push(['year',''+activeFilter.year]);
+  if(!parts.length)return '';
+  return '<div class="filter-chips">'+parts.map(p=>`<span class="fchip" onclick="clearOneFilter('${p[0]}')">${p[1]} ${X}</span>`).join('')+`<span class="fchip fchip-clear" onclick="clearAllFilters()">Clear all ${X}</span></div>`;
+}
 function renderTransactions(){
   let txs=[...DB.transactions].sort((a,b)=>new Date(b.date)-new Date(a.date));
   if(activeFilter.type!=='all'){ if(activeFilter.type==='transfer')txs=txs.filter(t=>['savings','emergency','goal','loan_repay'].includes(t.type)); else txs=txs.filter(t=>t.type===activeFilter.type); }
   if(activeFilter.month!=='all')txs=txs.filter(t=>new Date(t.date).getMonth()===parseInt(activeFilter.month));
   if(activeFilter.year!=='all')txs=txs.filter(t=>new Date(t.date).getFullYear()===parseInt(activeFilter.year));
   const c=document.getElementById('txPageContent');
-  if(txs.length===0){ c.innerHTML=`<div class="empty-state" style="margin-top:40px">${ic('i-card')}<div class="e-text">No transactions found</div><div class="e-sub">Add one using the + button</div></div>`; return; }
+  const chips=_filterChipsHTML();
+  if(txs.length===0){ c.innerHTML=chips+`<div class="empty-state" style="margin-top:40px">${ic('i-card')}<div class="e-text">No transactions found</div><div class="e-sub">Add one using the + button</div></div>`; return; }
   const g={},order=[]; txs.forEach(t=>{const k=(t.date||'').slice(0,10);if(!g[k]){g[k]=[];order.push(k);}g[k].push(t);});
-  c.innerHTML=order.map(k=>{
+  c.innerHTML=chips+order.map(k=>{
     const list=g[k];
     const net=list.reduce((s,t)=>s+(t.type==='income'?t.amount:-t.amount),0);
     const netTxt=(net>=0?'+':'−')+Math.abs(Math.round(net)).toLocaleString();
@@ -1876,6 +1937,13 @@ function openFilterModal(){
   openModal('filterModal');
 }
 function applyFilter(){ activeFilter={type:document.getElementById('filterType').value,month:document.getElementById('filterMonth').value,year:document.getElementById('filterYear').value}; closeModal('filterModal'); renderTransactions(); }
+function clearFilterFields(){
+  document.getElementById('filterType').value='all'; document.getElementById('filterTypeDisp').textContent='All Types';
+  document.getElementById('filterMonth').value='all'; document.getElementById('filterMonthDisp').textContent='All Months';
+  document.getElementById('filterYear').value='all'; document.getElementById('filterYearDisp').textContent='All Years';
+}
+function clearOneFilter(key){ activeFilter[key]='all'; renderTransactions(); }
+function clearAllFilters(){ activeFilter={type:'all',month:'all',year:'all'}; renderTransactions(); }
 function viewTransaction(id){
   const t=DB.transactions.find(x=>x.id===id); if(!t)return;
   const d=new Date(t.date);
@@ -1906,7 +1974,6 @@ function openEditTransaction(id){ const t=DB.transactions.find(x=>x.id===id); if
 let txImageData=null, editingTxId=null;
 function openTransactionModal(type,existing){
   editingTxId=existing?existing.id:null; txImageData=existing?existing.image:null;
-  document.getElementById('txModalTitle').textContent=existing?'Edit Transaction':'Add Transaction';
   buildTxForm(type,existing); openModal('transactionModal');
 }
 function openTxCategoryPicker(){
@@ -1930,57 +1997,40 @@ function openTxCategoryPicker(){
 function buildTxForm(type,existing){
   const c=document.getElementById('txModalContent');
   const val=existing?existing.amount:'', note=existing?(existing.note||''):'', date=existing?existing.date:today();
-  let isTransfer=['savings','emergency','goal'].includes(type);
-  let typeHTML=`<div class="type-selector">
-    <div class="type-btn ${type==='income'?'active':''}" onclick="rebuildTxForm('income')">${ic('i-income')}Income</div>
-    <div class="type-btn ${type==='expense'?'active':''}" onclick="rebuildTxForm('expense')">${ic('i-expense')}Expense</div>
-    <div class="type-btn ${isTransfer?'active':''}" onclick="rebuildTxForm('savings')">${ic('i-transfer')}Transfer</div></div>`;
-  let spec='';
+  const isTransfer=['savings','emergency','goal'].includes(type);
+  const meta={income:{cls:'txc-i',icon:'i-income',title:'Add income'},expense:{cls:'txc-e',icon:'i-expense',title:'Log expense'},savings:{cls:'txc-g',icon:'i-bank',title:'To savings'},emergency:{cls:'txc-w',icon:'i-shield',title:'To emergency'},goal:{cls:'txc-p',icon:'i-target',title:'To a goal'}}[type]||{cls:'txc-i',icon:'i-income',title:'Add income'};
+  let rows='';
   if(type==='income'){
     const curIt=existing?existing.incomeType:(DB.incomeTypes[0]?DB.incomeTypes[0].id:'');
     const curItName=(DB.incomeTypes.find(i=>i.id===curIt)||DB.incomeTypes[0]||{name:'Select'}).name;
-    spec=`<div class="form-group"><label class="form-label">Income Source</label>
-      <div class="picker-box" onclick="openOptionPicker('Income Source',DB.incomeTypes.map(i=>({value:i.id,label:i.name})),document.getElementById('txIncomeType').value,(v,l)=>{document.getElementById('txIncomeType').value=v;document.getElementById('txIncomeTypeDisp').textContent=l;})">
-        <span class="picker-box-val" id="txIncomeTypeDisp">${curItName}</span>
-        <svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
-      </div>
-      <input type="hidden" id="txIncomeType" value="${curIt}"></div>`;
+    rows=`<div class="txc-row" onclick="openOptionPicker('Income source',DB.incomeTypes.map(i=>({value:i.id,label:i.name})),document.getElementById('txIncomeType').value,(v,l)=>{document.getElementById('txIncomeType').value=v;document.getElementById('txIncomeTypeDisp').textContent=l;})"><span class="txc-k">Source</span><span class="txc-v"><span id="txIncomeTypeDisp">${curItName}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txIncomeType" value="${curIt}">`;
   } else if(type==='expense'){
-    const cats=[{id:'',name:'Not Budgeted'},...DB.categories];
     const curCat=existing&&existing.categoryId?existing.categoryId:'';
     const curCatName=(DB.categories.find(c=>c.id===curCat)||{name:'Not Budgeted'}).name;
     const src=existing&&existing.source?existing.source:'income';
     const srcNames={'income':'Income','savings':'Life Savings','emergency':'Emergency Fund'};
-    spec=`<div class="form-group"><label class="form-label">Category (Budget)</label>
-      <div class="picker-box" onclick="openTxCategoryPicker()">
-        <span class="picker-box-val" id="txCategoryDisp">${curCatName}</span>
-        <svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
-      </div>
-      <input type="hidden" id="txCategory" value="${curCat}"></div>
-    <div class="form-group"><label class="form-label">Money Source</label>
-      <div class="picker-box" onclick="openOptionPicker('Money Source',[{value:'income',label:'Income'},{value:'savings',label:'Life Savings'},{value:'emergency',label:'Emergency Fund'}],document.getElementById('txSource').value,(v,l)=>{document.getElementById('txSource').value=v;document.getElementById('txSourceDisp').textContent=l;})">
-        <span class="picker-box-val" id="txSourceDisp">${srcNames[src]||'Income'}</span>
-        <svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
-      </div>
-      <input type="hidden" id="txSource" value="${src}"></div>`;
+    rows=`<div class="txc-row" onclick="openTxCategoryPicker()"><span class="txc-k">Category</span><span class="txc-v"><span id="txCategoryDisp">${curCatName}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txCategory" value="${curCat}">
+    <div class="txc-row" onclick="openOptionPicker('Paid from',[{value:'income',label:'Income'},{value:'savings',label:'Life Savings'},{value:'emergency',label:'Emergency Fund'}],document.getElementById('txSource').value,(v,l)=>{document.getElementById('txSource').value=v;document.getElementById('txSourceDisp').textContent=l;})"><span class="txc-k">Paid from</span><span class="txc-v"><span id="txSourceDisp">${srcNames[src]||'Income'}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txSource" value="${src}">`;
   } else if(isTransfer){
     const trOpts=[{value:'savings',label:'Lifetime Savings'},{value:'emergency',label:'Emergency Fund'},...DB.goals.map(g=>({value:'goal_'+g.id,label:'Goal: '+g.name}))];
     const curTr=type==='goal'&&existing?'goal_'+existing.goalId:type;
     const curTrName=(trOpts.find(o=>o.value===curTr)||trOpts[0]||{label:'Select'}).label;
-    spec=`<div class="form-group"><label class="form-label">Transfer To</label>
-      <div class="picker-box" onclick="openOptionPicker('Transfer To',[{value:'savings',label:'Lifetime Savings'},{value:'emergency',label:'Emergency Fund'},...DB.goals.map(g=>({value:'goal_'+g.id,label:'Goal: '+g.name}))],document.getElementById('txTransferTo').value,(v,l)=>{document.getElementById('txTransferTo').value=v;document.getElementById('txTransferToDisp').textContent=l;})">
-        <span class="picker-box-val" id="txTransferToDisp">${curTrName}</span>
-        <svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
-      </div>
-      <input type="hidden" id="txTransferTo" value="${curTr}"></div>`;
+    rows=`<div class="txc-row" onclick="openOptionPicker('Transfer to',[{value:'savings',label:'Lifetime Savings'},{value:'emergency',label:'Emergency Fund'},...DB.goals.map(g=>({value:'goal_'+g.id,label:'Goal: '+g.name}))],document.getElementById('txTransferTo').value,(v,l)=>{document.getElementById('txTransferTo').value=v;document.getElementById('txTransferToDisp').textContent=l;})"><span class="txc-k">To</span><span class="txc-v"><span id="txTransferToDisp">${curTrName}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txTransferTo" value="${curTr}">`;
   }
   const valDisplay=val?parseInt(val).toLocaleString():'';
-  c.innerHTML=typeHTML+spec+`
-    <div class="form-group"><label class="form-label">Amount (UGX)</label><input type="text" inputmode="numeric" class="form-input" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}"></div>
-    <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="txDate" value="${date}"></div>
-    <div class="form-group"><label class="form-label">Note (optional)</label><input type="text" class="form-input" id="txNote" value="${note}" placeholder="Add a note..."></div>
-    <div class="form-group"><label class="form-label">Receipt / Image (optional)</label><div class="img-preview" id="txImgPreview" onclick="openPhotoChoice('tx')">${txImageData?`<img src="${txImageData}">`:`<div class="img-placeholder">${ic('i-camera')}<span>Tap to add photo</span></div>`}</div><input type="file" id="txImgInput" accept="image/*" style="display:none" onchange="handleTxImage(event)"></div>
-    <button class="btn-gold" onclick="saveTx('${type}')">${editingTxId?'Update':'Save'} Transaction</button>
+  c.innerHTML=`
+    <div class="txc-hdr"><span class="txc-chip ${meta.cls}">${ic(meta.icon)}</span><span class="txc-title">${meta.title}</span></div>
+    <div class="txc-amtlab">Amount <span style="color:var(--text)">(UGX)</span></div>
+    <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
+    <div class="txc-grp">
+      ${rows}
+      <div class="txc-row" onclick="(function(d){if(d.showPicker){try{d.showPicker();}catch(e){d.focus();}}else{d.focus();}})(document.getElementById('txDate'))"><span class="txc-k">Date</span><input type="date" class="txc-date" id="txDate" value="${date}" max="${today()}"></div>
+      <div class="txc-rcpt" onclick="openPhotoChoice('tx')">${ic('i-camera')}<span>Receipt · <span style="color:var(--text-dim)">${txImageData?'Photo added':'Add photo'}</span></span><span id="txImgPreview" style="margin-left:auto;display:flex">${txImageData?`<img src="${txImageData}">`:''}</span></div>
+    </div>
+    <div class="txc-amtlab">Note <span style="color:var(--text-dim)">(optional)</span></div>
+    <textarea class="form-input txc-note" id="txNote" placeholder="Add a note...">${note}</textarea>
+    <input type="file" id="txImgInput" accept="image/*" style="display:none" onchange="handleTxImage(event)">
+    <button class="btn-gold" onclick="saveTx('${type}')">${editingTxId?'Update':'Save'} transaction</button>
     <button class="btn-outline" onclick="closeAllModals()">Cancel</button>`;
 }
 function rebuildTxForm(type){ buildTxForm(type,null); }
@@ -1989,6 +2039,7 @@ function saveTx(type){
   const amount=getRawAmount(document.getElementById('txAmount'));
   if(!amount||amount<=0){showToast('Enter a valid amount','var(--danger)');return;}
   const date=document.getElementById('txDate').value; if(!date){showToast('Select a date','var(--danger)');return;}
+  if(date>today()){showToast('Date can’t be in the future','var(--danger)');return;}
   const note=document.getElementById('txNote').value;
   let tx={id:editingTxId||genId(),type,amount,date,note,image:txImageData};
   if(type==='income'){tx.incomeType=document.getElementById('txIncomeType').value;}
@@ -2012,29 +2063,50 @@ function renderBudget(){
   const budgets=DB.budgets.filter(b=>budgetTab==='expenses'?b.type==='expense':(b.type==='savings'||b.type==='emergency'));
   if(budgets.length===0){c.innerHTML=`<div class="empty-state">${ic('i-budget')}<div class="e-text">No budgets yet</div></div>`;return;}
   c.innerHTML=budgets.map(b=>{
-    let spent=0;
-    if(b.type==='expense')spent=txs.filter(t=>t.type==='expense'&&t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);
-    else if(b.type==='savings')spent=txs.filter(t=>t.type==='savings').reduce((s,t)=>s+t.amount,0);
-    else if(b.type==='emergency')spent=txs.filter(t=>t.type==='emergency').reduce((s,t)=>s+t.amount,0);
+    let catTxs=[];
+    if(b.type==='expense')catTxs=txs.filter(t=>t.type==='expense'&&t.categoryId===b.categoryId);
+    else if(b.type==='savings')catTxs=txs.filter(t=>t.type==='savings');
+    else if(b.type==='emergency')catTxs=txs.filter(t=>t.type==='emergency');
+    const spent=catTxs.reduce((s,t)=>s+t.amount,0);
     const mult=month==='all'?12:1;
     const budgetAmt=b.amount*mult;
+    const rem=budgetAmt-spent;
     const p=budgetAmt>0?Math.min((spent/budgetAmt)*100,100):0;
     const col=p>90?'var(--danger)':p>70?'var(--warning)':'var(--success)';
     const st=p>=100?'Over budget':p>=80?'Approaching limit':'On track';
     const sc=p>=100?'status-over':p>=80?'status-warn':'status-good';
-    const periodNote=mult>1?` <small style="color:var(--text-muted)">(${mult} mo)</small>`:'';
-    return `<div class="budget-card"><div class="budget-card-top"><div class="budget-card-name">${ic(b.icon)}${b.name}</div><div style="display:flex;gap:4px"><button class="icon-btn edit" onclick="editBudget('${b.id}')">${ic('i-edit')}</button><button class="icon-btn del" onclick="deleteBudget('${b.id}')">${ic('i-trash')}</button></div></div>
-    <div class="budget-card-amounts">Spent <span>${fmtShort(spent)}</span> of <span>${fmtShort(budgetAmt)}</span>${periodNote}</div>
-    <div class="budget-full-bar"><div class="budget-full-fill" style="width:${p}%;background:${col}"></div></div>
-    <div class="budget-card-status ${sc}">${st} · ${Math.round(p)}%</div></div>`;
+    const periodNote=mult>1?` (${mult} mo)`:'';
+    const rows=catTxs.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const txsHTML=rows.length?'<div class="txd-list">'+rows.map(txDigestRowHTML).join('')+'</div>':'<div class="bgt-empty">No transactions this period</div>';
+    return `<div class="bgt-card">
+      <div class="bgt-head" onclick="toggleBudget('${b.id}')">
+        <div class="bgt-chip">${ic(b.icon)}</div>
+        <div class="bgt-info"><div class="bgt-name">${b.name}</div><div class="bgt-sub">${fmtShort(spent)} of ${fmtShort(budgetAmt)}${periodNote}</div></div>
+        ${glRing(p,col,44)}
+        <div class="bgt-chev">${ic('i-chevron')}</div>
+      </div>
+      <div class="bgt-detail" id="bgtd-${b.id}" style="display:none">
+        <div class="bgt-stats"><div><div class="bgt-sl">Spent</div><div class="bgt-sv">${fmtShort(spent)}</div></div><div><div class="bgt-sl">Budget</div><div class="bgt-sv">${fmtShort(budgetAmt)}</div></div><div><div class="bgt-sl">${rem>=0?'Left':'Over'}</div><div class="bgt-sv" style="color:${rem>=0?'var(--success)':'var(--danger)'}">${fmtShort(Math.abs(rem))}</div></div></div>
+        <div class="budget-card-status ${sc}" style="margin-bottom:4px">${st} · ${Math.round(p)}%</div>
+        <div class="bgt-txlabel">This period</div>
+        ${txsHTML}
+        <div class="bgt-actions"><button class="btn-outline" onclick="editBudget('${b.id}')">Edit</button><button class="btn-outline bgt-del" onclick="deleteBudget('${b.id}')">Delete</button></div>
+      </div>
+    </div>`;
   }).join('');
+}
+function toggleBudget(id){
+  var d=document.getElementById('bgtd-'+id); if(!d)return;
+  var open=d.style.display!=='none';
+  d.style.display=open?'none':'block';
+  var card=d.parentElement; if(card&&card.classList.contains('bgt-card'))card.classList.toggle('open',!open);
 }
 function renderLoans(c){
   if(DB.loans.length===0){c.innerHTML=`<div class="empty-state">${ic('i-cash')}<div class="e-text">No loans recorded</div></div>`;return;}
   c.innerHTML=DB.loans.map(l=>{
     const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0);
     const rem=Math.max(0,l.amount-repaid); const p=l.amount>0?Math.min((repaid/l.amount)*100,100):0;
-    return `<div class="loan-card"><div class="loan-top"><div><div class="loan-name">${ic('i-cash')}${l.name}<span class="loan-lender">${l.source}</span></div></div><div style="display:flex;gap:4px"><button class="icon-btn edit" onclick="openAddLoanModal(DB.loans.find(x=>x.id==='${l.id}'))">${ic('i-edit')}</button><button class="icon-btn del" onclick="deleteLoan('${l.id}')">${ic('i-trash')}</button></div></div>
+    return `<div class="loan-card"><div class="loan-top"><div><div class="loan-name"><span class="bgt-chip" style="width:34px;height:34px">${ic('i-cash')}</span>${l.name}<span class="loan-lender">${l.source}</span></div></div><div style="display:flex;gap:4px"><button class="icon-btn edit" onclick="openAddLoanModal(DB.loans.find(x=>x.id==='${l.id}'))">${ic('i-edit')}</button><button class="icon-btn del" onclick="deleteLoan('${l.id}')">${ic('i-trash')}</button></div></div>
     <div class="loan-amounts"><div class="loan-amt-box"><div class="loan-amt-label">Original</div><div class="loan-amt-val">${fmtShort(l.amount)}</div></div><div class="loan-amt-box"><div class="loan-amt-label">Repaid</div><div class="loan-amt-val" style="color:var(--success)">${fmtShort(repaid)}</div></div><div class="loan-amt-box"><div class="loan-amt-label">Remaining</div><div class="loan-amt-val" style="color:${rem>0?'var(--danger)':'var(--success)'}">${fmtShort(rem)}</div></div></div>
     <div class="budget-full-bar"><div class="budget-full-fill" style="width:${p}%;background:linear-gradient(90deg,var(--gold-dim),var(--gold))"></div></div><div style="font-size:12px;color:var(--text-dim)">${Math.round(p)}% repaid</div></div>`;
   }).join('');
@@ -2042,7 +2114,7 @@ function renderLoans(c){
 function renderGoals(c){
   if(DB.goals.length===0){c.innerHTML=`<div class="empty-state">${ic('i-target')}<div class="e-text">No goals yet</div></div>`;return;}
   c.innerHTML=DB.goals.map(g=>{const p=g.target>0?Math.min((g.saved/g.target)*100,100):0; const ttg=timeToGo(g.targetDate);
-    return `<div class="goal-card"><div class="goal-top"><div class="goal-name">${ic(g.icon)}${g.name}</div><div style="display:flex;gap:8px;align-items:center"><div class="goal-pct">${Math.round(p)}%</div><button class="icon-btn edit" onclick="openAddGoalModal(DB.goals.find(x=>x.id==='${g.id}'))">${ic('i-edit')}</button><button class="icon-btn del" onclick="deleteGoal('${g.id}')">${ic('i-trash')}</button></div></div>
+    return `<div class="goal-card"><div class="goal-top"><div class="goal-name"><span class="bgt-chip" style="width:34px;height:34px">${ic(g.icon)}</span>${g.name}</div><div style="display:flex;gap:8px;align-items:center"><div class="goal-pct">${Math.round(p)}%</div><button class="icon-btn edit" onclick="openAddGoalModal(DB.goals.find(x=>x.id==='${g.id}'))">${ic('i-edit')}</button><button class="icon-btn del" onclick="deleteGoal('${g.id}')">${ic('i-trash')}</button></div></div>
     <div class="goal-bar"><div class="goal-fill" style="width:${p}%"></div></div><div class="goal-amounts"><span>${fmtShort(g.saved)} saved · ${fmtShort(Math.max(0,g.target-g.saved))} to go</span><span style="color:${ttg&&ttg.overdue?'var(--danger)':'var(--text-dim)'}">${ttg?ttg.text:'No date'}</span></div></div>`;
   }).join('');
 }
