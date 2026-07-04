@@ -214,13 +214,70 @@
 
   .budget-status-section { padding:0 var(--gutter) 10px; }
   .budget-status-section .glass-card { cursor:pointer; }
-  .misc-line { margin:0 var(--gutter) 8px; padding:14px 16px; border-radius:var(--radius-sm); background:var(--card-bg);
-    border:1px solid var(--card-border); display:flex; align-items:center; justify-content:space-between; gap:12px;
-    box-shadow:0 1px 1px var(--card-hi) inset, 0 8px 20px -8px var(--shadow), 0 2px 5px -2px var(--shadow); animation:fadeUp 0.5s both; }
-  .misc-left { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text); }
-  .misc-left svg { width:20px; height:20px; color:var(--gold); flex-shrink:0; }
-  .misc-left small { color:var(--text-dim); font-size:11px; }
-  .misc-val { font-size:16px; font-weight:800; letter-spacing:-0.2px; }
+  .misc-line { margin:0 var(--gutter) 8px; padding:13px 15px; border-radius:18px; background:var(--card-bg);
+    border:1px solid var(--card-border); display:flex; align-items:center; gap:12px; position:relative; overflow:hidden;
+    box-shadow:0 1px 1px var(--card-hi) inset, 0 10px 24px -8px var(--shadow), 0 2px 6px -2px var(--shadow); animation:fadeUp 0.5s both; }
+  .misc-line::before { content:''; position:absolute; inset:0; border-radius:18px; pointer-events:none;
+    background:radial-gradient(ellipse at 85% -20%, rgba(212,175,55,0.12) 0%, transparent 62%); }
+  .misc-chip { width:40px; height:40px; border-radius:12px; background:rgba(212,175,55,0.16); color:var(--gold);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 1px 1px var(--card-hi) inset; position:relative; z-index:1; }
+  .misc-chip svg { width:20px; height:20px; stroke-width:1.8; }
+  .misc-body { flex:1; min-width:0; position:relative; z-index:1; }
+  .misc-title { font-size:14px; font-weight:800; color:var(--text); }
+  .misc-desc { font-size:11.5px; color:var(--text-dim); margin-top:2px; }
+  .misc-amt { font-size:16px; font-weight:800; letter-spacing:-0.2px; color:var(--gold); flex-shrink:0; position:relative; z-index:1; }
+  .rc-wrap { display:flex; align-items:center; gap:16px; padding:16px 16px 12px; }
+  .rc-stats { flex:1; min-width:0; display:flex; flex-direction:column; gap:9px; }
+  .rc-stat { display:flex; align-items:center; gap:9px; }
+  .rc-dot { width:9px; height:9px; border-radius:3px; flex-shrink:0; }
+  .rc-sl { font-size:12.5px; color:var(--text-dim); flex:1; min-width:0; }
+  .rc-sv { font-size:13.5px; font-weight:800; color:var(--text); flex-shrink:0; }
+  .rc-verdict { padding:0 16px 15px; font-size:12.5px; color:var(--text-dim); line-height:1.5; }
+  .rc-verdict b { font-weight:800; color:var(--text); }
+  .disc-verdict { font-size:18px; font-weight:800; letter-spacing:-0.3px; }
+  .disc-line { font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-top:6px; }
+  .disc-over { padding:12px 16px 15px; margin-top:2px; border-top:1px solid var(--card-border); }
+  .disc-over .bs-over-row:last-child { margin-bottom:0; }
+  .disc-good { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--success); }
+  .disc-good svg { width:16px; height:16px; color:var(--success); flex-shrink:0; }
+  /* Compare periods */
+  .cmp-card { padding:14px 15px; }
+  .cmp-head { font-size:13px; font-weight:800; color:var(--text); text-align:center; margin-bottom:6px; letter-spacing:0.2px; }
+  .cmp-arw { color:var(--text-muted); margin:0 5px; font-weight:600; }
+  .cmp-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--card-border); }
+  .cmp-row.dig { cursor:pointer; }
+  .cmp-ic { width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .cmp-ic svg { width:16px; height:16px; stroke-width:1.9; }
+  .cmp-l { flex:1; min-width:0; font-size:13px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:2px; }
+  .cmp-chev { display:inline-flex; color:var(--text-muted); transition:transform 0.25s var(--ease); }
+  .cmp-chev svg { width:15px; height:15px; }
+  .cmp-row.open .cmp-chev { transform:rotate(90deg); }
+  .cmp-v { font-size:12.5px; color:var(--text); white-space:nowrap; }
+  .cmp-v b { font-weight:800; }
+  .cmp-prev { color:var(--text-dim); }
+  .cmp-d { font-size:11px; font-weight:800; margin-left:6px; flex-shrink:0; min-width:42px; text-align:right; }
+  .cmp-d.up { color:var(--success); } .cmp-d.down { color:var(--danger); } .cmp-d.flat { color:var(--text-muted); }
+  .cmp-detail { padding:2px 0 6px 40px; animation:slideDown 0.25s; }
+  .cmp-brow { display:flex; align-items:center; gap:8px; padding:6px 0; }
+  .cmp-bic { display:inline-flex; color:var(--text-muted); flex-shrink:0; }
+  .cmp-bic svg { width:14px; height:14px; }
+  .cmp-bn { flex:1; min-width:0; font-size:12px; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cmp-bv { font-size:11.5px; color:var(--text); white-space:nowrap; }
+  .cmp-bd { font-size:10px; font-weight:800; margin-left:6px; flex-shrink:0; min-width:36px; text-align:right; }
+  .cmp-bd.up { color:var(--success); } .cmp-bd.down { color:var(--danger); } .cmp-bd.flat { color:var(--text-muted); }
+  .cmp-empty { font-size:12px; color:var(--text-dim); padding:6px 0; }
+  .cmp-hint { font-size:11px; color:var(--text-muted); text-align:center; margin-top:10px; }
+  /* Coach insights */
+  .coach-card { padding:16px 15px; }
+  .coach-row { display:flex; gap:12px; align-items:flex-start; }
+  .coach-ava { width:34px; height:34px; border-radius:11px; background:rgba(212,175,55,0.15); color:var(--gold); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 1px 1px var(--card-hi) inset; }
+  .coach-ava svg { width:18px; height:18px; stroke-width:1.8; }
+  .coach-note { font-size:13.5px; line-height:1.62; color:var(--text); }
+  .coach-note b { font-weight:800; }
+  .coach-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .coach-chip { display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border-radius:20px; font-size:12px; font-weight:700; color:var(--text); background:var(--card-bg); border:1px solid var(--card-border); box-shadow:0 1px 2px -1px var(--shadow); cursor:pointer; transition:transform 0.12s var(--ease); }
+  .coach-chip svg { width:14px; height:14px; color:var(--cc); flex-shrink:0; stroke-width:2; }
+  .coach-chip:active { transform:scale(0.96); }
   .bal-cards { padding:0 var(--gutter) 8px; display:grid; grid-template-columns:1fr 1fr; gap:13px; }
   .bal-card { display:flex; align-items:center; gap:10px; padding:15px; border-radius:18px; position:relative; overflow:hidden;
     background:var(--card-bg); border:1px solid var(--card-border); animation:fadeUp 0.5s both;
@@ -485,6 +542,7 @@
   .settings-section-title { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:var(--gold-dim); margin-bottom:10px; padding-left:4px; font-weight:700; }
   .settings-list { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius-sm); overflow:hidden;
     box-shadow:0 1px 1px var(--card-hi) inset, 0 8px 20px -8px var(--shadow), 0 2px 5px -2px var(--shadow); }
+  .bgt-list { display:flex; flex-direction:column; gap:12px; }
   .settings-item { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--input-border); cursor:pointer; transition:background 0.2s; }
   .fp-sw { width:50px; height:30px; border-radius:15px; background:var(--gold); position:relative; flex-shrink:0; transition:background 0.22s var(--ease); cursor:pointer; }
   .fp-sw::after { content:''; position:absolute; top:2px; left:2px; width:26px; height:26px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.35); transition:left 0.22s var(--ease); }
@@ -652,6 +710,11 @@
   .bgt-chev svg { width:18px; height:18px; }
   .bgt-card.open .bgt-chev { transform:rotate(90deg); }
   .bgt-detail { padding:2px 14px 14px; animation:slideDown 0.25s; }
+  .set-about { font-size:13px; line-height:1.5; color:var(--text-dim); margin:2px 0 12px; }
+  .set-about.empty { font-style:italic; opacity:0.7; }
+  .set-cat-actions { display:flex; gap:8px; }
+  .set-mini { flex:1; padding:9px 0; font-size:13px; margin:0; border-radius:11px; }
+  .set-mini.del { color:var(--danger); border-color:rgba(224,85,85,0.32); }
   .bgt-stats { display:flex; gap:8px; margin-bottom:11px; }
   .bgt-stats > div { flex:1; background:var(--input-bg); border-radius:10px; padding:9px 6px; text-align:center; }
   .bgt-sl { font-size:10px; color:var(--text-dim); }
@@ -837,7 +900,6 @@
     </div>
     <div class="swipe-dots" id="ovDots"><span class="sdot active"></span><span class="sdot"></span></div>
     <div class="misc-line" id="miscLine" onclick="expandCard('misc')" style="cursor:pointer"></div>
-    <div class="bal-cards" id="balCards"></div>
     <div id="goalsCard"></div>
     <div class="section-header"><div class="section-title">Recent Transactions</div><div class="see-more" onclick="navTo('transactions')">See all</div></div>
     <div class="tx-list" id="recentTxList"></div>
@@ -894,11 +956,11 @@
       <div class="settings-section-title">Security</div>
       <div class="settings-list">
         <div class="settings-item" onclick="openPinSetup()">
-          <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-lock"/></svg></div><div><div class="s-label">Change PIN</div><div class="s-sub">Update your app PIN</div></div></div>
+          <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-lock"/></svg></div><div class="s-label">Change PIN</div></div>
           <div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div>
         </div>
         <div class="settings-item" onclick="toggleFingerprint()">
-          <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-finger"/></svg></div><div><div class="s-label">Fingerprint</div><div class="s-sub" id="fingerprintSub">Unlock with your fingerprint</div></div></div>
+          <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-finger"/></svg></div><div class="s-label">Fingerprint</div></div>
           <span class="fp-sw" id="fpSwitch"></span>
         </div>
       </div>
@@ -910,11 +972,11 @@
         <div class="settings-tab" id="stab-income" onclick="switchSettingsTab('income')">Income Sources</div>
       </div>
       <div id="stab-categories-panel">
-        <div class="settings-list" id="categoriesList"></div>
+        <div class="bgt-list" id="categoriesList"></div>
         <button class="btn-outline" onclick="openAddCategoryModal()" style="margin-top:10px;">+ Add Category</button>
       </div>
       <div id="stab-income-panel" style="display:none">
-        <div class="settings-list" id="incomeTypesList"></div>
+        <div class="bgt-list" id="incomeTypesList"></div>
         <button class="btn-outline" onclick="openAddIncomeTypeModal()" style="margin-top:10px;">+ Add Income Source</button>
       </div>
     </div>
@@ -1393,11 +1455,6 @@ function updateOverview(){
   renderBudgetStatus(txs);
   renderIncomeExpCard();
   equalizeOvCards();
-  // Current balance cards (running totals) - tappable
-  const balS=getPotBalance('savings'), balE=getPotBalance('emergency');
-  document.getElementById('balCards').innerHTML=`
-    <div class="bal-card" onclick="expandCard('savings')" style="--accent:rgba(212,175,55,0.6);--accent-soft:rgba(212,175,55,0.12)"><div class="bal-icon" style="color:var(--gold)">${ic('i-bank')}</div><div><div class="bal-label">Savings Balance</div><div class="bal-sub">Currently available</div></div><div class="bal-amount" style="color:var(--gold)">${fmtShort(balS)}</div></div>
-    <div class="bal-card" onclick="expandCard('emergency')" style="--accent:rgba(240,160,32,0.5);--accent-soft:rgba(240,160,32,0.1)"><div class="bal-icon" style="color:var(--warning)">${ic('i-shield')}</div><div><div class="bal-label">Emergency Balance</div><div class="bal-sub">Currently available</div></div><div class="bal-amount" style="color:var(--warning)">${fmtShort(balE)}</div></div>`;
   // Misc line: leftover still unallocated (and, for the year view, not already carried forward)
   const miscEl=document.getElementById('miscLine');
   if(month==='all'){
@@ -1415,11 +1472,11 @@ function updateOverview(){
     let unpostedMisc=0;
     for(let m=0;m<12;m++){ const lo=monthLeftover(m); if(lo>0 && !monthPosted(m)) unpostedMisc+=lo; }
     if(unpostedMisc<=0){ miscEl.style.display='none'; }
-    else { miscEl.style.display='flex'; miscEl.innerHTML=`<div class="misc-left">${ic('i-recycle')}<span>Miscellaneous Income <small>(unallocated · excludes carried-forward)</small></span></div><div class="misc-val" style="color:var(--gold)">${fmtShort(unpostedMisc)}</div>`; }
+    else { miscEl.style.display='flex'; miscEl.innerHTML=`<div class="misc-chip">${ic('i-recycle')}</div><div class="misc-body"><div class="misc-title">Miscellaneous income</div><div class="misc-desc">Unallocated · excludes carried-forward</div></div><div class="misc-amt">${fmtShort(unpostedMisc)}</div>`; }
   } else if(leftover<=0 || alreadyPosted){ miscEl.style.display='none'; }
   else {
     miscEl.style.display='flex';
-    miscEl.innerHTML=`<div class="misc-left">${ic('i-recycle')}<span>Miscellaneous Income <small>(leftover this month)</small></span></div><div class="misc-val" style="color:var(--gold)">${fmtShort(leftover)}</div>`;
+    miscEl.innerHTML=`<div class="misc-chip">${ic('i-recycle')}</div><div class="misc-body"><div class="misc-title">Miscellaneous income</div><div class="misc-desc">Leftover this month</div></div><div class="misc-amt">${fmtShort(leftover)}</div>`;
   }
   renderGoalsCard();
   if(month==='all'){ document.getElementById('cfBanner').style.display='none'; }
@@ -1441,6 +1498,16 @@ function timeToGo(targetDate){
 function glRing(pct,col,size){
   var p=Math.max(0,Math.min(100,pct))||0, sw=Math.max(3,size*0.12), r=size/2-sw/2-1, C=2*Math.PI*r, off=C*(1-p/100);
   return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex:none"><svg width="'+size+'" height="'+size+'" style="transform:rotate(-90deg)"><circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="var(--track)" stroke-width="'+sw+'"/><circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/></svg><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:'+Math.round(size*0.30)+'px;font-weight:800;color:var(--text)">'+Math.round(p)+'</div></div>';
+}
+function ringDual(pct,col,size,cap){
+  var p=Math.max(0,Math.min(100,pct))||0, sw=Math.max(4,size*0.11), r=size/2-sw/2-1, C=2*Math.PI*r, off=C*(1-p/100);
+  return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex:none">'+
+    '<svg width="'+size+'" height="'+size+'" style="transform:rotate(-90deg)">'+
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="var(--track)" stroke-width="'+sw+'"/>'+
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/></svg>'+
+    '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1">'+
+    '<div style="font-size:'+Math.round(size*0.26)+'px;font-weight:800;color:var(--text)">'+Math.round(p)+'%</div>'+
+    '<div style="font-size:'+Math.round(size*0.13)+'px;color:var(--text-dim);margin-top:3px">'+cap+'</div></div></div>';
 }
 function renderGoalsCard(){
   const el=document.getElementById('goalsCard');
@@ -1607,63 +1674,29 @@ function expandCard(kind){
       <div class="exp-divider"></div>
       <div class="exp-row"><span>Change in ${periodLabel()}</span><span style="color:${periodNet>=0?'var(--success)':'var(--danger)'};font-weight:700">${periodNet>=0?'+':'-'}${fmtShort(Math.abs(periodNet))}</span></div>`;
   } else if(kind==='budgetstatus'){
-    title='Budgeting Detail · '+periodLabel();
+    title='Budgeting Discipline · '+periodLabel();
     const exp=txs.filter(t=>t.type==='expense');
     const total=exp.reduce((s,t)=>s+t.amount,0);
-    const mult=periodMonths();
-    const annual=mult>1;
-    const rows=DB.budgets.filter(b=>b.type==='expense').map(b=>{
-      const cat=DB.categories.find(c=>c.id===b.categoryId)||{};
-      const spent=exp.filter(t=>t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);
-      const budget=b.amount*mult;
-      return {name:b.name||cat.name||'Untitled',icon:b.icon||cat.icon||'i-cash',spent,budget,p:budget>0?Math.round((spent/budget)*100):0};
-    }).filter(x=>x.spent>0||x.budget>0).sort((a,b)=>b.p-a.p);
-    // accurate decomposition: total = onBudget + untracked (exhaustive, mutually exclusive)
-    const onBudget=rows.reduce((s,x)=>s+x.spent,0);
-    const totalBudget=rows.reduce((s,x)=>s+x.budget,0);
-    const untracked=total-onBudget;
-    const overallP=pct(total,totalBudget);
-    const left=totalBudget-total;
-    const hasBudget=rows.some(x=>x.budget>0);
-    const over=rows.filter(x=>x.budget>0&&x.p>=100).length;
-    const near=rows.filter(x=>x.budget>0&&x.p>=80&&x.p<100).length;
-    const ok=rows.filter(x=>x.budget>0&&x.p<80).length;
-    if(rows.length===0||!hasBudget){
-      body=`<div class="exp-empty">No budgets set for ${periodLabel()}.`+
-        (total>0?`<div class="exp-sub" style="margin:6px 0 0">You spent ${fmtShort(total)} this period — add a budget to track it against a plan.</div>`:'')+
-        `</div>`;
+    if(total===0){
+      body=`<div class="exp-empty">No spending logged for ${periodLabel()} yet.</div>`;
     } else {
-      const hcol=overallP>=100?'danger':overallP>=80?'warning':'success';
-      const verdict=left<0?`Over budget by ${fmtShort(-left)}`:overallP>=80?`On the edge · ${fmtShort(left)} left`:`On track · ${fmtShort(left)} left`;
-      const chips=[
-        over?`<span style="color:var(--danger)">${over} over</span>`:'',
-        near?`<span style="color:var(--warning)">${near} nearing</span>`:'',
-        ok?`<span style="color:var(--success)">${ok} on track</span>`:''
-      ].filter(Boolean).join('<span class="bd-dot">·</span>');
-      const head=`<div class="bd-head">`+
-        `<div class="exp-total" style="color:var(--${hcol})">${overallP}%</div>`+
-        `<div class="bd-cap2">${fmtShort(total)} of ${fmtShort(totalBudget)} budget used${annual?' (annual)':''}</div>`+
-        `<div class="goal-bar bd-hbar"><div class="goal-fill" style="width:${Math.min(overallP,100)}%;background:var(--${hcol})"></div></div>`+
-        `<div class="bd-verdict" style="color:var(--${hcol})">${verdict}</div>`+
-        (chips?`<div class="bd-chips">${chips}</div>`:'')+
-        `</div><div class="exp-divider"></div>`;
-      const list=rows.map(x=>{
-        const noBud=x.budget<=0;
-        const col=noBud?'danger':x.p>=100?'danger':x.p>=80?'warning':'success';
-        const lbl=noBud?'—':x.p+'%';
-        const diff=x.budget-x.spent;
-        const cap=noBud?`${fmtShort(x.spent)} spent · no budget set`:diff>=0?`${fmtShort(x.spent)} of ${fmtShort(x.budget)} · ${fmtShort(diff)} left`:`${fmtShort(x.spent)} of ${fmtShort(x.budget)} · ${fmtShort(-diff)} over`;
-        return `<div class="bd-item"><div class="bd-line">`+
-          `<span class="bd-name">${ic(x.icon)}<span class="bd-nm">${x.name}</span></span>`+
-          `<span class="bd-pct" style="color:var(--${col})">${lbl}</span></div>`+
-          `<div class="goal-bar bd-bar"><div class="goal-fill" style="width:${noBud?100:Math.min(x.p,100)}%;background:var(--${col})"></div></div>`+
-          `<div class="bd-cap">${cap}</div></div>`;
-      }).join('');
-      const foot=untracked>0?`<div class="exp-divider"></div>`+
-         `<div class="exp-row" style="border:none;padding-bottom:0"><span>Untracked spending</span><span style="color:var(--warning)">${fmtShort(untracked)}</span></div>`+
-         `<div class="bd-cap">${pct(untracked,total)}% of spending fell outside any budget — tag it to a budgeted category to see it here.</div>`:`<div class="exp-divider"></div><div class="bd-cap" style="text-align:center">Every shilling is inside a budget. Clean books.</div>`;
-      const note=annual?`<div class="bd-cap" style="margin-top:10px;opacity:.8">Budgets are shown ×12 (annual). % may read low if you've logged only part of the year.</div>`:'';
-      body=head+list+foot+note;
+      const D=budgetDiscipline(exp, month);
+      if(!D.hasBudgets){
+        body=`<div class="exp-empty">No budgets set for ${periodLabel()}. Add budgets on the Budget tab to start tracking your discipline.</div>`;
+      } else {
+        const disc=Math.round(D.budSpent/total*100);
+        const unbudgeted=total-D.budSpent;
+        const overTop=D.over.slice(0,2);
+        // Ring = how much you budgeted for. Colour: 100% green · 80–99% amber · <80% red
+        const col=disc>=100?'var(--success)':disc>=80?'var(--warning)':'var(--danger)';
+        const verdict=disc>=100?'On track':disc>=80?'Almost there':'Loose';
+        body=`<div style="display:flex;justify-content:center;margin:6px 0 12px">${ringDual(disc,col,112,'budgeted')}</div>`+
+          `<div class="bd-verdict" style="color:${col};text-align:center;margin-bottom:16px">${verdict} · ${disc}% of your spending was budgeted for</div>`+
+          `<div class="exp-row"><span>Total spent</span><span style="font-weight:700">${fmtShort(total)}</span></div>`+
+          `<div class="exp-row"><span>Budgeted for</span><span style="color:var(--success);font-weight:700">${fmtShort(D.budSpent)}</span></div>`+
+          (unbudgeted>0?`<div class="exp-row"><span>Unbudgeted</span><span style="color:var(--warning);font-weight:700">${fmtShort(unbudgeted)}</span></div>`:'')+
+          (overTop.length?`<div class="exp-divider"></div><div class="bd-cap" style="margin-bottom:10px">${month==='all'?'Where you overspent most:':'Over budget this period:'}</div>`+overTop.map(o=>`<div class="bs-over-row">${ic(o.icon)}<span>${o.label}</span><span class="bs-over-amt">+${fmtShort(o.over)} over</span></div>`).join(''):`<div class="exp-divider"></div><div class="disc-good" style="justify-content:center">${ic('i-check')}<span>Nothing spent over budget — good job</span></div>`);
+      }
     }
   } else if(kind==='goals'){
     title='Goals & Loans';
@@ -1784,13 +1817,35 @@ function equalizeOvCards(){
 }
 function renderIncomeExpCard(){
   const el=document.getElementById('incomeExpCard'); if(!el) return;
-  const year=selYear;
+  const {month,year}=getSelectedPeriod();
+  // SINGLE MONTH → ring + Income / Expenditure / Kept
+  if(month!=='all'){
+    const txs=getTxForPeriod(month,year);
+    const inc=txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const exp=txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    if(inc<=0 && exp<=0){ el.innerHTML=`<div class="empty-state" style="padding:34px 16px"><div class="e-icon">${ic('i-income')}</div><div class="e-text">No income or expenses logged yet</div></div>`; return; }
+    const kept=inc-exp;
+    const keptPct=inc>0?Math.max(0,Math.round(kept/inc*100)):0;
+    const spendPct=inc>0?Math.round(exp/inc*100):0;
+    const keptCol=kept<0?'var(--danger)':'var(--success)';
+    const ringCol=kept<0?'var(--danger)':(keptPct>=35?'var(--success)':(keptPct>=20?'var(--gold)':'var(--warning)'));
+    let verdict;
+    if(inc<=0) verdict=`Expenses logged but no income recorded for this month yet.`;
+    else if(kept<0) verdict=`<b style="color:var(--danger)">Overspent by ${fmtShort(-kept)}</b> — spending was ${spendPct}% of income.`;
+    else verdict=`You kept <b>${fmtShort(kept)}</b> — that's <b>${keptPct}%</b> of what came in.`;
+    el.innerHTML=`<div class="rc-wrap">${ringDual(inc>0?keptPct:0,ringCol,92,'kept')}<div class="rc-stats">
+        <div class="rc-stat"><span class="rc-dot" style="background:var(--gold)"></span><span class="rc-sl">Income</span><span class="rc-sv">${fmtShort(inc)}</span></div>
+        <div class="rc-stat"><span class="rc-dot" style="background:var(--danger)"></span><span class="rc-sl">Expenditure</span><span class="rc-sv">${fmtShort(exp)}</span></div>
+        <div class="rc-stat"><span class="rc-dot" style="background:${keptCol}"></span><span class="rc-sl">Kept</span><span class="rc-sv" style="color:${keptCol}">${fmtShort(kept)}</span></div>
+      </div></div><div class="rc-verdict">${verdict}</div>`;
+    return;
+  }
+  // ALL MONTHS → multi-month income vs expenses curve
   const inc=Array(12).fill(0), exp=Array(12).fill(0);
   DB.transactions.forEach(t=>{ if(!t.date) return; const d=new Date(t.date); if(d.getFullYear()!==year) return; const m=d.getMonth(); if(t.type==='income') inc[m]+=t.amount; else if(t.type==='expense') exp[m]+=t.amount; });
   const bars=(m)=>{ const i=inc[m],e=exp[m],mx=Math.max(i,e,1); return `<div class="iec-hbars"><div class="iec-hrow"><span class="iec-hl">Income</span><div class="iec-ht"><div class="iec-hf" style="width:${Math.round(i/mx*100)}%;background:var(--gold)"></div></div><span class="iec-hv" style="color:var(--gold-dim)">${fmtShort(i)}</span></div><div class="iec-hrow"><span class="iec-hl">Expenses</span><div class="iec-ht"><div class="iec-hf" style="width:${Math.round(e/mx*100)}%;background:var(--danger)"></div></div><span class="iec-hv" style="color:var(--danger)">${fmtShort(e)}</span></div></div>`; };
-  const verdict=(m)=>{ const i=inc[m],e=exp[m]; if(i<=0){ return e>0?`<div class="iec-verdict bad">⚠ Expenses logged but no income recorded this month.</div>`:''; } const r=Math.round(e/i*100); let cls,txt; if(r<65){ cls='good'; txt=`✓ Good job — your expenses are ${r}% of your income, below your 65% target.`; } else if(r<=70){ cls='mid'; txt=`Not bad — expenses are ${r}% of income. Try to keep them below 65%.`; } else { cls='bad'; txt=`⚠ You're overspending — expenses are ${r}% of your income.`; } return `<div class="iec-verdict ${cls}">${txt}</div>`; };
-  const singleView=(m,note)=>`<div class="iec-per">${MONTHS[m]} ${year}</div><div class="iec-sm">${bars(m)}${verdict(m)}${note?`<div class="iec-note">${note}</div>`:''}</div>`;
-  if(selMonth!=='all'){ el.innerHTML=singleView(selMonth); return; }
+  const verdictFn=(m)=>{ const i=inc[m],e=exp[m]; if(i<=0){ return e>0?`<div class="iec-verdict bad">⚠ Expenses logged but no income recorded this month.</div>`:''; } const r=Math.round(e/i*100); let cls,txt; if(r<65){ cls='good'; txt=`✓ Good job — your expenses are ${r}% of your income, below your 65% target.`; } else if(r<=70){ cls='mid'; txt=`Not bad — expenses are ${r}% of income. Try to keep them below 65%.`; } else { cls='bad'; txt=`⚠ You're overspending — expenses are ${r}% of your income.`; } return `<div class="iec-verdict ${cls}">${txt}</div>`; };
+  const singleView=(m,note)=>`<div class="iec-per">${MONTHS[m]} ${year}</div><div class="iec-sm">${bars(m)}${verdictFn(m)}${note?`<div class="iec-note">${note}</div>`:''}</div>`;
   let first=-1,last=-1;
   for(let m=0;m<12;m++){ if(inc[m]||exp[m]){ if(first<0)first=m; last=m; } }
   if(first<0){ el.innerHTML=`<div class="iec-per">${year}</div><div class="iec-chart" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px">No income or expenses logged yet</div>`; return; }
@@ -1800,11 +1855,11 @@ function renderIncomeExpCard(){
   const W=300,H=100,pad=6, xstep=(W-pad*2)/(months.length-1);
   const yof=v=>(H-pad)-(v/mx)*(H-pad*2);
   const path=arr=>'M'+months.map((m,k)=>(pad+k*xstep).toFixed(1)+','+yof(arr[m]).toFixed(1)).join(' L');
-  const dotsFor=(arr,col)=>months.map((m,k)=>{ const xp=((pad+k*xstep)/W*100).toFixed(2), yp=(yof(arr[m])/H*100).toFixed(2), last=k===months.length-1; return last?`<span class="iec-dot iec-dot-last" style="left:${xp}%;top:${yp}%;border-color:${col}"></span>`:`<span class="iec-dot" style="left:${xp}%;top:${yp}%;background:${col}"></span>`; }).join('');
+  const dotsFor=(arr,col)=>months.map((m,k)=>{ const xp=((pad+k*xstep)/W*100).toFixed(2), yp=(yof(arr[m])/H*100).toFixed(2), lst=k===months.length-1; return lst?`<span class="iec-dot iec-dot-last" style="left:${xp}%;top:${yp}%;border-color:${col}"></span>`:`<span class="iec-dot" style="left:${xp}%;top:${yp}%;background:${col}"></span>`; }).join('');
   const totI=months.reduce((s,m)=>s+inc[m],0), totE=months.reduce((s,m)=>s+exp[m],0);
   let brief='';
   if(totI>0){
-    const r=Math.round(totE/totI*100), kept=totI-totE, keptPct=Math.max(0,100-r), rangeLbl=`${MONTHS[first].slice(0,3)}–${MONTHS[last].slice(0,3)}`;
+    const r=Math.round(totE/totI*100), kept=totI-totE, keptPct=Math.max(0,100-r);
     const lm=months[months.length-1], pm=months.length>1?months[months.length-2]:lm;
     let tr=''; if(exp[pm]>0&&lm!==pm){ if(exp[lm]<exp[pm]) tr=` Spending eased in ${MONTHS[lm]}.`; else if(exp[lm]>exp[pm]) tr=` Spending rose in ${MONTHS[lm]}.`; }
     if(kept>=0){ const cls=r<65?'good':(r<=70?'mid':'bad'), icon=r<65?'✓':(r<=70?'•':'⚠'); brief=`<div class="iec-verdict ${cls} iec-brief">${icon} Kept ${fmtShort(kept)} (${keptPct}%) of income.${tr}</div>`; }
@@ -1820,44 +1875,40 @@ function renderBudgetStatus(txs){
   const expTxs=txs.filter(t=>t.type==='expense');
   const totalExp=expTxs.reduce((s,t)=>s+t.amount,0);
   if(totalExp===0){ card.innerHTML=`<div class="empty-state" style="padding:30px 16px"><div class="e-icon">${ic('i-budget')}</div><div class="e-text">No spending logged for this period yet</div></div>`; return; }
-  const budgetedSpent=expTxs.filter(t=>t.categoryId).reduce((s,t)=>s+t.amount,0);
-  const unbudgetedSpent=expTxs.filter(t=>!t.categoryId).reduce((s,t)=>s+t.amount,0);
-  const budgetedPct=pct(budgetedSpent,totalExp);
-  const unbudgetedPct=pct(unbudgetedSpent,totalExp);
-  // overspend detection — per-month when viewing the whole year, else for the single period
   const {month:selM}=getSelectedPeriod();
+  const D=budgetDiscipline(expTxs, selM);
+  if(!D.hasBudgets){ card.innerHTML=`<div class="empty-state" style="padding:26px 16px"><div class="e-icon">${ic('i-budget')}</div><div class="e-text">No budgets set yet</div><div class="e-sub">Add budgets on the Budget tab to start tracking your discipline.</div></div>`; return; }
+  // Ring = how much of your spending you actually budgeted for. Colour: 100% green · 80–99% amber · <80% red
+  const disc=Math.round(D.budSpent/totalExp*100);
+  const unbudgeted=totalExp-D.budSpent;
+  const col=disc>=100?'var(--success)':disc>=80?'var(--warning)':'var(--danger)';
+  const verdict=disc>=100?'On track':disc>=80?'Almost there':'Loose';
+  const line=disc>=100?'Every expense was budgeted for — great discipline.':`${disc}% of your spending was budgeted for — ${fmtShort(unbudgeted)} wasn't. Add a budget for it.`;
+  // Overspend flag is separate from the ring: it shows even when you budgeted for everything (green) but blew a limit
+  const topOver=D.over.slice(0,2);
+  const overBlock=topOver.length
+    ? `<div class="disc-over">${topOver.map(o=>`<div class="bs-over-row">${ic(o.icon)}<span>${o.label}</span><span class="bs-over-amt">+${fmtShort(o.over)} over</span></div>`).join('')}</div>`
+    : `<div class="disc-over"><div class="disc-good">${ic('i-check')}<span>Nothing spent over budget — good job</span></div></div>`;
+  card.innerHTML=`<div class="rc-wrap">${ringDual(disc,col,92,'budgeted')}<div class="rc-stats"><div class="disc-verdict" style="color:${col}">${verdict}</div><div class="disc-line">${line}</div></div></div>${overBlock}`;
+}
+// Budget adherence for the selected period: how much of your BUDGETED spending stayed within budget.
+// disc = 100 ⇔ nothing overspent; over = over-budget categories, biggest first (per-month when viewing the year).
+function budgetDiscipline(expTxs, selM){
+  const bexp=DB.budgets.filter(b=>b.type==='expense');
   const catOf=id=>DB.categories.find(c=>c.id===id)||{};
-  let overTitle, topOver;
+  let budSpent=0, withinLimit=0, over=[];
   if(selM==='all'){
-    const events=[];
     for(let m=0;m<12;m++){
       const mTx=expTxs.filter(t=>new Date(t.date).getMonth()===m);
-      DB.budgets.filter(b=>b.type==='expense').forEach(b=>{
-        const spent=mTx.filter(t=>t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);
-        if(b.amount>0&&spent>b.amount){ const cat=catOf(b.categoryId); events.push({label:`In ${MONTHS[m]} — ${b.name||cat.name||'a category'}`,icon:b.icon||cat.icon||'i-question',over:spent-b.amount}); }
-      });
+      bexp.forEach(b=>{ const sp=mTx.filter(t=>t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0); budSpent+=sp; withinLimit+=Math.min(sp,b.amount); if(b.amount>0&&sp>b.amount){ const c=catOf(b.categoryId); over.push({label:`${MONTHS[m].slice(0,3)} · ${b.name||c.name||'a category'}`,icon:b.icon||c.icon||'i-question',over:sp-b.amount}); } });
     }
-    events.sort((a,b)=>b.over-a.over);
-    topOver=events.slice(0,2);
-    overTitle='Where you overspent most:';
   } else {
     const mult=periodMonths();
-    const over=[];
-    DB.budgets.filter(b=>b.type==='expense').forEach(b=>{
-      const spent=expTxs.filter(t=>t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);
-      const budget=b.amount*mult;
-      if(budget>0&&spent>budget){ const cat=catOf(b.categoryId); over.push({label:b.name||cat.name||'a category',icon:b.icon||cat.icon||'i-question',over:spent-budget}); }
-    });
-    over.sort((a,b)=>b.over-a.over);
-    topOver=over.slice(0,2);
-    overTitle='Overspending beyond budget:';
+    bexp.forEach(b=>{ const sp=expTxs.filter(t=>t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0); const bud=b.amount*mult; budSpent+=sp; withinLimit+=Math.min(sp,bud); if(bud>0&&sp>bud){ const c=catOf(b.categoryId); over.push({label:b.name||c.name||'a category',icon:b.icon||c.icon||'i-question',over:sp-bud}); } });
   }
-  const allBudgeted=unbudgetedSpent===0;
-  card.innerHTML=`
-    <div class="bs-bar"><div class="bs-bar-budgeted" style="width:${budgetedPct}%"></div><div class="bs-bar-unbudgeted" style="width:${unbudgetedPct}%"></div></div>
-    <div class="bs-legend"><span><i style="background:var(--success)"></i>Budgeted ${budgetedPct}%</span><span><i style="background:var(--danger)"></i>Unbudgeted ${unbudgetedPct}%</span></div>
-    ${allBudgeted?`<div class="bs-msg good">${ic('i-check')} Everything was budgeted. You are on track with great budgeting!</div>`:`<div class="bs-msg warn">${ic('i-warn')} ${fmtShort(unbudgetedSpent)} went to unbudgeted spending. Try assigning categories to tighten control.</div>`}
-    ${topOver.length>0?`<div class="bs-over"><div class="bs-over-title">${overTitle}</div>${topOver.map(o=>`<div class="bs-over-row">${ic(o.icon)}<span>${o.label}</span><span class="bs-over-amt">+${fmtShort(o.over)} over</span></div>`).join('')}</div>`:''}`;
+  over.sort((a,b)=>b.over-a.over);
+  const disc=budSpent>0?Math.round(withinLimit/budSpent*100):100;
+  return {disc, over, withinLimit, budSpent, overspend:over.reduce((s,o)=>s+o.over,0), hasBudgets:bexp.length>0};
 }
 function txItemHTML(t){
   const sign=t.type==='income'?'+':'-';
@@ -2431,6 +2482,91 @@ function an_insights(d){
   if(!out.length) out.push({icon:'i-check',title:'Looking balanced',body:'Your finances look steady this period. Keep it up.',color:'var(--success)'});
   return out;
 }
+// ---- Compare periods (arrow cards + dig-deeper breakdown) ----
+function an_compare(d){
+  const m=d.month, y=d.year;
+  let prevTxs, curLabel, prevLabel;
+  if(m==='all'){ prevTxs=DB.transactions.filter(t=>t.date&&new Date(t.date).getFullYear()===y-1); curLabel=''+y; prevLabel=''+(y-1); }
+  else { const pm=(m+11)%12, py=m===0?y-1:y; prevTxs=DB.transactions.filter(t=>{if(!t.date)return false;const dt=new Date(t.date);return dt.getMonth()===pm&&dt.getFullYear()===py;}); curLabel=MONTHS[m].slice(0,3)+' '+y; prevLabel=MONTHS[pm].slice(0,3)+(py!==y?" '"+(''+py).slice(2):''); }
+  if(!prevTxs.length) return ''; // nothing to compare against — hide the block
+  const cur=d.txs;
+  const sum=(txs,type)=>txs.filter(t=>t.type===type).reduce((s,t)=>s+t.amount,0);
+  const setAside=txs=>sum(txs,'savings')+sum(txs,'emergency')+sum(txs,'goal');
+  const metrics=[
+    {key:'income',label:'Income',icon:'i-income',color:'var(--success)',tint:'rgba(63,174,90,0.15)',cur:sum(cur,'income'),prev:sum(prevTxs,'income'),good:true,dig:true},
+    {key:'expense',label:'Expenses',icon:'i-expense',color:'var(--danger)',tint:'rgba(224,85,85,0.15)',cur:sum(cur,'expense'),prev:sum(prevTxs,'expense'),good:false,dig:true},
+    {key:'savings',label:'Money set aside',icon:'i-bank',color:'var(--gold)',tint:'rgba(212,175,55,0.15)',cur:setAside(cur),prev:setAside(prevTxs),good:true,dig:false}
+  ];
+  const rows=metrics.map(mt=>{
+    const head='<div class="cmp-row'+(mt.dig?' dig':'')+'"'+(mt.dig?' onclick="toggleCmp(\''+mt.key+'\')"':'')+'>'+
+      '<span class="cmp-ic" style="background:'+mt.tint+';color:'+mt.color+'">'+ic(mt.icon)+'</span>'+
+      '<span class="cmp-l">'+mt.label+(mt.dig?'<span class="cmp-chev">'+ic('i-chevron')+'</span>':'')+'</span>'+
+      '<span class="cmp-v"><span class="cmp-prev">'+fmtShort(mt.prev)+'</span><span class="cmp-arw">→</span><b>'+fmtShort(mt.cur)+'</b></span>'+
+      cmpDelta(mt.cur,mt.prev,mt.good)+'</div>';
+    return head+(mt.dig?'<div class="cmp-detail" id="cmpd-'+mt.key+'" style="display:none">'+cmpBreakdown(mt.key,cur,prevTxs)+'</div>':'');
+  }).join('');
+  return '<div class="section-header an-sh"><div class="section-title">Compare periods</div></div>'+
+    '<div class="an-pad" style="margin-bottom:6px"><div class="glass-card chart-card cmp-card">'+
+    '<div class="cmp-head">'+prevLabel+'<span class="cmp-arw">→</span>'+curLabel+'</div>'+rows+
+    '<div class="cmp-hint">Tap Income or Expenses to dig deeper</div></div></div>';
+}
+function cmpDelta(cur,prev,good){
+  if(prev<=0) return cur>0?'<span class="cmp-d up">new</span>':'<span class="cmp-d flat">—</span>';
+  const ch=Math.round((cur-prev)/prev*100);
+  if(ch===0) return '<span class="cmp-d flat">0%</span>';
+  const up=ch>0, g=good?up:!up;
+  return '<span class="cmp-d '+(g?'up':'down')+'">'+(up?'▲':'▼')+Math.abs(ch)+'%</span>';
+}
+function cmpBreakdown(key,cur,prev){
+  let map={};
+  if(key==='expense'){
+    DB.categories.forEach(c=>map[c.id]={name:c.name,icon:c.icon,cur:0,prev:0});
+    map['__un']={name:'Unbudgeted',icon:'i-question',cur:0,prev:0};
+    cur.filter(t=>t.type==='expense').forEach(t=>{const k=map[t.categoryId]?t.categoryId:'__un';map[k].cur+=t.amount;});
+    prev.filter(t=>t.type==='expense').forEach(t=>{const k=map[t.categoryId]?t.categoryId:'__un';map[k].prev+=t.amount;});
+  } else {
+    DB.incomeTypes.forEach(i=>map[i.id]={name:i.name,icon:i.icon,cur:0,prev:0});
+    map['__o']={name:'Other',icon:'i-cash',cur:0,prev:0};
+    cur.filter(t=>t.type==='income').forEach(t=>{const k=map[t.incomeType]?t.incomeType:'__o';map[k].cur+=t.amount;});
+    prev.filter(t=>t.type==='income').forEach(t=>{const k=map[t.incomeType]?t.incomeType:'__o';map[k].prev+=t.amount;});
+  }
+  let items=Object.keys(map).map(k=>map[k]).filter(x=>x.cur>0||x.prev>0).sort((a,b)=>b.cur-a.cur);
+  if(!items.length) return '<div class="cmp-empty">Nothing logged in either period.</div>';
+  const good=key==='income';
+  return items.map(x=>{
+    let badge;
+    if(x.prev<=0) badge=x.cur>0?'<span class="cmp-bd up">new</span>':'<span class="cmp-bd flat">—</span>';
+    else { const ch=Math.round((x.cur-x.prev)/x.prev*100); if(ch===0) badge='<span class="cmp-bd flat">0%</span>'; else { const up=ch>0, g=good?up:!up; badge='<span class="cmp-bd '+(g?'up':'down')+'">'+(up?'▲':'▼')+Math.abs(ch)+'%</span>'; } }
+    return '<div class="cmp-brow"><span class="cmp-bic">'+ic(x.icon)+'</span><span class="cmp-bn">'+x.name+'</span><span class="cmp-bv"><span class="cmp-prev">'+fmtShort(x.prev)+'</span><span class="cmp-arw">→</span>'+fmtShort(x.cur)+'</span>'+badge+'</div>';
+  }).join('');
+}
+function toggleCmp(key){ var el=document.getElementById('cmpd-'+key); if(!el)return; var open=el.style.display!=='none'; el.style.display=open?'none':'block'; var row=el.previousElementSibling; if(row&&row.classList.contains('cmp-row'))row.classList.toggle('open',!open); }
+// ---- Coach note + highlight chips (Smart Insights) ----
+function an_coach(d){
+  let note='';
+  const kept=d.income-d.totalExp;
+  if(d.income>0){
+    const keptPct=Math.max(0,100-pct(d.totalExp,d.income));
+    note='In '+periodLabel()+' you earned <b>'+fmtShort(d.income)+'</b> and spent <b>'+fmtShort(d.totalExp)+'</b>, ';
+    note+=kept>=0?'keeping <b>'+fmtShort(kept)+'</b> ('+keptPct+'%). ':'which is <b>'+fmtShort(-kept)+'</b> more than came in. ';
+    if(d.savingsRate>=20) note+='Your savings rate of '+d.savingsRate+'% is strong — keep it up. ';
+    else if(d.savingsRate>0) note+='You set aside '+d.savingsRate+'%; nudging toward 20% would build your cushion faster. ';
+    else note+='Nothing went to savings this time — even a little starts the habit. ';
+    if(d.avgMonthExp>0 && d.runway>0 && d.runway<3) note+='Your emergency fund covers about '+Math.max(0,d.runway).toFixed(1)+' month'+(d.runway<1.05?'':'s')+' of spending — aim for three.';
+    else if(d.runway>=6) note+='And with '+(d.runway>=99?'plenty of':d.runway.toFixed(1)+'+')+' months of expenses banked, you are well protected.';
+  } else {
+    note='No income is logged for '+periodLabel()+' yet. Add your earnings to see how your money is working for you.';
+  }
+  const chips=[];
+  if(d.biggest && d.totalExp>0) chips.push({icon:'i-search',label:'Biggest: '+d.biggest.name+' '+pct(d.biggest.v,d.totalExp)+'%',color:'var(--gold)',go:'spending'});
+  if(d.income>0) chips.push({icon:d.savingsRate>=20?'i-star':'i-bulb',label:'Savings '+d.savingsRate+'%',color:d.savingsRate>=20?'var(--success)':'var(--gold)',go:'savingsrate'});
+  const mult=periodMonths();
+  const overN=DB.budgets.filter(b=>b.type==='expense').filter(b=>{const sp=d.txs.filter(t=>t.type==='expense'&&t.categoryId===b.categoryId).reduce((s,t)=>s+t.amount,0);return b.amount*mult>0&&sp>b.amount*mult;}).length;
+  if(overN>0) chips.push({icon:'i-warn',label:overN+' over budget',color:'var(--danger)',go:'budgetstatus'});
+  if(d.loanPct>=30) chips.push({icon:'i-cash',label:'Loans '+d.loanPct+'% of income',color:d.loanPct>=50?'var(--danger)':'var(--warning)',go:'moneyflow'});
+  if(d.avgMonthExp>0 && d.runway>0) chips.push({icon:'i-shield',label:'Runway '+(d.runway>=99?'plenty':Math.max(0,d.runway).toFixed(1)+' mo'),color:d.runway<3?'var(--warning)':'var(--success)',go:'health'});
+  return {note,chips};
+}
 function setupAnSwipe(stackId,dotsId,titleId,moreId,titles,kinds){
   const sw=document.getElementById(stackId); if(!sw) return;
   const dots=document.querySelectorAll('#'+dotsId+' .sdot'), tEl=document.getElementById(titleId), mEl=document.getElementById(moreId);
@@ -2468,13 +2604,18 @@ function renderAnalyticsV2(){
     '<div class="an-bc"><div class="an-bv" style="color:#6BA368">'+fmtShort(comp.g)+'</div><div class="an-bl">Goals</div></div></div>';
   const flowInner='<div class="an-tag">Money flow</div><div class="an-ttl">Where your income goes</div><div class="an-sub">of your '+fmtShort(d.income)+' income · '+periodLabel()+'</div>'+(d.income>0?an_flow(d.income,d):'<div class="an-fill-c"><div class="an-single-sub">No income logged for this period</div></div>');
   const spendInner='<div class="an-tag">Spending</div><div class="an-ttl">Where your money went</div><div class="an-sub">'+periodLabel()+'</div>'+(d.totalExp>0?an_donut(d.catList,d.totalExp):'<div class="an-fill-c"><div class="an-single-sub">No spending logged for this period</div></div>');
-  const ins=an_insights(d);
-  const insightsBlock='<div class="section-header an-sh"><div class="section-title">Smart Insights</div></div><div class="an-pad" style="display:flex;flex-direction:column;gap:12px">'+ins.map(i=>'<div class="glass-card insight-card" style="border-color:'+i.color+'40"><div class="insight-icon" style="color:'+i.color+'">'+ic(i.icon)+'</div><div><div class="insight-title" style="color:'+i.color+'">'+i.title+'</div><div class="insight-body">'+i.body+'</div></div></div>').join('')+'</div>';
+  const compareBlock=an_compare(d);
+  const coach=an_coach(d);
+  const coachBlock='<div class="section-header an-sh"><div class="section-title">Smart Insights</div></div>'+
+    '<div class="an-pad"><div class="glass-card chart-card coach-card">'+
+    '<div class="coach-row"><div class="coach-ava">'+ic('i-bulb')+'</div><div class="coach-note">'+coach.note+'</div></div>'+
+    (coach.chips.length?'<div class="coach-chips">'+coach.chips.map(ch=>'<button class="coach-chip" style="--cc:'+ch.color+'" onclick="expandCard(\''+ch.go+'\')">'+ic(ch.icon)+'<span>'+ch.label+'</span></button>').join('')+'</div>':'')+
+    '</div></div>';
   c.innerHTML=healthCard+
     '<div class="section-header an-sh"><div class="section-title" id="anSw1Title">Savings Rate</div><div class="see-more" id="anSw1More" onclick="expandCard(\'savingsrate\')">Details</div></div><div class="swipe-stack" id="anSw1"><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'savingsrate\')">'+savingsInner+'</div></div><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'networth\')">'+nwInner+'</div></div></div><div class="swipe-dots" id="anDots1"><span class="sdot active"></span><span class="sdot"></span></div>'+
     '<div class="section-header an-sh"><div class="section-title">Where Income Goes</div><div class="see-more" onclick="expandCard(\'moneyflow\')">Details</div></div><div class="an-pad" style="margin-bottom:6px"><div class="glass-card chart-card an-chart" onclick="expandCard(\'moneyflow\')">'+flowInner+'</div></div>'+
     '<div class="section-header an-sh"><div class="section-title">Spending Breakdown</div><div class="see-more" onclick="expandCard(\'spending\')">Details</div></div><div class="an-pad" style="margin-bottom:6px"><div class="glass-card chart-card an-chart" onclick="expandCard(\'spending\')">'+spendInner+'</div></div>'+
-    insightsBlock;
+    compareBlock+coachBlock;
   setupAnSwipe('anSw1','anDots1','anSw1Title','anSw1More',['Savings Rate','Net Worth'],['savingsrate','networth']);
 }
 function renderAnalytics(){ return renderAnalyticsV2(); }
@@ -2580,9 +2721,9 @@ function renderSettings(){
   const fsw=document.getElementById('fpSwitch');
   if(fsw) fsw.classList.toggle('on',!!DB.fingerprintCredId);
   const cl=document.getElementById('categoriesList');
-  cl.innerHTML=DB.categories.map(cat=>`<div class="settings-item"><div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)">${ic(cat.icon)}</div><div class="s-label">${cat.name}</div></div><div style="display:flex;gap:6px"><button class="icon-btn edit" onclick="openAddCategoryModal('${cat.id}')">${ic('i-edit')}</button><button class="icon-btn del" onclick="deleteCategory('${cat.id}')">${ic('i-trash')}</button></div></div>`).join('');
+  cl.innerHTML=DB.categories.map(cat=>`<div class="bgt-card"><div class="bgt-head" onclick="toggleBudget('setcat-${cat.id}')"><div class="bgt-chip">${ic(cat.icon)}</div><div class="bgt-info"><div class="bgt-name">${cat.name}</div></div><div class="bgt-chev">${ic('i-chevron')}</div></div><div class="bgt-detail" id="bgtd-setcat-${cat.id}" style="display:none"><div class="set-about${cat.about?'':' empty'}">${cat.about?cat.about:'No description yet — tap Edit to add one.'}</div><div class="set-cat-actions"><button class="btn-outline set-mini" onclick="openAddCategoryModal('${cat.id}')">Edit</button><button class="btn-outline set-mini del" onclick="deleteCategory('${cat.id}')">Delete</button></div></div></div>`).join('');
   const il=document.getElementById('incomeTypesList');
-  il.innerHTML=DB.incomeTypes.map(it=>`<div class="settings-item"><div class="settings-item-left"><div class="settings-item-icon" style="color:var(--success)">${ic(it.icon)}</div><div class="s-label">${it.name}</div></div><div style="display:flex;gap:6px"><button class="icon-btn edit" onclick="openAddIncomeTypeModal('${it.id}')">${ic('i-edit')}</button>${it.id==='i5'?'':`<button class="icon-btn del" onclick="deleteIncomeType('${it.id}')">${ic('i-trash')}</button>`}</div></div>`).join('');
+  il.innerHTML=DB.incomeTypes.map(it=>`<div class="bgt-card"><div class="bgt-head" onclick="toggleBudget('setinc-${it.id}')"><div class="bgt-chip" style="background:rgba(63,174,90,0.15);color:var(--success)">${ic(it.icon)}</div><div class="bgt-info"><div class="bgt-name">${it.name}</div></div><div class="bgt-chev">${ic('i-chevron')}</div></div><div class="bgt-detail" id="bgtd-setinc-${it.id}" style="display:none"><div class="set-about${it.about?'':' empty'}">${it.about?it.about:'No description yet — tap Edit to add one.'}</div><div class="set-cat-actions"><button class="btn-outline set-mini" onclick="openAddIncomeTypeModal('${it.id}')">Edit</button>${it.id==='i5'?'':`<button class="btn-outline set-mini del" onclick="deleteIncomeType('${it.id}')">Delete</button>`}</div></div></div>`).join('');
 }
 function renderAvatar(){
   const init=DB.userName?DB.userName[0].toUpperCase():'';
@@ -2675,15 +2816,17 @@ function openAddCategoryModal(editId, forBudget){
   document.getElementById('catModalTitle').textContent=ex?'Edit Category':'Add Category';
   document.getElementById('catModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Category Name</label><input class="form-input" id="newCatName" value="${ex?ex.name:''}" placeholder="e.g. Gym"></div>
+    <div class="form-group"><label class="form-label">What it's about (explainer)</label><textarea class="form-input" id="newCatAbout" rows="2" placeholder="e.g. Groceries, dining out & takeaways">${ex&&ex.about?ex.about:''}</textarea></div>
     <div class="form-group"><label class="form-label">Icon</label><div class="icon-grid">${AVAIL_ICONS.map(i=>`<div class="icon-pick ${selectedIcon.c===i?'selected':''}" data-icon="${i}" onclick="pickIcon(this,'c')">${ic(i)}</div>`).join('')}</div></div>
     <button class="btn-gold" onclick="saveCategory('${editId||''}')">${ex?'Update':'Save'} Category</button><button class="btn-outline" onclick="closeModal('categoryModal')">Cancel</button>`;
   openModal('categoryModal');
 }
 function saveCategory(editId){
   const name=document.getElementById('newCatName').value.trim(); if(!name){showToast('Enter a name','var(--danger)');return;}
+  const about=document.getElementById('newCatAbout').value.trim();
   let newId=null;
-  if(editId){ const c=DB.categories.find(x=>x.id===editId); if(c){c.name=name;c.icon=selectedIcon.c;} const b=DB.budgets.find(x=>x.categoryId===editId); if(b){b.name=name;b.icon=selectedIcon.c;} showToast('Category updated','var(--success)'); }
-  else { newId=genId(); DB.categories.push({id:newId,name,icon:selectedIcon.c}); showToast('Category added','var(--success)'); }
+  if(editId){ const c=DB.categories.find(x=>x.id===editId); if(c){c.name=name;c.icon=selectedIcon.c;c.about=about;} const b=DB.budgets.find(x=>x.categoryId===editId); if(b){b.name=name;b.icon=selectedIcon.c;} showToast('Category updated','var(--success)'); }
+  else { newId=genId(); DB.categories.push({id:newId,name,icon:selectedIcon.c,about}); showToast('Category added','var(--success)'); }
   saveDB(); closeModal('categoryModal');
   if(_addCatForBudget && newId){ _addCatForBudget=false; const bc=document.getElementById('bCat'),bd=document.getElementById('bCatDisp'); if(bc)bc.value=newId; if(bd)bd.textContent=name; }
   else { renderSettings(); }
@@ -2694,6 +2837,7 @@ function openAddIncomeTypeModal(editId){
   selectedIcon.i=ex?ex.icon:'i-cash';
   document.getElementById('incomeTypeContent').innerHTML=`
     <div class="form-group"><label class="form-label">Source Name</label><input class="form-input" id="newItName" value="${ex?ex.name:''}" placeholder="e.g. Rental Income"></div>
+    <div class="form-group"><label class="form-label">What it's about (explainer)</label><textarea class="form-input" id="newItAbout" rows="2" placeholder="e.g. Rent from the Ntinda apartment">${ex&&ex.about?ex.about:''}</textarea></div>
     <div class="form-group"><label class="form-label">Icon</label><div class="icon-grid">${AVAIL_ICONS.map(i=>`<div class="icon-pick ${selectedIcon.i===i?'selected':''}" data-icon="${i}" onclick="pickIcon(this,'i')">${ic(i)}</div>`).join('')}</div></div>
     <button class="btn-gold" onclick="saveIncomeType('${editId||''}')">${ex?'Update':'Save'} Source</button><button class="btn-outline" onclick="closeModal('incomeTypeModal')">Cancel</button>`;
   document.querySelector('#incomeTypeModal .modal-title').textContent=ex?'Edit Income Source':'Add Income Source';
@@ -2701,8 +2845,9 @@ function openAddIncomeTypeModal(editId){
 }
 function saveIncomeType(editId){
   const name=document.getElementById('newItName').value.trim(); if(!name){showToast('Enter a name','var(--danger)');return;}
-  if(editId){ const it=DB.incomeTypes.find(x=>x.id===editId); if(it){it.name=name;it.icon=selectedIcon.i;} showToast('Income source updated','var(--success)'); }
-  else { DB.incomeTypes.push({id:genId(),name,icon:selectedIcon.i}); showToast('Income source added','var(--success)'); }
+  const about=document.getElementById('newItAbout').value.trim();
+  if(editId){ const it=DB.incomeTypes.find(x=>x.id===editId); if(it){it.name=name;it.icon=selectedIcon.i;it.about=about;} showToast('Income source updated','var(--success)'); }
+  else { DB.incomeTypes.push({id:genId(),name,icon:selectedIcon.i,about}); showToast('Income source added','var(--success)'); }
   saveDB(); closeModal('incomeTypeModal'); renderSettings();
 }
 function deleteIncomeType(id){ askConfirm('Remove this source?','',()=>{ DB.incomeTypes=DB.incomeTypes.filter(x=>x.id!==id); saveDB(); renderSettings(); showToast('Source removed','var(--danger)'); },'Remove',true); }
