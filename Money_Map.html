@@ -99,7 +99,7 @@
   /* ===== Soft iOS-style entrance animations (re-triggered per page by navTo → _animatePage) ===== */
   @keyframes riseIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
   @keyframes avIn { from { opacity:0; transform:translateX(-50%) scale(0.86); } to { opacity:1; transform:translateX(-50%) scale(1); } }
-  .txd-dayhead, .txd-row, .set-tile, .bgt-card, .loan-card, .overview-card, .settings-item { animation:riseIn 0.48s var(--ease) both; }
+  .txd-dayhead, .txd-row, .set-tile, .bgt-card, .loan-card, .overview-card, .settings-item, .misc-line, .swipe-card { animation:riseIn 0.48s var(--ease) both; }
   .set-av { animation:avIn 0.55s var(--ease) both; }
   .txd-row:nth-child(2), .set-tile:nth-child(2), .budget-card:nth-child(2), .loan-card:nth-child(2), .overview-card:nth-child(2), .settings-item:nth-child(2){animation-delay:0.05s}
   .txd-row:nth-child(3), .set-tile:nth-child(3), .budget-card:nth-child(3), .loan-card:nth-child(3), .overview-card:nth-child(3), .settings-item:nth-child(3){animation-delay:0.10s}
@@ -226,17 +226,20 @@
   .misc-title { font-size:14px; font-weight:800; color:var(--text); }
   .misc-desc { font-size:11.5px; color:var(--text-dim); margin-top:2px; }
   .misc-amt { font-size:16px; font-weight:800; letter-spacing:-0.2px; color:var(--gold); flex-shrink:0; position:relative; z-index:1; }
-  .rc-wrap { display:flex; align-items:center; gap:16px; padding:16px 16px 12px; }
+  /* Overview swipe pair (Budgeting Discipline + Income vs Expenses): tight padding, content
+     vertically centred to fill the card, both locked to the same height via equalizeOvCards. */
+  #budgetStatusCard, #incomeExpCard { min-height:176px; padding:15px; display:flex; flex-direction:column; justify-content:center; box-sizing:border-box; }
+  .rc-wrap { display:flex; align-items:center; gap:16px; }
   .rc-stats { flex:1; min-width:0; display:flex; flex-direction:column; gap:9px; }
   .rc-stat { display:flex; align-items:center; gap:9px; }
   .rc-dot { width:9px; height:9px; border-radius:3px; flex-shrink:0; }
   .rc-sl { font-size:12.5px; color:var(--text-dim); flex:1; min-width:0; }
   .rc-sv { font-size:13.5px; font-weight:800; color:var(--text); flex-shrink:0; }
-  .rc-verdict { padding:0 16px 15px; font-size:12.5px; color:var(--text-dim); line-height:1.5; }
+  .rc-verdict { margin-top:12px; font-size:12.5px; color:var(--text-dim); line-height:1.5; }
   .rc-verdict b { font-weight:800; color:var(--text); }
   .disc-verdict { font-size:18px; font-weight:800; letter-spacing:-0.3px; }
   .disc-line { font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-top:6px; }
-  .disc-over { padding:12px 16px 15px; margin-top:2px; border-top:1px solid var(--card-border); }
+  .disc-over { margin-top:12px; padding-top:12px; border-top:1px solid var(--card-border); }
   .disc-over .bs-over-row:last-child { margin-bottom:0; }
   .disc-good { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--success); }
   .disc-good svg { width:16px; height:16px; color:var(--success); flex-shrink:0; }
@@ -323,8 +326,8 @@
   .goal-ov-pct { font-size:13px; font-weight:800; color:var(--gold); }
   .goal-ov-meta { display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-top:5px; }
   /* Combined Goals & Loans status */
-  .gl-card { margin:0 var(--gutter) 8px; padding:16px; border-radius:var(--radius-sm); background:var(--card-bg); border:1px solid var(--card-border);
-    box-shadow:0 1px 1px var(--card-hi) inset, 0 8px 20px -8px var(--shadow), 0 2px 5px -2px var(--shadow); cursor:pointer; }
+  .gl-card { margin:0 var(--gutter) 8px; padding:16px; border-radius:18px; background:var(--card-bg); border:1px solid var(--card-border);
+    box-shadow:0 1px 1px var(--card-hi) inset, 0 12px 26px -10px var(--shadow), 0 2px 6px -2px var(--shadow); cursor:pointer; }
   .gl-section-label { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--gold-dim); font-weight:700; margin-bottom:8px; }
   .gl-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; }
   .gl-name { font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; }
@@ -545,7 +548,11 @@
   .settings-section-title { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:var(--gold-dim); margin-bottom:10px; padding-left:4px; font-weight:700; }
   .settings-list { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius-sm); overflow:hidden;
     box-shadow:0 1px 1px var(--card-hi) inset, 0 8px 20px -8px var(--shadow), 0 2px 5px -2px var(--shadow); }
-  .bgt-list { display:flex; flex-direction:column; gap:12px; }
+  .bgt-list { display:flex; flex-direction:column; gap:10px; }
+  .bgt-list .bgt-head { padding:11px 14px; gap:11px; }
+  .bgt-list .bgt-chip { width:32px; height:32px; border-radius:9px; }
+  .bgt-list .bgt-chip svg { width:17px; height:17px; }
+  .bgt-list .bgt-name { font-size:14px; }
   .settings-item { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--input-border); cursor:pointer; transition:background 0.2s; }
   .fp-sw { width:50px; height:30px; border-radius:15px; background:var(--gold); position:relative; flex-shrink:0; transition:background 0.22s var(--ease); cursor:pointer; }
   .fp-sw::after { content:''; position:absolute; top:2px; left:2px; width:26px; height:26px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.35); transition:left 0.22s var(--ease); }
@@ -694,7 +701,21 @@
   .txc-noteinput::placeholder { color:var(--text-muted); }
   .txc-rcpt-tile { display:flex; align-items:center; gap:10px; padding:14px 15px; border:1px dashed var(--glass-border); border-radius:var(--radius-sm); color:var(--text-dim); cursor:pointer; margin-bottom:15px; }
   .txc-rcpt-tile > svg { width:18px; height:18px; stroke:var(--gold); flex-shrink:0; }
-  .txc-rcpt-tile img { width:34px; height:34px; border-radius:8px; object-fit:cover; }
+  .txc-rcpt-tile.has { border-style:solid; border-color:var(--card-border); background:var(--card-bg); cursor:default; padding:10px 12px; }
+  .txc-rcpt-thumb { width:40px; height:40px; border-radius:9px; overflow:hidden; flex-shrink:0; background:var(--track); }
+  .txc-rcpt-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .txc-rcpt-lbl { flex:1; min-width:0; font-size:13px; color:var(--text); }
+  .txc-rcpt-btn { font-size:12px; font-weight:700; padding:6px 11px; border-radius:9px; border:1px solid var(--card-border); background:transparent; color:var(--text); cursor:pointer; }
+  .txc-rcpt-btn.del { color:var(--danger); border-color:rgba(224,85,85,0.32); }
+  /* Receipt indicator in the view-transaction card */
+  .rcpt-chip { display:flex; align-items:center; gap:11px; margin-top:16px; padding:9px; border:1px solid var(--card-border); border-radius:12px; background:var(--card-bg); cursor:pointer; text-align:left; }
+  .rcpt-chip-thumb { width:42px; height:42px; border-radius:9px; overflow:hidden; flex-shrink:0; background:var(--track); }
+  .rcpt-chip-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .rcpt-chip-txt { flex:1; min-width:0; }
+  .rcpt-chip-t { font-size:13.5px; font-weight:700; color:var(--text); }
+  .rcpt-chip-s { font-size:11.5px; color:var(--text-dim); margin-top:1px; }
+  .rcpt-chip-chev { color:var(--text-muted); flex-shrink:0; display:flex; }
+  .rcpt-chip-chev svg { width:18px; height:18px; }
   .gl-chip { width:38px; height:38px; border-radius:11px; background:rgba(212,175,55,0.15); color:var(--gold); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .gl-chip svg { width:19px; height:19px; stroke-width:1.8; }
   .filter-chips { display:flex; flex-wrap:wrap; gap:7px; padding:0 0 6px; }
@@ -1338,7 +1359,7 @@ function navTo(page){
 }
 function _animatePage(page){
   var pg=document.getElementById('page-'+page); if(!pg)return;
-  var els=pg.querySelectorAll('.txd-dayhead,.txd-row,.set-tile,.set-av,.bgt-card,.loan-card,.overview-card,.settings-item');
+  var els=pg.querySelectorAll('.txd-dayhead,.txd-row,.set-tile,.set-av,.bgt-card,.loan-card,.overview-card,.settings-item,.misc-line,.swipe-card');
   for(var i=0;i<els.length;i++) els[i].style.animation='none';
   void pg.offsetWidth;                     // one reflow so the animations restart
   for(var j=0;j<els.length;j++) els[j].style.animation='';
@@ -2039,7 +2060,7 @@ function viewTransaction(id){
     <div style="color:var(--text-dim);font-size:14px;">${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</div>
     ${t.type==='expense'?`<div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap"><span class="tx-tag">${t.categoryId?'Budgeted':'Not Budgeted'}</span><span class="tx-tag">From: ${t.source==='savings'?'Life Savings':t.source==='emergency'?'Emergency Fund':'Income'}</span></div>`:''}
     ${t.note?`<div style="color:var(--text-dim);font-size:13px;margin-top:8px;">${t.note}</div>`:''}
-    ${t.image?`<img src="${t.image}" style="width:100%;border-radius:14px;margin-top:16px;">`:''}</div>
+    ${t.image?`<div class="rcpt-chip" onclick="viewImage(document.getElementById('_rcptSrc').value)"><div class="rcpt-chip-thumb"><img src="${t.image}"></div><div class="rcpt-chip-txt"><div class="rcpt-chip-t">Receipt attached</div><div class="rcpt-chip-s">Tap to view full size</div></div><span class="rcpt-chip-chev">${ic('i-chevron')}</span><input type="hidden" id="_rcptSrc" value="${t.image}"></div>`:''}</div>
     <div class="action-row"><button class="btn-sm btn-sm-edit" onclick="closeModalQuiet('viewTxModal');openEditTransaction('${id}')">${ic('i-edit')}Edit</button><button class="btn-sm btn-sm-del" onclick="deleteTransaction('${id}')">${ic('i-trash')}Delete</button></div>
     <button class="btn-outline" onclick="closeModal('viewTxModal')">Close</button>`;
   openModal('viewTxModal');
@@ -2114,13 +2135,20 @@ function buildTxForm(type,existing){
       <div class="txc-row" onclick="_openDate('txDate')"><span class="txc-k">Date</span><span class="txc-v"><span id="txDateDisp">${fmtDateShort(date)}</span>${ic('i-chevron')}</span><input type="date" class="txc-hiddendate" id="txDate" value="${date}" max="${today()}" onchange="_syncDate('txDate','txDateDisp')"></div>
       <div class="txc-noterow"><textarea class="txc-noteinput" id="txNote" placeholder="Add a note (optional)">${note}</textarea></div>
     </div>
-    <div class="txc-rcpt-tile" onclick="openPhotoChoice('tx')">${ic('i-camera')}<span>Add receipt</span><span id="txImgPreview" style="margin-left:auto;display:flex">${txImageData?`<img src="${txImageData}">`:''}</span></div>
+    <div id="txRcptRow">${txRcptHTML()}</div>
     <input type="file" id="txImgInput" accept="image/*" style="display:none" onchange="handleTxImage(event)">
     <button class="btn-gold" onclick="saveTx('${type}')">${editingTxId?'Update':'Save'} transaction</button>
     <button class="btn-outline" onclick="closeModal('transactionModal')">Cancel</button>`;
 }
 function rebuildTxForm(type){ buildTxForm(type,null); }
-function handleTxImage(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ openCropper(ev.target.result,'receipt',cropped=>{ txImageData=cropped; const p=document.getElementById('txImgPreview'); if(p)p.innerHTML=`<img src="${txImageData}">`; }); }; r.readAsDataURL(f); e.target.value=''; }
+function txRcptHTML(){
+  if(txImageData) return `<div class="txc-rcpt-tile has"><div class="txc-rcpt-thumb"><img src="${txImageData}"></div><span class="txc-rcpt-lbl">Receipt added</span><button type="button" class="txc-rcpt-btn" onclick="openPhotoChoice('tx')">Change</button><button type="button" class="txc-rcpt-btn del" onclick="removeTxImage()">Remove</button></div>`;
+  return `<div class="txc-rcpt-tile" onclick="openPhotoChoice('tx')">${ic('i-camera')}<span>Add receipt</span></div>`;
+}
+function refreshTxRcpt(){ const row=document.getElementById('txRcptRow'); if(row) row.innerHTML=txRcptHTML(); }
+function removeTxImage(){ txImageData=null; refreshTxRcpt(); }
+function handleTxImage(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ openCropper(ev.target.result,'receipt',cropped=>{ txImageData=cropped; refreshTxRcpt(); }); }; r.readAsDataURL(f); e.target.value=''; }
+function viewImage(src){ if(!src)return; const im=document.getElementById('pvImg'); if(im)im.src=src; const m=document.getElementById('photoViewModal'); if(m)m.style.display='flex'; }
 function saveTx(type){
   const amount=getRawAmount(document.getElementById('txAmount'));
   if(!amount||amount<=0){showToast('Enter a valid amount','var(--danger)');return;}
@@ -2305,7 +2333,7 @@ function openLoanForm(preId,existing){
   let pending=loans.map(l=>{const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id&&(!existing||t.id!==existing.id)).reduce((s,t)=>s+t.amount,0);return {...l,rem:Math.max(0,l.amount-repaid)};});
   if(!existing) pending=pending.filter(l=>l.rem>0);
   if(pending.length===0){ showToast('No pending loans to pay','var(--text-dim)'); return; }
-  const cur=(existing?loans.find(l=>l.id===existing.loanId):null)||pending.find(l=>l.id===preId)||pending[0];
+  const loan=(existing?loans.find(l=>l.id===existing.loanId):null)||pending.find(l=>l.id===preId)||pending[0];
   const val=existing?existing.amount:''; const valDisplay=val?parseInt(val).toLocaleString():'';
   const from=existing&&existing.from?existing.from:'income';
   const fromNames={income:'Income',savings:'Life Savings',emergency:'Emergency Fund'};
@@ -2316,12 +2344,12 @@ function openLoanForm(preId,existing){
     <div class="txc-amtlab">Amount <span style="color:var(--text)">(${cur()})</span></div>
     <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
     <div class="txc-grp">
-      <div class="txc-row" onclick="openOptionPicker('Loan',DB.loans.map(l=>({value:l.id,label:l.name})),document.getElementById('txLoanId').value,(v,l)=>{document.getElementById('txLoanId').value=v;document.getElementById('txLoanIdDisp').textContent=l;})"><span class="txc-k">Loan</span><span class="txc-v"><span id="txLoanIdDisp">${cur.name}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanId" value="${cur.id}">
+      <div class="txc-row" onclick="openOptionPicker('Loan',DB.loans.map(l=>({value:l.id,label:l.name})),document.getElementById('txLoanId').value,(v,l)=>{document.getElementById('txLoanId').value=v;document.getElementById('txLoanIdDisp').textContent=l;})"><span class="txc-k">Loan</span><span class="txc-v"><span id="txLoanIdDisp">${loan.name}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanId" value="${loan.id}">
       <div class="txc-row" onclick="openOptionPicker('Pay from',[{value:'income',label:'Income'},{value:'savings',label:'Life Savings'},{value:'emergency',label:'Emergency Fund'}],document.getElementById('txLoanFrom').value,(v,l)=>{document.getElementById('txLoanFrom').value=v;document.getElementById('txLoanFromDisp').textContent=l;})"><span class="txc-k">Pay from</span><span class="txc-v"><span id="txLoanFromDisp">${fromNames[from]||'Income'}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanFrom" value="${from}">
       <div class="txc-row" onclick="_openDate('txDate')"><span class="txc-k">Date</span><span class="txc-v"><span id="txDateDisp">${fmtDateShort(date)}</span>${ic('i-chevron')}</span><input type="date" class="txc-hiddendate" id="txDate" value="${date}" max="${today()}" onchange="_syncDate('txDate','txDateDisp')"></div>
       <div class="txc-noterow"><textarea class="txc-noteinput" id="txNote" placeholder="Add a note (optional)">${note}</textarea></div>
     </div>
-    <div class="txc-rcpt-tile" onclick="openPhotoChoice('tx')">${ic('i-camera')}<span>Add receipt</span><span id="txImgPreview" style="margin-left:auto;display:flex">${txImageData?`<img src="${txImageData}">`:''}</span></div>
+    <div id="txRcptRow">${txRcptHTML()}</div>
     <input type="file" id="txImgInput" accept="image/*" style="display:none" onchange="handleTxImage(event)">
     <button class="btn-gold" onclick="saveLoanRepayment()">${existing?'Update':'Save'} repayment</button>
     <button class="btn-outline" onclick="closeModal('transactionModal')">Cancel</button>`;
@@ -2523,7 +2551,9 @@ function openCmpPicker(side){
   ys.add(selYear); ys.add(new Date().getFullYear());
   const years=[...ys].sort((a,b)=>a-b);
   openOptionPicker('Compare — pick year', years.map(y=>({label:''+y,value:y})), cur0.year, function(y){
-    const opts=[{label:'Whole year',value:'all'}].concat(MONTHS.map((mm,i)=>({label:mm,value:i})));
+    const activeM=new Set();
+    DB.transactions.forEach(t=>{ if(!t.date) return; const dt=new Date(t.date); if(dt.getFullYear()===parseInt(y)) activeM.add(dt.getMonth()); });
+    const opts=[{label:'Whole year',value:'all'}].concat([...activeM].sort((a,b)=>a-b).map(i=>({label:MONTHS[i],value:i})));
     openOptionPicker('Compare — pick month', opts, cur0.month, function(mo){
       const p={month:mo==='all'?'all':parseInt(mo), year:parseInt(y)};
       if(side==='A') _cmpA=p; else _cmpB=p;
@@ -3030,11 +3060,11 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .swipe-stack { display:flex; align-items:flex-start; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
   .swipe-stack::-webkit-scrollbar { display:none; }
   .swipe-card { flex:0 0 100%; scroll-snap-align:start; padding:0 var(--gutter) 6px; box-sizing:border-box; }
-  .swipe-card > .glass-card { box-shadow:0 1px 1px var(--card-hi) inset, 0 6px 13px -7px var(--shadow), 0 2px 5px -2px var(--shadow); }
+  .swipe-card > .glass-card { box-shadow:0 1px 1px var(--card-hi) inset, 0 12px 26px -10px var(--shadow), 0 2px 6px -2px var(--shadow); }
   .swipe-dots { display:flex; gap:7px; justify-content:center; margin:3px 0 3px; }
   .sdot { width:7px; height:7px; border-radius:50%; background:var(--gold-dim); opacity:0.45; transition:all 0.25s var(--ease); cursor:pointer; }
   .sdot.active { opacity:1; width:20px; border-radius:4px; background:var(--gold); }
-  .iec-per { align-self:flex-end; font-size:10.5px; font-weight:800; letter-spacing:0.02em; color:var(--gold-dim); background:rgba(212,175,55,0.16); padding:4px 11px; border-radius:999px; margin-bottom:10px; }
+  .iec-per { align-self:flex-end; font-size:10.5px; font-weight:800; letter-spacing:0.02em; color:var(--gold-dim); background:rgba(212,175,55,0.16); padding:3px 10px; border-radius:999px; margin-bottom:6px; }
   .iec-leg { display:flex; gap:14px; margin-bottom:6px; }
   .iec-leg span { font-size:11px; color:var(--text-dim); display:flex; align-items:center; gap:5px; }
   .iec-leg i { width:9px; height:9px; border-radius:50%; display:inline-block; }
@@ -3059,10 +3089,10 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .iec-ht { flex:1; height:9px; background:var(--input-bg); border-radius:5px; overflow:hidden; }
   .iec-hf { height:100%; border-radius:5px; }
   .iec-hv { font-size:12px; font-weight:700; width:78px; text-align:right; flex-shrink:0; }
-  .iec-chart { height:96px; min-height:0; position:relative; }
+  .iec-chart { height:62px; min-height:0; position:relative; }
   .iec-dot { position:absolute; width:6px; height:6px; border-radius:50%; transform:translate(-50%,-50%); pointer-events:none; }
   .iec-dot-last { width:11px; height:11px; background:var(--card-bg); border:2.4px solid var(--gold); }
-  .iec-brief { flex-shrink:0; margin-top:9px; font-size:11.5px; line-height:1.42; }
+  .iec-brief { flex-shrink:0; margin-top:6px; font-size:11.5px; line-height:1.42; }
   /* photo cropper */
   #cropModal { position:fixed; inset:0; z-index:900; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.86); padding:16px; }
   .crop-shell { width:100%; max-width:460px; display:flex; flex-direction:column; }
