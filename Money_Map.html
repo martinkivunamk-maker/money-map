@@ -243,6 +243,9 @@
   /* Compare periods */
   .cmp-card { padding:14px 15px; }
   .cmp-head { font-size:13px; font-weight:800; color:var(--text); text-align:center; margin-bottom:6px; letter-spacing:0.2px; }
+  .cmp-picker { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+  .cmp-pill { display:inline-flex; align-items:center; gap:3px; padding:6px 8px 6px 13px; border-radius:20px; font-size:12.5px; font-weight:800; color:var(--text); background:var(--card-bg); border:1px solid var(--card-border); box-shadow:0 1px 2px -1px var(--shadow); cursor:pointer; }
+  .cmp-pill svg { width:14px; height:14px; color:var(--text-muted); transform:rotate(90deg); flex-shrink:0; }
   .cmp-arw { color:var(--text-muted); margin:0 5px; font-weight:600; }
   .cmp-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--card-border); }
   .cmp-row.dig { cursor:pointer; }
@@ -950,6 +953,10 @@
           <div class="theme-opt" data-theme-opt="dark" onclick="setTheme('dark')"><svg viewBox="0 0 24 24"><use href="#i-moon"/></svg></div>
           <div class="theme-opt" data-theme-opt="auto" onclick="setTheme('auto')"><svg viewBox="0 0 24 24"><use href="#i-auto"/></svg>Auto</div>
         </div>
+      </div>
+      <div class="settings-item" onclick="openCurrencyPicker()">
+        <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-cash"/></svg></div><div class="s-label">Currency</div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span id="settingsCurrency" style="color:var(--text-dim);font-size:14px;font-weight:600"></span><div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div></div>
       </div></div>
     </div>
     <div class="settings-section">
@@ -1086,7 +1093,7 @@
 // ===== DATA =====
 const DB_KEY = 'moneymap_v2';
 let DB = {
-  pin:null, userName:'Martinluther', userPhoto:null, theme:'auto', fingerprintCredId:null,
+  pin:null, userName:'Martinluther', userPhoto:null, theme:'auto', fingerprintCredId:null, currency:'UGX',
   categories:[
     {id:'c1',name:'House Rent',icon:'i-house'},{id:'c2',name:'Food',icon:'i-food'},
     {id:'c3',name:'Transport',icon:'i-car'},{id:'c4',name:'Groceries',icon:'i-cart'},
@@ -1163,8 +1170,24 @@ function formatAmountInput(inp){
   inp.value=raw?parseInt(raw).toLocaleString():'';
 }
 function getRawAmount(inp){ return parseFloat(inp.dataset.raw||inp.value.replace(/[^0-9]/g,'')||'0'); }
-function fmtUGX(n){ if(isNaN(n))return 'UGX 0'; return 'UGX '+Math.abs(Math.round(n)).toLocaleString(); }
-function fmtShort(n){ n=Math.abs(Math.round(n)); if(n>=1000000){const v=parseFloat((n/1000000).toFixed(2));return 'UGX '+v+'M';} if(n>=1000){const v=parseFloat((n/1000).toFixed(1));return 'UGX '+v+'K';} return 'UGX '+n.toLocaleString(); }
+function cur(){ return DB.currency||'UGX'; }
+const CURRENCIES=[
+  {code:'UGX',name:'Ugandan Shilling'},{code:'KES',name:'Kenyan Shilling'},{code:'TZS',name:'Tanzanian Shilling'},
+  {code:'RWF',name:'Rwandan Franc'},{code:'NGN',name:'Nigerian Naira'},{code:'GHS',name:'Ghanaian Cedi'},
+  {code:'ZAR',name:'South African Rand'},{code:'USD',name:'US Dollar'},{code:'EUR',name:'Euro'},
+  {code:'GBP',name:'British Pound'},{code:'INR',name:'Indian Rupee'},{code:'AED',name:'UAE Dirham'}
+];
+function openCurrencyPicker(){
+  openOptionPicker('Currency', CURRENCIES.map(c=>({label:c.code+' · '+c.name, value:c.code})), cur(), function(val){
+    DB.currency=val; saveDB();
+    renderSettings(); updateOverview();
+    if(currentPage==='analytics')renderAnalytics();
+    if(currentPage==='budget')renderBudget();
+    showToast('Currency set to '+val,'var(--success)');
+  });
+}
+function fmtUGX(n){ if(isNaN(n))return cur()+' 0'; return cur()+' '+Math.abs(Math.round(n)).toLocaleString(); }
+function fmtShort(n){ n=Math.abs(Math.round(n)); if(n>=1000000){const v=parseFloat((n/1000000).toFixed(2));return cur()+' '+v+'M';} if(n>=1000){const v=parseFloat((n/1000).toFixed(1));return cur()+' '+v+'K';} return cur()+' '+n.toLocaleString(); }
 function genId(){ return '_'+Math.random().toString(36).substr(2,9); }
 function today(){ return new Date().toISOString().split('T')[0]; }
 function pct(a,b){ return b>0?Math.round((a/b)*100):0; }
@@ -1953,7 +1976,7 @@ function txDigestRowHTML(t){
   const tag=t.note?label:(t.type==='income'?'Income':t.type==='expense'?'Expense':'Transfer');
   const tint=t.type==='income'?'i':(t.type==='expense'?'e':'g');
   const amtcls=t.type==='income'?'pos':(t.type==='expense'?'neg':'gold');
-  const amt=(t.type==='income'?'+':'−')+fmtShort(t.amount).replace('UGX ','');
+  const amt=(t.type==='income'?'+':'−')+fmtShort(t.amount).replace(cur()+' ','');
   return `<div class="txd-row" onclick="viewTransaction('${t.id}')"><div class="txd-ic ${tint}">${ic(getTxIcon(t))}</div><div class="txd-info"><div class="txd-nm">${primary}</div><div class="txd-tag">${tag}</div></div><div class="txd-amt ${amtcls}">${amt}</div></div>`;
 }
 function _filterChipsHTML(){
@@ -2084,7 +2107,7 @@ function buildTxForm(type,existing){
   const valDisplay=val?parseInt(val).toLocaleString():'';
   c.innerHTML=`
     <div class="txc-hdr"><span class="txc-chip ${meta.cls}">${ic(meta.icon)}</span><span class="txc-title">${meta.title}</span></div>
-    <div class="txc-amtlab">Amount <span style="color:var(--text)">(UGX)</span></div>
+    <div class="txc-amtlab">Amount <span style="color:var(--text)">(${cur()})</span></div>
     <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
     <div class="txc-grp">
       ${rows}
@@ -2232,7 +2255,7 @@ function buildBudgetForm(ex){
     catField=`<div class="form-group"><label class="form-label">Name</label><input class="form-input" id="bName" value="${ex?ex.name:''}" placeholder="e.g. Monthly Savings"></div>`;
   }
   document.getElementById('budgetModalContent').innerHTML=catField+`
-    <div class="form-group"><label class="form-label">Budget Amount (UGX)</label><input type="text" inputmode="numeric" class="form-input" id="bAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
+    <div class="form-group"><label class="form-label">Budget Amount (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="bAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
     <button class="btn-gold" onclick="saveBudget('${ex?ex.id:''}')">Save</button><button class="btn-outline" onclick="closeModal('addBudgetModal')">Cancel</button>`;
 }
 function openBudgetCatPicker(){
@@ -2261,7 +2284,7 @@ function openAddLoanModal(ex){
   document.getElementById('loanModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Loan Name</label><input class="form-input" id="lName" value="${ex?ex.name:''}" placeholder="e.g. Bank Loan"></div>
     <div class="form-group"><label class="form-label">Source (who/where)</label><input class="form-input" id="lSource" value="${ex?ex.source:''}" placeholder="e.g. Stanbic Bank"></div>
-    <div class="form-group"><label class="form-label">Total Amount (UGX)</label><input type="text" inputmode="numeric" class="form-input" id="lAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
+    <div class="form-group"><label class="form-label">Total Amount (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="lAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
     <div class="form-group"><label class="form-label">Date Taken</label><input type="date" class="form-input" id="lDate" value="${ex?ex.date:today()}"></div>
     <button class="btn-gold" onclick="saveLoan('${ex?ex.id:''}')">Save Loan</button><button class="btn-outline" onclick="closeModal('addLoanModal')">Cancel</button>`;
   openModal('addLoanModal');
@@ -2290,7 +2313,7 @@ function openLoanForm(preId,existing){
   const note=existing?(existing.note||''):'';
   document.getElementById('txModalContent').innerHTML=`
     <div class="txc-hdr"><span class="txc-chip txc-g">${ic('i-cash')}</span><span class="txc-title">${existing?'Edit repayment':'Pay a loan'}</span></div>
-    <div class="txc-amtlab">Amount <span style="color:var(--text)">(UGX)</span></div>
+    <div class="txc-amtlab">Amount <span style="color:var(--text)">(${cur()})</span></div>
     <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
     <div class="txc-grp">
       <div class="txc-row" onclick="openOptionPicker('Loan',DB.loans.map(l=>({value:l.id,label:l.name})),document.getElementById('txLoanId').value,(v,l)=>{document.getElementById('txLoanId').value=v;document.getElementById('txLoanIdDisp').textContent=l;})"><span class="txc-k">Loan</span><span class="txc-v"><span id="txLoanIdDisp">${cur.name}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanId" value="${cur.id}">
@@ -2319,7 +2342,7 @@ function openAddGoalModal(ex){
   document.getElementById('goalModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Goal Name</label><input class="form-input" id="gName" value="${ex?ex.name:''}" placeholder="e.g. Buy a Car"></div>
     <div class="form-group"><label class="form-label">Icon</label><div class="icon-grid" id="gIconGrid">${AVAIL_ICONS.map(i=>`<div class="icon-pick ${ex&&ex.icon===i?'selected':(!ex&&i==='i-target'?'selected':'')}" data-icon="${i}" onclick="pickIcon(this,'g')">${ic(i)}</div>`).join('')}</div></div>
-    <div class="form-group"><label class="form-label">Target Amount (UGX)</label><input type="text" inputmode="numeric" class="form-input" id="gTarget" value="${ex?parseInt(ex.target).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.target:''}"></div>
+    <div class="form-group"><label class="form-label">Target Amount (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="gTarget" value="${ex?parseInt(ex.target).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.target:''}"></div>
     <div class="form-group"><label class="form-label">Target Date (when to close)</label><input type="date" class="form-input" id="gDate" value="${ex&&ex.targetDate?ex.targetDate:''}"></div>
     <button class="btn-gold" onclick="saveGoal('${ex?ex.id:''}')">Save Goal</button><button class="btn-outline" onclick="closeModal('addGoalModal')">Cancel</button>`;
   selectedIcon.g=ex?ex.icon:'i-target'; openModal('addGoalModal');
@@ -2400,7 +2423,7 @@ function anData(){
   }
   return {month,year,txs,income,totalExp,expFromInc,savAdd,emgAdd,goalAdd,loanPaid,setAside,savingsRate,loanPct,catList,catFull,months,rateSeries,nwSeries,S,E,G,curNW,endNW,startNW,yearGrowth,avgMonthExp,avgSurplus,emgBal,runway,onBudget,totalBudgets,biggest,score,sLabel,sColor,sBg,yearInc,yearExp,prevRate,nwSel,nwPrev,prevMonthName,comp};
 }
-function an_money(v){ return fmtShort(v).replace('UGX ',''); }
+function an_money(v){ return fmtShort(v).replace(cur()+' ',''); }
 function ovStyleCurve(months,series,color,target){
   if(!months||months.length<2) return '<div class="exp-empty" style="padding:16px">Log 2+ months to see the trend.</div>';
   var W=320,H=130,pad=14,n=months.length,xs=(W-pad*2)/(n-1);
@@ -2482,20 +2505,42 @@ function an_insights(d){
   if(!out.length) out.push({icon:'i-check',title:'Looking balanced',body:'Your finances look steady this period. Keep it up.',color:'var(--success)'});
   return out;
 }
-// ---- Compare periods (arrow cards + dig-deeper breakdown) ----
-function an_compare(d){
-  const m=d.month, y=d.year;
-  let prevTxs, curLabel, prevLabel;
-  if(m==='all'){ prevTxs=DB.transactions.filter(t=>t.date&&new Date(t.date).getFullYear()===y-1); curLabel=''+y; prevLabel=''+(y-1); }
-  else { const pm=(m+11)%12, py=m===0?y-1:y; prevTxs=DB.transactions.filter(t=>{if(!t.date)return false;const dt=new Date(t.date);return dt.getMonth()===pm&&dt.getFullYear()===py;}); curLabel=MONTHS[m].slice(0,3)+' '+y; prevLabel=MONTHS[pm].slice(0,3)+(py!==y?" '"+(''+py).slice(2):''); }
-  if(!prevTxs.length) return ''; // nothing to compare against — hide the block
-  const cur=d.txs;
+// ---- Compare periods (user-selectable A → B, arrow cards + dig-deeper) ----
+let _cmpA=null, _cmpB=null;
+function cmpLabel(p){ return p.month==='all'?('Year '+p.year):(MONTHS[p.month].slice(0,3)+' '+p.year); }
+function ensureCmpDefaults(){
+  if(_cmpB) return;
+  const {month,year}=getSelectedPeriod();
+  _cmpB={month,year};
+  if(month==='all') _cmpA={month:'all',year:year-1};
+  else { const pm=(month+11)%12, py=month===0?year-1:year; _cmpA={month:pm,year:py}; }
+}
+function openCmpPicker(side){
+  ensureCmpDefaults();
+  const cur0=side==='A'?_cmpA:_cmpB;
+  // every year that has data (no >=2026 floor here — compare must reach earlier years) + current
+  const ys=new Set(DB.transactions.map(t=>new Date(t.date).getFullYear()).filter(Boolean));
+  ys.add(selYear); ys.add(new Date().getFullYear());
+  const years=[...ys].sort((a,b)=>a-b);
+  openOptionPicker('Compare — pick year', years.map(y=>({label:''+y,value:y})), cur0.year, function(y){
+    const opts=[{label:'Whole year',value:'all'}].concat(MONTHS.map((mm,i)=>({label:mm,value:i})));
+    openOptionPicker('Compare — pick month', opts, cur0.month, function(mo){
+      const p={month:mo==='all'?'all':parseInt(mo), year:parseInt(y)};
+      if(side==='A') _cmpA=p; else _cmpB=p;
+      if(currentPage==='analytics') renderAnalytics();
+    });
+  });
+}
+function an_compare(){
+  ensureCmpDefaults();
+  const A=_cmpA, B=_cmpB;
+  const txA=getTxForPeriod(A.month,A.year), txB=getTxForPeriod(B.month,B.year);
   const sum=(txs,type)=>txs.filter(t=>t.type===type).reduce((s,t)=>s+t.amount,0);
   const setAside=txs=>sum(txs,'savings')+sum(txs,'emergency')+sum(txs,'goal');
   const metrics=[
-    {key:'income',label:'Income',icon:'i-income',color:'var(--success)',tint:'rgba(63,174,90,0.15)',cur:sum(cur,'income'),prev:sum(prevTxs,'income'),good:true,dig:true},
-    {key:'expense',label:'Expenses',icon:'i-expense',color:'var(--danger)',tint:'rgba(224,85,85,0.15)',cur:sum(cur,'expense'),prev:sum(prevTxs,'expense'),good:false,dig:true},
-    {key:'savings',label:'Money set aside',icon:'i-bank',color:'var(--gold)',tint:'rgba(212,175,55,0.15)',cur:setAside(cur),prev:setAside(prevTxs),good:true,dig:false}
+    {key:'income',label:'Income',icon:'i-income',color:'var(--success)',tint:'rgba(63,174,90,0.15)',cur:sum(txB,'income'),prev:sum(txA,'income'),good:true,dig:true},
+    {key:'expense',label:'Expenses',icon:'i-expense',color:'var(--danger)',tint:'rgba(224,85,85,0.15)',cur:sum(txB,'expense'),prev:sum(txA,'expense'),good:false,dig:true},
+    {key:'savings',label:'Money set aside',icon:'i-bank',color:'var(--gold)',tint:'rgba(212,175,55,0.15)',cur:setAside(txB),prev:setAside(txA),good:true,dig:false}
   ];
   const rows=metrics.map(mt=>{
     const head='<div class="cmp-row'+(mt.dig?' dig':'')+'"'+(mt.dig?' onclick="toggleCmp(\''+mt.key+'\')"':'')+'>'+
@@ -2503,12 +2548,12 @@ function an_compare(d){
       '<span class="cmp-l">'+mt.label+(mt.dig?'<span class="cmp-chev">'+ic('i-chevron')+'</span>':'')+'</span>'+
       '<span class="cmp-v"><span class="cmp-prev">'+fmtShort(mt.prev)+'</span><span class="cmp-arw">→</span><b>'+fmtShort(mt.cur)+'</b></span>'+
       cmpDelta(mt.cur,mt.prev,mt.good)+'</div>';
-    return head+(mt.dig?'<div class="cmp-detail" id="cmpd-'+mt.key+'" style="display:none">'+cmpBreakdown(mt.key,cur,prevTxs)+'</div>':'');
+    return head+(mt.dig?'<div class="cmp-detail" id="cmpd-'+mt.key+'" style="display:none">'+cmpBreakdown(mt.key,txB,txA)+'</div>':'');
   }).join('');
   return '<div class="section-header an-sh"><div class="section-title">Compare periods</div></div>'+
     '<div class="an-pad" style="margin-bottom:6px"><div class="glass-card chart-card cmp-card">'+
-    '<div class="cmp-head">'+prevLabel+'<span class="cmp-arw">→</span>'+curLabel+'</div>'+rows+
-    '<div class="cmp-hint">Tap Income or Expenses to dig deeper</div></div></div>';
+    '<div class="cmp-picker"><button class="cmp-pill" onclick="openCmpPicker(\'A\')">'+cmpLabel(A)+ic('i-chevron')+'</button><span class="cmp-arw">→</span><button class="cmp-pill" onclick="openCmpPicker(\'B\')">'+cmpLabel(B)+ic('i-chevron')+'</button></div>'+rows+
+    '<div class="cmp-hint">Tap a period to change it · tap Income/Expenses to dig deeper</div></div></div>';
 }
 function cmpDelta(cur,prev,good){
   if(prev<=0) return cur>0?'<span class="cmp-d up">new</span>':'<span class="cmp-d flat">—</span>';
@@ -2604,7 +2649,7 @@ function renderAnalyticsV2(){
     '<div class="an-bc"><div class="an-bv" style="color:#6BA368">'+fmtShort(comp.g)+'</div><div class="an-bl">Goals</div></div></div>';
   const flowInner='<div class="an-tag">Money flow</div><div class="an-ttl">Where your income goes</div><div class="an-sub">of your '+fmtShort(d.income)+' income · '+periodLabel()+'</div>'+(d.income>0?an_flow(d.income,d):'<div class="an-fill-c"><div class="an-single-sub">No income logged for this period</div></div>');
   const spendInner='<div class="an-tag">Spending</div><div class="an-ttl">Where your money went</div><div class="an-sub">'+periodLabel()+'</div>'+(d.totalExp>0?an_donut(d.catList,d.totalExp):'<div class="an-fill-c"><div class="an-single-sub">No spending logged for this period</div></div>');
-  const compareBlock=an_compare(d);
+  const compareBlock=an_compare();
   const coach=an_coach(d);
   const coachBlock='<div class="section-header an-sh"><div class="section-title">Smart Insights</div></div>'+
     '<div class="an-pad"><div class="glass-card chart-card coach-card">'+
@@ -2720,6 +2765,8 @@ function renderSettings(){
   if(fsub) fsub.textContent='Unlock with your fingerprint';
   const fsw=document.getElementById('fpSwitch');
   if(fsw) fsw.classList.toggle('on',!!DB.fingerprintCredId);
+  const curEl=document.getElementById('settingsCurrency');
+  if(curEl) curEl.textContent=cur();
   const cl=document.getElementById('categoriesList');
   cl.innerHTML=DB.categories.map(cat=>`<div class="bgt-card"><div class="bgt-head" onclick="toggleBudget('setcat-${cat.id}')"><div class="bgt-chip">${ic(cat.icon)}</div><div class="bgt-info"><div class="bgt-name">${cat.name}</div></div><div class="bgt-chev">${ic('i-chevron')}</div></div><div class="bgt-detail" id="bgtd-setcat-${cat.id}" style="display:none"><div class="set-about${cat.about?'':' empty'}">${cat.about?cat.about:'No description yet — tap Edit to add one.'}</div><div class="set-cat-actions"><button class="btn-outline set-mini" onclick="openAddCategoryModal('${cat.id}')">Edit</button><button class="btn-outline set-mini del" onclick="deleteCategory('${cat.id}')">Delete</button></div></div></div>`).join('');
   const il=document.getElementById('incomeTypesList');
