@@ -1978,7 +1978,7 @@ function deleteTransaction(id){
     if(currentPage==='transactions')renderTransactions(); else updateOverview();
   },'Delete',true);
 }
-function openEditTransaction(id){ const t=DB.transactions.find(x=>x.id===id); if(t)openTransactionModal(t.type,t); }
+function openEditTransaction(id){ const t=DB.transactions.find(x=>x.id===id); if(!t)return; if(t.type==='loan_repay'){ openLoanForm(t.loanId,t); return; } openTransactionModal(t.type,t); }
 
 // ===== ADD/EDIT TX =====
 let txImageData=null, editingTxId=null;
@@ -2224,25 +2224,32 @@ function saveLoan(id){
 function deleteLoan(id){ askConfirm('Remove this loan?','',()=>{ DB.loans=DB.loans.filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Loan removed','var(--danger)'); },'Remove',true); }
 function quickPayLoan(){ openLoanForm(null); }
 function payLoan(id){ openLoanForm(id); }
-function openLoanForm(preId){
-  editingTxId=null; txImageData=null;
-  const pending=(DB.loans||[]).map(l=>{const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0);return {...l,rem:Math.max(0,l.amount-repaid)};}).filter(l=>l.rem>0);
+function openLoanForm(preId,existing){
+  editingTxId=existing?existing.id:null; txImageData=existing?(existing.image||null):null;
+  const loans=DB.loans||[];
+  if(loans.length===0){ showToast('No loans recorded','var(--text-dim)'); return; }
+  let pending=loans.map(l=>{const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id&&(!existing||t.id!==existing.id)).reduce((s,t)=>s+t.amount,0);return {...l,rem:Math.max(0,l.amount-repaid)};});
+  if(!existing) pending=pending.filter(l=>l.rem>0);
   if(pending.length===0){ showToast('No pending loans to pay','var(--text-dim)'); return; }
-  const cur=pending.find(l=>l.id===preId)||pending[0];
-  const date=today();
+  const cur=(existing?loans.find(l=>l.id===existing.loanId):null)||pending.find(l=>l.id===preId)||pending[0];
+  const val=existing?existing.amount:''; const valDisplay=val?parseInt(val).toLocaleString():'';
+  const from=existing&&existing.from?existing.from:'income';
+  const fromNames={income:'Income',savings:'Life Savings',emergency:'Emergency Fund'};
+  const date=existing?existing.date:today();
+  const note=existing?(existing.note||''):'';
   document.getElementById('txModalContent').innerHTML=`
-    <div class="txc-hdr"><span class="txc-chip txc-g">${ic('i-cash')}</span><span class="txc-title">Pay a loan</span></div>
+    <div class="txc-hdr"><span class="txc-chip txc-g">${ic('i-cash')}</span><span class="txc-title">${existing?'Edit repayment':'Pay a loan'}</span></div>
     <div class="txc-amtlab">Amount <span style="color:var(--text)">(UGX)</span></div>
-    <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" placeholder="0" oninput="formatAmountInput(this)" data-raw="">
+    <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
     <div class="txc-grp">
       <div class="txc-row" onclick="openOptionPicker('Loan',DB.loans.map(l=>({value:l.id,label:l.name})),document.getElementById('txLoanId').value,(v,l)=>{document.getElementById('txLoanId').value=v;document.getElementById('txLoanIdDisp').textContent=l;})"><span class="txc-k">Loan</span><span class="txc-v"><span id="txLoanIdDisp">${cur.name}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanId" value="${cur.id}">
-      <div class="txc-row" onclick="openOptionPicker('Pay from',[{value:'income',label:'Income'},{value:'savings',label:'Life Savings'},{value:'emergency',label:'Emergency Fund'}],document.getElementById('txLoanFrom').value,(v,l)=>{document.getElementById('txLoanFrom').value=v;document.getElementById('txLoanFromDisp').textContent=l;})"><span class="txc-k">Pay from</span><span class="txc-v"><span id="txLoanFromDisp">Income</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanFrom" value="income">
+      <div class="txc-row" onclick="openOptionPicker('Pay from',[{value:'income',label:'Income'},{value:'savings',label:'Life Savings'},{value:'emergency',label:'Emergency Fund'}],document.getElementById('txLoanFrom').value,(v,l)=>{document.getElementById('txLoanFrom').value=v;document.getElementById('txLoanFromDisp').textContent=l;})"><span class="txc-k">Pay from</span><span class="txc-v"><span id="txLoanFromDisp">${fromNames[from]||'Income'}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanFrom" value="${from}">
       <div class="txc-row" onclick="_openDate('txDate')"><span class="txc-k">Date</span><span class="txc-v"><span id="txDateDisp">${fmtDateShort(date)}</span>${ic('i-chevron')}</span><input type="date" class="txc-hiddendate" id="txDate" value="${date}" max="${today()}" onchange="_syncDate('txDate','txDateDisp')"></div>
-      <div class="txc-noterow"><textarea class="txc-noteinput" id="txNote" placeholder="Add a note (optional)"></textarea></div>
+      <div class="txc-noterow"><textarea class="txc-noteinput" id="txNote" placeholder="Add a note (optional)">${note}</textarea></div>
     </div>
-    <div class="txc-rcpt-tile" onclick="openPhotoChoice('tx')">${ic('i-camera')}<span>Add receipt</span><span id="txImgPreview" style="margin-left:auto;display:flex"></span></div>
+    <div class="txc-rcpt-tile" onclick="openPhotoChoice('tx')">${ic('i-camera')}<span>Add receipt</span><span id="txImgPreview" style="margin-left:auto;display:flex">${txImageData?`<img src="${txImageData}">`:''}</span></div>
     <input type="file" id="txImgInput" accept="image/*" style="display:none" onchange="handleTxImage(event)">
-    <button class="btn-gold" onclick="saveLoanRepayment()">Save repayment</button>
+    <button class="btn-gold" onclick="saveLoanRepayment()">${existing?'Update':'Save'} repayment</button>
     <button class="btn-outline" onclick="closeModal('transactionModal')">Cancel</button>`;
   openModal('transactionModal');
 }
@@ -2251,9 +2258,10 @@ function saveLoanRepayment(){
   const loanId=document.getElementById('txLoanId').value; if(!loanId){showToast('Choose a loan','var(--danger)');return;}
   const date=document.getElementById('txDate').value; if(!date){showToast('Select a date','var(--danger)');return;}
   if(date>today()){showToast('Date can’t be in the future','var(--danger)');return;}
-  DB.transactions.push({id:genId(),type:'loan_repay',loanId,amount,date,note:document.getElementById('txNote').value,from:document.getElementById('txLoanFrom').value,image:txImageData});
-  saveDB(); closeAllModals(); showToast('Repayment recorded','var(--success)');
-  if(currentPage==='overview')updateOverview(); else if(currentPage==='budget')renderBudget(); else updateOverview();
+  const tx={id:editingTxId||genId(),type:'loan_repay',loanId,amount,date,note:document.getElementById('txNote').value,from:document.getElementById('txLoanFrom').value,image:txImageData};
+  if(editingTxId){ const i=DB.transactions.findIndex(x=>x.id===editingTxId); if(i>-1)DB.transactions[i]=tx; } else DB.transactions.push(tx);
+  saveDB(); closeAllModals(); showToast(editingTxId?'Repayment updated':'Repayment recorded','var(--success)'); editingTxId=null;
+  if(currentPage==='transactions')renderTransactions(); else if(currentPage==='budget')renderBudget(); else updateOverview();
 }
 function openAddGoalModal(ex){
   document.getElementById('goalModalTitle').textContent=ex?'Edit Goal':'Add Goal';
