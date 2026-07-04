@@ -627,6 +627,13 @@
   .txc-rcpt > svg { width:18px; height:18px; stroke:var(--gold); flex-shrink:0; }
   .txc-rcpt img { width:34px; height:34px; border-radius:8px; object-fit:cover; }
   .txc-note { min-height:64px; resize:none; font-family:inherit; }
+  .txc-hiddendate { position:absolute; right:15px; bottom:8px; width:1px; height:1px; opacity:0; pointer-events:none; border:none; padding:0; }
+  .txc-noterow { border-top:1px solid var(--input-border); }
+  .txc-noteinput { width:100%; box-sizing:border-box; border:none; background:none; color:var(--text); font-family:inherit; font-size:14px; padding:13px 15px; resize:none; min-height:54px; outline:none; }
+  .txc-noteinput::placeholder { color:var(--text-muted); }
+  .txc-rcpt-tile { display:flex; align-items:center; gap:10px; padding:14px 15px; border:1px dashed var(--glass-border); border-radius:var(--radius-sm); color:var(--text-dim); cursor:pointer; margin-bottom:15px; }
+  .txc-rcpt-tile > svg { width:18px; height:18px; stroke:var(--gold); flex-shrink:0; }
+  .txc-rcpt-tile img { width:34px; height:34px; border-radius:8px; object-fit:cover; }
   .gl-chip { width:38px; height:38px; border-radius:11px; background:rgba(212,175,55,0.15); color:var(--gold); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .gl-chip svg { width:19px; height:19px; stroke-width:1.8; }
   .filter-chips { display:flex; flex-wrap:wrap; gap:7px; padding:0 0 6px; }
@@ -845,7 +852,7 @@
   <!-- BUDGET -->
   <div class="page" id="page-budget">
     <div class="sticky-head">
-      <div class="page-header"><div class="page-title">Budget</div></div>
+      <div class="page-header"><div class="page-title">Budget</div><div class="period-selector"><div id="budgetMonthBtn" class="period-btn" onclick="openPeriodPicker('month')">Month</div><span style="color:var(--text-muted);font-size:11px;padding:0 2px">·</span><div id="budgetYearBtn" class="period-btn" onclick="openPeriodPicker('year')">2026</div></div></div>
       <div class="budget-tabs">
         <div class="budget-tab active" onclick="switchBudgetTab('expenses',this)">Expenses</div>
         <div class="budget-tab" onclick="switchBudgetTab('savings',this)">Savings</div>
@@ -1268,6 +1275,8 @@ function updatePeriodBtns(){
   document.getElementById('yearBtn').textContent=selYear;
   const am=document.getElementById('anMonthBtn'),ay=document.getElementById('anYearBtn');
   if(am)am.textContent=label; if(ay)ay.textContent=selYear;
+  const bm=document.getElementById('budgetMonthBtn'),by=document.getElementById('budgetYearBtn');
+  if(bm)bm.textContent=label; if(by)by.textContent=selYear;
 }
 function getActiveYears(){
   const years=new Set([new Date().getFullYear()]);
@@ -1302,6 +1311,7 @@ function selectPeriod(mode,val){
   }
   updatePeriodBtns();closeModal('periodPickerModal');updateOverview();
   if(currentPage==='analytics')renderAnalytics();
+  if(currentPage==='budget')renderBudget();
 }
 function initPeriodSelectors(){
   selMonth=new Date().getMonth();selYear=new Date().getFullYear();
@@ -1994,6 +2004,9 @@ function openTxCategoryPicker(){
   });
   openOptionPicker('Select Category',opts,cur,(v,l)=>{document.getElementById('txCategory').value=v;document.getElementById('txCategoryDisp').textContent=l;});
 }
+function fmtDateShort(iso){ if(!iso)return 'Select'; var d=new Date(iso+'T00:00:00'); return d.getDate()+' '+MONTHS[d.getMonth()].slice(0,3)+' '+d.getFullYear(); }
+function _openDate(id){ var d=document.getElementById(id); if(!d)return; try{ if(d.showPicker) d.showPicker(); else { d.focus(); if(d.click)d.click(); } }catch(e){ try{ d.focus(); if(d.click)d.click(); }catch(_){} } }
+function _syncDate(id,dispId){ var d=document.getElementById(id),s=document.getElementById(dispId); if(d&&s)s.textContent=fmtDateShort(d.value); }
 function buildTxForm(type,existing){
   const c=document.getElementById('txModalContent');
   const val=existing?existing.amount:'', note=existing?(existing.note||''):'', date=existing?existing.date:today();
@@ -2024,14 +2037,13 @@ function buildTxForm(type,existing){
     <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
     <div class="txc-grp">
       ${rows}
-      <div class="txc-row" onclick="(function(d){if(d.showPicker){try{d.showPicker();}catch(e){d.focus();}}else{d.focus();}})(document.getElementById('txDate'))"><span class="txc-k">Date</span><input type="date" class="txc-date" id="txDate" value="${date}" max="${today()}"></div>
-      <div class="txc-rcpt" onclick="openPhotoChoice('tx')">${ic('i-camera')}<span>Receipt · <span style="color:var(--text-dim)">${txImageData?'Photo added':'Add photo'}</span></span><span id="txImgPreview" style="margin-left:auto;display:flex">${txImageData?`<img src="${txImageData}">`:''}</span></div>
+      <div class="txc-row" onclick="_openDate('txDate')"><span class="txc-k">Date</span><span class="txc-v"><span id="txDateDisp">${fmtDateShort(date)}</span>${ic('i-chevron')}</span><input type="date" class="txc-hiddendate" id="txDate" value="${date}" max="${today()}" onchange="_syncDate('txDate','txDateDisp')"></div>
+      <div class="txc-noterow"><textarea class="txc-noteinput" id="txNote" placeholder="Add a note (optional)">${note}</textarea></div>
     </div>
-    <div class="txc-amtlab">Note <span style="color:var(--text-dim)">(optional)</span></div>
-    <textarea class="form-input txc-note" id="txNote" placeholder="Add a note...">${note}</textarea>
+    <div class="txc-rcpt-tile" onclick="openPhotoChoice('tx')">${ic('i-camera')}<span>Add receipt</span><span id="txImgPreview" style="margin-left:auto;display:flex">${txImageData?`<img src="${txImageData}">`:''}</span></div>
     <input type="file" id="txImgInput" accept="image/*" style="display:none" onchange="handleTxImage(event)">
     <button class="btn-gold" onclick="saveTx('${type}')">${editingTxId?'Update':'Save'} transaction</button>
-    <button class="btn-outline" onclick="closeAllModals()">Cancel</button>`;
+    <button class="btn-outline" onclick="closeModal('transactionModal')">Cancel</button>`;
 }
 function rebuildTxForm(type){ buildTxForm(type,null); }
 function handleTxImage(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ openCropper(ev.target.result,'receipt',cropped=>{ txImageData=cropped; const p=document.getElementById('txImgPreview'); if(p)p.innerHTML=`<img src="${txImageData}">`; }); }; r.readAsDataURL(f); e.target.value=''; }
@@ -2102,20 +2114,54 @@ function toggleBudget(id){
   var card=d.parentElement; if(card&&card.classList.contains('bgt-card'))card.classList.toggle('open',!open);
 }
 function renderLoans(c){
-  if(DB.loans.length===0){c.innerHTML=`<div class="empty-state">${ic('i-cash')}<div class="e-text">No loans recorded</div></div>`;return;}
+  if(!DB.loans||DB.loans.length===0){c.innerHTML=`<div class="empty-state">${ic('i-cash')}<div class="e-text">No loans recorded</div></div>`;return;}
   c.innerHTML=DB.loans.map(l=>{
-    const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0);
+    const reps=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const repaid=reps.reduce((s,t)=>s+t.amount,0);
     const rem=Math.max(0,l.amount-repaid); const p=l.amount>0?Math.min((repaid/l.amount)*100,100):0;
-    return `<div class="loan-card"><div class="loan-top"><div><div class="loan-name"><span class="bgt-chip" style="width:34px;height:34px">${ic('i-cash')}</span>${l.name}<span class="loan-lender">${l.source}</span></div></div><div style="display:flex;gap:4px"><button class="icon-btn edit" onclick="openAddLoanModal(DB.loans.find(x=>x.id==='${l.id}'))">${ic('i-edit')}</button><button class="icon-btn del" onclick="deleteLoan('${l.id}')">${ic('i-trash')}</button></div></div>
-    <div class="loan-amounts"><div class="loan-amt-box"><div class="loan-amt-label">Original</div><div class="loan-amt-val">${fmtShort(l.amount)}</div></div><div class="loan-amt-box"><div class="loan-amt-label">Repaid</div><div class="loan-amt-val" style="color:var(--success)">${fmtShort(repaid)}</div></div><div class="loan-amt-box"><div class="loan-amt-label">Remaining</div><div class="loan-amt-val" style="color:${rem>0?'var(--danger)':'var(--success)'}">${fmtShort(rem)}</div></div></div>
-    <div class="budget-full-bar"><div class="budget-full-fill" style="width:${p}%;background:linear-gradient(90deg,var(--gold-dim),var(--gold))"></div></div><div style="font-size:12px;color:var(--text-dim)">${Math.round(p)}% repaid</div></div>`;
+    const col=rem<=0?'var(--success)':'var(--gold)';
+    const txsHTML=reps.length?'<div class="txd-list">'+reps.map(txDigestRowHTML).join('')+'</div>':'<div class="bgt-empty">No repayments yet</div>';
+    return `<div class="bgt-card">
+      <div class="bgt-head" onclick="toggleBudget('loan-${l.id}')">
+        <div class="bgt-chip">${ic('i-cash')}</div>
+        <div class="bgt-info"><div class="bgt-name">${l.name}</div><div class="bgt-sub">${fmtShort(rem)} left${l.source?' · '+l.source:''}</div></div>
+        ${glRing(p,col,44)}
+        <div class="bgt-chev">${ic('i-chevron')}</div>
+      </div>
+      <div class="bgt-detail" id="bgtd-loan-${l.id}" style="display:none">
+        <div class="bgt-stats"><div><div class="bgt-sl">Original</div><div class="bgt-sv">${fmtShort(l.amount)}</div></div><div><div class="bgt-sl">Repaid</div><div class="bgt-sv" style="color:var(--success)">${fmtShort(repaid)}</div></div><div><div class="bgt-sl">Remaining</div><div class="bgt-sv" style="color:${rem>0?'var(--danger)':'var(--success)'}">${fmtShort(rem)}</div></div></div>
+        <div class="budget-card-status" style="margin-bottom:8px;color:var(--text-dim)">${Math.round(p)}% repaid</div>
+        ${rem>0?`<button class="btn-gold" style="margin:0 0 10px" onclick="payLoan('${l.id}')">Pay this loan</button>`:''}
+        <div class="bgt-txlabel">Repayments</div>
+        ${txsHTML}
+        <div class="bgt-actions"><button class="btn-outline" onclick="openAddLoanModal(DB.loans.find(x=>x.id==='${l.id}'))">Edit</button><button class="btn-outline bgt-del" onclick="deleteLoan('${l.id}')">Delete</button></div>
+      </div>
+    </div>`;
   }).join('');
 }
 function renderGoals(c){
-  if(DB.goals.length===0){c.innerHTML=`<div class="empty-state">${ic('i-target')}<div class="e-text">No goals yet</div></div>`;return;}
-  c.innerHTML=DB.goals.map(g=>{const p=g.target>0?Math.min((g.saved/g.target)*100,100):0; const ttg=timeToGo(g.targetDate);
-    return `<div class="goal-card"><div class="goal-top"><div class="goal-name"><span class="bgt-chip" style="width:34px;height:34px">${ic(g.icon)}</span>${g.name}</div><div style="display:flex;gap:8px;align-items:center"><div class="goal-pct">${Math.round(p)}%</div><button class="icon-btn edit" onclick="openAddGoalModal(DB.goals.find(x=>x.id==='${g.id}'))">${ic('i-edit')}</button><button class="icon-btn del" onclick="deleteGoal('${g.id}')">${ic('i-trash')}</button></div></div>
-    <div class="goal-bar"><div class="goal-fill" style="width:${p}%"></div></div><div class="goal-amounts"><span>${fmtShort(g.saved)} saved · ${fmtShort(Math.max(0,g.target-g.saved))} to go</span><span style="color:${ttg&&ttg.overdue?'var(--danger)':'var(--text-dim)'}">${ttg?ttg.text:'No date'}</span></div></div>`;
+  if(!DB.goals||DB.goals.length===0){c.innerHTML=`<div class="empty-state">${ic('i-target')}<div class="e-text">No goals yet</div></div>`;return;}
+  c.innerHTML=DB.goals.map(g=>{
+    const p=g.target>0?Math.min((g.saved/g.target)*100,100):0; const ttg=timeToGo(g.targetDate);
+    const rem=Math.max(0,g.target-g.saved);
+    const gtx=DB.transactions.filter(t=>t.type==='goal'&&t.goalId===g.id).slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const col=p>=100?'var(--success)':'var(--gold)';
+    const txsHTML=gtx.length?'<div class="txd-list">'+gtx.map(txDigestRowHTML).join('')+'</div>':'<div class="bgt-empty">No contributions yet</div>';
+    return `<div class="bgt-card">
+      <div class="bgt-head" onclick="toggleBudget('goal-${g.id}')">
+        <div class="bgt-chip">${ic(g.icon)}</div>
+        <div class="bgt-info"><div class="bgt-name">${g.name}</div><div class="bgt-sub">${fmtShort(rem)} to go${ttg?' · '+ttg.text:''}</div></div>
+        ${glRing(p,col,44)}
+        <div class="bgt-chev">${ic('i-chevron')}</div>
+      </div>
+      <div class="bgt-detail" id="bgtd-goal-${g.id}" style="display:none">
+        <div class="bgt-stats"><div><div class="bgt-sl">Saved</div><div class="bgt-sv" style="color:var(--success)">${fmtShort(g.saved)}</div></div><div><div class="bgt-sl">Target</div><div class="bgt-sv">${fmtShort(g.target)}</div></div><div><div class="bgt-sl">To go</div><div class="bgt-sv">${fmtShort(rem)}</div></div></div>
+        <div class="budget-card-status" style="margin-bottom:8px;color:${ttg&&ttg.overdue?'var(--danger)':'var(--text-dim)'}">${Math.round(p)}%${ttg?' · '+ttg.text:''}</div>
+        <div class="bgt-txlabel">Contributions</div>
+        ${txsHTML}
+        <div class="bgt-actions"><button class="btn-outline" onclick="openAddGoalModal(DB.goals.find(x=>x.id==='${g.id}'))">Edit</button><button class="btn-outline bgt-del" onclick="deleteGoal('${g.id}')">Delete</button></div>
+      </div>
+    </div>`;
   }).join('');
 }
 function openAddBudgetModal(){ if(budgetTab==='loans'){openAddLoanModal();return;} if(budgetTab==='goals'){openAddGoalModal();return;} buildBudgetForm(null); openModal('addBudgetModal'); }
@@ -2176,35 +2222,36 @@ function saveLoan(id){
   saveDB(); closeModal('addLoanModal'); renderBudget(); showToast('Loan saved','var(--success)');
 }
 function deleteLoan(id){ askConfirm('Remove this loan?','',()=>{ DB.loans=DB.loans.filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Loan removed','var(--danger)'); },'Remove',true); }
-function quickPayLoan(){
-  const loans=(DB.loans||[]).map(l=>{
-    const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0);
-    return {...l,rem:Math.max(0,l.amount-repaid)};
-  }).filter(l=>l.rem>0);
-  if(loans.length===0){ showToast('No pending loans to pay','var(--text-dim)'); return; }
-  if(loans.length===1){ payLoan(loans[0].id); return; }
-  // multiple: show picker
-  document.getElementById('txModalTitle').textContent='Pay a Loan';
-  document.getElementById('txModalContent').innerHTML=`<div class="form-group"><label class="form-label">Choose Loan</label></div>`+
-    loans.map(l=>`<div class="quick-action-btn" onclick="payLoan('${l.id}')"><div class="qa-icon" style="color:var(--gold)">${ic('i-cash')}</div><div><div class="qa-title">${l.name}</div><div class="qa-sub">${fmtShort(l.rem)} pending</div></div></div>`).join('')+
-    `<button class="btn-outline" onclick="closeAllModals()" style="margin-top:10px">Cancel</button>`;
-  openModal('transactionModal');
-}
-function payLoan(id){
-  editingTxId=null;txImageData=null; const l=DB.loans.find(x=>x.id===id);
-  document.getElementById('txModalTitle').textContent='Loan Repayment';
+function quickPayLoan(){ openLoanForm(null); }
+function payLoan(id){ openLoanForm(id); }
+function openLoanForm(preId){
+  editingTxId=null; txImageData=null;
+  const pending=(DB.loans||[]).map(l=>{const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0);return {...l,rem:Math.max(0,l.amount-repaid)};}).filter(l=>l.rem>0);
+  if(pending.length===0){ showToast('No pending loans to pay','var(--text-dim)'); return; }
+  const cur=pending.find(l=>l.id===preId)||pending[0];
+  const date=today();
   document.getElementById('txModalContent').innerHTML=`
-    <div class="form-group"><label class="form-label">Loan</label><input class="form-input" value="${l?l.name:''}" disabled></div>
-    <div class="form-group"><label class="form-label">Amount (UGX)</label><input type="text" inputmode="numeric" class="form-input" id="txAmount" placeholder="0" oninput="formatAmountInput(this)" data-raw=""></div>
-    <div class="form-group"><label class="form-label">Pay From</label><select class="form-select" id="txLoanFrom"><option value="income">Income</option><option value="savings">Lifetime Savings</option><option value="emergency">Emergency Fund</option></select></div>
-    <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="txDate" value="${today()}"></div>
-    <div class="form-group"><label class="form-label">Note</label><input class="form-input" id="txNote" placeholder="Optional"></div>
-    <button class="btn-gold" onclick="saveLoanRepayment('${id}')">Save Repayment</button><button class="btn-outline" onclick="closeAllModals()">Cancel</button>`;
+    <div class="txc-hdr"><span class="txc-chip txc-g">${ic('i-cash')}</span><span class="txc-title">Pay a loan</span></div>
+    <div class="txc-amtlab">Amount <span style="color:var(--text)">(UGX)</span></div>
+    <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" placeholder="0" oninput="formatAmountInput(this)" data-raw="">
+    <div class="txc-grp">
+      <div class="txc-row" onclick="openOptionPicker('Loan',DB.loans.map(l=>({value:l.id,label:l.name})),document.getElementById('txLoanId').value,(v,l)=>{document.getElementById('txLoanId').value=v;document.getElementById('txLoanIdDisp').textContent=l;})"><span class="txc-k">Loan</span><span class="txc-v"><span id="txLoanIdDisp">${cur.name}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanId" value="${cur.id}">
+      <div class="txc-row" onclick="openOptionPicker('Pay from',[{value:'income',label:'Income'},{value:'savings',label:'Life Savings'},{value:'emergency',label:'Emergency Fund'}],document.getElementById('txLoanFrom').value,(v,l)=>{document.getElementById('txLoanFrom').value=v;document.getElementById('txLoanFromDisp').textContent=l;})"><span class="txc-k">Pay from</span><span class="txc-v"><span id="txLoanFromDisp">Income</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanFrom" value="income">
+      <div class="txc-row" onclick="_openDate('txDate')"><span class="txc-k">Date</span><span class="txc-v"><span id="txDateDisp">${fmtDateShort(date)}</span>${ic('i-chevron')}</span><input type="date" class="txc-hiddendate" id="txDate" value="${date}" max="${today()}" onchange="_syncDate('txDate','txDateDisp')"></div>
+      <div class="txc-noterow"><textarea class="txc-noteinput" id="txNote" placeholder="Add a note (optional)"></textarea></div>
+    </div>
+    <div class="txc-rcpt-tile" onclick="openPhotoChoice('tx')">${ic('i-camera')}<span>Add receipt</span><span id="txImgPreview" style="margin-left:auto;display:flex"></span></div>
+    <input type="file" id="txImgInput" accept="image/*" style="display:none" onchange="handleTxImage(event)">
+    <button class="btn-gold" onclick="saveLoanRepayment()">Save repayment</button>
+    <button class="btn-outline" onclick="closeModal('transactionModal')">Cancel</button>`;
   openModal('transactionModal');
 }
-function saveLoanRepayment(loanId){
-  const amount=getRawAmount(document.getElementById('txAmount')); if(!amount||amount<=0){showToast('Enter amount','var(--danger)');return;}
-  DB.transactions.push({id:genId(),type:'loan_repay',loanId,amount,date:document.getElementById('txDate').value,note:document.getElementById('txNote').value,from:document.getElementById('txLoanFrom').value,image:null});
+function saveLoanRepayment(){
+  const amount=getRawAmount(document.getElementById('txAmount')); if(!amount||amount<=0){showToast('Enter a valid amount','var(--danger)');return;}
+  const loanId=document.getElementById('txLoanId').value; if(!loanId){showToast('Choose a loan','var(--danger)');return;}
+  const date=document.getElementById('txDate').value; if(!date){showToast('Select a date','var(--danger)');return;}
+  if(date>today()){showToast('Date can’t be in the future','var(--danger)');return;}
+  DB.transactions.push({id:genId(),type:'loan_repay',loanId,amount,date,note:document.getElementById('txNote').value,from:document.getElementById('txLoanFrom').value,image:txImageData});
   saveDB(); closeAllModals(); showToast('Repayment recorded','var(--success)');
   if(currentPage==='overview')updateOverview(); else if(currentPage==='budget')renderBudget(); else updateOverview();
 }
