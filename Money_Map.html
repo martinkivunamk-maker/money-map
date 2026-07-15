@@ -163,7 +163,7 @@
     font-weight:700; color:var(--gold); transition:transform 0.2s; }
   .avatar:active { transform:scale(0.92); }
   .avatar img { width:100%; height:100%; object-fit:cover; }
-  .greeting-text .hello { font-size:13px; color:var(--text-dim); }
+  .greeting-text .hello { font-size:13px; color:var(--text-dim); margin-bottom:3px; }
   .greeting-text .name { font-size:19px; font-weight:800; color:var(--text); }
   .period-selector { display:flex; align-items:center; gap:6px; background:var(--glass); border:1px solid var(--glass-border);
     border-radius:30px; padding:7px 12px; }
@@ -192,6 +192,19 @@
   .trend.down { color:var(--danger); }
 
   .section-header { display:flex; justify-content:space-between; align-items:center; padding:22px var(--gutter) 10px; }
+  .section-header.gl-sh { padding-top:10px; }
+  .bsum-card { margin:2px 0 14px; padding:15px 16px; border-radius:18px; background:var(--card-bg); border:1px solid var(--card-border);
+    box-shadow:0 1px 1px var(--card-hi) inset, 0 12px 26px -10px var(--shadow), 0 2px 6px -2px var(--shadow); animation:fadeUp 0.5s both; }
+  .bsum-top { display:flex; align-items:flex-start; justify-content:space-between; }
+  .bsum-rt { text-align:right; }
+  .bsum-lab { font-size:11px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--text-dim); margin-bottom:4px; }
+  .bsum-spent { font-size:24px; font-weight:800; line-height:1; }
+  .bsum-bud { font-size:16px; font-weight:800; color:var(--text); }
+  .bsum-bar { height:9px; border-radius:6px; background:var(--track); overflow:hidden; margin:13px 0 9px; }
+  .bsum-fill { height:100%; border-radius:6px; transition:width 0.5s var(--ease); }
+  .bsum-foot { display:flex; align-items:center; justify-content:space-between; }
+  .bsum-pct { font-size:13px; font-weight:800; }
+  .bsum-rem { font-size:12px; font-weight:600; color:var(--text-dim); }
   .section-title { font-size:17px; font-weight:800; color:var(--text); }
   .see-more { font-size:13px; color:var(--gold); font-weight:700; cursor:pointer; }
 
@@ -1105,6 +1118,7 @@
 
 <div class="modal-overlay" id="filterModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" style="display:flex;align-items:center;justify-content:space-between;gap:12px">Filter Transactions<span onclick="clearFilterFields()" style="font-size:13px;font-weight:700;color:var(--danger);cursor:pointer">Clear filters</span></div>
   <div class="form-group"><label class="form-label">Type</label><div class="picker-box" onclick="openFilterPicker('Type')"><span class="picker-box-val" id="filterTypeDisp">All Types</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterType" value="all"></div>
+  <div class="form-group" id="filterCatRow" style="display:none"><label class="form-label" id="filterCatLabel">Category</label><div class="picker-box" onclick="openFilterPicker('Category')"><span class="picker-box-val" id="filterCategoryDisp">All Categories</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterCategory" value="all"></div>
   <div class="form-group"><label class="form-label">Month</label><div class="picker-box" onclick="openFilterPicker('Month')"><span class="picker-box-val" id="filterMonthDisp">All Months</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterMonth" value="all"></div>
   <div class="form-group"><label class="form-label">Year</label><div class="picker-box" onclick="openFilterPicker('Year')"><span class="picker-box-val" id="filterYearDisp">All Years</span><svg class="pb-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div><input type="hidden" id="filterYear" value="all"></div>
   <button class="btn-gold" onclick="applyFilter()">Apply Filter</button><button class="btn-outline" onclick="closeModal('filterModal')">Cancel</button>
@@ -1490,10 +1504,11 @@ function updateOverview(){
   document.getElementById('ov-savings-pct').textContent=(income>0?pct(savingsAdded,income)+'% of income':'—');
   document.getElementById('ov-emergency-pct').textContent=(income>0?pct(emergencyAdded,income)+'% of income':'—');
   const h=new Date().getHours();
-  document.getElementById('greetingText').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('greetingText').textContent=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
   document.getElementById('headerName').textContent=DB.userName;
   renderAvatar();
-  const recent=[...DB.transactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3);
+  const _rIdx=new Map(DB.transactions.map((t,i)=>[t.id,i]));
+  const recent=[...DB.transactions].sort((a,b)=>{const dd=new Date(b.date)-new Date(a.date);return dd!==0?dd:(_rIdx.get(b.id)-_rIdx.get(a.id));}).slice(0,3);
   const rtl=document.getElementById('recentTxList');
   rtl.innerHTML=recent.length===0?`<div class="empty-state">${ic('i-card')}<div class="e-text">No transactions yet</div><div class="e-sub">Tap + to add your first one</div></div>`:`<div class="txd-list">${recent.map(t=>txDigestRowHTML(t)).join('')}</div>`;
   renderBudgetStatus(txs);
@@ -1513,10 +1528,10 @@ function updateOverview(){
       return mi-mx-ms-me-mg-ml;
     };
     const monthPosted=(m)=>{ const nm=m===11?0:m+1, ny=m===11?year+1:year; return DB.transactions.some(t=>t.incomeType==='i5'&&new Date(t.date).getMonth()===nm&&new Date(t.date).getFullYear()===ny); };
-    let unpostedMisc=0;
-    for(let m=0;m<12;m++){ const lo=monthLeftover(m); if(lo>0 && !monthPosted(m)) unpostedMisc+=lo; }
+    let unpostedMisc=0, unpostedMonths=[];
+    for(let m=0;m<12;m++){ const lo=monthLeftover(m); if(lo>0 && !monthPosted(m)){ unpostedMisc+=lo; unpostedMonths.push(MONTHS[m]); } }
     if(unpostedMisc<=0){ miscEl.style.display='none'; }
-    else { miscEl.style.display='flex'; miscEl.innerHTML=`<div class="misc-chip">${ic('i-recycle')}</div><div class="misc-body"><div class="misc-title">Miscellaneous income</div><div class="misc-desc">Unallocated · excludes carried-forward</div></div><div class="misc-amt">${fmtShort(unpostedMisc)}</div>`; }
+    else { miscEl.style.display='flex'; miscEl.innerHTML=`<div class="misc-chip">${ic('i-recycle')}</div><div class="misc-body"><div class="misc-title">Miscellaneous income</div><div class="misc-desc">Still unallocated in ${unpostedMonths.join(', ')}</div></div><div class="misc-amt">${fmtShort(unpostedMisc)}</div>`; }
   } else if(leftover<=0 || alreadyPosted){ miscEl.style.display='none'; }
   else {
     miscEl.style.display='flex';
@@ -1539,9 +1554,10 @@ function timeToGo(targetDate){
   const years=(days/365).toFixed(1);
   return {overdue:false, text:`${years} year${years==='1.0'?'':'s'} left`};
 }
-function glRing(pct,col,size){
+function glRing(pct,col,size,labelVal){
   var p=Math.max(0,Math.min(100,pct))||0, sw=Math.max(3,size*0.12), r=size/2-sw/2-1, C=2*Math.PI*r, off=C*(1-p/100);
-  return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex:none"><svg width="'+size+'" height="'+size+'" style="transform:rotate(-90deg)"><circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="var(--track)" stroke-width="'+sw+'"/><circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/></svg><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:'+Math.round(size*0.30)+'px;font-weight:800;color:var(--text)">'+Math.round(p)+'</div></div>';
+  var lbl=(labelVal!=null?Math.round(labelVal):Math.round(p));
+  return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex:none"><svg width="'+size+'" height="'+size+'" style="transform:rotate(-90deg)"><circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="var(--track)" stroke-width="'+sw+'"/><circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/></svg><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:'+Math.round(size*(lbl>=100?0.24:0.30))+'px;font-weight:800;color:var(--text)">'+lbl+'</div></div>';
 }
 function ringDual(pct,col,size,cap){
   var p=Math.max(0,Math.min(100,pct))||0, sw=Math.max(4,size*0.11), r=size/2-sw/2-1, C=2*Math.PI*r, off=C*(1-p/100);
@@ -1614,7 +1630,7 @@ function renderGoalsCard(){
     goalsCount=`${pendingGoals.length} active${doneGoals.length>0?` · ${doneGoals.length} done`:''}`;
   }
 
-  el.innerHTML=`<div class="section-header"><div class="section-title">Goals &amp; Loans Status</div><div class="see-more" onclick="expandCard('goals')">Details</div></div>
+  el.innerHTML=`<div class="section-header gl-sh"><div class="section-title">Goals &amp; Loans Status</div><div class="see-more" onclick="expandCard('goals')">Details</div></div>
   <div class="gl-card" onclick="expandCard('goals')">
     <div class="gl-section-label">Loans${loansCount?` <span class="gl-inline-count">· ${loansCount}</span>`:''}</div>
     ${loansBlock}
@@ -1791,12 +1807,12 @@ function expandCard(kind){
   } else if(kind==='networth'){
     const d=anData(); title='Net Worth · '+d.year;
     const sB=getPotBalance('savings'), eB=getPotBalance('emergency'), gB=DB.transactions.filter(t=>t.type==='goal').reduce((s,t)=>s+t.amount,0);
-    body=`<div class="exp-total">${fmtShort(d.endNW)}</div><div class="exp-sub">savings + emergency + goals</div>${ovStyleCurve(d.months,d.nwSeries,'var(--gold)')}
-      <div class="exp-row"><span>Life Savings</span><span>${fmtShort(sB)}</span></div>
-      <div class="exp-row"><span>Emergency Fund</span><span>${fmtShort(eB)}</span></div>
-      <div class="exp-row"><span>Goals saved</span><span>${fmtShort(gB)}</span></div>
+    body=`<div class="exp-total">${fmtUGX(d.endNW)}</div><div class="exp-sub">savings + emergency + goals</div>${ovStyleCurve(d.months,d.nwSeries,'var(--gold)')}
+      <div class="exp-row"><span>Life Savings</span><span>${fmtUGX(sB)}</span></div>
+      <div class="exp-row"><span>Emergency Fund</span><span>${fmtUGX(eB)}</span></div>
+      <div class="exp-row"><span>Goals saved</span><span>${fmtUGX(gB)}</span></div>
       <div class="exp-divider"></div>
-      <div class="exp-row"><span style="font-weight:800">Growth in ${d.year}</span><span style="color:${d.yearGrowth>=0?'var(--success)':'var(--danger)'};font-weight:800">${d.yearGrowth>=0?'+':'-'}${fmtShort(d.yearGrowth)}</span></div>`;
+      <div class="exp-row"><span style="font-weight:800">Growth in ${d.year}</span><span style="color:${d.yearGrowth>=0?'var(--success)':'var(--danger)'};font-weight:800">${d.yearGrowth>=0?'+':'-'}${fmtUGX(d.yearGrowth)}</span></div>`;
   } else if(kind==='moneyflow'){
     const d=anData(); title='Where Your Income Goes · '+periodLabel();
     const kept=d.income-(d.expFromInc+d.savAdd+d.emgAdd+d.goalAdd+d.loanPaid);
@@ -1979,7 +1995,7 @@ function getTxLabel(t){
 }
 
 // ===== TRANSACTIONS =====
-let activeFilter={type:'all',month:'all',year:'all'};
+let activeFilter={type:'all',category:'all',month:'all',year:'all'};
 function txDayLabel(k){
   const d=new Date(k+'T00:00:00'); const now=new Date();
   const t0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
@@ -2004,14 +2020,22 @@ function _filterChipsHTML(){
   const X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const parts=[];
   if(activeFilter.type!=='all')parts.push(['type',({income:'Income',expense:'Expense',transfer:'Transfers'})[activeFilter.type]||activeFilter.type]);
+  if(activeFilter.category!=='all')parts.push(['category',_catFilterLabel(activeFilter.type,activeFilter.category)]);
   if(activeFilter.month!=='all')parts.push(['month',MONTHS[activeFilter.month]]);
   if(activeFilter.year!=='all')parts.push(['year',''+activeFilter.year]);
   if(!parts.length)return '';
   return '<div class="filter-chips">'+parts.map(p=>`<span class="fchip" onclick="clearOneFilter('${p[0]}')">${p[1]} ${X}</span>`).join('')+`<span class="fchip fchip-clear" onclick="clearAllFilters()">Clear all ${X}</span></div>`;
 }
 function renderTransactions(){
-  let txs=[...DB.transactions].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const _oIdx=new Map(DB.transactions.map((t,i)=>[t.id,i]));
+  let txs=[...DB.transactions].sort((a,b)=>{const dd=new Date(b.date)-new Date(a.date);return dd!==0?dd:(_oIdx.get(b.id)-_oIdx.get(a.id));});
   if(activeFilter.type!=='all'){ if(activeFilter.type==='transfer')txs=txs.filter(t=>['savings','emergency','goal','loan_repay'].includes(t.type)); else txs=txs.filter(t=>t.type===activeFilter.type); }
+  if(activeFilter.category!=='all'){
+    if(activeFilter.type==='income')txs=txs.filter(t=>t.incomeType===activeFilter.category);
+    else if(activeFilter.type==='transfer')txs=txs.filter(t=>t.type===activeFilter.category);
+    else if(activeFilter.category==='__unbudgeted__')txs=txs.filter(t=>t.type==='expense'&&!t.categoryId);
+    else txs=txs.filter(t=>t.type==='expense'&&t.categoryId===activeFilter.category);
+  }
   if(activeFilter.month!=='all')txs=txs.filter(t=>new Date(t.date).getMonth()===parseInt(activeFilter.month));
   if(activeFilter.year!=='all')txs=txs.filter(t=>new Date(t.date).getFullYear()===parseInt(activeFilter.year));
   const c=document.getElementById('txPageContent');
@@ -2028,27 +2052,50 @@ function renderTransactions(){
 function openFilterPicker(which){
   var cur=document.getElementById('filter'+which).value, opts;
   if(which==='Type') opts=[{value:'all',label:'All Types'},{value:'income',label:'Income'},{value:'expense',label:'Expense'},{value:'transfer',label:'Transfers'}];
+  else if(which==='Category'){ opts=_catFilterOpts(document.getElementById('filterType').value); }
   else if(which==='Month'){ var ms=new Set(); DB.transactions.forEach(function(t){if(t.date)ms.add(new Date(t.date).getMonth());}); opts=[{value:'all',label:'All Months'}].concat([...ms].sort(function(a,b){return a-b;}).map(function(m){return {value:m,label:MONTHS[m]};})); }
   else { var ys=new Set(); DB.transactions.forEach(function(t){if(t.date)ys.add(new Date(t.date).getFullYear());}); opts=[{value:'all',label:'All Years'}].concat([...ys].sort(function(a,b){return a-b;}).map(function(y){return {value:y,label:''+y};})); }
-  openOptionPicker(which,opts,cur,function(v,l){ document.getElementById('filter'+which).value=v; document.getElementById('filter'+which+'Disp').textContent=l; });
+  openOptionPicker(which,opts,cur,function(v,l){ document.getElementById('filter'+which).value=v; document.getElementById('filter'+which+'Disp').textContent=l; if(which==='Type'){ var d=_catDefaults(v); document.getElementById('filterCategory').value='all'; document.getElementById('filterCategoryDisp').textContent=d.all; _syncFilterCatField(); } });
+}
+function _catDefaults(type){
+  if(type==='income')return {label:'Income Source', all:'All Income Sources'};
+  if(type==='transfer')return {label:'Transfer To', all:'All Transfers'};
+  if(type==='expense')return {label:'Category', all:'All Categories'};
+  return {label:'Category', all:'All'};
+}
+function _catFilterOpts(type){
+  if(type==='income')return [{value:'all',label:'All Income Sources'}].concat(DB.incomeTypes.map(function(i){return {value:i.id,label:i.name};}));
+  if(type==='transfer')return [{value:'all',label:'All Transfers'},{value:'savings',label:'To Life Savings'},{value:'emergency',label:'To Emergency Fund'},{value:'goal',label:'To Goals'},{value:'loan_repay',label:'Loan Repayments'}];
+  return [{value:'all',label:'All Categories'}].concat(DB.categories.map(function(c){return {value:c.id,label:c.name};})).concat([{value:'__unbudgeted__',label:'Unbudgeted'}]);
+}
+function _syncFilterCatField(){
+  var type=document.getElementById('filterType').value, row=document.getElementById('filterCatRow'), lab=document.getElementById('filterCatLabel'), d=_catDefaults(type);
+  if(type==='all'){ row.style.display='none'; document.getElementById('filterCategory').value='all'; document.getElementById('filterCategoryDisp').textContent=d.all; }
+  else { row.style.display=''; lab.textContent=d.label; }
 }
 function openFilterModal(){
   document.getElementById('filterType').value=activeFilter.type;
   document.getElementById('filterTypeDisp').textContent=({all:'All Types',income:'Income',expense:'Expense',transfer:'Transfers'})[activeFilter.type]||'All Types';
+  document.getElementById('filterCategory').value=activeFilter.category;
+  document.getElementById('filterCategoryDisp').textContent=_catFilterLabel(activeFilter.type,activeFilter.category);
+  _syncFilterCatField();
   document.getElementById('filterMonth').value=activeFilter.month;
   document.getElementById('filterMonthDisp').textContent=activeFilter.month==='all'?'All Months':MONTHS[activeFilter.month];
   document.getElementById('filterYear').value=activeFilter.year;
   document.getElementById('filterYearDisp').textContent=activeFilter.year==='all'?'All Years':(''+activeFilter.year);
   openModal('filterModal');
 }
-function applyFilter(){ activeFilter={type:document.getElementById('filterType').value,month:document.getElementById('filterMonth').value,year:document.getElementById('filterYear').value}; closeModal('filterModal'); renderTransactions(); }
+function applyFilter(){ activeFilter={type:document.getElementById('filterType').value,category:document.getElementById('filterCategory').value,month:document.getElementById('filterMonth').value,year:document.getElementById('filterYear').value}; closeModal('filterModal'); renderTransactions(); }
 function clearFilterFields(){
   document.getElementById('filterType').value='all'; document.getElementById('filterTypeDisp').textContent='All Types';
+  document.getElementById('filterCategory').value='all'; document.getElementById('filterCategoryDisp').textContent='All Categories';
   document.getElementById('filterMonth').value='all'; document.getElementById('filterMonthDisp').textContent='All Months';
   document.getElementById('filterYear').value='all'; document.getElementById('filterYearDisp').textContent='All Years';
+  _syncFilterCatField();
 }
-function clearOneFilter(key){ activeFilter[key]='all'; renderTransactions(); }
-function clearAllFilters(){ activeFilter={type:'all',month:'all',year:'all'}; renderTransactions(); }
+function _catFilterLabel(type,v){ if(v==='all')return _catDefaults(type).all; if(type==='income'){const i=DB.incomeTypes.find(x=>x.id===v);return i?i.name:_catDefaults(type).all;} if(type==='transfer')return ({savings:'To Life Savings',emergency:'To Emergency Fund',goal:'To Goals',loan_repay:'Loan Repayments'})[v]||_catDefaults(type).all; if(v==='__unbudgeted__')return 'Unbudgeted'; const c=DB.categories.find(x=>x.id===v); return c?c.name:_catDefaults(type).all; }
+function clearOneFilter(key){ activeFilter[key]='all'; if(key==='type')activeFilter.category='all'; renderTransactions(); }
+function clearAllFilters(){ activeFilter={type:'all',category:'all',month:'all',year:'all'}; renderTransactions(); }
 function viewTransaction(id){
   const t=DB.transactions.find(x=>x.id===id); if(!t)return;
   const d=new Date(t.date);
@@ -2174,9 +2221,26 @@ function switchBudgetTab(tab,el){ budgetTab=tab; document.querySelectorAll('.bud
 function renderBudget(){
   const {month,year}=getSelectedPeriod(); const txs=getTxForPeriod(month,year); const c=document.getElementById('budgetCards');
   if(budgetTab==='loans'){renderLoans(c);return;} if(budgetTab==='goals'){renderGoals(c);return;}
-  const budgets=DB.budgets.filter(b=>budgetTab==='expenses'?b.type==='expense':(b.type==='savings'||b.type==='emergency'));
+  const budgets=DB.budgets.filter(b=>budgetTab==='expenses'?b.type==='expense':(b.type==='savings'||b.type==='emergency')).slice().sort((a,b)=>b.amount-a.amount);
   if(budgets.length===0){c.innerHTML=`<div class="empty-state">${ic('i-budget')}<div class="e-text">No budgets yet</div></div>`;return;}
-  c.innerHTML=budgets.map(b=>{
+  const _bMult=month==='all'?12:1;
+  let summaryHTML='';
+  if(budgetTab==='expenses'){
+    const totBudget=budgets.reduce((s,b)=>s+b.amount*_bMult,0);
+    const totSpent=budgets.reduce((s,b)=>s+txs.filter(t=>t.type==='expense'&&t.categoryId===b.categoryId).reduce((ss,t)=>ss+t.amount,0),0);
+    const sPct=totBudget>0?(totSpent/totBudget)*100:0;
+    const sCol=sPct>100?'var(--danger)':sPct>=96?'var(--warning)':'var(--success)';
+    const sRem=totBudget-totSpent;
+    summaryHTML=`<div class="bsum-card">
+      <div class="bsum-top">
+        <div><div class="bsum-lab">Spent so far</div><div class="bsum-spent" style="color:${sCol}">${fmtShort(totSpent)}</div></div>
+        <div class="bsum-rt"><div class="bsum-lab">Total budget</div><div class="bsum-bud">${fmtShort(totBudget)}</div></div>
+      </div>
+      <div class="bsum-bar"><div class="bsum-fill" style="width:${Math.min(sPct,100)}%;background:${sCol}"></div></div>
+      <div class="bsum-foot"><span class="bsum-pct" style="color:${sCol}">${Math.round(sPct)}% used</span><span class="bsum-rem">${sRem>=0?fmtShort(sRem)+' still to spend':fmtShort(-sRem)+' over budget'}</span></div>
+    </div>`;
+  }
+  c.innerHTML=summaryHTML+budgets.map(b=>{
     let catTxs=[];
     if(b.type==='expense')catTxs=txs.filter(t=>t.type==='expense'&&t.categoryId===b.categoryId);
     else if(b.type==='savings')catTxs=txs.filter(t=>t.type==='savings');
@@ -2185,10 +2249,10 @@ function renderBudget(){
     const mult=month==='all'?12:1;
     const budgetAmt=b.amount*mult;
     const rem=budgetAmt-spent;
-    const p=budgetAmt>0?Math.min((spent/budgetAmt)*100,100):0;
-    const col=p>90?'var(--danger)':p>70?'var(--warning)':'var(--success)';
-    const st=p>=100?'Over budget':p>=80?'Approaching limit':'On track';
-    const sc=p>=100?'status-over':p>=80?'status-warn':'status-good';
+    const p=budgetAmt>0?(spent/budgetAmt)*100:0;
+    const col=p>100?'var(--danger)':p>=96?'var(--warning)':'var(--success)';
+    const st=p>100?'Over budget':p>=96?'Approaching limit':'On track';
+    const sc=p>100?'status-over':p>=96?'status-warn':'status-good';
     const periodNote=mult>1?` (${mult} mo)`:'';
     const rows=catTxs.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
     const txsHTML=rows.length?'<div class="txd-list">'+rows.map(txDigestRowHTML).join('')+'</div>':'<div class="bgt-empty">No transactions this period</div>';
@@ -2196,7 +2260,7 @@ function renderBudget(){
       <div class="bgt-head" onclick="toggleBudget('${b.id}')">
         <div class="bgt-chip">${ic(b.icon)}</div>
         <div class="bgt-info"><div class="bgt-name">${b.name}</div><div class="bgt-sub">${fmtShort(spent)} of ${fmtShort(budgetAmt)}${periodNote}</div></div>
-        ${glRing(p,col,44)}
+        ${glRing(p,col,44,p)}
         <div class="bgt-chev">${ic('i-chevron')}</div>
       </div>
       <div class="bgt-detail" id="bgtd-${b.id}" style="display:none">
@@ -2226,13 +2290,13 @@ function renderLoans(c){
     return `<div class="bgt-card">
       <div class="bgt-head" onclick="toggleBudget('loan-${l.id}')">
         <div class="bgt-chip">${ic('i-cash')}</div>
-        <div class="bgt-info"><div class="bgt-name">${l.name}</div><div class="bgt-sub">${fmtShort(rem)} left${l.source?' · '+l.source:''}</div></div>
+        <div class="bgt-info"><div class="bgt-name">${l.name}</div><div class="bgt-sub">${rem<=0?'Fully Paid':fmtShort(rem)+' left'}${l.source?' · '+l.source:''}</div></div>
         ${glRing(p,col,44)}
         <div class="bgt-chev">${ic('i-chevron')}</div>
       </div>
       <div class="bgt-detail" id="bgtd-loan-${l.id}" style="display:none">
         <div class="bgt-stats"><div><div class="bgt-sl">Original</div><div class="bgt-sv">${fmtShort(l.amount)}</div></div><div><div class="bgt-sl">Repaid</div><div class="bgt-sv" style="color:var(--success)">${fmtShort(repaid)}</div></div><div><div class="bgt-sl">Remaining</div><div class="bgt-sv" style="color:${rem>0?'var(--danger)':'var(--success)'}">${fmtShort(rem)}</div></div></div>
-        <div class="budget-card-status" style="margin-bottom:8px;color:var(--text-dim)">${Math.round(p)}% repaid</div>
+        <div class="budget-card-status" style="margin-bottom:8px;color:${rem<=0?'var(--success)':'var(--text-dim)'}">${rem<=0?'Fully Paid':Math.round(p)+'% repaid'}</div>
         ${rem>0?`<button class="btn-gold" style="margin:0 0 10px" onclick="payLoan('${l.id}')">Pay this loan</button>`:''}
         <div class="bgt-txlabel">Repayments</div>
         ${txsHTML}
@@ -2252,13 +2316,13 @@ function renderGoals(c){
     return `<div class="bgt-card">
       <div class="bgt-head" onclick="toggleBudget('goal-${g.id}')">
         <div class="bgt-chip">${ic(g.icon)}</div>
-        <div class="bgt-info"><div class="bgt-name">${g.name}</div><div class="bgt-sub">${fmtShort(rem)} to go${ttg?' · '+ttg.text:''}</div></div>
+        <div class="bgt-info"><div class="bgt-name">${g.name}</div><div class="bgt-sub">${p>=100?'Completed':fmtShort(rem)+' to go'}${ttg&&p<100?' · '+ttg.text:''}</div></div>
         ${glRing(p,col,44)}
         <div class="bgt-chev">${ic('i-chevron')}</div>
       </div>
       <div class="bgt-detail" id="bgtd-goal-${g.id}" style="display:none">
         <div class="bgt-stats"><div><div class="bgt-sl">Saved</div><div class="bgt-sv" style="color:var(--success)">${fmtShort(g.saved)}</div></div><div><div class="bgt-sl">Target</div><div class="bgt-sv">${fmtShort(g.target)}</div></div><div><div class="bgt-sl">To go</div><div class="bgt-sv">${fmtShort(rem)}</div></div></div>
-        <div class="budget-card-status" style="margin-bottom:8px;color:${ttg&&ttg.overdue?'var(--danger)':'var(--text-dim)'}">${Math.round(p)}%${ttg?' · '+ttg.text:''}</div>
+        <div class="budget-card-status" style="margin-bottom:8px;color:${p>=100?'var(--success)':ttg&&ttg.overdue?'var(--danger)':'var(--text-dim)'}">${p>=100?'Completed':Math.round(p)+'%'}${ttg&&p<100?' · '+ttg.text:''}</div>
         <div class="bgt-txlabel">Contributions</div>
         ${txsHTML}
         <div class="bgt-actions"><button class="btn-outline" onclick="openAddGoalModal(DB.goals.find(x=>x.id==='${g.id}'))">Edit</button><button class="btn-outline bgt-del" onclick="deleteGoal('${g.id}')">Delete</button></div>
@@ -2507,7 +2571,7 @@ function an_health(d){
   const ring='<svg viewBox="0 0 78 78" style="width:78px;height:78px;transform:rotate(-90deg)"><circle cx="39" cy="39" r="34" fill="none" stroke="rgba(127,127,127,0.18)" stroke-width="8"/><circle cx="39" cy="39" r="34" fill="none" style="stroke:'+d.sColor+'" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+fill.toFixed(1)+' '+(C-fill).toFixed(1)+'"/></svg>';
   const rt=d.runway>=99?'plenty':Math.max(0,d.runway).toFixed(1)+' mo';
   const surplus=(d.avgSurplus<0?'-':'')+fmtShort(d.avgSurplus);
-  return '<div class="an-health-hdr"><div class="an-ring">'+ring+'<div class="an-ring-c"><div class="an-ring-v">'+d.score+'</div><div class="an-ring-l">/ 100</div></div></div><div><div class="an-ttl">Financial Health</div><div class="an-badge" style="color:'+d.sColor+';background:'+d.sBg+'">'+d.sLabel+'</div><div class="an-sub" style="margin:0">'+periodLabel()+' snapshot</div></div></div><div class="an-tiles"><div class="an-tile"><div class="an-tile-v">'+d.savingsRate+'%</div><div class="an-tile-l">Savings rate</div></div><div class="an-tile"><div class="an-tile-v">'+rt+'</div><div class="an-tile-l">Emergency runway</div></div><div class="an-tile"><div class="an-tile-v">'+surplus+'</div><div class="an-tile-l">Avg monthly surplus</div></div><div class="an-tile"><div class="an-tile-v">'+(d.totalBudgets?d.onBudget+' / '+d.totalBudgets:'—')+'</div><div class="an-tile-l">Categories on budget</div></div></div>'+(d.biggest&&d.totalExp>0?'<div class="an-foot">Biggest expense: <b>'+d.biggest.name+'</b> · '+pct(d.biggest.v,d.totalExp)+'% of spending</div>':'');
+  return '<div class="an-tag">'+periodLabel()+'</div><div class="an-health-hdr"><div class="an-ring">'+ring+'<div class="an-ring-c"><div class="an-ring-v">'+d.score+'</div><div class="an-ring-l">/ 100</div></div></div><div><div class="an-ttl">Financial Health</div><div class="an-badge" style="color:'+d.sColor+';background:'+d.sBg+'">'+d.sLabel+'</div></div></div><div class="an-tiles"><div class="an-tile"><div class="an-tile-v">'+d.savingsRate+'%</div><div class="an-tile-l">Savings rate</div></div><div class="an-tile"><div class="an-tile-v">'+rt+'</div><div class="an-tile-l">Emergency runway</div></div><div class="an-tile"><div class="an-tile-v">'+surplus+'</div><div class="an-tile-l">Avg monthly surplus</div></div><div class="an-tile"><div class="an-tile-v">'+(d.totalBudgets?d.onBudget+' / '+d.totalBudgets:'—')+'</div><div class="an-tile-l">Categories on budget</div></div></div>'+(d.biggest&&d.totalExp>0?'<div class="an-foot">Biggest expense: <b>'+d.biggest.name+'</b> · '+pct(d.biggest.v,d.totalExp)+'% of spending</div>':'');
 }
 function an_insights(d){
   const out=[];
