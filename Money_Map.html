@@ -1091,6 +1091,7 @@
   </div>
   <button class="btn-outline" style="margin-top:8px" onclick="closeModal('assetChoiceModal')">Cancel</button>
 </div></div>
+<div class="modal-overlay" id="goalConvertModal" style="z-index:645"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Goal fully funded</div><div id="goalConvertContent"></div></div></div>
 <div class="modal-overlay" id="assetModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="assetModalTitle">Add Asset</div><div id="assetModalContent"></div></div></div>
 <div class="modal-overlay" id="investmentModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="investmentModalTitle">Add Investment</div><div id="investmentModalContent"></div></div></div>
 <div class="modal-overlay" id="holdingModal" style="z-index:660"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="holdingModalTitle">Add a place</div><div id="holdingModalContent"></div></div></div>
@@ -1259,7 +1260,7 @@ function openCurrencyPicker(){
 function fmtUGX(n){ if(isNaN(n))return cur()+' 0'; return cur()+' '+Math.abs(Math.round(n)).toLocaleString(); }
 function fmtShort(n){ n=Math.abs(Math.round(n)); if(n>=1000000){const v=parseFloat((n/1000000).toFixed(2));return cur()+' '+v+'M';} if(n>=1000){const v=parseFloat((n/1000).toFixed(1));return cur()+' '+v+'K';} return cur()+' '+n.toLocaleString(); }
 function genId(){ return '_'+Math.random().toString(36).substr(2,9); }
-function today(){ return new Date().toISOString().split('T')[0]; }
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function pct(a,b){ return b>0?Math.round((a/b)*100):0; }
 function showToast(m,c){ const t=document.getElementById('toast'); t.textContent=m; t.style.color=c||'var(--text)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
 let _modalStack=[], _modalHistDepth=0, _resettingHistory=false;
@@ -2633,20 +2634,52 @@ function saveGoal(id){
   if(id){const g=DB.goals.find(x=>x.id===id);if(g){g.name=name;g.icon=selectedIcon.g;g.target=target;g.targetDate=targetDate;g.kind=kind;}} else DB.goals.push({id:genId(),name,icon:selectedIcon.g,target,saved:0,targetDate,kind});
   saveDB(); syncOwnedGoals(); closeModal('addGoalModal'); renderBudget(); showToast('Goal saved','var(--success)');
 }
-function deleteGoal(id){ askConfirm('Remove this goal?','',()=>{ DB.goals=DB.goals.filter(x=>x.id!==id); DB.assets=(DB.assets||[]).filter(a=>a.fromGoalId!==id); saveDB(); renderBudget(); showToast('Goal removed','var(--danger)'); },'Remove',true); }
+function deleteGoal(id){ askConfirm('Remove this goal?','',()=>{ var g=(DB.goals||[]).find(x=>x.id===id); if(g&&g.toppedUpAssetId){ var ta=(DB.assets||[]).find(x=>x.id===g.toppedUpAssetId); if(ta){ ta.value=Math.max(0,(ta.value||0)-(g.toppedUpAmount||0)); ta.qty=Math.max(0,(ta.qty||0)-1); } } DB.goals=DB.goals.filter(x=>x.id!==id); DB.assets=(DB.assets||[]).filter(a=>a.fromGoalId!==id); saveDB(); renderBudget(); showToast('Goal removed','var(--danger)'); },'Remove',true); }
 // When a fully-funded investment goal is paid off, mirror it into Assets & Investments (keeps a Completed copy in Goals).
+let _convGoalId=null, _convDeferred={};
 function syncOwnedGoals(){
-  DB.goals=DB.goals||[]; DB.assets=DB.assets||[]; let changed=false;
-  DB.goals.forEach(g=>{
-    if(goalKind(g.id)==='investment' && g.target>0 && (g.saved||0)>=g.target && !g.owned){
-      g.owned=true;
-      DB.assets.push({id:genId(),name:g.name,qty:1,value:g.saved,icon:g.icon||'i-invest',fromGoalId:g.id});
-      changed=true;
-    }
-  });
-  if(changed) saveDB();
-  return changed;
+  DB.goals=DB.goals||[]; DB.assets=DB.assets||[];
+  if(_convGoalId) return false;
+  var g=DB.goals.find(function(x){ return goalKind(x.id)==='investment' && x.target>0 && (x.saved||0)>=x.target && !x.owned && !_convDeferred[x.id]; });
+  if(g){ var gid=g.id; setTimeout(function(){ openGoalConvertModal(gid); }, 160); return true; }
+  return false;
 }
+function openGoalConvertModal(goalId){
+  var g=(DB.goals||[]).find(function(x){return x.id===goalId;}); if(!g||g.owned) return;
+  _convGoalId=goalId;
+  document.getElementById('goalConvertContent').innerHTML=
+    '<div style="font-size:14px;color:var(--text-dim);line-height:1.55;margin-bottom:16px"><span style="color:var(--success);font-weight:700">'+esc(g.name)+'</span> is fully funded ('+fmtShort(g.saved)+'). Move it into your Assets so it counts as real wealth \u2014 without double-counting:</div>'+
+    '<div class="quick-actions">'+
+      '<div class="quick-action-btn" onclick="convGoalNew()"><div class="qa-icon" style="color:var(--gold);background:rgba(212,175,55,0.16)"><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg></div><span class="qa-title">Add as new asset</span><span class="qa-hint">Creates a new entry</span></div>'+
+      '<div class="quick-action-btn" onclick="convGoalTopup()"><div class="qa-icon" style="color:var(--success);background:rgba(63,174,90,0.14)"><svg viewBox="0 0 24 24"><use href="#i-invest"/></svg></div><span class="qa-title">Top up an existing asset</span><span class="qa-hint">Add to one you have</span></div>'+
+    '</div>'+
+    '<button class="btn-outline" style="margin-top:8px" onclick="convGoalLater()">Later</button>';
+  openModal('goalConvertModal');
+}
+function convGoalNew(){
+  var g=(DB.goals||[]).find(function(x){return x.id===_convGoalId;}); if(!g){ closeModal('goalConvertModal'); return; }
+  DB.assets=DB.assets||[];
+  DB.assets.push({id:genId(),name:g.name,qty:1,value:g.saved,icon:g.icon||'i-invest',fromGoalId:g.id});
+  g.owned=true; saveDB(); _convGoalId=null;
+  closeModal('goalConvertModal'); renderBudget(); updateOverview();
+  showToast(g.name+' added to Assets','var(--success)');
+  setTimeout(syncOwnedGoals,140);
+}
+function convGoalTopup(){
+  var g=(DB.goals||[]).find(function(x){return x.id===_convGoalId;}); if(!g){ closeModal('goalConvertModal'); return; }
+  var assets=DB.assets||[];
+  if(!assets.length){ showToast('No assets yet \u2014 adding as new','var(--gold)'); convGoalNew(); return; }
+  var opts=assets.map(function(a){ return {value:a.id, label:esc(a.name), status:fmtShort(a.value||0), statusType:'left'}; });
+  openOptionPicker('Top up which asset?', opts, '', function(assetId){
+    var a=(DB.assets||[]).find(function(x){return x.id===assetId;}); if(!a) return;
+    a.value=(a.value||0)+g.saved; a.qty=(a.qty||0)+1;
+    g.owned=true; g.toppedUpAssetId=a.id; g.toppedUpAmount=g.saved; saveDB(); _convGoalId=null;
+    closeModal('goalConvertModal'); renderBudget(); updateOverview();
+    showToast('Topped up '+a.name,'var(--success)');
+    setTimeout(syncOwnedGoals,140);
+  });
+}
+function convGoalLater(){ if(_convGoalId) _convDeferred[_convGoalId]=true; _convGoalId=null; closeModal('goalConvertModal'); }
 
 // ===== ASSETS & INVESTMENTS =====
 function renderAssets(c){
@@ -2716,7 +2749,7 @@ function saveAsset(id){
   else DB.assets.push({id:genId(),name,qty,value,icon:'i-house'});
   saveDB(); closeModal('assetModal'); renderBudget(); showToast('Asset saved','var(--success)');
 }
-function deleteAsset(id){ askConfirm('Remove this asset?','',()=>{ DB.assets=(DB.assets||[]).filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Asset removed','var(--danger)'); },'Remove',true); }
+function deleteAsset(id){ askConfirm('Remove this asset?','',()=>{ var a=(DB.assets||[]).find(x=>x.id===id); if(a&&a.fromGoalId){ var g=(DB.goals||[]).find(x=>x.id===a.fromGoalId); if(g){ g.owned=false; delete _convDeferred[g.id]; } } DB.assets=(DB.assets||[]).filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Asset removed','var(--danger)'); },'Remove',true); }
 function openInvestmentModal(id){
   const ex=id?(DB.investments||[]).find(x=>x.id===id):null;
   document.getElementById('investmentModalTitle').textContent=ex?'Edit Investment':'Add Investment';
@@ -2756,7 +2789,7 @@ function anData(){
   const income=f(t=>t.type==='income'), totalExp=f(t=>t.type==='expense');
   const expFromInc=f(t=>t.type==='expense'&&(!t.source||t.source==='income'));
   const savAdd=f(t=>t.type==='savings'), emgAdd=f(t=>t.type==='emergency'), goalAdd=f(t=>t.type==='goal');
-  const goalInv=sumInvGoals(txs), goalLife=sumLifeGoals(txs);
+  const goalInv=txs.filter(t=>t.type==='goal'&&goalKind(t.goalId)==='investment').reduce((s,t)=>s+t.amount,0), goalLife=sumLifeGoals(txs);
   const loanPaid=f(t=>t.type==='loan_repay'); const loanPaidInc=f(t=>t.type==='loan_repay'&&(!t.from||t.from==='income'));
   const setAside=savAdd+emgAdd+goalInv;                       // wealth-building = savings side
   const savingsRate=income>0?Math.round(setAside/income*100):0;
@@ -3060,7 +3093,7 @@ function renderAnalyticsV2(){
     '<div class="an-numhead"><div class="an-numbig" style="font-size:31px">'+nwBig+'</div><div class="an-numsub">'+nwSub+'</div>'+nwDeltaH+'</div>'+
     '<div class="an-band cols3"><div class="an-bc br"><div class="an-bv" style="color:#C9A227">'+fmtShort(comp.s)+'</div><div class="an-bl">Life Savings</div></div>'+
     '<div class="an-bc br"><div class="an-bv" style="color:#E8A33D">'+fmtShort(comp.e)+'</div><div class="an-bl">Emergency</div></div>'+
-    '<div class="an-bc"><div class="an-bv" style="color:#6BA368">'+fmtShort(comp.g)+'</div><div class="an-bl">Investments</div></div></div>';
+    '<div class="an-bc"><div class="an-bv" style="color:#6BA368">'+fmtShort(comp.g+d.extraNW)+'</div><div class="an-bl">Assets</div></div></div>';
   const flowInner='<div class="an-tag">Money flow</div><div class="an-ttl">Where your income goes</div><div class="an-sub">of your '+fmtShort(d.income)+' income · '+periodLabel()+'</div>'+(d.income>0?an_flow(d.income,d):'<div class="an-fill-c"><div class="an-single-sub">No income logged for this period</div></div>');
   const spendInner='<div class="an-tag">Spending</div><div class="an-ttl">Where your money went</div><div class="an-sub">'+periodLabel()+'</div>'+(d.totalExp>0?an_donut(d.catList,d.totalExp):'<div class="an-fill-c"><div class="an-single-sub">No spending logged for this period</div></div>');
   const compareBlock=an_compare();
@@ -3371,7 +3404,7 @@ function setupOvSwipe(){
     dots.forEach((d,j)=>d.classList.toggle('active',j===i));
   };
 }
-function initApp(){ syncOwnedGoals(); initPeriodSelectors(); updateOverview(); renderSettings(); setupOvSwipe(); }
+function initApp(){ initPeriodSelectors(); updateOverview(); renderSettings(); setupOvSwipe(); syncOwnedGoals(); }
 window.addEventListener('popstate',()=>{
   if(_resettingHistory){ _resettingHistory=false; return; }
   if(_modalHistDepth>0)_modalHistDepth--;
