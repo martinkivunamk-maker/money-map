@@ -978,7 +978,7 @@
         <div class="budget-tab active" onclick="switchBudgetTab('expenses',this)">Expenses</div>
         <div class="budget-tab" onclick="switchBudgetTab('loans',this)">Loans</div>
         <div class="budget-tab" onclick="switchBudgetTab('goals',this)">Goals</div>
-        <div class="budget-tab" onclick="switchBudgetTab('assets',this)">Assets &amp; Investments</div>
+        <div class="budget-tab" onclick="switchBudgetTab('assets',this)">Assets</div>
       </div>
     </div>
     <div class="budget-cards" id="budgetCards"></div>
@@ -1683,13 +1683,11 @@ function renderGoalsCard(){
     <div style="display:flex;gap:10px;margin-bottom:6px">
       <div style="flex:1;border:1px solid var(--input-border);border-radius:12px;padding:11px 13px">
         <div style="display:flex;align-items:center;gap:6px;color:var(--gold-dim);font-size:11px;font-weight:700">${icSized('i-target',14)}<span>Goals in progress</span></div>
-        <div style="font-size:20px;font-weight:800;color:var(--text);margin-top:7px">${pendingGoals.length}</div>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:1px">${fmtShort(toGo)} to go</div>
+        <div style="margin-top:7px"><span style="font-size:20px;font-weight:800;color:var(--text)">${pendingGoals.length}</span><span style="font-size:12px;font-weight:600;color:var(--text-dim);margin-left:3px">— ${fmtShort(toGo)} to go</span></div>
       </div>
       <div style="flex:1;border:1px solid var(--input-border);border-radius:12px;padding:11px 13px">
         <div style="display:flex;align-items:center;gap:6px;color:#9d6fb8;font-size:11px;font-weight:700">${icSized('i-cash',14)}<span>Pending loans</span></div>
-        <div style="font-size:20px;font-weight:800;color:var(--text);margin-top:7px">${pendingLoans.length}</div>
-        <div style="font-size:11px;color:${owed>0?'var(--danger)':'var(--text-dim)'};margin-top:1px">${fmtShort(owed)} owed</div>
+        <div style="margin-top:7px"><span style="font-size:20px;font-weight:800;color:var(--text)">${pendingLoans.length}</span><span style="font-size:12px;font-weight:600;color:${owed>0?'var(--danger)':'var(--text-dim)'};margin-left:3px">— ${fmtShort(owed)} owed</span></div>
       </div>
     </div>
     ${rows}
@@ -1743,7 +1741,7 @@ function expandCard(kind){
     const d=anData(); title='Expenses · '+periodLabel();
     const thisExp=d.totalExp;
     let prevExp=0, prevLabel='Last month';
-    if(d.month){ const py=d.month===1?d.year-1:d.year, pmi=d.month===1?11:d.month-2; prevExp=DB.transactions.filter(t=>t.type==='expense').filter(t=>{const dt=new Date(t.date);return dt.getFullYear()===py&&dt.getMonth()===pmi;}).reduce((s,t)=>s+t.amount,0); }
+    if(d.month!=='all'){ const py=d.month===0?d.year-1:d.year, pmi=(d.month+11)%12; prevExp=DB.transactions.filter(t=>t.type==='expense').filter(t=>{const dt=new Date(t.date);return dt.getFullYear()===py&&dt.getMonth()===pmi;}).reduce((s,t)=>s+t.amount,0); }
     else { prevExp=DB.transactions.filter(t=>t.type==='expense'&&new Date(t.date).getFullYear()===d.year-1).reduce((s,t)=>s+t.amount,0); prevLabel='Last year'; }
     const diff=thisExp-prevExp, dpct=prevExp>0?Math.round(Math.abs(diff)/prevExp*100):0;
     const big=d.biggest;
@@ -2315,7 +2313,7 @@ function renderHoldingsList(){
   var list=DB.holdings||[];
   el.innerHTML=list.length?list.map(function(h){
     var sv=DB.transactions.filter(function(t){return (t.type==='savings'||t.type==='emergency')&&t.holding===h.id;}).reduce(function(s,t){return s+t.amount;},0);
-    return '<div class="bgt-card"><div class="bgt-head" style="cursor:default"><div class="bgt-chip">'+ic('i-bank')+'</div><div class="bgt-info"><div class="bgt-name">'+h.name+'</div><div class="bgt-sub">'+fmtShort(sv)+' placed here</div></div><div class="bgt-chev" onclick="openAddHoldingModal(false,DB.holdings.find(function(x){return x.id===\''+h.id+'\';}))">'+ic('i-edit')+'</div><div class="bgt-chev" onclick="deleteHolding(\''+h.id+'\')" style="color:var(--danger)">'+ic('i-trash')+'</div></div></div>';
+    return '<div class="bgt-card" style="margin-bottom:8px"><div class="bgt-head" onclick="toggleBudget(\'hold-'+h.id+'\')"><div class="bgt-chip">'+ic('i-bank')+'</div><div class="bgt-info"><div class="bgt-name">'+h.name+'</div><div class="bgt-sub">'+fmtShort(sv)+' placed here</div></div><div class="bgt-chev">'+ic('i-chevron')+'</div></div><div class="bgt-detail" id="bgtd-hold-'+h.id+'" style="display:none"><div class="bgt-stats"><div><div class="bgt-sl">Balance placed here</div><div class="bgt-sv">'+fmtShort(sv)+'</div></div></div><div class="bgt-actions"><button class="btn-outline" onclick="openAddHoldingModal(false,DB.holdings.find(function(x){return x.id===\''+h.id+'\';}))">Edit</button><button class="btn-outline bgt-del" onclick="deleteHolding(\''+h.id+'\')">Delete</button></div></div></div>';
   }).join(''):'<div class="bgt-empty">No places yet — add where you keep savings.</div>';
 }
 function deleteHolding(id){
@@ -2657,32 +2655,42 @@ function renderAssets(c){
   const invTot=DB.investments.reduce((s,i)=>s+(i.interest||0),0);
   const grand=assetTot+invTot;
   let html=`<div class="bsum-card" style="margin-bottom:16px">
-    <div class="bsum-lab" style="margin-bottom:10px">Assets &amp; investments</div>
+    <div class="bsum-lab" style="margin-bottom:10px">Assets</div>
     <div style="display:flex;gap:9px">
       <div style="flex:1;border:1px solid var(--input-border);border-radius:12px;padding:10px 11px"><div style="display:flex;align-items:center;gap:5px;color:var(--gold-dim);font-size:11px;font-weight:700">${icSized('i-house',14)}<span>Assets</span></div><div style="font-size:16px;font-weight:800;color:var(--text);margin-top:5px">${fmtShort(assetTot)}</div><div style="font-size:10.5px;color:var(--text-dim);margin-top:1px">${DB.assets.length} item${DB.assets.length===1?'':'s'}</div></div>
       <div style="flex:1;border:1px solid var(--success);border-radius:12px;padding:10px 11px"><div style="display:flex;align-items:center;gap:5px;color:var(--success);font-size:11px;font-weight:700">${icSized('i-invest',14)}<span>Investments</span></div><div style="font-size:16px;font-weight:800;color:var(--text);margin-top:5px">${fmtShort(invTot)}</div><div style="font-size:10.5px;color:var(--text-dim);margin-top:1px">interest · ${DB.investments.length} item${DB.investments.length===1?'':'s'}</div></div>
     </div>
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--input-border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--text-dim)">Added to net worth</span><span style="font-size:17px;font-weight:800;color:var(--text)">${fmtShort(grand)}</span></div>
   </div>`;
-  html+=`<div class="bgt-txlabel">Physical assets</div>`;
+  html+=`<div class="bgt-txlabel" style="margin:0">Physical assets</div>`;
   if(!DB.assets.length){ html+=`<div class="bgt-empty">No assets yet — add cows, land, a car and their current value.</div>`; }
   else DB.assets.forEach(a=>{
-    html+=`<div class="bgt-card" style="margin-bottom:8px"><div class="bgt-head" style="cursor:default">
-      <div class="bgt-chip">${ic(a.icon||'i-house')}</div>
-      <div class="bgt-info"><div class="bgt-name">${esc(a.name)}</div><div class="bgt-sub">Qty ${a.qty||0} · ${fmtShort(a.value||0)}</div></div>
-      <div class="bgt-chev" style="cursor:pointer" onclick="openAssetModal('${a.id}')">${icSized('i-edit',18)}</div>
-      <div class="bgt-chev" style="cursor:pointer;color:var(--danger)" onclick="deleteAsset('${a.id}')">${icSized('i-trash',18)}</div>
-    </div></div>`;
+    html+=`<div class="bgt-card">
+      <div class="bgt-head" onclick="toggleBudget('asset-${a.id}')">
+        <div class="bgt-chip">${ic(a.icon||'i-house')}</div>
+        <div class="bgt-info"><div class="bgt-name">${esc(a.name)}</div><div class="bgt-sub">Qty ${a.qty||0} · ${fmtShort(a.value||0)}</div></div>
+        <div class="bgt-chev">${ic('i-chevron')}</div>
+      </div>
+      <div class="bgt-detail" id="bgtd-asset-${a.id}" style="display:none">
+        <div class="bgt-stats"><div><div class="bgt-sl">Quantity</div><div class="bgt-sv">${a.qty||0}</div></div><div><div class="bgt-sl">Current value</div><div class="bgt-sv">${fmtShort(a.value||0)}</div></div></div>
+        <div class="bgt-actions"><button class="btn-outline" onclick="openAssetModal('${a.id}')">Edit</button><button class="btn-outline bgt-del" onclick="deleteAsset('${a.id}')">Delete</button></div>
+      </div>
+    </div>`;
   });
-  html+=`<div class="bgt-txlabel" style="margin-top:16px">Investments (interest)</div>`;
+  html+=`<div class="bgt-txlabel" style="margin:0">Investments (interest)</div>`;
   if(!DB.investments.length){ html+=`<div class="bgt-empty">No investments yet — add where you invested and the interest earned.</div>`; }
   else DB.investments.forEach(i=>{
-    html+=`<div class="bgt-card" style="margin-bottom:8px"><div class="bgt-head" style="cursor:default">
-      <div class="bgt-chip" style="background:rgba(63,174,90,0.14);color:var(--success)">${ic('i-invest')}</div>
-      <div class="bgt-info"><div class="bgt-name">${esc(i.name)}</div><div class="bgt-sub">${fmtShort(i.interest||0)} interest</div></div>
-      <div class="bgt-chev" style="cursor:pointer" onclick="openInvestmentModal('${i.id}')">${icSized('i-edit',18)}</div>
-      <div class="bgt-chev" style="cursor:pointer;color:var(--danger)" onclick="deleteInvestment('${i.id}')">${icSized('i-trash',18)}</div>
-    </div></div>`;
+    html+=`<div class="bgt-card">
+      <div class="bgt-head" onclick="toggleBudget('inv-${i.id}')">
+        <div class="bgt-chip" style="background:rgba(63,174,90,0.14);color:var(--success)">${ic('i-invest')}</div>
+        <div class="bgt-info"><div class="bgt-name">${esc(i.name)}</div><div class="bgt-sub">${fmtShort(i.interest||0)} interest</div></div>
+        <div class="bgt-chev">${ic('i-chevron')}</div>
+      </div>
+      <div class="bgt-detail" id="bgtd-inv-${i.id}" style="display:none">
+        <div class="bgt-stats"><div><div class="bgt-sl">Interest earned</div><div class="bgt-sv" style="color:var(--success)">${fmtShort(i.interest||0)}</div></div></div>
+        <div class="bgt-actions"><button class="btn-outline" onclick="openInvestmentModal('${i.id}')">Edit</button><button class="btn-outline bgt-del" onclick="deleteInvestment('${i.id}')">Delete</button></div>
+      </div>
+    </div>`;
   });
   c.innerHTML=html;
 }
@@ -3041,7 +3049,7 @@ function renderAnalyticsV2(){
   var srC2=srTo20>0?['+'+fmtShort(srTo20),'to 35%','var(--gold-dim)']:['✓','35% met','var(--success)'];
   savingsInner='<div class="an-tag">Savings rate</div>'+
     '<div class="an-numhead"><div class="an-numbig" style="color:var(--success)">'+d.savingsRate+'%</div><div class="an-numsub">set aside in '+periodLabel()+'</div>'+srDelta+'</div>'+
-    '<div class="an-band"><div class="an-bc br"><div class="an-bv">'+fmtShort(d.setAside)+'</div><div class="an-bl">set aside</div></div>'+
+    '<div class="an-band cols3"><div class="an-bc br"><div class="an-bv">'+fmtShort(d.setAside)+'</div><div class="an-bl">set aside</div></div>'+
     '<div class="an-bc br"><div class="an-bv" style="color:'+srC2[2]+'">'+srC2[0]+'</div><div class="an-bl">'+srC2[1]+'</div></div>'+
     '<div class="an-bc"><div class="an-bv">'+srBest+'%</div><div class="an-bl">best month</div></div></div>';
   // ---- Net Worth ----
@@ -3050,7 +3058,7 @@ function renderAnalyticsV2(){
   else { var nwd=d.nwSel-d.nwPrev; nwBig=fmtShort(d.nwSel); nwSub='balance at end of '+periodLabel(); nwDeltaH='<div class="an-numcmp '+(nwd>=0?'up':'down')+'">'+(nwd>=0?'▲':'▼')+' '+fmtShort(Math.abs(nwd))+' vs '+d.prevMonthName+'</div>'; }
   nwInner='<div class="an-tag">Net worth</div>'+
     '<div class="an-numhead"><div class="an-numbig" style="font-size:31px">'+nwBig+'</div><div class="an-numsub">'+nwSub+'</div>'+nwDeltaH+'</div>'+
-    '<div class="an-band"><div class="an-bc br"><div class="an-bv" style="color:#C9A227">'+fmtShort(comp.s)+'</div><div class="an-bl">Life Savings</div></div>'+
+    '<div class="an-band cols3"><div class="an-bc br"><div class="an-bv" style="color:#C9A227">'+fmtShort(comp.s)+'</div><div class="an-bl">Life Savings</div></div>'+
     '<div class="an-bc br"><div class="an-bv" style="color:#E8A33D">'+fmtShort(comp.e)+'</div><div class="an-bl">Emergency</div></div>'+
     '<div class="an-bc"><div class="an-bv" style="color:#6BA368">'+fmtShort(comp.g)+'</div><div class="an-bl">Investments</div></div></div>';
   const flowInner='<div class="an-tag">Money flow</div><div class="an-ttl">Where your income goes</div><div class="an-sub">of your '+fmtShort(d.income)+' income · '+periodLabel()+'</div>'+(d.income>0?an_flow(d.income,d):'<div class="an-fill-c"><div class="an-single-sub">No income logged for this period</div></div>');
