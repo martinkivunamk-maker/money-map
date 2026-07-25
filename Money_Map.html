@@ -1878,7 +1878,7 @@ function expandCard(kind){
     body=`<div class="exp-total">${fmtUGX(d.endNW)}</div><div class="exp-sub">savings + emergency + investments + assets</div>${ovStyleCurve(d.months,d.nwSeries,'var(--gold)')}
       <div class="exp-row"><span>Life Savings</span><span>${fmtUGX(sB)}</span></div>
       <div class="exp-row"><span>Emergency Fund</span><span>${fmtUGX(eB)}</span></div>
-      <div class="exp-row"><span>Investments (goals)</span><span>${fmtUGX(gB)}</span></div>
+      ${(()=>{ const gs=(DB.goals||[]).filter(g=>goalKind(g.id)==='investment' && !g.owned); if(!gs.length) return '<div class="exp-row"><span>Investment goals (in progress)</span><span>'+fmtUGX(0)+'</span></div>'; return '<div class="bd-cap" style="margin:10px 0 4px">Investment goals · in progress</div>'+gs.map(g=>'<div class="exp-row"><span>'+esc(g.name)+' · <span style="color:var(--text-muted);font-weight:400">'+pct(g.saved||0,g.target||0)+'% funded</span></span><span>'+fmtUGX(g.saved||0)+'</span></div>').join(''); })()}
       <div class="exp-row"><span>Physical assets</span><span>${fmtUGX(d.assetVal)}</span></div>
       <div class="exp-row"><span>Investment interest</span><span>${fmtUGX(d.invVal)}</span></div>
       <div class="exp-divider"></div>
@@ -2639,6 +2639,16 @@ function deleteGoal(id){ askConfirm('Remove this goal?','',()=>{ var g=(DB.goals
 let _convGoalId=null, _convDeferred={};
 function syncOwnedGoals(){
   DB.goals=DB.goals||[]; DB.assets=DB.assets||[];
+  // Self-heal: a goal flagged as moved-to-assets (owned) must still have a real backing asset AND be fully funded.
+  // If its asset was deleted or it's no longer fully funded, the move was undone \u2014 treat it as in-progress again.
+  var healed=false;
+  DB.goals.forEach(function(g){
+    if(g.owned){
+      var hasAsset=(DB.assets||[]).some(function(a){return a.fromGoalId===g.id;}) || (g.toppedUpAssetId && (DB.assets||[]).some(function(a){return a.id===g.toppedUpAssetId;}));
+      if(!hasAsset || (g.target>0 && (g.saved||0)<g.target)){ g.owned=false; delete g.toppedUpAssetId; delete g.toppedUpAmount; healed=true; }
+    }
+  });
+  if(healed) saveDB();
   if(_convGoalId) return false;
   var g=DB.goals.find(function(x){ return goalKind(x.id)==='investment' && x.target>0 && (x.saved||0)>=x.target && !x.owned && !_convDeferred[x.id]; });
   if(g){ var gid=g.id; setTimeout(function(){ openGoalConvertModal(gid); }, 160); return true; }
