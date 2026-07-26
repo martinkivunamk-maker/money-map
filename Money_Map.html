@@ -1044,6 +1044,16 @@
       </div>
     </div>
     <div class="settings-section">
+      <div class="settings-section-title">Starting balances</div>
+      <div style="font-size:12px;color:var(--text-dim);margin:-6px 0 12px;line-height:1.5">Money you already had saved before you started using Money Map. It's added to your totals and net worth, but never counted as savings for any single month.</div>
+      <div class="settings-list">
+        <div class="settings-item" onclick="openStartBalModal()">
+          <div class="settings-item-left"><div class="settings-item-icon"><svg viewBox="0 0 24 24"><use href="#i-bank"/></svg></div><div class="s-label">Set starting balances</div></div>
+          <div style="display:flex;align-items:center;gap:8px"><span id="startBalSummary" style="color:var(--text-dim);font-size:13px;font-weight:600"></span><div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="settings-section">
       <div class="settings-section-title">Savings holdings</div>
       <div style="font-size:12px;color:var(--text-dim);margin:-6px 0 12px;line-height:1.5">Where you keep your savings and emergency fund — bank, unit trust, bitcoin, and so on.</div>
       <div class="bgt-list" id="holdingsList"></div>
@@ -1087,6 +1097,7 @@
 <div class="modal-overlay" id="assetChoiceModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Add to net worth</div>
   <div class="quick-actions">
     <div class="quick-action-btn" onclick="closeModal('assetChoiceModal');openAssetModal()"><div class="qa-icon" style="color:var(--gold);background:rgba(212,175,55,0.16)"><svg viewBox="0 0 24 24"><use href="#i-house"/></svg></div><span class="qa-title">Physical asset</span><span class="qa-hint">Cows, land, car…</span></div>
+    <div class="quick-action-btn" onclick="closeModal('assetChoiceModal');openAccountModal()"><div class="qa-icon" style="color:var(--gold);background:rgba(212,175,55,0.16)"><svg viewBox="0 0 24 24"><use href="#i-wallet"/></svg></div><span class="qa-title">Cash &amp; account</span><span class="qa-hint">NSSF, bank, mobile money</span></div>
     <div class="quick-action-btn" onclick="closeModal('assetChoiceModal');openInvestmentModal()"><div class="qa-icon" style="color:var(--success);background:rgba(63,174,90,0.14)"><svg viewBox="0 0 24 24"><use href="#i-invest"/></svg></div><span class="qa-title">Investment interest</span><span class="qa-hint">Unit trust, shares…</span></div>
   </div>
   <button class="btn-outline" style="margin-top:8px" onclick="closeModal('assetChoiceModal')">Cancel</button>
@@ -1094,7 +1105,9 @@
 <div class="modal-overlay" id="goalConvertModal" style="z-index:645"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Goal fully funded</div><div id="goalConvertContent"></div></div></div>
 <div class="modal-overlay" id="assetModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="assetModalTitle">Add Asset</div><div id="assetModalContent"></div></div></div>
 <div class="modal-overlay" id="investmentModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="investmentModalTitle">Add Investment</div><div id="investmentModalContent"></div></div></div>
+<div class="modal-overlay" id="accountModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="accountModalTitle">Add Account</div><div id="accountModalContent"></div></div></div>
 <div class="modal-overlay" id="holdingModal" style="z-index:660"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="holdingModalTitle">Add a place</div><div id="holdingModalContent"></div></div></div>
+<div class="modal-overlay" id="startBalModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Starting balances</div><div id="startBalContent"></div></div></div>
 <div class="modal-overlay" id="settingsMenuModal" style="z-index:640"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Settings</div><div id="settingsMenuContent"></div><button class="btn-outline" onclick="_smGo()" style="margin-top:6px">Open all settings</button></div></div>
 <div class="modal-overlay" id="pinSetupModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Set New PIN</div><div id="pinSetupContent"></div></div></div>
 <div class="modal-overlay" id="categoryModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="catModalTitle">Add Category</div><div id="catModalContent"></div></div></div>
@@ -1498,7 +1511,8 @@ function getPotBalance(pot){
   const added=DB.transactions.filter(t=>t.type===pot).reduce((s,t)=>s+t.amount,0);
   const loanOut=DB.transactions.filter(t=>t.type==='loan_repay'&&t.from===pot).reduce((s,t)=>s+t.amount,0);
   const spentOut=DB.transactions.filter(t=>t.type==='expense'&&t.source===pot).reduce((s,t)=>s+t.amount,0);
-  return added-loanOut-spentOut;
+  const opening=pot==='savings'?(DB.openingSavings||0):pot==='emergency'?(DB.openingEmergency||0):0;
+  return added-loanOut-spentOut+opening;
 }
 // ===== WEALTH MODEL HELPERS =====
 // A goal is either an 'investment' (builds wealth → counts to net worth + savings rate)
@@ -1779,6 +1793,7 @@ function expandCard(kind){
       <div style="margin-top:14px;padding:11px 13px;border-radius:12px;font-size:13px;line-height:1.5;background:${kept>=0?'rgba(63,174,90,0.1)':'rgba(224,85,85,0.1)'};color:${kept>=0?'var(--success)':'var(--danger)'}">${msg}</div>`;
   } else if(kind==='savings'||kind==='emergency'){
     const pot=kind;
+    const opening=pot==='savings'?(DB.openingSavings||0):(DB.openingEmergency||0);
     title=(pot==='savings'?'Life Savings':'Emergency Fund')+' Detail';
     const bal=getPotBalance(pot);
     const inAll=DB.transactions.filter(t=>t.type===pot).reduce((s,t)=>s+t.amount,0);
@@ -1796,6 +1811,7 @@ function expandCard(kind){
       '<div class="exp-divider"></div>'):'';
     body=`<div class="exp-total" style="color:${col}">${fmtUGX(bal)}</div><div class="exp-sub">available balance · all time</div>
       ${holdHTML}
+      ${opening>0?'<div class="exp-row"><span>Starting balance</span><span style="color:var(--success)">+'+fmtShort(opening)+'</span></div>':''}
       <div class="exp-row"><span>Total put in (all time)</span><span style="color:var(--success)">+${fmtShort(inAll)}</span></div>
       ${outSpent>0?`<div class="exp-row"><span>Spent from it (all time)</span><span style="color:var(--danger)">-${fmtShort(outSpent)}</span></div>`:''}
       ${outLoan>0?`<div class="exp-row"><span>Used for loans (all time)</span><span style="color:var(--danger)">-${fmtShort(outLoan)}</span></div>`:''}
@@ -1880,6 +1896,7 @@ function expandCard(kind){
       <div class="exp-row"><span>Emergency Fund</span><span>${fmtUGX(eB)}</span></div>
       ${(()=>{ const gs=(DB.goals||[]).filter(g=>goalKind(g.id)==='investment' && !g.owned); if(!gs.length) return '<div class="exp-row"><span>Investment goals (in progress)</span><span>'+fmtUGX(0)+'</span></div>'; return '<div class="bd-cap" style="margin:10px 0 4px">Investment goals · in progress</div>'+gs.map(g=>'<div class="exp-row"><span>'+esc(g.name)+' · <span style="color:var(--text-muted);font-weight:400">'+pct(g.saved||0,g.target||0)+'% funded</span></span><span>'+fmtUGX(g.saved||0)+'</span></div>').join(''); })()}
       <div class="exp-row"><span>Physical assets</span><span>${fmtUGX(d.assetVal)}</span></div>
+      ${d.accountsVal>0?`<div class="exp-row"><span>Cash &amp; accounts</span><span>${fmtUGX(d.accountsVal)}</span></div>`:''}
       <div class="exp-row"><span>Investment interest</span><span>${fmtUGX(d.invVal)}</span></div>
       <div class="exp-divider"></div>
       <div class="exp-row"><span style="font-weight:800">Growth in ${d.year}</span><span style="color:${d.yearGrowth>=0?'var(--success)':'var(--danger)'};font-weight:800">${d.yearGrowth>=0?'+':'-'}${fmtUGX(d.yearGrowth)}</span></div>`;
@@ -2694,14 +2711,17 @@ function convGoalLater(){ if(_convGoalId) _convDeferred[_convGoalId]=true; _conv
 // ===== ASSETS & INVESTMENTS =====
 function renderAssets(c){
   DB.assets=DB.assets||[]; DB.investments=DB.investments||[];
+  DB.accounts=DB.accounts||[];
   const assetTot=DB.assets.reduce((s,a)=>s+(a.value||0),0);
   const invTot=DB.investments.reduce((s,i)=>s+(i.interest||0),0);
-  const grand=assetTot+invTot;
+  const acctTot=DB.accounts.reduce((s,a)=>s+(a.value||0),0);
+  const grand=assetTot+invTot+acctTot;
   let html=`<div class="bsum-card" style="margin-bottom:16px">
     <div class="bsum-lab" style="margin-bottom:10px">Assets</div>
-    <div style="display:flex;gap:9px">
-      <div style="flex:1;border:1px solid var(--input-border);border-radius:12px;padding:10px 11px"><div style="display:flex;align-items:center;gap:5px;color:var(--gold-dim);font-size:11px;font-weight:700">${icSized('i-house',14)}<span>Assets</span></div><div style="font-size:16px;font-weight:800;color:var(--text);margin-top:5px">${fmtShort(assetTot)}</div><div style="font-size:10.5px;color:var(--text-dim);margin-top:1px">${DB.assets.length} item${DB.assets.length===1?'':'s'}</div></div>
-      <div style="flex:1;border:1px solid var(--success);border-radius:12px;padding:10px 11px"><div style="display:flex;align-items:center;gap:5px;color:var(--success);font-size:11px;font-weight:700">${icSized('i-invest',14)}<span>Investments</span></div><div style="font-size:16px;font-weight:800;color:var(--text);margin-top:5px">${fmtShort(invTot)}</div><div style="font-size:10.5px;color:var(--text-dim);margin-top:1px">interest · ${DB.investments.length} item${DB.investments.length===1?'':'s'}</div></div>
+    <div style="display:flex;gap:7px">
+      <div style="flex:1;border:1px solid var(--input-border);border-radius:12px;padding:9px 8px"><div style="display:flex;align-items:center;gap:4px;color:var(--gold-dim);font-size:10.5px;font-weight:700">${icSized('i-house',13)}<span>Physical</span></div><div style="font-size:15px;font-weight:800;color:var(--text);margin-top:5px">${fmtShort(assetTot)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:1px">${DB.assets.length} item${DB.assets.length===1?'':'s'}</div></div>
+      <div style="flex:1;border:1px solid var(--input-border);border-radius:12px;padding:9px 8px"><div style="display:flex;align-items:center;gap:4px;color:var(--gold-dim);font-size:10.5px;font-weight:700">${icSized('i-wallet',13)}<span>Cash</span></div><div style="font-size:15px;font-weight:800;color:var(--text);margin-top:5px">${fmtShort(acctTot)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:1px">${DB.accounts.length} item${DB.accounts.length===1?'':'s'}</div></div>
+      <div style="flex:1;border:1px solid var(--success);border-radius:12px;padding:9px 8px"><div style="display:flex;align-items:center;gap:4px;color:var(--success);font-size:10.5px;font-weight:700">${icSized('i-invest',13)}<span>Interest</span></div><div style="font-size:15px;font-weight:800;color:var(--text);margin-top:5px">${fmtShort(invTot)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:1px">${DB.investments.length} item${DB.investments.length===1?'':'s'}</div></div>
     </div>
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--input-border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--text-dim)">Added to net worth</span><span style="font-size:17px;font-weight:800;color:var(--text)">${fmtShort(grand)}</span></div>
   </div>`;
@@ -2717,6 +2737,21 @@ function renderAssets(c){
       <div class="bgt-detail" id="bgtd-asset-${a.id}" style="display:none">
         <div class="bgt-stats"><div><div class="bgt-sl">Quantity</div><div class="bgt-sv">${a.qty||0}</div></div><div><div class="bgt-sl">Current value</div><div class="bgt-sv">${fmtShort(a.value||0)}</div></div></div>
         <div class="bgt-actions"><button class="btn-outline" onclick="openAssetModal('${a.id}')">Edit</button><button class="btn-outline bgt-del" onclick="deleteAsset('${a.id}')">Delete</button></div>
+      </div>
+    </div>`;
+  });
+  html+=`<div class="bgt-txlabel" style="margin:0">Cash &amp; accounts</div>`;
+  if(!DB.accounts.length){ html+=`<div class="bgt-empty">No accounts yet — add money sitting in NSSF, bank, mobile money and its current balance.</div>`; }
+  else DB.accounts.forEach(a=>{
+    html+=`<div class="bgt-card">
+      <div class="bgt-head" onclick="toggleBudget('acct-${a.id}')">
+        <div class="bgt-chip">${ic(a.icon||'i-wallet')}</div>
+        <div class="bgt-info"><div class="bgt-name">${esc(a.name)}</div><div class="bgt-sub">${fmtShort(a.value||0)}</div></div>
+        <div class="bgt-chev">${ic('i-chevron')}</div>
+      </div>
+      <div class="bgt-detail" id="bgtd-acct-${a.id}" style="display:none">
+        <div class="bgt-stats"><div><div class="bgt-sl">Current balance</div><div class="bgt-sv">${fmtShort(a.value||0)}</div></div></div>
+        <div class="bgt-actions"><button class="btn-outline" onclick="openAccountModal('${a.id}')">Edit</button><button class="btn-outline bgt-del" onclick="deleteAccount('${a.id}')">Delete</button></div>
       </div>
     </div>`;
   });
@@ -2780,6 +2815,27 @@ function saveInvestment(id){
   saveDB(); closeModal('investmentModal'); renderBudget(); showToast('Investment saved','var(--success)');
 }
 function deleteInvestment(id){ askConfirm('Remove this investment?','',()=>{ DB.investments=(DB.investments||[]).filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Investment removed','var(--danger)'); },'Remove',true); }
+function openAccountModal(id){
+  const ex=id?(DB.accounts||[]).find(x=>x.id===id):null;
+  document.getElementById('accountModalTitle').textContent=ex?'Edit Account':'Add Cash & Account';
+  document.getElementById('accountModalContent').innerHTML=`
+    <div class="form-group"><label class="form-label">Account name</label><input class="form-input" id="acName" value="${ex?esc(ex.name):''}" placeholder="e.g. NSSF, Bank, Mobile Money"></div>
+    <div class="form-group"><label class="form-label">Current balance (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="acValue" value="${ex&&ex.value?ex.value.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.value:''}"></div>
+    <div style="font-size:11.5px;color:var(--text-muted);margin:-6px 0 15px;line-height:1.5">Money sitting in an account — the full balance counts toward your net worth under Assets.</div>
+    <button class="btn-gold" onclick="saveAccount('${ex?ex.id:''}')">Save account</button><button class="btn-outline" onclick="closeModal('accountModal')">Cancel</button>`;
+  openModal('accountModal');
+}
+function saveAccount(id){
+  const name=(document.getElementById('acName').value||'').trim();
+  const value=getRawAmount(document.getElementById('acValue'));
+  if(!name){ showToast('Enter an account name','var(--danger)'); return; }
+  if(!value){ showToast('Enter the current balance','var(--danger)'); return; }
+  DB.accounts=DB.accounts||[];
+  if(id){ const a=DB.accounts.find(x=>x.id===id); if(a){ a.name=name; a.value=value; } }
+  else DB.accounts.push({id:genId(),name,value,icon:'i-wallet'});
+  saveDB(); closeModal('accountModal'); renderBudget(); showToast('Account saved','var(--success)');
+}
+function deleteAccount(id){ askConfirm('Remove this account?','',()=>{ DB.accounts=(DB.accounts||[]).filter(x=>x.id!==id); saveDB(); renderBudget(); showToast('Account removed','var(--danger)'); },'Remove',true); }
 
 // ===== ANALYTICS =====
 // ===== ANALYTICS (rebuilt dashboard) =====
@@ -2790,6 +2846,7 @@ function potsAsOf(cutoff){
     else if(t.type==='expense'){ if(t.source==='savings') s-=t.amount; else if(t.source==='emergency') e-=t.amount; }
     else if(t.type==='loan_repay'){ if(t.from==='savings') s-=t.amount; else if(t.from==='emergency') e-=t.amount; }
   });
+  s+=DB.openingSavings||0; e+=DB.openingEmergency||0;
   return {s:s,e:e,g:g,total:s+e+g};
 }
 function anData(){
@@ -2826,7 +2883,8 @@ function anData(){
   months.forEach(m=>{const p=potsAsOf(new Date(year,m+1,0,23,59,59));S.push(p.s);E.push(p.e);G.push(p.g);});
   const assetVal=(DB.assets||[]).reduce((s,a)=>s+(a.value||0),0);
   const invVal=(DB.investments||[]).reduce((s,i)=>s+(i.interest||0),0);
-  const extraNW=assetVal+invVal;
+  const accountsVal=(DB.accounts||[]).reduce((s,a)=>s+(a.value||0),0);
+  const extraNW=assetVal+invVal+accountsVal;
   const nwSeries=months.map((m,i)=>S[i]+E[i]+G[i]+extraNW);
   const startNW=potsAsOf(new Date(year-1,11,31,23,59,59)).total+extraNW;
   const endNW=nwSeries.length?nwSeries[nwSeries.length-1]:potsAsOf(new Date()).total+extraNW;
@@ -2855,7 +2913,7 @@ function anData(){
     var li=months.length-1;
     comp = li>=0?{s:S[li],e:E[li],g:G[li]}:{s:getPotBalance('savings'),e:getPotBalance('emergency'),g:0};
   }
-  return {month,year,txs,income,totalExp,expFromInc,savAdd,emgAdd,goalAdd,goalInv,goalLife,loanPaid,loanPaidInc,setAside,savingsRate,spendSide,saveSide,spendPct,savePct,loanPct,catList,catFull,months,rateSeries,nwSeries,S,E,G,curNW,endNW,startNW,yearGrowth,avgMonthExp,avgSurplus,emgBal,runway,onBudget,totalBudgets,biggest,score,sLabel,sColor,sBg,yearInc,yearExp,prevRate,nwSel,nwPrev,prevMonthName,comp,extraNW,assetVal,invVal};
+  return {month,year,txs,income,totalExp,expFromInc,savAdd,emgAdd,goalAdd,goalInv,goalLife,loanPaid,loanPaidInc,setAside,savingsRate,spendSide,saveSide,spendPct,savePct,loanPct,catList,catFull,months,rateSeries,nwSeries,S,E,G,curNW,endNW,startNW,yearGrowth,avgMonthExp,avgSurplus,emgBal,runway,onBudget,totalBudgets,biggest,score,sLabel,sColor,sBg,yearInc,yearExp,prevRate,nwSel,nwPrev,prevMonthName,comp,extraNW,assetVal,invVal,accountsVal};
 }
 function an_money(v){ return fmtShort(v).replace(cur()+' ',''); }
 function _splitTier(sv){
@@ -3227,7 +3285,25 @@ function renderSettings(){
   cl.innerHTML=DB.categories.map(cat=>`<div class="bgt-card"><div class="bgt-head" onclick="toggleBudget('setcat-${cat.id}')"><div class="bgt-chip">${ic(cat.icon)}</div><div class="bgt-info"><div class="bgt-name">${cat.name}</div></div><div class="bgt-chev">${ic('i-chevron')}</div></div><div class="bgt-detail" id="bgtd-setcat-${cat.id}" style="display:none"><div class="set-about${cat.about?'':' empty'}">${cat.about?cat.about:'No description yet — tap Edit to add one.'}</div><div class="set-cat-actions"><button class="btn-outline set-mini" onclick="openAddCategoryModal('${cat.id}')">Edit</button><button class="btn-outline set-mini del" onclick="deleteCategory('${cat.id}')">Delete</button></div></div></div>`).join('');
   const il=document.getElementById('incomeTypesList');
   il.innerHTML=DB.incomeTypes.map(it=>`<div class="bgt-card"><div class="bgt-head" onclick="toggleBudget('setinc-${it.id}')"><div class="bgt-chip" style="background:rgba(63,174,90,0.15);color:var(--success)">${ic(it.icon)}</div><div class="bgt-info"><div class="bgt-name">${it.name}</div></div><div class="bgt-chev">${ic('i-chevron')}</div></div><div class="bgt-detail" id="bgtd-setinc-${it.id}" style="display:none"><div class="set-about${it.about?'':' empty'}">${it.about?it.about:'No description yet — tap Edit to add one.'}</div><div class="set-cat-actions"><button class="btn-outline set-mini" onclick="openAddIncomeTypeModal('${it.id}')">Edit</button>${it.id==='i5'?'':`<button class="btn-outline set-mini del" onclick="deleteIncomeType('${it.id}')">Delete</button>`}</div></div></div>`).join('');
+  const sbEl=document.getElementById('startBalSummary'); if(sbEl) sbEl.textContent=_startBalSummaryText();
   renderHoldingsList();
+}
+function _startBalSummaryText(){ const s=(DB.openingSavings||0),e=(DB.openingEmergency||0); if(!s&&!e) return 'Not set'; return fmtShort(s+e); }
+function openStartBalModal(){
+  document.getElementById('startBalContent').innerHTML=`
+    <div style="font-size:12.5px;color:var(--text-muted);margin:-4px 0 16px;line-height:1.5">Enter what you had already saved before you started tracking. It's added to your totals and net worth, but not counted as savings for any single month.</div>
+    <div class="form-group"><label class="form-label">Life Savings starting balance (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="sbSavings" value="${DB.openingSavings?DB.openingSavings.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${DB.openingSavings||''}"></div>
+    <div class="form-group"><label class="form-label">Emergency Fund starting balance (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="sbEmergency" value="${DB.openingEmergency?DB.openingEmergency.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${DB.openingEmergency||''}"></div>
+    <button class="btn-gold" onclick="saveStartBal()">Save</button><button class="btn-outline" onclick="closeModal('startBalModal')">Cancel</button>`;
+  openModal('startBalModal');
+}
+function saveStartBal(){
+  DB.openingSavings=getRawAmount(document.getElementById('sbSavings'))||0;
+  DB.openingEmergency=getRawAmount(document.getElementById('sbEmergency'))||0;
+  saveDB(); closeModal('startBalModal');
+  const el=document.getElementById('startBalSummary'); if(el) el.textContent=_startBalSummaryText();
+  if(currentPage==='budget')renderBudget(); if(currentPage==='analytics')renderAnalytics(); updateOverview();
+  showToast('Starting balances saved','var(--success)');
 }
 function openProfilePhoto(){ if(DB.userPhoto){ viewImage(DB.userPhoto); } else { openPhotoChoice('profile'); } }
 function renderAvatar(){
