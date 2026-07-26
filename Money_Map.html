@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#faf8f3">
-<script>try{var _d=JSON.parse(localStorage.getItem('moneymap_v2')||'{}');var _t=_d.theme||'auto';if(_t==='auto')_t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.querySelector('meta[name=theme-color]').setAttribute('content',_t==='dark'?'#060606':'#faf8f3');}catch(e){}</script>
+<meta name="theme-color" content="#ffffff">
+<script>try{var _d=JSON.parse(localStorage.getItem('moneymap_v2')||'{}');var _t=_d.theme||'auto';if(_t==='auto')_t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.querySelector('meta[name=theme-color]').setAttribute('content',_t==='dark'?'#060606':'#ffffff');}catch(e){}</script>
 <link rel="manifest" href="manifest.json">
 <title>Money Map</title>
 <style>
@@ -48,28 +48,28 @@
   }
   /* LIGHT THEME */
   [data-theme="light"] {
-    --bg: #faf8f3;
-    --bg-glow1: rgba(212,175,55,0.18);
-    --bg-glow2: rgba(212,175,55,0.08);
+    --bg: #ffffff;
+    --bg-glow1: rgba(212,175,55,0.07);
+    --bg-glow2: rgba(212,175,55,0.035);
     --surface: #ffffff;
-    --surface2: #f4f1ea;
-    --glass: rgba(255,255,255,0.7);
-    --glass-hover: rgba(255,255,255,0.9);
-    --glass-border: rgba(212,175,55,0.35);
-    --glass-line: rgba(212,175,55,0.5);
-    --text: #1a1a1a;
-    --text-dim: #777;
-    --text-muted: #aaa;
-    --nav-bg: rgba(255,255,255,0.94);
-    --nav-glass: rgba(252,250,245,0.62);
-    --modal-bg: linear-gradient(180deg, #ffffff 0%, #faf8f3 100%);
-    --input-bg: rgba(0,0,0,0.04);
-    --input-border: rgba(0,0,0,0.1);
-    --track: rgba(0,0,0,0.08);
-    --shadow: rgba(120,100,40,0.18);
-    --card-bg: linear-gradient(165deg, #ffffff 0%, #fbf7ec 100%);
-    --card-border: rgba(212,175,55,0.3);
-    --card-hi: rgba(255,255,255,0.9);
+    --surface2: #f3f3f5;
+    --glass: rgba(255,255,255,0.75);
+    --glass-hover: rgba(0,0,0,0.03);
+    --glass-border: rgba(0,0,0,0.09);
+    --glass-line: rgba(212,175,55,0.45);
+    --text: #14140f;
+    --text-dim: #6a6a70;
+    --text-muted: #9a9aa2;
+    --nav-bg: rgba(255,255,255,0.92);
+    --nav-glass: rgba(255,255,255,0.62);
+    --modal-bg: #ffffff;
+    --input-bg: rgba(0,0,0,0.035);
+    --input-border: rgba(0,0,0,0.12);
+    --track: rgba(0,0,0,0.07);
+    --shadow: rgba(24,24,40,0.13);
+    --card-bg: #ffffff;
+    --card-border: rgba(0,0,0,0.08);
+    --card-hi: #ffffff;
   }
   --danger: #e05555; --success: #3fae5a; --warning: #f0a020;
 
@@ -79,7 +79,9 @@
   :root { --danger:#e05555; --success:#3fae5a; --warning:#f0a020; }
   html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;
+    overscroll-behavior:none; -webkit-user-select:none; user-select:none;
     transition: background 0.5s ease, color 0.4s ease; }
+  input, textarea, select, [contenteditable], .form-input, .form-select { -webkit-user-select:text; user-select:text; }
 
   svg { stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   svg.icn { width:24px; height:24px; }
@@ -95,6 +97,8 @@
   @keyframes pulseGlow { 0%,100% { box-shadow:0 4px 24px rgba(212,175,55,0.35); } 50% { box-shadow:0 4px 36px rgba(212,175,55,0.6); } }
   @keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
   @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pageIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes rippleFx { to { transform:scale(2.4); opacity:0; } }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
   /* ===== Soft iOS-style entrance animations (re-triggered per page by navTo → _animatePage) ===== */
   @keyframes riseIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
@@ -139,14 +143,36 @@
   .fp-hint { font-size:14px; color:var(--text-dim); text-align:center; }
   .fp-usepin { font-size:13px; color:var(--gold); font-weight:700; cursor:pointer; padding:10px 16px; }
 
+  /* WELCOME SCREEN */
+  #welcomeScreen { position:fixed; inset:0; z-index:10000; display:flex; flex-direction:column;
+    padding:calc(env(safe-area-inset-top,0px) + 20px) 30px calc(env(safe-area-inset-bottom,0px) + 40px);
+    background:radial-gradient(ellipse at 50% 14%, var(--bg-glow1) 0%, transparent 60%), var(--bg); animation:fadeIn 0.5s; }
+  #welcomeScreen.hidden { display:none; }
+  #welcomeScreen.leaving { animation:welLeave 0.4s var(--ease) forwards; }
+  @keyframes welLeave { to { opacity:0; transform:scale(1.03); } }
+  @keyframes welLogo { 0% { opacity:0; transform:translateY(20px) scale(0.78);} 60% { transform:translateY(0) scale(1.06);} 100% { opacity:1; transform:scale(1);} }
+  .wel-top { flex:1.3; display:flex; align-items:flex-end; justify-content:center; }
+  .wel-logo { width:108px; height:108px; border-radius:30px; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(155deg, var(--gold-light), var(--gold));
+    box-shadow:0 22px 50px -14px rgba(212,175,55,0.65), inset 0 0 0 1px rgba(255,255,255,0.25); animation:welLogo 0.9s var(--ease) both; }
+  .wel-logo svg { width:56px; height:56px; stroke:#fff; stroke-width:1.7; fill:none; }
+  .wel-mid { flex:1; display:flex; flex-direction:column; align-items:center; padding-top:32px; text-align:center; }
+  .wel-msg { font-size:30px; font-weight:800; color:var(--text); letter-spacing:-0.5px; animation:fadeUp 0.7s 0.2s both; }
+  .wel-sub { font-size:15px; color:var(--text-dim); margin-top:9px; animation:fadeUp 0.7s 0.32s both; }
+  .wel-bottom { width:100%; animation:fadeUp 0.7s 0.46s both; }
+  .wel-btn { width:100%; height:58px; border:none; border-radius:18px; cursor:pointer; font-size:17px; font-weight:800; letter-spacing:0.3px;
+    color:#1a1400; background:linear-gradient(135deg, var(--gold-light), var(--gold));
+    box-shadow:0 14px 32px -10px rgba(212,175,55,0.7); transition:transform 0.15s var(--ease), box-shadow 0.2s; }
+  .wel-btn:active { transform:scale(0.96); box-shadow:0 6px 16px -10px rgba(212,175,55,0.7); }
+
   #app { position:fixed; inset:0; display:flex; flex-direction:column; overflow:hidden; }
   #app.hidden { display:none; }
   .app-bg { position:fixed; inset:0; z-index:-1; transition:background 0.5s ease;
     background: radial-gradient(ellipse at 15% 8%, var(--bg-glow1) 0%, transparent 50%),
                 radial-gradient(ellipse at 88% 90%, var(--bg-glow2) 0%, transparent 45%), var(--bg); }
 
-  .page { position:absolute; inset:0; bottom:0; overflow-y:auto; overflow-x:hidden; display:none; padding-bottom:calc(var(--nav-height) + 24px + env(safe-area-inset-bottom, 0px)); }
-  .page.active { display:block; animation:fadeIn 0.35s; }
+  .page { position:absolute; inset:0; bottom:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; display:none; padding-bottom:calc(var(--nav-height) + 24px + env(safe-area-inset-bottom, 0px)); }
+  .page.active { display:block; animation:pageIn 0.42s var(--ease); }
   .page::-webkit-scrollbar { display:none; }
 
   .glass-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius);
@@ -156,7 +182,7 @@
     background:linear-gradient(90deg, transparent, var(--glass-line), transparent); }
 
   /* OVERVIEW */
-  .overview-header { padding:16px var(--gutter) 14px; display:flex; align-items:center; justify-content:space-between; animation:fadeUp 0.5s both; position:sticky; top:0; z-index:20; background:var(--bg); }
+  .overview-header { padding:calc(16px + env(safe-area-inset-top,0px)) var(--gutter) 14px; display:flex; align-items:center; justify-content:space-between; animation:fadeUp 0.5s both; position:sticky; top:0; z-index:20; background:var(--bg); }
   .profile-row { display:flex; align-items:center; gap:12px; }
   .avatar { width:46px; height:46px; border-radius:50%; border:2px solid var(--gold); background:var(--surface2);
     overflow:hidden; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px;
@@ -394,7 +420,7 @@
   .budget-bar-fill { height:100%; border-radius:4px; transition:width 0.8s var(--ease); }
   .budget-pct-label { font-size:11px; width:38px; text-align:right; font-weight:600; }
 
-  .page-header { padding:16px var(--gutter) 14px; display:flex; align-items:center; gap:12px; animation:fadeUp 0.5s both; position:sticky; top:0; z-index:20; background:var(--bg); }
+  .page-header { padding:calc(16px + env(safe-area-inset-top,0px)) var(--gutter) 14px; display:flex; align-items:center; gap:12px; animation:fadeUp 0.5s both; position:sticky; top:0; z-index:20; background:var(--bg); }
   .sticky-head { position:sticky; top:0; z-index:20; background:var(--bg); }
   #page-budget .page-header { position:static; z-index:auto; background:none; }
   .page-title { font-size:26px; font-weight:800; color:var(--text); flex:1; letter-spacing:-0.5px; }
@@ -675,7 +701,7 @@
     border-radius:28px; overflow-y:auto; overflow-x:hidden; transform:translateY(110%) translateZ(0); -webkit-overflow-scrolling:touch; touch-action:pan-y; overscroll-behavior:contain;
     backface-visibility:hidden; transition:transform 0.4s var(--ease); padding:0 var(--gutter) 24px; }
   .modal-sheet::-webkit-scrollbar { display:none; }
-  .modal-overlay.open .modal-sheet { transform:translateY(0) translateZ(0); }
+  .modal-overlay.open .modal-sheet { transform:translateY(0) translateZ(0); transition:transform 0.5s cubic-bezier(0.16, 1.02, 0.3, 1); }
   .modal-handle { width:38px; height:4px; background:var(--text-muted); border-radius:2px; margin:12px auto 22px; opacity:0.5; }
   .modal-title { font-size:21px; font-weight:800; color:var(--text); margin-bottom:8px; letter-spacing:-0.3px; position:sticky; top:0; z-index:5; background:var(--modal-bg); padding:4px 0 14px; touch-action:pan-y; }
 
@@ -691,7 +717,10 @@
   .btn-gold { width:100%; padding:16px; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--gold-light),var(--gold));
     border:none; color:#0a0a0a; font-size:16px; font-weight:800; cursor:pointer; letter-spacing:0.3px; margin-top:8px;
     transition:transform 0.15s; box-shadow:0 4px 16px rgba(212,175,55,0.3); }
-  .btn-gold:active { transform:scale(0.98); }
+  .btn-gold:active { transform:scale(0.96); }
+  .btn-gold, .wel-btn, .pin-btn { position:relative; overflow:hidden; }
+  .btn-gold > *, .wel-btn > * { position:relative; z-index:1; }
+  .ripple { position:absolute; border-radius:50%; background:rgba(212,175,55,0.30); transform:scale(0); animation:rippleFx 0.6s var(--ease); pointer-events:none; z-index:0; }
   .btn-outline { width:100%; padding:14px; border-radius:var(--radius-sm); background:none; border:1px solid var(--glass-border);
     color:var(--text-dim); font-size:15px; cursor:pointer; margin-top:8px; font-weight:600; transition:background 0.15s; }
   .btn-outline:active { background:var(--glass); }
@@ -888,8 +917,18 @@
   <symbol id="f-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></symbol>
 </svg>
 
+<!-- WELCOME SCREEN -->
+<div id="welcomeScreen">
+  <div class="wel-top"><div class="wel-logo"><svg viewBox="0 0 24 24"><use href="#i-wallet"/></svg></div></div>
+  <div class="wel-mid">
+    <div class="wel-msg" id="welcomeMsg">Welcome back</div>
+    <div class="wel-sub" id="welcomeSub">Good to see you again</div>
+  </div>
+  <div class="wel-bottom"><button class="wel-btn" id="welcomeBtn" onclick="enterFromWelcome()">Log in</button></div>
+</div>
+
 <!-- LOCK SCREEN -->
-<div id="lockScreen">
+<div id="lockScreen" class="hidden">
   <div class="lock-logo"><svg viewBox="0 0 24 24"><use href="#i-wallet"/></svg></div>
   <div class="lock-title">MONEY MAP</div>
   <div class="lock-subtitle" id="lockSubtitle">Enter your PIN</div>
@@ -1029,10 +1068,11 @@
       </div>
     </div>
     <div class="settings-section">
-      <div class="settings-section-title">Categories &amp; Income</div>
+      <div class="settings-section-title">Categories, income &amp; savings</div>
       <div class="settings-tabs">
         <div class="settings-tab active" id="stab-categories" onclick="switchSettingsTab('categories')">Categories</div>
-        <div class="settings-tab" id="stab-income" onclick="switchSettingsTab('income')">Income Sources</div>
+        <div class="settings-tab" id="stab-income" onclick="switchSettingsTab('income')">Income</div>
+        <div class="settings-tab" id="stab-savings" onclick="switchSettingsTab('savings')">Savings</div>
       </div>
       <div id="stab-categories-panel">
         <div class="bgt-list" id="categoriesList"></div>
@@ -1042,22 +1082,25 @@
         <div class="bgt-list" id="incomeTypesList"></div>
         <button class="btn-outline" onclick="openAddIncomeTypeModal()" style="margin-top:10px;">+ Add Income Source</button>
       </div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-section-title">Starting balances</div>
-      <div style="font-size:12px;color:var(--text-dim);margin:-6px 0 12px;line-height:1.5">Money you already had saved before you started using Money Map. It's added to your totals and net worth, but never counted as savings for any single month.</div>
-      <div class="settings-list">
-        <div class="settings-item" onclick="openStartBalModal()">
-          <div class="settings-item-left"><div class="settings-item-icon"><svg viewBox="0 0 24 24"><use href="#i-bank"/></svg></div><div class="s-label">Set starting balances</div></div>
-          <div style="display:flex;align-items:center;gap:8px"><span id="startBalSummary" style="color:var(--text-dim);font-size:13px;font-weight:600"></span><div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div></div>
-        </div>
+      <div id="stab-savings-panel" style="display:none">
+        <div style="font-size:12px;color:var(--text-dim);margin:0 0 12px;line-height:1.5">Where you keep your money — bank, mobile money, unit trust, etc.</div>
+        <div class="bgt-list" id="holdingsList"></div>
+        <button class="btn-outline" onclick="openAddHoldingModal(false)" style="margin-top:10px;">+ Add a place</button>
       </div>
     </div>
     <div class="settings-section">
-      <div class="settings-section-title">Savings holdings</div>
-      <div style="font-size:12px;color:var(--text-dim);margin:-6px 0 12px;line-height:1.5">Where you keep your savings and emergency fund — bank, unit trust, bitcoin, and so on.</div>
-      <div class="bgt-list" id="holdingsList"></div>
-      <button class="btn-outline" onclick="openAddHoldingModal(false)" style="margin-top:10px;">+ Add a place</button>
+      <div class="settings-section-title">Starting balances</div>
+      <div style="font-size:12px;color:var(--text-dim);margin:-6px 0 12px;line-height:1.5">Savings you had before Money Map — counts toward net worth, not monthly savings.</div>
+      <div class="bgt-list">
+        <div class="bgt-card" onclick="openStartBalModal()">
+          <div class="bgt-head">
+            <div class="bgt-chip"><svg viewBox="0 0 24 24"><use href="#i-bank"/></svg></div>
+            <div class="bgt-info"><div class="bgt-name">Set starting balances</div></div>
+            <span id="startBalSummary" style="color:var(--text-dim);font-size:13px;font-weight:600;margin-right:6px"></span>
+            <div class="bgt-chev"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="settings-section">
       <div class="settings-section-title">Data</div>
@@ -1215,6 +1258,45 @@ const AVAIL_ICONS=['i-house','i-food','i-car','i-cart','i-phone','i-pill','i-bul
 function ic(id){ return `<svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#${id}"/></svg>`; }
 function icSized(id,px){ return '<svg viewBox="0 0 24 24" style="width:'+px+'px;height:'+px+'px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#'+id+'"/></svg>'; }
 function haptic(ms){ navigator.vibrate&&navigator.vibrate(ms||8); }
+function _reduceMotion(){ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+function _ovCount(id,to,suffix){
+  const el=document.getElementById(id); if(!el) return; suffix=suffix||'';
+  if(_reduceMotion()){ el.innerHTML=fmtShort(to)+suffix; el._cv=to; return; }
+  const from=el._cv||0; el._cv=to;
+  if(from===to){ el.innerHTML=fmtShort(to)+suffix; return; }
+  const dur=650, t0=performance.now();
+  function step(now){ const p=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-p,3);
+    el.innerHTML=fmtShort(Math.round(from+(to-from)*e))+suffix; if(p<1) requestAnimationFrame(step); }
+  requestAnimationFrame(step);
+}
+document.addEventListener('pointerdown',function(e){
+  const t=e.target && e.target.closest && e.target.closest('.btn-gold,.wel-btn,.pin-btn'); if(!t) return;
+  const rect=t.getBoundingClientRect(), size=Math.max(rect.width,rect.height);
+  const r=document.createElement('span'); r.className='ripple'; r.style.width=r.style.height=size+'px';
+  r.style.left=((e.clientX||rect.left+rect.width/2)-rect.left-size/2)+'px';
+  r.style.top=((e.clientY||rect.top+rect.height/2)-rect.top-size/2)+'px';
+  t.appendChild(r); setTimeout(function(){ r.remove(); },600);
+},{passive:true});
+function initWelcome(){
+  const returning=!!DB.pin;
+  const m=document.getElementById('welcomeMsg'), s=document.getElementById('welcomeSub'), b=document.getElementById('welcomeBtn');
+  if(m) m.textContent=returning?'Welcome back':'Welcome';
+  if(s) s.textContent=returning?'Good to see you again':"Let's get your money mapped";
+  if(b) b.textContent=returning?'Log in':'Set up account';
+}
+function enterFromWelcome(){
+  haptic();
+  const w=document.getElementById('welcomeScreen'); if(!w){ startAuth(); return; }
+  w.classList.add('leaving');
+  setTimeout(function(){ w.classList.add('hidden'); w.classList.remove('leaving'); startAuth(); },380);
+}
+function startAuth(){
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('lockScreen').classList.remove('hidden');
+  if(!DB.pin){ isSettingPin=true; document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; showPinPad(); return; }
+  if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
+  else { showPinPad(); }
+}
 
 // ===== OPTION PICKER (replaces <select> bottom sheets) =====
 let _optionPickerCallback=null, _optionPickerOpts=[];
@@ -1317,7 +1399,7 @@ function applyTheme(){
   let t = DB.theme;
   if(t==='auto'){ t = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark'; }
   document.documentElement.setAttribute('data-theme', t);
-  document.querySelector('meta[name=theme-color]').setAttribute('content', t==='light'?'#faf8f3':'#060606');
+  document.querySelector('meta[name=theme-color]').setAttribute('content', t==='light'?'#ffffff':'#060606');
   document.querySelectorAll('[data-theme-opt]').forEach(el=>el.classList.toggle('active', el.dataset.themeOpt===DB.theme));
 }
 function setTheme(t){ DB.theme=t; saveDB(); applyTheme(); }
@@ -1580,10 +1662,10 @@ function updateOverview(){
       ? `${allocPct}% allocated · ${fmtShort(leftover)} moved to ${nextMonthName}`
       : `${allocPct}% allocated · ${pct(leftover,income)}% (${fmtShort(leftover)}) to carry forward`;
   } else { incomePctText='Fully allocated'; }
-  document.getElementById('ov-income').innerHTML=fmtShort(income)+trend(income,pInc,true);
-  document.getElementById('ov-expenses').innerHTML=fmtShort(expenses)+trend(expenses,pExp,false);
-  document.getElementById('ov-savings').innerHTML=fmtShort(savingsAdded)+trend(savingsAdded,pSav,true);
-  document.getElementById('ov-emergency').innerHTML=fmtShort(emergencyAdded)+trend(emergencyAdded,pEmg,true);
+  _ovCount('ov-income',income,trend(income,pInc,true));
+  _ovCount('ov-expenses',expenses,trend(expenses,pExp,false));
+  _ovCount('ov-savings',savingsAdded,trend(savingsAdded,pSav,true));
+  _ovCount('ov-emergency',emergencyAdded,trend(emergencyAdded,pEmg,true));
   document.getElementById('ov-income-pct').textContent=incomePctText;
   document.getElementById('ov-expense-pct').textContent=(income>0?pct(expenses,income)+'% of income':'—');
   document.getElementById('ov-savings-pct').textContent=(income>0?pct(savingsAdded,income)+'% of income':'—');
@@ -3264,10 +3346,10 @@ function _renderAnalyticsLegacyUnused(){
 let _settingsTab='categories';
 function switchSettingsTab(tab){
   _settingsTab=tab;
-  document.getElementById('stab-categories').classList.toggle('active',tab==='categories');
-  document.getElementById('stab-income').classList.toggle('active',tab==='income');
-  document.getElementById('stab-categories-panel').style.display=tab==='categories'?'':'none';
-  document.getElementById('stab-income-panel').style.display=tab==='income'?'':'none';
+  ['categories','income','savings'].forEach(function(t){
+    var tb=document.getElementById('stab-'+t); if(tb) tb.classList.toggle('active',tab===t);
+    var pn=document.getElementById('stab-'+t+'-panel'); if(pn) pn.style.display=tab===t?'':'none';
+  });
 }
 function renderSettings(){
   document.getElementById('settingsNameDisplay').textContent=DB.userName;
@@ -3537,7 +3619,7 @@ window.addEventListener('pageshow', _onAppReturn);
 window.addEventListener('focus', _onAppReturn);
 document.addEventListener('resume', _onAppReturn);
 var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anResizeT); _anResizeT=setTimeout(function(){ try{ if(currentPage==='analytics') renderAnalytics(); else if(currentPage==='overview') equalizeOvCards(); }catch(e){} },220); });
-loadDB(); applyTheme(); initLock();
+loadDB(); applyTheme(); initWelcome();
 // Ask Android/Chrome to keep our data (mark storage persistent so it isn't evicted under storage pressure)
 try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ if(!p) navigator.storage.persist().catch(function(){}); }).catch(function(){}); } }catch(e){}
 // ===== DRAG POPUP DOWN TO CLOSE =====
