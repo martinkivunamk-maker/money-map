@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#ffffff">
@@ -146,9 +146,14 @@
   /* WELCOME SCREEN (white + centered gold glow) */
   #welcomeScreen { position:fixed; inset:0; z-index:10000; display:flex; flex-direction:column; overflow:hidden; background:#ffffff; animation:fadeIn 0.5s; }
   #welcomeScreen.hidden { display:none; }
-  #welcomeScreen.leaving { animation:welLeave 0.4s var(--ease) forwards; }
-  @keyframes welLeave { to { opacity:0; transform:scale(1.03); } }
+  #welcomeScreen.leaving { animation:welLeave 0.44s var(--ease) forwards; }
+  @keyframes welLeave { to { opacity:0; transform:scale(1.06); filter:blur(3px); } }
   @keyframes welLogo { 0% { opacity:0; transform:translateY(20px) scale(0.78);} 60% { transform:translateY(0) scale(1.06);} 100% { opacity:1; transform:scale(1);} }
+  @keyframes appEnter { from { opacity:0; transform:scale(0.985); } to { opacity:1; transform:scale(1); } }
+  @keyframes lockEnter { from { opacity:0; transform:translateY(16px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+  #app.entering { animation:appEnter 0.5s var(--ease); }
+  #lockScreen.entering { animation:lockEnter 0.46s var(--ease); }
+  @media (prefers-reduced-motion: reduce) { #app.entering, #lockScreen.entering, #welcomeScreen.leaving { animation:none !important; } }
   .w2-bg { position:absolute; inset:0; z-index:0; filter:blur(80px);
     background:radial-gradient(460px 300px at 50% 46%, rgba(224,196,120,0.60), transparent 68%),
       radial-gradient(360px 260px at 20% 50%, rgba(214,178,74,0.48), transparent 70%),
@@ -157,24 +162,24 @@
       radial-gradient(300px 220px at 30% 40%, rgba(224,196,120,0.30), transparent 72%),
       #ffffff; }
   .w2-wrap { position:relative; z-index:2; flex:1; display:flex; flex-direction:column;
-    padding:calc(env(safe-area-inset-top,0px) + 48px) 30px calc(env(safe-area-inset-bottom,0px) + 34px); }
+    padding:calc(env(safe-area-inset-top,0px) + 76px) 32px calc(env(safe-area-inset-bottom,0px) + 40px); }
   .w2-top { display:flex; flex-direction:column; align-items:center; text-align:center; }
   .w2-logo { width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center;
     background:linear-gradient(155deg, var(--gold-light), var(--gold)); box-shadow:0 10px 24px -8px rgba(201,154,34,0.55); animation:welLogo 0.9s var(--ease) both; }
   .w2-logo svg { width:24px; height:24px; stroke:#fff; stroke-width:1.7; fill:none; }
-  .w2-hi { font-size:15px; color:#6f6752; margin-top:16px; animation:fadeUp 0.7s 0.1s both; }
-  .w2-name { font-size:30px; font-weight:800; color:#161616; letter-spacing:-0.4px; line-height:1.12; margin-top:2px; animation:fadeUp 0.7s 0.18s both; }
-  .w2-sub { font-size:13.5px; color:#9a7c22; font-weight:600; margin-top:6px; animation:fadeUp 0.7s 0.26s both; }
+  .w2-hi { font-size:18px; font-weight:500; color:#6f6752; margin-top:28px; letter-spacing:-0.2px; animation:fadeUp 0.7s 0.1s both; }
+  .w2-name { font-size:38px; font-weight:800; color:#161616; letter-spacing:-0.8px; line-height:1.05; margin-top:6px; animation:fadeUp 0.7s 0.18s both; }
+  .w2-sub { font-size:14px; color:#9a7c22; font-weight:600; margin-top:14px; animation:fadeUp 0.7s 0.26s both; }
   .w2-spacer { flex:1; }
   .w2-bottom { display:flex; flex-direction:column; align-items:center; text-align:center; animation:fadeUp 0.7s 0.34s both; }
   .w2-nwlab { font-size:12.5px; color:#7c745e; letter-spacing:0.4px; }
-  .w2-nwrow { display:flex; align-items:center; gap:11px; margin-top:6px; }
-  .w2-nwval { font-size:29px; font-weight:800; color:#161616; letter-spacing:-0.4px; }
+  .w2-nwrow { display:flex; align-items:center; gap:12px; margin-top:10px; }
+  .w2-nwval { font-size:32px; font-weight:800; color:#161616; letter-spacing:-0.5px; }
   .w2-dots { letter-spacing:3px; position:relative; top:3px; }
   .w2-eye { width:37px; height:37px; border:none; border-radius:50%; background:rgba(184,134,15,0.16); color:#b8860f; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; }
   .w2-eye svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-  .w2-trend { font-size:13px; color:#1f9d55; font-weight:600; margin-top:8px; }
-  .w2-stats { margin-top:26px; display:flex; width:100%; }
+  .w2-trend { font-size:13px; color:#1f9d55; font-weight:600; margin-top:10px; }
+  .w2-stats { margin-top:40px; display:flex; width:100%; }
   .w2-tile { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:0 6px; position:relative; }
   .w2-tile + .w2-tile:before { content:''; position:absolute; left:0; top:4px; bottom:4px; width:1px; background:rgba(90,80,50,0.16); }
   .w2-tile .ic { width:22px; height:22px; color:#b8860f; }
@@ -182,7 +187,7 @@
   .w2-tile .lb { font-size:10.5px; color:#7c745e; }
   .w2-tile .vl { font-size:15px; font-weight:800; color:#161616; }
   .w2-tile .sb { font-size:10px; color:#8c846e; }
-  .w2-btn { margin-top:28px; width:100%; height:58px; border:none; border-radius:16px; cursor:pointer; font-size:17px; font-weight:800;
+  .w2-btn { margin-top:36px; width:100%; height:60px; border:none; border-radius:17px; cursor:pointer; font-size:17px; font-weight:800;
     color:#231c05; background:linear-gradient(135deg,#e7c24e,#c99a22); box-shadow:0 8px 22px rgba(201,154,34,0.4);
     display:flex; align-items:center; justify-content:center; gap:10px; transition:transform 0.15s var(--ease); }
   .w2-btn:active { transform:scale(0.97); }
@@ -208,6 +213,31 @@
   [data-theme="dark"] .w2-tile .vl { color:#f5f2ea; }
   [data-theme="dark"] .w2-tile .sb { color:#8f8778; }
 
+  /* SAVINGS CELEBRATION */
+  #celebrate { position:fixed; inset:0; z-index:10001; display:none; align-items:center; justify-content:center; }
+  #celebrate.show { display:flex; }
+  #celebrate .cel-scrim { position:absolute; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px); animation:fadeIn 0.25s; }
+  [data-theme="light"] #celebrate .cel-scrim { background:rgba(20,18,14,0.28); }
+  #celebrate .cel-card { position:relative; width:300px; text-align:center; border-radius:30px; padding:38px 26px 26px; background:linear-gradient(180deg,#1c1b18,#141311); border:1px solid rgba(224,196,120,0.20); box-shadow:0 34px 80px -22px rgba(0,0,0,0.75); animation:celPop 0.5s var(--ease); }
+  [data-theme="light"] #celebrate .cel-card { background:linear-gradient(180deg,#ffffff,#fbf8f1); border-color:rgba(201,154,34,0.22); box-shadow:0 34px 80px -26px rgba(120,90,10,0.35); }
+  @keyframes celPop { 0% { opacity:0; transform:scale(0.8) translateY(12px);} 60% { transform:scale(1.03);} 100% { opacity:1; transform:scale(1);} }
+  .cel-badge { width:90px; height:90px; margin:0 auto 20px; border-radius:50%; background:radial-gradient(circle at 50% 32%,#f4d876,#c99a22); display:flex; align-items:center; justify-content:center; box-shadow:0 14px 34px -8px rgba(201,154,34,0.7); animation:celBadge 0.6s 0.1s var(--ease) both; }
+  @keyframes celBadge { 0% { transform:scale(0.4); opacity:0;} 60% { transform:scale(1.12);} 100% { transform:scale(1); opacity:1;} }
+  .cel-badge svg { width:46px; height:46px; stroke:#fff; stroke-width:2.8; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .cel-title { font-size:26px; font-weight:800; color:#f5f2ea; letter-spacing:-0.4px; }
+  [data-theme="light"] .cel-title { color:#161616; }
+  .cel-amt { font-size:16px; font-weight:700; color:#e6bd52; margin-top:11px; }
+  [data-theme="light"] .cel-amt { color:#a97e14; }
+  .cel-sub { font-size:13.5px; color:#a99f88; margin-top:8px; line-height:1.55; padding:0 6px; }
+  [data-theme="light"] .cel-sub { color:#7c745e; }
+  .cel-note { margin-top:22px; font-size:15px; font-weight:800; color:#231c05; background:linear-gradient(135deg,#e7c24e,#c99a22); border-radius:14px; padding:13px; }
+  .cel-confetti { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .cel-confetti i { position:absolute; top:0; width:8px; height:8px; border-radius:2px; opacity:0; animation:celFall 1.4s var(--ease) forwards; }
+  @keyframes celFall { 0% { opacity:0; transform:translateY(-20px) rotate(0deg);} 15% { opacity:1;} 100% { opacity:0; transform:translateY(70vh) rotate(320deg);} }
+  @media (prefers-reduced-motion: reduce) { #celebrate .cel-card, .cel-badge, .cel-confetti i { animation:none !important; } }
+
+  /* Status-bar skin: the app's own colour bleeds up under the notification bar so there's no white seam in dark mode (the notification bar itself is untouched) */
+  body::before { content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top,0px); background:var(--bg); z-index:9998; pointer-events:none; transition:background 0.5s ease; }
   #app { position:fixed; inset:0; display:flex; flex-direction:column; overflow:hidden; }
   #app.hidden { display:none; }
   .app-bg { position:fixed; inset:0; z-index:-1; transition:background 0.5s ease;
@@ -982,6 +1012,17 @@
 </div>
 
 <!-- LOCK SCREEN -->
+<div id="celebrate" onclick="hideCelebration()">
+  <div class="cel-scrim"></div>
+  <div class="cel-confetti" id="celConfetti"></div>
+  <div class="cel-card">
+    <div class="cel-badge"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <div class="cel-title">Well done!</div>
+    <div class="cel-amt" id="celAmt"></div>
+    <div class="cel-sub" id="celSub"></div>
+    <div class="cel-note">Keep it up — you're building wealth</div>
+  </div>
+</div>
 <div id="lockScreen" class="hidden">
   <div class="lock-logo"><svg viewBox="0 0 24 24"><use href="#i-wallet"/></svg></div>
   <div class="lock-title">MONEY MAP</div>
@@ -1326,7 +1367,7 @@ function _ovCount(id,to,suffix){
   requestAnimationFrame(step);
 }
 document.addEventListener('pointerdown',function(e){
-  const t=e.target && e.target.closest && e.target.closest('.btn-gold,.wel-btn,.w2-btn,.pin-btn'); if(!t) return;
+  const t=e.target && e.target.closest && e.target.closest('.btn-gold,.wel-btn,.pin-btn'); if(!t) return;
   const rect=t.getBoundingClientRect(), size=Math.max(rect.width,rect.height);
   const r=document.createElement('span'); r.className='ripple'; r.style.width=r.style.height=size+'px';
   r.style.left=((e.clientX||rect.left+rect.width/2)-rect.left-size/2)+'px';
@@ -1351,7 +1392,7 @@ function _welcomeNetWorth(){
   const assetVal=(DB.assets||[]).reduce((a,x)=>a+(x.value||0),0);
   const invVal=(DB.investments||[]).reduce((a,x)=>a+(x.interest||0),0);
   const accountsVal=(DB.accounts||[]).reduce((a,x)=>a+(x.value||0),0);
-  const owed=(DB.loans||[]).reduce((a,l)=>{const repaid=(DB.transactions||[]).filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0);return a+Math.max(0,(l.amount||0)-repaid);},0);
+  const owed=_owedTotal();
   return s+e+invGoal+assetVal+invVal+accountsVal-owed;
 }
 function _welcomeStats(){
@@ -1418,7 +1459,7 @@ function bootGate(){
 function initWelcome(){
   const returning=!!DB.pin;
   const nm=document.getElementById('welName'); const hi=document.getElementById('welHi');
-  if(DB.userName){ if(hi){ hi.textContent=returning?'Welcome back,':'Welcome,'; hi.style.display=''; } if(nm){ nm.textContent=DB.userName; nm.style.display=''; } }
+  if(DB.userName){ if(hi){ hi.textContent=returning?'Welcome back':'Welcome'; hi.style.display=''; } if(nm){ nm.textContent=DB.userName; nm.style.display=''; } }
   else { if(hi) hi.style.display='none'; if(nm){ nm.textContent='Welcome'; nm.style.display=''; } }
   const sub=document.getElementById('welSub'); if(sub){ const h=new Date().getHours(); const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening'; const streak=_savingsStreakMonths(); sub.textContent=returning?(g+(streak>=1?" \u2014 you're on track this month":" \u2014 let's map your money")):"Let's get your money mapped"; }
   const b=document.getElementById('welcomeBtn'); if(b){ if(returning){ b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-lock"/></svg>Log in'; } else { b.textContent='Set up account'; } }
@@ -1433,7 +1474,8 @@ function enterFromWelcome(){
 }
 function startAuth(){
   document.getElementById('app').classList.add('hidden');
-  document.getElementById('lockScreen').classList.remove('hidden');
+  var _ls=document.getElementById('lockScreen'); _ls.classList.remove('hidden');
+  _ls.classList.remove('entering'); void _ls.offsetWidth; _ls.classList.add('entering'); setTimeout(function(){_ls.classList.remove('entering');},500);
   if(!DB.pin){ isSettingPin=true; document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; showPinPad(); return; }
   if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
   else { showPinPad(); }
@@ -1579,7 +1621,7 @@ function checkPin(){
     if(pinEntry===DB.pin){ if(_welPinReveal){ _welPinReveal=false; document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.remove('hidden'); _welNwShown=true; renderWelcomeNW(); } else { unlockApp(); } } else { document.getElementById('lockError').textContent='Incorrect PIN. Try again.'; pinEntry=''; setTimeout(()=>{updateDots(); document.getElementById('lockError').textContent='';},600); }
   }
 }
-function unlockApp(){ _justUnlocked=Date.now(); _appUnlocked=true; clearTimeout(_authTimer); _authTimer=setTimeout(function(){_authInProgress=false;},1000); try{ localStorage.setItem('mm_bg', String(Date.now())); }catch(e){} document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); initApp(); }
+function unlockApp(){ _justUnlocked=Date.now(); _appUnlocked=true; clearTimeout(_authTimer); _authTimer=setTimeout(function(){_authInProgress=false;},1000); try{ localStorage.setItem('mm_bg', String(Date.now())); }catch(e){} document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.add('hidden'); var _ap=document.getElementById('app'); _ap.classList.remove('hidden'); _ap.classList.remove('entering'); void _ap.offsetWidth; _ap.classList.add('entering'); setTimeout(function(){_ap.classList.remove('entering');},520); initApp(); }
 function tryFingerprint(){
   if(_fpBusy) return;
   if(!window.PublicKeyCredential){showPinPad();showToast('Biometrics not available on this device','var(--text-dim)');return;}
@@ -1647,10 +1689,17 @@ function navTo(page){
 }
 function _animatePage(page){
   var pg=document.getElementById('page-'+page); if(!pg)return;
-  var els=pg.querySelectorAll('.txd-dayhead,.txd-row,.set-tile,.set-av,.bgt-card,.loan-card,.overview-card,.settings-item,.misc-line,.swipe-card');
-  for(var i=0;i<els.length;i++) els[i].style.animation='none';
-  void pg.offsetWidth;                     // one reflow so the animations restart
-  for(var j=0;j<els.length;j++) els[j].style.animation='';
+  var reduce=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els=pg.querySelectorAll('.glass-card,.section-header,.swipe-stack,.swipe-dots,.txd-dayhead,.txd-row,.set-tile,.set-av,.bgt-card,.loan-card,.overview-card,.settings-item,.misc-line,.an-chart,.empty-state');
+  var i=0;
+  for(var k=0;k<els.length;k++){
+    var el=els[k]; el.style.animation='none';
+    if(reduce||el.offsetParent===null) continue;
+    void el.offsetWidth;
+    el.style.animation='riseIn 0.5s var(--ease) both';
+    el.style.animationDelay=Math.min(i*0.045,0.42)+'s';
+    i++;
+  }
 }
 function goSettings(){ navTo('settings'); }
 function _smGo(){ closeModal('settingsMenuModal'); navTo('settings'); }
@@ -1893,7 +1942,8 @@ function renderGoalsCard(){
   const sBal=getPotBalance('savings'), eBal=getPotBalance('emergency');
   const invGoalMoney=DB.transactions.filter(isInvGoalTx).reduce((s,t)=>s+t.amount,0);
   const assets=sBal+eBal+invGoalMoney;
-  const netWorth=assets-owed;
+  const extraNW=(DB.assets||[]).reduce((a,x)=>a+(x.value||0),0)+(DB.investments||[]).reduce((a,x)=>a+(x.interest||0),0)+(DB.accounts||[]).reduce((a,x)=>a+(x.value||0),0);
+  const netWorth=assets+extraNW-owed;
   const ownedInv=goals.filter(g=>goalKind(g.id)==='investment'&&g.target>0&&g.saved>=g.target);
   const ownedTotal=ownedInv.reduce((s,g)=>s+g.saved,0);
   const pendingGoals=goals.filter(g=>g.saved<g.target);
@@ -2124,13 +2174,14 @@ function expandCard(kind){
   } else if(kind==='networth'){
     const d=anData(); title='Net Worth · '+d.year;
     const sB=getPotBalance('savings'), eB=getPotBalance('emergency'), gB=DB.transactions.filter(isInvGoalTx).reduce((s,t)=>s+t.amount,0);
-    body=`<div class="exp-total">${fmtUGX(d.endNW)}</div><div class="exp-sub">savings + emergency + investments + assets</div>${ovStyleCurve(d.months,d.nwSeries,'var(--gold)')}
+    body=`<div class="exp-total">${fmtUGX(d.endNW)}</div><div class="exp-sub">savings + emergency + investments + assets, less loans</div>${ovStyleCurve(d.months,d.nwSeries,'var(--gold)')}
       <div class="exp-row"><span>Life Savings</span><span>${fmtUGX(sB)}</span></div>
       <div class="exp-row"><span>Emergency Fund</span><span>${fmtUGX(eB)}</span></div>
       ${(()=>{ const gs=(DB.goals||[]).filter(g=>goalKind(g.id)==='investment' && !g.owned); if(!gs.length) return '<div class="exp-row"><span>Investment goals (in progress)</span><span>'+fmtUGX(0)+'</span></div>'; return '<div class="bd-cap" style="margin:10px 0 4px">Investment goals · in progress</div>'+gs.map(g=>'<div class="exp-row"><span>'+esc(g.name)+' · <span style="color:var(--text-muted);font-weight:400">'+pct(g.saved||0,g.target||0)+'% funded</span></span><span>'+fmtUGX(g.saved||0)+'</span></div>').join(''); })()}
       <div class="exp-row"><span>Physical assets</span><span>${fmtUGX(d.assetVal)}</span></div>
       ${d.accountsVal>0?`<div class="exp-row"><span>Cash &amp; accounts</span><span>${fmtUGX(d.accountsVal)}</span></div>`:''}
       <div class="exp-row"><span>Investment interest</span><span>${fmtUGX(d.invVal)}</span></div>
+      ${d.owedNow>0?`<div class="exp-row"><span>Outstanding loans</span><span style="color:var(--danger)">-${fmtUGX(d.owedNow)}</span></div>`:''}
       <div class="exp-divider"></div>
       <div class="exp-row"><span style="font-weight:800">Growth in ${d.year}</span><span style="color:${d.yearGrowth>=0?'var(--success)':'var(--danger)'};font-weight:800">${d.yearGrowth>=0?'+':'-'}${fmtUGX(d.yearGrowth)}</span></div>`;
   } else if(kind==='splitrule'){
@@ -2589,12 +2640,30 @@ function saveTx(type){
   else if(type==='expense'){tx.categoryId=document.getElementById('txCategory').value||null; tx.source=document.getElementById('txSource').value;}
   else if(['savings','emergency','goal','transfer'].includes(type)){const d=document.getElementById('txTransferTo').value; if(d.startsWith('goal_')){tx.type='goal';tx.goalId=d.replace('goal_','');}else{tx.type=d;const w=document.getElementById('txWhere');if(w&&w.value&&w.value!=='__none__')tx.holding=w.value;}}
   if(tx.type==='goal'&&tx.goalId){const g=DB.goals.find(g=>g.id===tx.goalId); if(g){ if(editingTxId){const o=DB.transactions.find(x=>x.id===editingTxId); if(o&&o.type==='goal'&&o.goalId===tx.goalId)g.saved=Math.max(0,g.saved-o.amount);} g.saved=(g.saved||0)+amount; }}
+  var _isNew=!editingTxId;
   if(editingTxId){const i=DB.transactions.findIndex(x=>x.id===editingTxId); if(i>-1)DB.transactions[i]=tx;} else DB.transactions.push(tx);
-  saveDB(); syncOwnedGoals(); closeAllModals(); showToast(editingTxId?'Transaction updated':'Transaction saved','var(--success)');
+  saveDB(); syncOwnedGoals(); closeAllModals();
+  var _celebrate=_isNew && (tx.type==='savings' || tx.type==='emergency' || (tx.type==='goal' && goalKind(tx.goalId)==='investment'));
+  if(_celebrate){ var _dest=tx.type==='savings'?'Life Savings':tx.type==='emergency'?'Emergency Fund':((DB.goals.find(function(g){return g.id===tx.goalId;})||{}).name||'your goal'); showCelebration(amount,_dest); }
+  else { showToast(editingTxId?'Transaction updated':'Transaction saved','var(--success)'); }
   refreshYearOptions();
   if(currentPage==='transactions')renderTransactions(); else updateOverview();
 }
 function _hasPendingLoans(){ return (DB.loans||[]).some(l=>{const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0); return Math.max(0,l.amount-repaid)>0;}); }
+function _owedTotal(){ return (DB.loans||[]).reduce(function(a,l){ var repaid=(DB.transactions||[]).filter(function(t){return t.type==='loan_repay'&&t.loanId===l.id;}).reduce(function(s,t){return s+t.amount;},0); return a+Math.max(0,(l.amount||0)-repaid); },0); }
+var _celTimer=null;
+function showCelebration(amount,dest){
+  var ov=document.getElementById('celebrate'); if(!ov) return;
+  document.getElementById('celAmt').textContent=fmtUGX(amount)+' \u2192 '+dest;
+  var streak=_savingsStreakMonths();
+  document.getElementById('celSub').textContent=(streak>=2?("That's "+streak+" months of saving in a row. "):'')+'Every shilling brings your goals closer.';
+  var cc=document.getElementById('celConfetti');
+  if(cc){ var cols=['#e7c24e','#6BA368','#E0554F','#f4d876','#5BA0C9','#B388C9']; var h=''; for(var i=0;i<14;i++){ h+='<i style="left:'+(6+Math.random()*88)+'%;background:'+cols[i%cols.length]+';animation-delay:'+(Math.random()*0.4).toFixed(2)+'s"></i>'; } cc.innerHTML=h; }
+  ov.classList.add('show');
+  try{ navigator.vibrate&&navigator.vibrate([18,40,24]); }catch(e){}
+  clearTimeout(_celTimer); _celTimer=setTimeout(hideCelebration,2600);
+}
+function hideCelebration(){ var ov=document.getElementById('celebrate'); if(ov) ov.classList.remove('show'); clearTimeout(_celTimer); }
 function openQuickAdd(){
   var el=document.getElementById('quickAddActions');
   if(el){
@@ -3118,10 +3187,11 @@ function anData(){
   const invVal=(DB.investments||[]).reduce((s,i)=>s+(i.interest||0),0);
   const accountsVal=(DB.accounts||[]).reduce((s,a)=>s+(a.value||0),0);
   const extraNW=assetVal+invVal+accountsVal;
-  const nwSeries=months.map((m,i)=>S[i]+E[i]+G[i]+extraNW);
-  const startNW=potsAsOf(new Date(year-1,11,31,23,59,59)).total+extraNW;
-  const endNW=nwSeries.length?nwSeries[nwSeries.length-1]:potsAsOf(new Date()).total+extraNW;
-  const curNW=potsAsOf(new Date()).total+extraNW; const yearGrowth=endNW-startNW;
+  const owedNow=_owedTotal();
+  const nwSeries=months.map((m,i)=>S[i]+E[i]+G[i]+extraNW-owedNow);
+  const startNW=potsAsOf(new Date(year-1,11,31,23,59,59)).total+extraNW-owedNow;
+  const endNW=nwSeries.length?nwSeries[nwSeries.length-1]:potsAsOf(new Date()).total+extraNW-owedNow;
+  const curNW=potsAsOf(new Date()).total+extraNW-owedNow; const yearGrowth=endNW-startNW;
   const activeN=months.length||1;
   const yearExp=expMo.reduce((s,v)=>s+v,0), yearInc=incM.reduce((s,v)=>s+v,0);
   const avgMonthExp=Math.round(yearExp/activeN), avgSurplus=Math.round((yearInc-yearExp)/activeN);
@@ -3146,7 +3216,7 @@ function anData(){
     var li=months.length-1;
     comp = li>=0?{s:S[li],e:E[li],g:G[li]}:{s:getPotBalance('savings'),e:getPotBalance('emergency'),g:0};
   }
-  return {month,year,txs,income,totalExp,expFromInc,savAdd,emgAdd,goalAdd,goalInv,goalLife,loanPaid,loanPaidInc,setAside,savingsRate,spendSide,saveSide,spendPct,savePct,loanPct,catList,catFull,months,rateSeries,nwSeries,S,E,G,curNW,endNW,startNW,yearGrowth,avgMonthExp,avgSurplus,emgBal,runway,onBudget,totalBudgets,biggest,score,sLabel,sColor,sBg,yearInc,yearExp,prevRate,nwSel,nwPrev,prevMonthName,comp,extraNW,assetVal,invVal,accountsVal};
+  return {month,year,txs,income,totalExp,expFromInc,savAdd,emgAdd,goalAdd,goalInv,goalLife,loanPaid,loanPaidInc,setAside,savingsRate,spendSide,saveSide,spendPct,savePct,loanPct,catList,catFull,months,rateSeries,nwSeries,S,E,G,curNW,endNW,startNW,yearGrowth,avgMonthExp,avgSurplus,emgBal,runway,onBudget,totalBudgets,biggest,score,sLabel,sColor,sBg,yearInc,yearExp,prevRate,nwSel,nwPrev,prevMonthName,comp,extraNW,assetVal,invVal,accountsVal,owedNow};
 }
 function an_money(v){ return fmtShort(v).replace(cur()+' ',''); }
 function _splitTier(sv){
