@@ -143,18 +143,18 @@
   .fp-hint { font-size:14px; color:var(--text-dim); text-align:center; }
   .fp-usepin { font-size:13px; color:var(--gold); font-weight:700; cursor:pointer; padding:10px 16px; }
 
-  /* WELCOME SCREEN (warm) */
-  #welcomeScreen { position:fixed; inset:0; z-index:10000; display:flex; flex-direction:column; overflow:hidden; background:#f1ece1; animation:fadeIn 0.5s; }
+  /* WELCOME SCREEN (white + centered gold glow) */
+  #welcomeScreen { position:fixed; inset:0; z-index:10000; display:flex; flex-direction:column; overflow:hidden; background:#ffffff; animation:fadeIn 0.5s; }
   #welcomeScreen.hidden { display:none; }
   #welcomeScreen.leaving { animation:welLeave 0.4s var(--ease) forwards; }
   @keyframes welLeave { to { opacity:0; transform:scale(1.03); } }
   @keyframes welLogo { 0% { opacity:0; transform:translateY(20px) scale(0.78);} 60% { transform:translateY(0) scale(1.06);} 100% { opacity:1; transform:scale(1);} }
-  .w2-bg { position:absolute; inset:-80px; z-index:0; filter:blur(64px);
-    background:radial-gradient(240px 240px at 22% 22%, rgba(214,178,74,0.58), transparent 70%),
-      radial-gradient(260px 260px at 84% 30%, rgba(150,180,120,0.42), transparent 70%),
-      radial-gradient(320px 320px at 60% 76%, rgba(224,196,120,0.5), transparent 72%),
-      radial-gradient(240px 240px at 18% 84%, rgba(188,205,172,0.42), transparent 70%),
-      linear-gradient(#f7f2e7,#ece5d5); }
+  .w2-bg { position:absolute; inset:0; z-index:0; filter:blur(76px);
+    background:radial-gradient(300px 300px at 50% 44%, rgba(224,196,120,0.62), transparent 66%),
+      radial-gradient(240px 240px at 26% 52%, rgba(214,178,74,0.50), transparent 68%),
+      radial-gradient(260px 260px at 76% 56%, rgba(150,180,120,0.40), transparent 70%),
+      radial-gradient(300px 260px at 52% 68%, rgba(224,196,120,0.36), transparent 72%),
+      #ffffff; }
   .w2-wrap { position:relative; z-index:2; flex:1; display:flex; flex-direction:column;
     padding:calc(env(safe-area-inset-top,0px) + 48px) 30px calc(env(safe-area-inset-bottom,0px) + 34px); }
   .w2-top { display:flex; flex-direction:column; align-items:center; text-align:center; }
@@ -1290,7 +1290,8 @@ const GOAL_ICONS=['i-target','i-house','i-car','i-invest','i-bank','i-cash','i-g
 
 function ic(id){ return `<svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#${id}"/></svg>`; }
 function icSized(id,px){ return '<svg viewBox="0 0 24 24" style="width:'+px+'px;height:'+px+'px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#'+id+'"/></svg>'; }
-function haptic(ms){ navigator.vibrate&&navigator.vibrate(ms||8); }
+function haptic(ms){ navigator.vibrate&&navigator.vibrate(ms||12); }
+function hapticStrong(){ if(navigator.vibrate){ navigator.vibrate(38); } }
 function _reduceMotion(){ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 function _ovCount(id,to,suffix){
   const el=document.getElementById(id); if(!el) return; suffix=suffix||'';
@@ -1364,13 +1365,15 @@ function renderWelcomeStats(){
     '<div class="w2-tile"><div class="ic">'+ic('i-target')+'</div><div class="lb">Savings Streak</div><div class="vl">'+st.streak+'</div><div class="sb">'+st.streakSub+'</div></div>';
 }
 function toggleWelcomeNW(){
-  haptic();
+  hapticStrong();
   if(_welNwShown){ _welNwShown=false; renderWelcomeNW(); return; }
   if(DB.fingerprintCredId && window.PublicKeyCredential){
+    if(_fpBusy) return;
+    _fpBusy=true; _authInProgress=true;
     const challenge=new Uint8Array(32); crypto.getRandomValues(challenge);
     navigator.credentials.get({publicKey:{ challenge, timeout:60000, userVerification:'required', allowCredentials:[{type:'public-key',id:new Uint8Array(DB.fingerprintCredId)}] }})
-      .then(()=>{ _welNwShown=true; renderWelcomeNW(); })
-      .catch(()=>{ showToast("Couldn't verify \u2014 try again",'var(--text-dim)'); });
+      .then(()=>{ _fpBusy=false; _welNwShown=true; renderWelcomeNW(); hapticStrong(); clearTimeout(_authTimer); _authTimer=setTimeout(function(){_authInProgress=false;},1000); })
+      .catch(()=>{ _fpBusy=false; clearTimeout(_authTimer); _authTimer=setTimeout(function(){_authInProgress=false;},1000); showToast("Couldn't verify \u2014 try again",'var(--text-dim)'); });
   } else if(DB.pin){
     _welPinReveal=true;
     pinEntry='';pinFirst='';isSettingPin=false; updateDots();
@@ -1383,15 +1386,11 @@ function toggleWelcomeNW(){
     _welNwShown=true; renderWelcomeNW();
   }
 }
-function showWelcome(){ const w=document.getElementById('welcomeScreen'); if(w){ w.classList.remove('hidden'); w.classList.remove('leaving'); } const a=document.getElementById('app'); if(a) a.classList.add('hidden'); const l=document.getElementById('lockScreen'); if(l) l.classList.add('hidden'); }
+function showWelcome(){ _appUnlocked=false; const w=document.getElementById('welcomeScreen'); if(w){ w.classList.remove('hidden'); w.classList.remove('leaving'); } const a=document.getElementById('app'); if(a) a.classList.add('hidden'); const l=document.getElementById('lockScreen'); if(l) l.classList.add('hidden'); }
 function hideWelcome(){ const w=document.getElementById('welcomeScreen'); if(w) w.classList.add('hidden'); }
 function bootGate(){
+  // Cold start (opened fresh / relaunched from background) -> ALWAYS begin at the welcome page. No auto prompt.
   initWelcome();
-  if(DB.pin){
-    const bg=parseInt(localStorage.getItem('mm_bg')||'0',10);
-    const away=bg?Date.now()-bg:Infinity;
-    if(bg && away < 300000){ hideWelcome(); initLock(); return; }
-  }
   showWelcome();
 }
 function initWelcome(){
@@ -1405,7 +1404,7 @@ function initWelcome(){
   renderWelcomeNW(); renderWelcomeStats();
 }
 function enterFromWelcome(){
-  haptic();
+  hapticStrong();
   const w=document.getElementById('welcomeScreen'); if(!w){ startAuth(); return; }
   w.classList.add('leaving');
   setTimeout(function(){ w.classList.add('hidden'); w.classList.remove('leaving'); startAuth(); },380);
@@ -1452,6 +1451,7 @@ function pickPhotoSource(source){
 // ===== AMOUNT FORMATTING =====
 function formatAmountInput(inp){
   let raw=inp.value.replace(/[^0-9]/g,'');
+  if(raw.length!==(inp.dataset.raw||'').length) haptic(16);
   inp.dataset.raw=raw;
   inp.value=raw?parseInt(raw).toLocaleString():'';
 }
@@ -1557,20 +1557,21 @@ function checkPin(){
     if(pinEntry===DB.pin){ if(_welPinReveal){ _welPinReveal=false; document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.remove('hidden'); _welNwShown=true; renderWelcomeNW(); } else { unlockApp(); } } else { document.getElementById('lockError').textContent='Incorrect PIN. Try again.'; pinEntry=''; setTimeout(()=>{updateDots(); document.getElementById('lockError').textContent='';},600); }
   }
 }
-function unlockApp(){ _justUnlocked=Date.now(); document.getElementById('lockScreen').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); initApp(); }
+function unlockApp(){ _justUnlocked=Date.now(); _appUnlocked=true; clearTimeout(_authTimer); _authTimer=setTimeout(function(){_authInProgress=false;},1000); try{ localStorage.setItem('mm_bg', String(Date.now())); }catch(e){} document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); initApp(); }
 function tryFingerprint(){
   if(_fpBusy) return;
   if(!window.PublicKeyCredential){showPinPad();showToast('Biometrics not available on this device','var(--text-dim)');return;}
   if(!DB.fingerprintCredId){showPinPad();showToast('Enable fingerprint in Settings first','var(--text-dim)');return;}
   const icon=document.getElementById('fpIcon'), hint=document.getElementById('fpHint');
   if(icon) icon.classList.add('scanning'); if(hint) hint.textContent='Scanning…';
-  _fpBusy=true;
+  _fpBusy=true; _authInProgress=true;
   const challenge=new Uint8Array(32); crypto.getRandomValues(challenge);
   navigator.credentials.get({publicKey:{
     challenge, timeout:60000, userVerification:'required',
     allowCredentials:[{type:'public-key',id:new Uint8Array(DB.fingerprintCredId)}]
   }}).then(()=>{_fpBusy=false;unlockApp();}).catch(()=>{
     _fpBusy=false;
+    clearTimeout(_authTimer); _authTimer=setTimeout(function(){_authInProgress=false;},1000);
     if(icon) icon.classList.remove('scanning');
     if(hint) hint.textContent="Couldn't read fingerprint — tap to retry";
   });
@@ -1779,7 +1780,7 @@ function updateOverview(){
   else if(leftover>0){
     const allocPct=100-pct(leftover,income);
     incomePctText=alreadyPosted
-      ? `${allocPct}% allocated �� ${fmtShort(leftover)} moved to ${nextMonthName}`
+      ? `${allocPct}% allocated · ${fmtShort(leftover)} moved to ${nextMonthName}`
       : `${allocPct}% allocated · ${pct(leftover,income)}% (${fmtShort(leftover)}) to carry forward`;
   } else { incomePctText='Fully allocated'; }
   _ovCount('ov-income',income,trend(income,pInc,true));
@@ -3714,7 +3715,7 @@ document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay')&&e.target.classList.contains('open'))closeModal(e.target.id);
 });
 // ===== AUTO-LOCK ON BACKGROUND / SCREEN-OFF =====
-let _suppressLock=false, _suppressTimer=null, _justUnlocked=0, _fpBusy=false, _fpTimer=null;
+let _suppressLock=false, _suppressTimer=null, _justUnlocked=0, _fpBusy=false, _fpTimer=null, _appUnlocked=false, _authInProgress=false, _authTimer=null;
 function suppressNextLock(){ _suppressLock=true; clearTimeout(_suppressTimer); _suppressTimer=setTimeout(()=>{_suppressLock=false;},30000); }
 // Put up the lock screen (without triggering the biometric prompt).
 function _lockNow(){
@@ -3730,20 +3731,20 @@ function relock(){ _lockNow(); if(DB.pin && DB.fingerprintCredId && window.Publi
 // Android brings it back (fresh load, frozen resume, or state restore) it is ALREADY locked —
 // no reliance on a "you returned" event firing. On return, (re)trigger the fingerprint prompt.
 function _onAppLeave(){
-  if(_suppressLock) return;
-  try{ localStorage.setItem('mm_bg', String(Date.now())); }catch(e){}
-  if(Date.now()-_justUnlocked < 800) return;                        // ignore the biometric sheet's own hide right after unlocking
-  if(DB.pin && document.getElementById('lockScreen').classList.contains('hidden')) _lockNow();
+  if(_suppressLock || _authInProgress) return;
+  try{ localStorage.setItem('mm_bg', String(Date.now())); }catch(e){}   // remember when we left; do NOT lock on leave (welcome page is the gate)
 }
 function _onAppReturn(){
   if(_suppressLock){ _suppressLock=false; clearTimeout(_suppressTimer); return; }
-  if(DB.pin){
-    const bg=parseInt(localStorage.getItem('mm_bg')||'0',10);
-    if(bg && (Date.now()-bg) >= 300000){ _welNwShown=false; _welPinReveal=false; initWelcome(); showWelcome(); return; }
+  if(_authInProgress) return;                                             // biometric sheet is up; ignore its focus/visibility churn
+  if(!DB.pin) return;                                                    // nothing to gate yet
+  const bg=parseInt(localStorage.getItem('mm_bg')||'0',10);
+  const away=bg?Date.now()-bg:Infinity;
+  if(away >= 120000){                                                    // idle 2+ min -> re-gate through the welcome page (no auto prompt)
+    _welNwShown=false; _welPinReveal=false; _appUnlocked=false; _fpBusy=false;
+    initWelcome(); showWelcome();
   }
-  if(DB.pin && DB.fingerprintCredId && window.PublicKeyCredential && !document.getElementById('lockScreen').classList.contains('hidden')){
-    clearTimeout(_fpTimer); _fpTimer=setTimeout(tryFingerprint,300);  // debounced so several return events fire only one prompt
-  }
+  // within 2 min: resume exactly where the user left off
 }
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) _onAppLeave(); else _onAppReturn(); });
 window.addEventListener('pagehide', _onAppLeave);
