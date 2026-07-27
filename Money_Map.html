@@ -149,11 +149,12 @@
   #welcomeScreen.leaving { animation:welLeave 0.4s var(--ease) forwards; }
   @keyframes welLeave { to { opacity:0; transform:scale(1.03); } }
   @keyframes welLogo { 0% { opacity:0; transform:translateY(20px) scale(0.78);} 60% { transform:translateY(0) scale(1.06);} 100% { opacity:1; transform:scale(1);} }
-  .w2-bg { position:absolute; inset:0; z-index:0; filter:blur(76px);
-    background:radial-gradient(300px 300px at 50% 44%, rgba(224,196,120,0.62), transparent 66%),
-      radial-gradient(240px 240px at 26% 52%, rgba(214,178,74,0.50), transparent 68%),
-      radial-gradient(260px 260px at 76% 56%, rgba(150,180,120,0.40), transparent 70%),
-      radial-gradient(300px 260px at 52% 68%, rgba(224,196,120,0.36), transparent 72%),
+  .w2-bg { position:absolute; inset:0; z-index:0; filter:blur(80px);
+    background:radial-gradient(460px 300px at 50% 46%, rgba(224,196,120,0.60), transparent 68%),
+      radial-gradient(360px 260px at 20% 50%, rgba(214,178,74,0.48), transparent 70%),
+      radial-gradient(360px 260px at 82% 54%, rgba(150,180,120,0.40), transparent 70%),
+      radial-gradient(420px 240px at 50% 62%, rgba(224,196,120,0.40), transparent 72%),
+      radial-gradient(300px 220px at 30% 40%, rgba(224,196,120,0.30), transparent 72%),
       #ffffff; }
   .w2-wrap { position:relative; z-index:2; flex:1; display:flex; flex-direction:column;
     padding:calc(env(safe-area-inset-top,0px) + 48px) 30px calc(env(safe-area-inset-bottom,0px) + 34px); }
@@ -185,6 +186,27 @@
     color:#231c05; background:linear-gradient(135deg,#e7c24e,#c99a22); box-shadow:0 8px 22px rgba(201,154,34,0.4);
     display:flex; align-items:center; justify-content:center; gap:10px; transition:transform 0.15s var(--ease); }
   .w2-btn:active { transform:scale(0.97); }
+
+  /* WELCOME SCREEN — dark mode (top/bottom blend with dark system bars) */
+  [data-theme="dark"] #welcomeScreen { background:#060606; }
+  [data-theme="dark"] .w2-bg {
+    background:radial-gradient(460px 300px at 50% 46%, rgba(224,196,120,0.34), transparent 68%),
+      radial-gradient(360px 260px at 20% 50%, rgba(214,178,74,0.28), transparent 70%),
+      radial-gradient(360px 260px at 82% 54%, rgba(150,180,120,0.22), transparent 70%),
+      radial-gradient(420px 240px at 50% 62%, rgba(224,196,120,0.26), transparent 72%),
+      radial-gradient(300px 220px at 30% 40%, rgba(224,196,120,0.18), transparent 72%),
+      #060606; }
+  [data-theme="dark"] .w2-hi { color:#b9b2a0; }
+  [data-theme="dark"] .w2-name { color:#f5f2ea; }
+  [data-theme="dark"] .w2-sub { color:#e0b64a; }
+  [data-theme="dark"] .w2-nwlab { color:#a99f88; }
+  [data-theme="dark"] .w2-nwval { color:#f5f2ea; }
+  [data-theme="dark"] .w2-eye { background:rgba(224,182,64,0.20); color:#e6bd52; }
+  [data-theme="dark"] .w2-trend { color:#3ecb7d; }
+  [data-theme="dark"] .w2-tile + .w2-tile:before { background:rgba(220,210,180,0.16); }
+  [data-theme="dark"] .w2-tile .lb { color:#a99f88; }
+  [data-theme="dark"] .w2-tile .vl { color:#f5f2ea; }
+  [data-theme="dark"] .w2-tile .sb { color:#8f8778; }
 
   #app { position:fixed; inset:0; display:flex; flex-direction:column; overflow:hidden; }
   #app.hidden { display:none; }
@@ -954,7 +976,7 @@
       <div class="w2-nwrow" id="welNwRow"></div>
       <div class="w2-trend" id="welTrend" style="visibility:hidden">↗ Improving</div>
       <div class="w2-stats" id="welStats"></div>
-      <button class="w2-btn" id="welcomeBtn" onclick="enterFromWelcome()">Log in</button>
+      <button class="w2-btn" id="welcomeBtn" onclick="enterFromWelcome()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-lock"/></svg>Log in</button>
     </div>
   </div>
 </div>
@@ -1399,7 +1421,7 @@ function initWelcome(){
   if(DB.userName){ if(hi){ hi.textContent=returning?'Welcome back,':'Welcome,'; hi.style.display=''; } if(nm){ nm.textContent=DB.userName; nm.style.display=''; } }
   else { if(hi) hi.style.display='none'; if(nm){ nm.textContent='Welcome'; nm.style.display=''; } }
   const sub=document.getElementById('welSub'); if(sub){ const h=new Date().getHours(); const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening'; const streak=_savingsStreakMonths(); sub.textContent=returning?(g+(streak>=1?" \u2014 you're on track this month":" \u2014 let's map your money")):"Let's get your money mapped"; }
-  const b=document.getElementById('welcomeBtn'); if(b) b.textContent=returning?'Log in':'Set up account';
+  const b=document.getElementById('welcomeBtn'); if(b){ if(returning){ b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-lock"/></svg>Log in'; } else { b.textContent='Set up account'; } }
   _welNwShown=false;
   renderWelcomeNW(); renderWelcomeStats();
 }
@@ -3740,11 +3762,11 @@ function _onAppReturn(){
   if(!DB.pin) return;                                                    // nothing to gate yet
   const bg=parseInt(localStorage.getItem('mm_bg')||'0',10);
   const away=bg?Date.now()-bg:Infinity;
-  if(away >= 120000){                                                    // idle 2+ min -> re-gate through the welcome page (no auto prompt)
+  if(away >= 60000){                                                     // idle 1+ min -> re-gate through the welcome page (no auto prompt)
     _welNwShown=false; _welPinReveal=false; _appUnlocked=false; _fpBusy=false;
     initWelcome(); showWelcome();
   }
-  // within 2 min: resume exactly where the user left off
+  // within 1 min: resume exactly where the user left off
 }
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) _onAppLeave(); else _onAppReturn(); });
 window.addEventListener('pagehide', _onAppLeave);
