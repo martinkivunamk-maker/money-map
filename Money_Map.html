@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#ffffff">
@@ -237,7 +237,7 @@
   @media (prefers-reduced-motion: reduce) { #celebrate .cel-card, .cel-badge, .cel-confetti i { animation:none !important; } }
 
   /* Status-bar skin: the app's own colour bleeds up under the notification bar so there's no white seam in dark mode (the notification bar itself is untouched) */
-  body::before { content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top,0px); background:var(--bg); z-index:9998; pointer-events:none; transition:background 0.5s ease; }
+  /* Status-bar tint is controlled by the theme-color <meta> (see applyTheme). On Android there is no reliable way to "skin" into the OS notification bar via CSS, so we keep the top model simple and let theme-color paint that strip. */
   #app { position:fixed; inset:0; display:flex; flex-direction:column; overflow:hidden; }
   #app.hidden { display:none; }
   .app-bg { position:fixed; inset:0; z-index:-1; transition:background 0.5s ease;
@@ -1428,8 +1428,7 @@ function renderWelcomeStats(){
     '<div class="w2-tile"><div class="ic">'+ic('i-target')+'</div><div class="lb">Savings Streak</div><div class="vl">'+st.streak+'</div><div class="sb">'+st.streakSub+'</div></div>';
 }
 function toggleWelcomeNW(){
-  hapticStrong();
-  if(_welNwShown){ _welNwShown=false; renderWelcomeNW(); return; }
+  if(_welNwShown){ _welNwShown=false; haptic(12); renderWelcomeNW(); return; }
   if(DB.fingerprintCredId && window.PublicKeyCredential){
     if(_fpBusy) return;
     _fpBusy=true; _authInProgress=true;
@@ -1446,7 +1445,7 @@ function toggleWelcomeNW(){
     showPinPad();
     document.getElementById('lockSubtitle').textContent='Enter PIN to view net worth';
   } else {
-    _welNwShown=true; renderWelcomeNW();
+    _welNwShown=true; hapticStrong(); renderWelcomeNW();
   }
 }
 function showWelcome(){ _appUnlocked=false; const w=document.getElementById('welcomeScreen'); if(w){ w.classList.remove('hidden'); w.classList.remove('leaving'); } const a=document.getElementById('app'); if(a) a.classList.add('hidden'); const l=document.getElementById('lockScreen'); if(l) l.classList.add('hidden'); }
@@ -1515,7 +1514,7 @@ function pickPhotoSource(source){
 // ===== AMOUNT FORMATTING =====
 function formatAmountInput(inp){
   let raw=inp.value.replace(/[^0-9]/g,'');
-  if(raw.length!==(inp.dataset.raw||'').length) haptic(16);
+  // Amount typing already triggers the device keyboard's own haptic; no extra buzz here (prevents double-buzz).
   inp.dataset.raw=raw;
   inp.value=raw?parseInt(raw).toLocaleString():'';
 }
@@ -1583,7 +1582,18 @@ function applyTheme(){
   let t = DB.theme;
   if(t==='auto'){ t = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark'; }
   document.documentElement.setAttribute('data-theme', t);
-  document.querySelector('meta[name=theme-color]').setAttribute('content', t==='light'?'#ffffff':'#060606');
+  // On Android, mutating an existing theme-color <meta> at runtime is unreliable and can leave a
+  // stuck status-bar seam/line until the app is relaunched. Replacing the element forces a clean repaint.
+  (function(){
+    var tc = (t==='light') ? '#ffffff' : '#060606';
+    var old = document.querySelector('meta[name=theme-color]');
+    if(old && old.parentNode) old.parentNode.removeChild(old);
+    var m = document.createElement('meta');
+    m.setAttribute('name','theme-color');
+    m.setAttribute('content', tc);
+    document.head.appendChild(m);
+    try{ document.documentElement.style.colorScheme = (t==='light') ? 'light' : 'dark'; }catch(e){}
+  })();
   document.querySelectorAll('[data-theme-opt]').forEach(el=>el.classList.toggle('active', el.dataset.themeOpt===DB.theme));
 }
 function setTheme(t){ DB.theme=t; saveDB(); applyTheme(); }
@@ -1618,7 +1628,7 @@ function checkPin(){
     if(!pinFirst){ pinFirst=pinEntry; pinEntry=''; updateDots(); document.getElementById('lockSubtitle').textContent='Confirm your PIN'; document.getElementById('lockError').textContent=''; }
     else { if(pinEntry===pinFirst){ DB.pin=pinEntry; saveDB(); unlockApp(); } else { document.getElementById('lockError').textContent='PINs do not match. Try again.'; pinEntry=''; pinFirst=''; updateDots(); } }
   } else {
-    if(pinEntry===DB.pin){ if(_welPinReveal){ _welPinReveal=false; document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.remove('hidden'); _welNwShown=true; renderWelcomeNW(); } else { unlockApp(); } } else { document.getElementById('lockError').textContent='Incorrect PIN. Try again.'; pinEntry=''; setTimeout(()=>{updateDots(); document.getElementById('lockError').textContent='';},600); }
+    if(pinEntry===DB.pin){ if(_welPinReveal){ _welPinReveal=false; hapticStrong(); document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.remove('hidden'); _welNwShown=true; renderWelcomeNW(); } else { unlockApp(); } } else { document.getElementById('lockError').textContent='Incorrect PIN. Try again.'; pinEntry=''; setTimeout(()=>{updateDots(); document.getElementById('lockError').textContent='';},600); }
   }
 }
 function unlockApp(){ _justUnlocked=Date.now(); _appUnlocked=true; clearTimeout(_authTimer); _authTimer=setTimeout(function(){_authInProgress=false;},1000); try{ localStorage.setItem('mm_bg', String(Date.now())); }catch(e){} document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.add('hidden'); var _ap=document.getElementById('app'); _ap.classList.remove('hidden'); _ap.classList.remove('entering'); void _ap.offsetWidth; _ap.classList.add('entering'); setTimeout(function(){_ap.classList.remove('entering');},520); initApp(); }
