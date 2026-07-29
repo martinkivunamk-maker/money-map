@@ -1,5 +1,30 @@
-const CACHE='moneymap-test-v32';
-const CORE=['./','./Money_Map.html'];
-self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>Promise.allSettled(CORE.map(x=>c.add(x)))));});
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).then(r=>{const q=r.clone();caches.open(CACHE).then(c=>c.put(e.request,q));return r;}).catch(()=>caches.match(e.request).then(r=>r||caches.match('./Money_Map.html'))));});
+const CACHE = 'moneymap-v32';
+
+self.addEventListener('install', () => self.skipWaiting());
+
+self.addEventListener('activate', e => e.waitUntil((async () => {
+  const keys = await caches.keys();
+  await Promise.all(keys.map(k => k === CACHE ? null : caches.delete(k)));
+  await self.clients.claim();
+})()));
+
+// Stale-while-revalidate: serve the cached copy INSTANTLY (no network wait on open), and
+// refresh the cache from the network in the background so the next open is current. This
+// makes opens fast even on weak signal; the trade-off is that an upload shows on the
+// SECOND open after deploying (first open serves the old copy + downloads the new one).
+// The background refresh uses {cache:'reload'} so it BYPASSES the browser's 10-minute
+// HTTP cache (GitHub Pages max-age=600) and always pulls the genuine latest file —
+// otherwise the revalidation just re-cached the stale copy for 10 min after every deploy.
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  const network = fetch(e.request, { cache: 'reload' }).then(async resp => {
+    try { const c = await caches.open(CACHE); await c.put(e.request, resp.clone()); } catch (_) {}
+    return resp;
+  }).catch(() => null);
+  e.respondWith((async () => {
+    const cached = await caches.match(e.request);
+    if (cached) return cached;                 // instant local copy
+    return (await network) || new Response('Offline', { status: 503, statusText: 'Offline' });
+  })());
+  e.waitUntil(network);                        // keep the background refresh alive
+});

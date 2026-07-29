@@ -21,7 +21,7 @@
     --gutter: 24px;
     --ease: cubic-bezier(0.32, 0.72, 0, 1);
     --motion-fast: 180ms; --motion-page:220ms; --motion-sheet:300ms;
-    --native-inset-top:0px; --native-inset-bottom:0px;
+    --native-inset-top:0px; --native-inset-bottom:0px; --native-inset-left:0px; --native-inset-right:0px;
   }
   /* DARK THEME */
   [data-theme="dark"] {
@@ -1217,7 +1217,7 @@
       </div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
     </div>
-      <div class="set-foot">Money Map v2.0.3.2</div>
+      <div class="set-foot">Money Map v2.0.3.3</div>
     </div>
   </div>
 
@@ -1365,6 +1365,9 @@ const GOAL_ICONS=['i-target','i-house','i-car','i-invest','i-bank','i-cash','i-g
 function ic(id){ return `<svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#${id}"/></svg>`; }
 function icSized(id,px){ return '<svg viewBox="0 0 24 24" style="width:'+px+'px;height:'+px+'px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#'+id+'"/></svg>'; }
 function _native(){return window.MoneyMapNative||null;}
+var _nativeSystemTheme='';
+window.__moneyMapNativeTheme=function(t){_nativeSystemTheme=t||'';try{if(DB&&DB.theme==='auto')applyTheme();}catch(e){}};
+function _nativeSaveFile(name,mime,text){try{var n=_native();if(n&&n.saveFile){n.saveFile(name,mime,btoa(unescape(encodeURIComponent(text))));return true;}}catch(e){}return false;}
 function _nativeTheme(t){try{var n=_native();if(n&&n.setTheme)n.setTheme(t);}catch(e){}}
 function _nativeModal(){try{var n=_native();if(n&&n.setModalOpen)n.setModalOpen(_modalStack.length>0);}catch(e){}}
 function haptic(kind){try{var n=_native();if(n&&n.haptic){n.haptic(typeof kind==='string'?kind:'light');return;}}catch(e){} try{navigator.vibrate&&navigator.vibrate(typeof kind==='number'?kind:10);}catch(e){}}
@@ -1628,7 +1631,7 @@ function _confirmProceed(){ const cb=_confirmCallback; _confirmCallback=null; cl
 // ===== THEME =====
 function applyTheme(){
   let t = DB.theme;
-  if(t==='auto'){ t = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark'; }
+  if(t==='auto'){ t=_nativeSystemTheme||((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'); }
   document.documentElement.setAttribute('data-theme', t);
   _nativeTheme(t);
   // On Android, mutating an existing theme-color <meta> at runtime is unreliable and can leave a
@@ -1749,7 +1752,16 @@ function navTo(page){
   if(page==='budget')renderBudget(); if(page==='analytics')renderAnalytics(); if(page==='settings')renderSettings();
   _animatePage(page);
 }
-function _animatePage(page){var pg=document.getElementById('page-'+page);if(!pg)return;pg.style.willChange='transform,opacity';setTimeout(function(){pg.style.willChange='auto';},260);}
+function _animatePage(page){
+  var pg=document.getElementById('page-'+page);if(!pg)return;
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var els=pg.querySelectorAll('.overview-card,.glass-card,.swipe-stack,.txd-dayhead,.txd-row,.bgt-card,.loan-card,.set-card,.set-tiles,.settings-section,.an-chart,.empty-state');
+  var max=Math.min(els.length,10);
+  for(var i=0;i<max;i++){
+    var el=els[i];if(!el||el.offsetParent===null||!el.animate)continue;
+    el.animate([{opacity:.72,transform:'translate3d(0,7px,0)'},{opacity:1,transform:'translate3d(0,0,0)'}],{duration:230,delay:Math.min(i*18,90),easing:'cubic-bezier(.22,.78,.2,1)',fill:'both'});
+  }
+}
 function goSettings(){ navTo('settings'); }
 function _smGo(){ closeModal('settingsMenuModal'); navTo('settings'); }
 function openSettingsMenu(){
@@ -3824,7 +3836,9 @@ function deleteIncomeType(id){ askConfirm('Remove this source?','',()=>{ DB.inco
 
 // ===== BACKUP & RESTORE =====
 function backupData(){
-  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  var json=JSON.stringify(DB,null,2);
+  if(_nativeSaveFile('MoneyMap_Backup_'+today()+'.json','application/json',json)){showToast('Backup saved to Downloads','var(--success)');return;}
+  const blob=new Blob([json],{type:'application/json'});
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=`MoneyMap_Backup_${today()}.json`;a.click();URL.revokeObjectURL(url);
   showToast('Backup saved successfully','var(--success)');
@@ -3853,6 +3867,7 @@ function exportData(format){
     const rows=[['Date','Type','Amount','Description','Note']];
     [...DB.transactions].sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(t=>rows.push([t.date,t.type,t.amount,getTxLabel(t),t.note||'']));
     const csv=rows.map(r=>r.map(x=>`"${x}"`).join(',')).join('\n');
+    if(_nativeSaveFile('MoneyMap_'+today()+'.csv','text/csv',csv)){showToast('CSV saved to Downloads','var(--success)');return;}
     const blob=new Blob([csv],{type:'text/csv'}),url=URL.createObjectURL(blob),a=document.createElement('a');
     a.href=url;a.download=`MoneyMap_${today()}.csv`;a.click();URL.revokeObjectURL(url); showToast('CSV downloaded','var(--success)');
   } else {
@@ -3861,6 +3876,7 @@ function exportData(format){
     const tS=DB.transactions.filter(t=>t.type==='savings').reduce((s,t)=>s+t.amount,0);
     const tEm=DB.transactions.filter(t=>t.type==='emergency').reduce((s,t)=>s+t.amount,0);
     const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Money Map Report</title><style>body{font-family:Arial;padding:40px;color:#222}h1{color:#D4AF37}table{width:100%;border-collapse:collapse;margin-top:16px}th{background:#D4AF37;color:#fff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #eee}</style></head><body><h1>Money Map — Financial Report</h1><p>Generated ${new Date().toLocaleDateString()} · ${DB.userName}</p><h2>Summary</h2><table><tr><th>Metric</th><th>Amount</th></tr><tr><td>Total Income</td><td>${fmtUGX(tI)}</td></tr><tr><td>Total Expenses</td><td>${fmtUGX(tE)}</td></tr><tr><td>Lifetime Savings</td><td>${fmtUGX(tS)}</td></tr><tr><td>Emergency Fund</td><td>${fmtUGX(tEm)}</td></tr><tr><td>Net Balance</td><td>${fmtUGX(tI-tE-tS-tEm)}</td></tr></table><h2>Transactions</h2><table><tr><th>Date</th><th>Type</th><th>Description</th><th>Amount</th></tr>${[...DB.transactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t=>`<tr><td>${t.date}</td><td>${t.type}</td><td>${getTxLabel(t)}</td><td>${fmtUGX(t.amount)}</td></tr>`).join('')}</table></body></html>`;
+    if(_nativeSaveFile('MoneyMap_Report_'+today()+'.html','text/html',html)){showToast('Report saved to Downloads','var(--success)');return;}
     const blob=new Blob([html],{type:'text/html'}),url=URL.createObjectURL(blob),a=document.createElement('a');
     a.href=url;a.download=`MoneyMap_Report_${today()}.html`;a.click();URL.revokeObjectURL(url); showToast('Report downloaded','var(--success)');
   }
@@ -4061,15 +4077,30 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .picker-item:active { background:var(--glass); transition:none; }
   *:focus, *:focus-visible { outline:none !important; }
 
-  /* Money Map native motion + edge layer v2.0.3.2 */
-  html[data-native-shell="true"] .overview-header,html[data-native-shell="true"] .page-header{padding-top:calc(16px + var(--native-inset-top));}
-  html[data-native-shell="true"] #bottomNav{bottom:calc(6px + var(--native-inset-bottom));}
+  /* Money Map native motion + edge layer v2.0.3.3 */
+  html[data-native-shell="true"] .overview-header,html[data-native-shell="true"] .page-header{
+    padding-top:calc(18px + var(--native-inset-top));
+    padding-left:calc(var(--gutter) + var(--native-inset-left));
+    padding-right:calc(var(--gutter) + var(--native-inset-right));
+  }
+  html[data-native-shell="true"] .set-hdr{height:calc(150px + var(--native-inset-top));}
+  html[data-native-shell="true"] .set-back{top:calc(14px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
+  html[data-native-shell="true"] .set-pencil{top:calc(14px + var(--native-inset-top));right:calc(16px + var(--native-inset-right));}
+  html[data-native-shell="true"] #bottomNav{bottom:calc(6px + var(--native-inset-bottom));left:calc(8px + var(--native-inset-left));right:calc(8px + var(--native-inset-right));}
   html[data-native-shell="true"] .page{padding-bottom:calc(var(--nav-height) + 24px + var(--native-inset-bottom));}
-  html[data-native-shell="true"] .modal-overlay{padding-bottom:calc(16px + var(--native-inset-bottom));}
+  html[data-native-shell="true"] .modal-overlay{padding:12px calc(12px + var(--native-inset-right)) calc(16px + var(--native-inset-bottom)) calc(12px + var(--native-inset-left));backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(5,5,5,.62);}
+  html[data-native-shell="true"][data-theme="light"] .modal-overlay{background:rgba(18,16,10,.38);}
+  html[data-native-shell="true"] .modal-sheet{max-height:calc(100dvh - var(--native-inset-top) - var(--native-inset-bottom) - 18px);}
   html[data-native-shell="true"] #celebrate{padding-bottom:calc(7vh + var(--native-inset-bottom));}
+  html[data-native-shell="true"] #celebrate .cel-scrim,html[data-native-shell="true"] #bottomNav{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+  html[data-native-shell="true"] .app-bg{transform:translateZ(0);backface-visibility:hidden;}
   #budgetStatusCard,.gl-card,.settings-section,.overview-header,.page-header,.chart-card,.insight-card,.set-card,.set-tiles,#fab{animation:none;}
-  .nav-item,.quick-action-btn,.set-tile,.overview-card,.bgt-card,.loan-card,.btn-gold,.btn-outline,.btn-danger{transform:translateZ(0);transition:transform 100ms ease-out;}
-  .quick-action-btn:active,.set-tile:active,.overview-card:active,.bgt-card:active,.loan-card:active,.btn-gold:active,.btn-outline:active,.btn-danger:active{transform:scale(.985) translateZ(0);}
+  .page.active{animation-duration:220ms;}
+  .bar-fill,.bsum-fill,.budget-bar-fill,.budget-full-fill,.goal-fill,.cel-bar-fill{transition-duration:420ms!important;}
+  .nav-item,.quick-action-btn,.set-tile,.overview-card,.bgt-card,.loan-card,.btn-gold,.btn-outline,.btn-danger{transform:translateZ(0);transition:transform 110ms ease-out,background-color 180ms linear;}
+  .quick-action-btn:active,.set-tile:active,.overview-card:active,.bgt-card:active,.loan-card:active,.btn-gold:active,.btn-outline:active,.btn-danger:active{transform:scale(.982) translateZ(0);}
+  .set-back,.set-pencil{transition:transform 110ms ease-out;}
+  .set-back:active,.set-pencil:active{transform:scale(.92);}
 </style>
 
 <script>
