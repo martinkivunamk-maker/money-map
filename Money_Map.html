@@ -154,20 +154,19 @@
   #app.entering { animation:appEnter 0.5s var(--ease); }
   #lockScreen.entering { animation:lockEnter 0.46s var(--ease); }
   @media (prefers-reduced-motion: reduce) { #app.entering, #lockScreen.entering, #welcomeScreen.leaving { animation:none !important; } }
-  .w2-bg { position:absolute; inset:0; z-index:0; filter:blur(80px);
-    background:radial-gradient(460px 300px at 50% 46%, rgba(224,196,120,0.60), transparent 68%),
-      radial-gradient(360px 260px at 20% 50%, rgba(214,178,74,0.48), transparent 70%),
-      radial-gradient(360px 260px at 82% 54%, rgba(150,180,120,0.40), transparent 70%),
-      radial-gradient(420px 240px at 50% 62%, rgba(224,196,120,0.40), transparent 72%),
-      radial-gradient(300px 220px at 30% 40%, rgba(224,196,120,0.30), transparent 72%),
+  .w2-bg { position:absolute; inset:0; z-index:0; filter:blur(84px);
+    background:radial-gradient(620px 400px at 50% 44%, rgba(224,196,120,0.60), transparent 72%),
+      radial-gradient(500px 340px at 18% 48%, rgba(214,178,74,0.46), transparent 74%),
+      radial-gradient(500px 340px at 84% 54%, rgba(150,180,120,0.38), transparent 74%),
+      radial-gradient(560px 320px at 50% 64%, rgba(224,196,120,0.38), transparent 76%),
+      radial-gradient(420px 300px at 32% 38%, rgba(224,196,120,0.28), transparent 76%),
       #ffffff; }
   .w2-wrap { position:relative; z-index:2; flex:1; display:flex; flex-direction:column;
-    padding:calc(env(safe-area-inset-top,0px) + 76px) 32px calc(env(safe-area-inset-bottom,0px) + 40px); }
+    padding:calc(env(safe-area-inset-top,0px) + 52px) 30px calc(env(safe-area-inset-bottom,0px) + 30px); }
   .w2-top { display:flex; flex-direction:column; align-items:center; text-align:center; }
-  .w2-logo { width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center;
-    background:linear-gradient(155deg, var(--gold-light), var(--gold)); box-shadow:0 10px 24px -8px rgba(201,154,34,0.55); animation:welLogo 0.9s var(--ease) both; }
-  .w2-logo svg { width:24px; height:24px; stroke:#fff; stroke-width:1.7; fill:none; }
-  .w2-hi { font-size:18px; font-weight:500; color:#6f6752; margin-top:28px; letter-spacing:-0.2px; animation:fadeUp 0.7s 0.1s both; }
+  .w2-logo { width:66px; height:66px; display:flex; align-items:center; justify-content:center; animation:welLogo 0.9s var(--ease) both; }
+  .w2-logo svg { width:62px; height:62px; stroke:url(#gg); stroke-width:1.5; fill:none; }
+  .w2-hi { font-size:18px; font-weight:500; color:#6f6752; margin-top:22px; letter-spacing:-0.2px; animation:fadeUp 0.7s 0.1s both; }
   .w2-name { font-size:38px; font-weight:800; color:#161616; letter-spacing:-0.8px; line-height:1.05; margin-top:6px; animation:fadeUp 0.7s 0.18s both; }
   .w2-sub { font-size:14px; color:#9a7c22; font-weight:600; margin-top:14px; animation:fadeUp 0.7s 0.26s both; }
   .w2-spacer { flex:1; }
@@ -179,18 +178,18 @@
   .w2-eye { width:37px; height:37px; border:none; border-radius:50%; background:rgba(184,134,15,0.16); color:#b8860f; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; }
   .w2-eye svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   .w2-trend { font-size:13px; color:#1f9d55; font-weight:600; margin-top:10px; }
-  .w2-stats { margin-top:40px; display:flex; width:100%; }
-  .w2-tile { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:0 6px; position:relative; }
-  .w2-tile + .w2-tile:before { content:''; position:absolute; left:0; top:4px; bottom:4px; width:1px; background:rgba(90,80,50,0.16); }
-  .w2-tile .ic { width:22px; height:22px; color:#b8860f; }
-  .w2-tile .ic svg { width:22px; height:22px; }
-  .w2-tile .lb { font-size:10.5px; color:#7c745e; }
-  .w2-tile .vl { font-size:15px; font-weight:800; color:#161616; }
-  .w2-tile .sb { font-size:10px; color:#8c846e; }
-  .w2-btn { margin-top:36px; width:100%; height:60px; border:none; border-radius:17px; cursor:pointer; font-size:17px; font-weight:800;
+  .w2-stats { margin-top:34px; display:flex; width:100%; }
+  .w2-tile { flex:1; display:flex; flex-direction:column; align-items:center; gap:7px; padding:0 8px; position:relative; }
+  .w2-tile + .w2-tile:before { content:''; position:absolute; left:0; top:2px; bottom:2px; width:1px; background:rgba(90,80,50,0.10); }
+  .w2-tile .ic { width:24px; height:24px; color:#b8860f; }
+  .w2-tile .ic svg { width:24px; height:24px; }
+  .w2-tile .vl { font-size:17px; font-weight:800; color:#161616; letter-spacing:-0.3px; }
+  .w2-tile .lb { font-size:11px; color:#7c745e; font-weight:500; }
+  .w2-btn { margin-top:40px; width:100%; height:60px; border:none; border-radius:18px; cursor:pointer; font-size:17px; font-weight:800;
     color:#231c05; background:linear-gradient(135deg,#e7c24e,#c99a22); box-shadow:0 8px 22px rgba(201,154,34,0.4);
     display:flex; align-items:center; justify-content:center; gap:10px; transition:transform 0.15s var(--ease); }
   .w2-btn:active { transform:scale(0.97); }
+  .w2-usepin { margin-top:14px; font-size:13.5px; color:#9a7c22; font-weight:700; cursor:pointer; padding:6px 12px; text-align:center; }
 
   /* WELCOME SCREEN — dark mode (top/bottom blend with dark system bars) */
   [data-theme="dark"] #welcomeScreen { background:#060606; }
@@ -230,11 +229,18 @@
   [data-theme="light"] .cel-amt { color:#a97e14; }
   .cel-sub { font-size:13.5px; color:#a99f88; margin-top:8px; line-height:1.55; padding:0 6px; }
   [data-theme="light"] .cel-sub { color:#7c745e; }
-  .cel-note { margin-top:22px; font-size:15px; font-weight:800; color:#231c05; background:linear-gradient(135deg,#e7c24e,#c99a22); border-radius:14px; padding:13px; }
+  .cel-bar { margin-top:18px; }
+  .cel-bar-track { height:8px; border-radius:6px; background:rgba(201,154,34,0.16); overflow:hidden; }
+  [data-theme="dark"] .cel-bar-track { background:rgba(224,196,120,0.14); }
+  .cel-bar-fill { height:100%; width:0; border-radius:6px; background:linear-gradient(90deg,#e7c24e,#c99a22); transition:width 0.9s var(--ease); }
+  .cel-bar-cap { margin-top:7px; font-size:11.5px; color:#8c846e; font-weight:600; }
+  [data-theme="dark"] .cel-bar-cap { color:#a99f88; }
+  .cel-note { margin-top:22px; font-size:15px; font-weight:800; color:#231c05; background:linear-gradient(135deg,#e7c24e,#c99a22); border-radius:14px; padding:13px; animation:celFloat 3.4s ease-in-out 0.6s infinite; }
+  @keyframes celFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
   .cel-confetti { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
   .cel-confetti i { position:absolute; top:0; width:8px; height:8px; border-radius:2px; opacity:0; animation:celFall 1.4s var(--ease) forwards; }
   @keyframes celFall { 0% { opacity:0; transform:translateY(-20px) rotate(0deg);} 15% { opacity:1;} 100% { opacity:0; transform:translateY(70vh) rotate(320deg);} }
-  @media (prefers-reduced-motion: reduce) { #celebrate .cel-card, .cel-badge, .cel-confetti i { animation:none !important; } }
+  @media (prefers-reduced-motion: reduce) { #celebrate .cel-card, .cel-badge, .cel-confetti i, .cel-note { animation:none !important; } .cel-bar-fill { transition:none !important; } }
 
   /* Status-bar skin: the app's own colour bleeds up under the notification bar so there's no white seam in dark mode (the notification bar itself is untouched) */
   /* Status-bar tint is controlled by the theme-color <meta> (see applyTheme). On Android there is no reliable way to "skin" into the OS notification bar via CSS, so we keep the top model simple and let theme-color paint that strip. */
@@ -700,7 +706,7 @@
   .set-back svg { width:22px; height:22px; stroke:#7a5f10; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
   .set-back:active { transform:scale(0.9); }
   .set-pencil svg { width:18px; height:18px; stroke:var(--gold-dim); }
-  .set-panel { position:relative; margin-top:-28px; background:var(--bg); border-radius:28px 28px 0 0; z-index:2; padding:64px 0 24px; }
+  .set-panel { position:relative; margin-top:-28px; background:var(--bg); border-radius:28px 28px 0 0; z-index:2; padding:72px 0 24px; }
   .set-av { position:absolute; top:-58px; left:50%; transform:translateX(-50%); width:116px; height:116px; border-radius:50%; border:4px solid var(--bg); z-index:3; overflow:hidden;
     background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:42px; font-weight:800; color:var(--gold); cursor:pointer; box-shadow:0 8px 22px -8px var(--shadow); }
   .set-av img { width:100%; height:100%; object-fit:cover; }
@@ -991,6 +997,7 @@
 </svg>
 
 <!-- WELCOME SCREEN -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e7c24e"/><stop offset="1" stop-color="#c99a22"/></linearGradient></defs></svg>
 <div id="welcomeScreen">
   <div class="w2-bg"></div>
   <div class="w2-wrap">
@@ -1007,6 +1014,7 @@
       <div class="w2-trend" id="welTrend" style="visibility:hidden">↗ Improving</div>
       <div class="w2-stats" id="welStats"></div>
       <button class="w2-btn" id="welcomeBtn" onclick="enterFromWelcome()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-lock"/></svg>Log in</button>
+      <div class="w2-usepin" id="welUsePin" style="display:none" onclick="_welcomeToPin()">Use PIN instead</div>
     </div>
   </div>
 </div>
@@ -1017,10 +1025,11 @@
   <div class="cel-confetti" id="celConfetti"></div>
   <div class="cel-card">
     <div class="cel-badge"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
-    <div class="cel-title">Well done!</div>
+    <div class="cel-title" id="celTitle">Well done!</div>
     <div class="cel-amt" id="celAmt"></div>
     <div class="cel-sub" id="celSub"></div>
-    <div class="cel-note">Keep it up — you're building wealth</div>
+    <div class="cel-bar" id="celBar" style="display:none"><div class="cel-bar-track"><div class="cel-bar-fill" id="celBarFill"></div></div><div class="cel-bar-cap" id="celBarCap"></div></div>
+    <div class="cel-note" id="celNote">Keep it up — you're building wealth</div>
   </div>
 </div>
 <div id="lockScreen" class="hidden">
@@ -1423,9 +1432,9 @@ function renderWelcomeStats(){
   const el=document.getElementById('welStats'); if(!el) return;
   const st=_welcomeStats();
   el.innerHTML=
-    '<div class="w2-tile"><div class="ic">'+ic('i-invest')+'</div><div class="lb">Savings Rate</div><div class="vl">'+st.rate+'%</div><div class="sb">of income</div></div>'+
-    '<div class="w2-tile"><div class="ic">'+ic('i-shield')+'</div><div class="lb">Financial Health</div><div class="vl">'+st.health+'</div><div class="sb">'+st.healthSub+'</div></div>'+
-    '<div class="w2-tile"><div class="ic">'+ic('i-target')+'</div><div class="lb">Savings Streak</div><div class="vl">'+st.streak+'</div><div class="sb">'+st.streakSub+'</div></div>';
+    '<div class="w2-tile"><div class="ic">'+ic('i-invest')+'</div><div class="vl">'+st.rate+'%</div><div class="lb">Savings Rate</div></div>'+
+    '<div class="w2-tile"><div class="ic">'+ic('i-shield')+'</div><div class="vl">'+st.health+'</div><div class="lb">Financial Health</div></div>'+
+    '<div class="w2-tile"><div class="ic">'+ic('i-target')+'</div><div class="vl">'+st.streak+'</div><div class="lb">Savings Streak</div></div>';
 }
 function toggleWelcomeNW(){
   if(_welNwShown){ _welNwShown=false; haptic(12); renderWelcomeNW(); return; }
@@ -1463,13 +1472,44 @@ function initWelcome(){
   const sub=document.getElementById('welSub'); if(sub){ const h=new Date().getHours(); const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening'; const streak=_savingsStreakMonths(); sub.textContent=returning?(g+(streak>=1?" \u2014 you're on track this month":" \u2014 let's map your money")):"Let's get your money mapped"; }
   const b=document.getElementById('welcomeBtn'); if(b){ if(returning){ b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-lock"/></svg>Log in'; } else { b.textContent='Set up account'; } }
   _welNwShown=false;
+  var _up=document.getElementById('welUsePin'); if(_up) _up.style.display='none';
   renderWelcomeNW(); renderWelcomeStats();
 }
 function enterFromWelcome(){
   hapticStrong();
-  const w=document.getElementById('welcomeScreen'); if(!w){ startAuth(); return; }
+  // No PIN yet -> first-time setup happens on the lock screen (create a PIN).
+  if(!DB.pin){ _leaveWelcomeThen(startAuth); return; }
+  // Fingerprint enrolled -> authenticate straight from the welcome screen (no intermediate lock window).
+  if(DB.fingerprintCredId && window.PublicKeyCredential){ _fpFromWelcome(); return; }
+  // PIN-only -> go to the lock screen PIN pad.
+  _leaveWelcomeThen(startAuth);
+}
+function _leaveWelcomeThen(fn){
+  const w=document.getElementById('welcomeScreen'); if(!w){ fn(); return; }
   w.classList.add('leaving');
-  setTimeout(function(){ w.classList.add('hidden'); w.classList.remove('leaving'); startAuth(); },380);
+  setTimeout(function(){ w.classList.add('hidden'); w.classList.remove('leaving'); fn(); },380);
+}
+function _fpFromWelcome(){
+  if(_fpBusy) return;
+  _fpBusy=true; _authInProgress=true;
+  var btn=document.getElementById('welcomeBtn');
+  if(btn){ btn.dataset.lbl=btn.innerHTML; btn.disabled=true; btn.style.opacity='0.72'; }
+  var _restore=function(){ if(btn){ btn.disabled=false; btn.style.opacity=''; if(btn.dataset.lbl) btn.innerHTML=btn.dataset.lbl; } };
+  var challenge=new Uint8Array(32); crypto.getRandomValues(challenge);
+  navigator.credentials.get({publicKey:{ challenge, timeout:60000, userVerification:'required', allowCredentials:[{type:'public-key',id:new Uint8Array(DB.fingerprintCredId)}] }})
+    .then(function(){ _fpBusy=false; _restore(); _leaveWelcomeThen(unlockApp); })
+    .catch(function(){ _fpBusy=false; clearTimeout(_authTimer); _authTimer=setTimeout(function(){_authInProgress=false;},1000); _restore();
+      var u=document.getElementById('welUsePin'); if(u && DB.pin) u.style.display='';
+      showToast("Couldn't verify \u2014 tap Log in to try again",'var(--text-dim)'); });
+}
+function _welcomeToPin(){
+  var u=document.getElementById('welUsePin'); if(u) u.style.display='none';
+  _leaveWelcomeThen(function(){
+    document.getElementById('app').classList.add('hidden');
+    var _ls=document.getElementById('lockScreen'); _ls.classList.remove('hidden');
+    _ls.classList.remove('entering'); void _ls.offsetWidth; _ls.classList.add('entering'); setTimeout(function(){_ls.classList.remove('entering');},500);
+    showPinPad();
+  });
 }
 function startAuth(){
   document.getElementById('app').classList.add('hidden');
@@ -2182,9 +2222,11 @@ function expandCard(kind){
       <div class="exp-row"><span>Lowest month</span><span>${worst}%</span></div>
       <div style="margin-top:14px;padding:11px 13px;border-radius:12px;font-size:13px;line-height:1.5;background:rgba(63,174,90,0.1);color:var(--success)">${d.savingsRate>=35?'You are hitting the 35% target — excellent discipline.':'Aim for 35%+. Money moved to savings, emergency, or an investment goal all counts.'}</div>`;
   } else if(kind==='networth'){
-    const d=anData(); title='Net Worth · '+d.year;
-    const sB=getPotBalance('savings'), eB=getPotBalance('emergency'), gB=DB.transactions.filter(isInvGoalTx).reduce((s,t)=>s+t.amount,0);
-    body=`<div class="exp-total">${fmtUGX(d.endNW)}</div><div class="exp-sub">savings + emergency + investments + assets, less loans</div>${ovStyleCurve(d.months,d.nwSeries,'var(--gold)')}
+    const d=anData(); title='Net Worth · '+(d.month==='all'?d.year:MONTHS[d.month]+' '+d.year);
+    const comp=d.comp||{s:0,e:0,g:0};
+    const headNW=d.month==='all'?d.endNW:d.nwSel;
+    const sB=d.month==='all'?getPotBalance('savings'):comp.s, eB=d.month==='all'?getPotBalance('emergency'):comp.e, gB=DB.transactions.filter(isInvGoalTx).reduce((s,t)=>s+t.amount,0);
+    body=`<div class="exp-total">${fmtUGX(headNW)}</div><div class="exp-sub">savings + emergency + investments + assets, less loans</div>${ovStyleCurve(d.months,d.nwSeries,'var(--gold)')}
       <div class="exp-row"><span>Life Savings</span><span>${fmtUGX(sB)}</span></div>
       <div class="exp-row"><span>Emergency Fund</span><span>${fmtUGX(eB)}</span></div>
       ${(()=>{ const gs=(DB.goals||[]).filter(g=>goalKind(g.id)==='investment' && !g.owned); if(!gs.length) return '<div class="exp-row"><span>Investment goals (in progress)</span><span>'+fmtUGX(0)+'</span></div>'; return '<div class="bd-cap" style="margin:10px 0 4px">Investment goals · in progress</div>'+gs.map(g=>'<div class="exp-row"><span>'+esc(g.name)+' · <span style="color:var(--text-muted);font-weight:400">'+pct(g.saved||0,g.target||0)+'% funded</span></span><span>'+fmtUGX(g.saved||0)+'</span></div>').join(''); })()}
@@ -2654,7 +2696,7 @@ function saveTx(type){
   if(editingTxId){const i=DB.transactions.findIndex(x=>x.id===editingTxId); if(i>-1)DB.transactions[i]=tx;} else DB.transactions.push(tx);
   saveDB(); syncOwnedGoals(); closeAllModals();
   var _celebrate=_isNew && (tx.type==='savings' || tx.type==='emergency' || (tx.type==='goal' && goalKind(tx.goalId)==='investment'));
-  if(_celebrate){ var _dest=tx.type==='savings'?'Life Savings':tx.type==='emergency'?'Emergency Fund':((DB.goals.find(function(g){return g.id===tx.goalId;})||{}).name||'your goal'); showCelebration(amount,_dest); }
+  if(_celebrate){ var _dest=tx.type==='savings'?'Life Savings':tx.type==='emergency'?'Emergency Fund':((DB.goals.find(function(g){return g.id===tx.goalId;})||{}).name||'your goal'); showCelebration(amount,_dest,tx.type,tx.goalId); }
   else { showToast(editingTxId?'Transaction updated':'Transaction saved','var(--success)'); }
   refreshYearOptions();
   if(currentPage==='transactions')renderTransactions(); else updateOverview();
@@ -2662,16 +2704,51 @@ function saveTx(type){
 function _hasPendingLoans(){ return (DB.loans||[]).some(l=>{const repaid=DB.transactions.filter(t=>t.type==='loan_repay'&&t.loanId===l.id).reduce((s,t)=>s+t.amount,0); return Math.max(0,l.amount-repaid)>0;}); }
 function _owedTotal(){ return (DB.loans||[]).reduce(function(a,l){ var repaid=(DB.transactions||[]).filter(function(t){return t.type==='loan_repay'&&t.loanId===l.id;}).reduce(function(s,t){return s+t.amount;},0); return a+Math.max(0,(l.amount||0)-repaid); },0); }
 var _celTimer=null;
-function showCelebration(amount,dest){
+function _avgMonthlyExpense(){
+  var byMonth={};
+  (DB.transactions||[]).forEach(function(t){ if(t.type==='expense'&&t.date){ var d=new Date(t.date); var k=d.getFullYear()+'-'+d.getMonth(); byMonth[k]=(byMonth[k]||0)+t.amount; } });
+  var keys=Object.keys(byMonth); if(!keys.length) return 0;
+  return keys.reduce(function(a,k){ return a+byMonth[k]; },0)/keys.length;
+}
+function showCelebration(amount,dest,type,goalId){
   var ov=document.getElementById('celebrate'); if(!ov) return;
-  document.getElementById('celAmt').textContent=fmtUGX(amount)+' \u2192 '+dest;
+  var elAmt=document.getElementById('celAmt'), elSub=document.getElementById('celSub'), elTitle=document.getElementById('celTitle'), elNote=document.getElementById('celNote');
+  var elBar=document.getElementById('celBar'), elFill=document.getElementById('celBarFill'), elCap=document.getElementById('celBarCap');
+  if(elAmt) elAmt.textContent=fmtUGX(amount)+' \u2192 '+dest;
   var streak=_savingsStreakMonths();
-  document.getElementById('celSub').textContent=(streak>=2?("That's "+streak+" months of saving in a row. "):'')+'Every shilling brings your goals closer.';
+  var title='Well done!', sub='Every shilling brings your goals closer.', note="You're building real wealth";
+  var showBar=false, barPct=0, barCap='';
+  if(type==='emergency'){
+    title='Safety net growing';
+    var avg=_avgMonthlyExpense(), target=avg*6, bal=getPotBalance('emergency');
+    if(target>0){ barPct=Math.max(0,Math.min(100,Math.round(bal/target*100))); showBar=true; var toGo=Math.max(0,target-bal);
+      sub=toGo>0?"You're on your way to unlocking 6 months of security.":'You now have 6+ months of security. Rock solid.';
+      barCap=toGo>0?(fmtShort(toGo)+' to full 6-month cover \u00b7 '+barPct+'%'):'6 months of expenses covered';
+    } else { sub='Your safety net just got stronger.'; }
+    note='Future-you is protected';
+  } else if(type==='goal'){
+    title='One step closer';
+    var g=(DB.goals||[]).find(function(x){ return x.id===goalId; });
+    if(g&&g.target>0){ barPct=Math.max(0,Math.min(100,Math.round((g.saved||0)/g.target*100))); showBar=true;
+      sub=g.name+' is '+barPct+'% funded.';
+      barCap=barPct>=100?"Fully funded \u2014 it's yours!":(fmtShort(Math.max(0,g.target-(g.saved||0)))+' to go');
+      note=barPct>=85?'This asset is nearly yours':"You're buying your future";
+    } else { sub='Another investment in your future.'; note="You're buying your future"; }
+  } else {
+    title='Another brick in your future';
+    sub=(streak>=2?("That's "+streak+" months of saving in a row. "):'')+'Future-you is already smiling.';
+    note="You're building real wealth";
+  }
+  if(elTitle) elTitle.textContent=title;
+  if(elSub) elSub.textContent=sub;
+  if(elNote) elNote.textContent=note;
+  if(elBar){ if(showBar){ elBar.style.display=''; if(elCap) elCap.textContent=barCap; if(elFill) elFill.style.width='0'; } else { elBar.style.display='none'; } }
   var cc=document.getElementById('celConfetti');
-  if(cc){ var cols=['#e7c24e','#6BA368','#E0554F','#f4d876','#5BA0C9','#B388C9']; var h=''; for(var i=0;i<14;i++){ h+='<i style="left:'+(6+Math.random()*88)+'%;background:'+cols[i%cols.length]+';animation-delay:'+(Math.random()*0.4).toFixed(2)+'s"></i>'; } cc.innerHTML=h; }
+  if(cc){ var cols=['#e7c24e','#6BA368','#E0554F','#f4d876','#5BA0C9','#B388C9']; var h=''; for(var i=0;i<26;i++){ h+='<i style="left:'+(4+Math.random()*92)+'%;background:'+cols[i%cols.length]+';animation-delay:'+(Math.random()*1.2).toFixed(2)+'s"></i>'; } cc.innerHTML=h; }
   ov.classList.add('show');
-  try{ navigator.vibrate&&navigator.vibrate([18,40,24]); }catch(e){}
-  clearTimeout(_celTimer); _celTimer=setTimeout(hideCelebration,2600);
+  if(showBar&&elFill){ setTimeout(function(){ elFill.style.width=barPct+'%'; },160); }
+  try{ navigator.vibrate&&navigator.vibrate(30); }catch(e){}
+  clearTimeout(_celTimer); _celTimer=setTimeout(hideCelebration,4800);
 }
 function hideCelebration(){ var ov=document.getElementById('celebrate'); if(ov) ov.classList.remove('show'); clearTimeout(_celTimer); }
 function openQuickAdd(){
@@ -3218,8 +3295,8 @@ function anData(){
   var prevRate=null, nwSel=endNW, nwPrev=null, prevMonthName='', comp;
   if(month!=='all'){
     var pEnd=potsAsOf(new Date(year,month+1,0,23,59,59));
-    nwSel=pEnd.total+extraNW; comp={s:pEnd.s,e:pEnd.e,g:pEnd.g};
-    nwPrev=potsAsOf(new Date(year,month,0,23,59,59)).total+extraNW;
+    nwSel=pEnd.total+extraNW-owedNow; comp={s:pEnd.s,e:pEnd.e,g:pEnd.g};
+    nwPrev=potsAsOf(new Date(year,month,0,23,59,59)).total+extraNW-owedNow;
     prevMonthName=MONTHS[(month+11)%12].slice(0,3);
     if(month>0){ var pe=incM[month-1]; prevRate=pe>0?Math.round(setMo[month-1]/pe*1000)/10:0; }
   } else {
