@@ -213,7 +213,7 @@
   [data-theme="dark"] .w2-tile .sb { color:#8f8778; }
 
   /* SAVINGS CELEBRATION */
-  #celebrate { position:fixed; inset:0; z-index:10001; display:none; align-items:center; justify-content:center; }
+  #celebrate { position:fixed; inset:0; z-index:10001; display:none; align-items:flex-end; justify-content:center; padding-bottom:7vh; }
   #celebrate.show { display:flex; }
   #celebrate .cel-scrim { position:absolute; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px); animation:fadeIn 0.25s; }
   [data-theme="light"] #celebrate .cel-scrim { background:rgba(20,18,14,0.28); }
@@ -1215,7 +1215,7 @@
       </div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
     </div>
-      <div class="set-foot">Money Map v2.0</div>
+      <div class="set-foot">Money Map v2.0.3.1</div>
     </div>
   </div>
 
@@ -1740,7 +1740,7 @@ function navTo(page){
 function _animatePage(page){
   var pg=document.getElementById('page-'+page); if(!pg)return;
   var reduce=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var els=pg.querySelectorAll('.glass-card,.section-header,.swipe-stack,.swipe-dots,.txd-dayhead,.txd-row,.set-tile,.set-av,.bgt-card,.loan-card,.overview-card,.settings-item,.misc-line,.an-chart,.empty-state');
+  var els=pg.querySelectorAll('.glass-card,.section-header,.swipe-stack,.swipe-dots,.txd-dayhead,.txd-row,.set-tile,.bgt-card,.loan-card,.overview-card,.settings-item,.misc-line,.an-chart,.empty-state');
   var i=0;
   for(var k=0;k<els.length;k++){
     var el=els[k]; el.style.animation='none';
