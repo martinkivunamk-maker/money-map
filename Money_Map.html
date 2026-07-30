@@ -20,29 +20,31 @@
     --nav-height: 76px;
     --gutter: 24px;
     --ease: cubic-bezier(0.32, 0.72, 0, 1);
+    --motion-fast: 180ms; --motion-page:220ms; --motion-sheet:300ms;
+    --native-inset-top:0px; --native-inset-bottom:0px; --native-inset-left:0px; --native-inset-right:0px; --native-ime-bottom:0px;
   }
   /* DARK THEME */
   [data-theme="dark"] {
-    --bg: #060606;
+    --bg: #000000;
     --bg-glow1: rgba(212,175,55,0.13);
     --bg-glow2: rgba(212,175,55,0.06);
-    --surface: #111111;
-    --surface2: #1a1a1a;
-    --glass: rgba(255,255,255,0.05);
+    --surface: #050505;
+    --surface2: #0a0a0a;
+    --glass: rgba(255,255,255,0.045);
     --glass-hover: rgba(255,255,255,0.09);
     --glass-border: rgba(212,175,55,0.22);
     --glass-line: rgba(212,175,55,0.4);
     --text: #f5f5f5;
     --text-dim: #8a8a8a;
     --text-muted: #555;
-    --nav-bg: rgba(18,18,18,0.93);
-    --nav-glass: rgba(20,20,20,0.6);
-    --modal-bg: linear-gradient(180deg, #161616 0%, #0d0d0d 100%);
+    --nav-bg: #000000;
+    --nav-glass: rgba(0,0,0,0.92);
+    --modal-bg: linear-gradient(180deg, #0b0b0b 0%, #000000 100%);
     --input-bg: rgba(255,255,255,0.06);
     --input-border: rgba(255,255,255,0.1);
     --track: rgba(255,255,255,0.08);
     --shadow: rgba(0,0,0,0.6);
-    --card-bg: linear-gradient(165deg, rgba(38,36,30,0.9) 0%, rgba(20,19,16,0.92) 100%);
+    --card-bg: linear-gradient(165deg, rgba(16,16,16,0.98) 0%, rgba(4,4,4,0.99) 100%);
     --card-border: rgba(212,175,55,0.18);
     --card-hi: rgba(255,255,255,0.07);
   }
@@ -97,13 +99,13 @@
   @keyframes pulseGlow { 0%,100% { box-shadow:0 4px 24px rgba(212,175,55,0.35); } 50% { box-shadow:0 4px 36px rgba(212,175,55,0.6); } }
   @keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
   @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes pageIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pageIn { from { opacity:0; transform:translate3d(0,6px,0); } to { opacity:1; transform:translate3d(0,0,0); } }
   @keyframes rippleFx { to { transform:scale(2.4); opacity:0; } }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
   /* ===== Soft iOS-style entrance animations (re-triggered per page by navTo → _animatePage) ===== */
   @keyframes riseIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
   @keyframes avIn { from { opacity:0; transform:translateX(-50%) scale(0.86); } to { opacity:1; transform:translateX(-50%) scale(1); } }
-  .txd-dayhead, .txd-row, .set-tile, .bgt-card, .loan-card, .overview-card, .settings-item, .misc-line, .swipe-card { animation:riseIn 0.48s var(--ease) both; }
+  .txd-dayhead, .txd-row, .set-tile, .bgt-card, .loan-card, .overview-card, .settings-item, .misc-line, .swipe-card { animation:none; }
   .set-av { animation:avIn 0.55s var(--ease) both; }
   .txd-row:nth-child(2), .set-tile:nth-child(2), .budget-card:nth-child(2), .loan-card:nth-child(2), .overview-card:nth-child(2), .settings-item:nth-child(2){animation-delay:0.05s}
   .txd-row:nth-child(3), .set-tile:nth-child(3), .budget-card:nth-child(3), .loan-card:nth-child(3), .overview-card:nth-child(3), .settings-item:nth-child(3){animation-delay:0.10s}
@@ -217,10 +219,10 @@
   #celebrate.show { display:flex; }
   #celebrate .cel-scrim { position:absolute; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px); animation:fadeIn 0.25s; }
   [data-theme="light"] #celebrate .cel-scrim { background:rgba(20,18,14,0.28); }
-  #celebrate .cel-card { position:relative; width:300px; text-align:center; border-radius:30px; padding:38px 26px 26px; background:linear-gradient(180deg,#1c1b18,#141311); border:1px solid rgba(224,196,120,0.20); box-shadow:0 34px 80px -22px rgba(0,0,0,0.75); animation:celPop 0.5s var(--ease); }
+  #celebrate .cel-card { position:relative; width:300px; text-align:center; border-radius:30px; padding:38px 26px 26px; background:linear-gradient(180deg,#1c1b18,#141311); border:1px solid rgba(224,196,120,0.20); box-shadow:0 34px 80px -22px rgba(0,0,0,0.75); animation:celPop 320ms cubic-bezier(0.2,0.82,0.2,1); }
   [data-theme="light"] #celebrate .cel-card { background:linear-gradient(180deg,#ffffff,#fbf8f1); border-color:rgba(201,154,34,0.22); box-shadow:0 34px 80px -26px rgba(120,90,10,0.35); }
   @keyframes celPop { 0% { opacity:0; transform:scale(0.8) translateY(12px);} 60% { transform:scale(1.03);} 100% { opacity:1; transform:scale(1);} }
-  .cel-badge { width:90px; height:90px; margin:0 auto 20px; border-radius:50%; background:radial-gradient(circle at 50% 32%,#f4d876,#c99a22); display:flex; align-items:center; justify-content:center; box-shadow:0 14px 34px -8px rgba(201,154,34,0.7); animation:celBadge 0.6s 0.1s var(--ease) both; }
+  .cel-badge { width:90px; height:90px; margin:0 auto 20px; border-radius:50%; background:radial-gradient(circle at 50% 32%,#f4d876,#c99a22); display:flex; align-items:center; justify-content:center; box-shadow:0 14px 34px -8px rgba(201,154,34,0.7); animation:celBadge 380ms 40ms cubic-bezier(0.2,0.82,0.2,1) both; }
   @keyframes celBadge { 0% { transform:scale(0.4); opacity:0;} 60% { transform:scale(1.12);} 100% { transform:scale(1); opacity:1;} }
   .cel-badge svg { width:46px; height:46px; stroke:#fff; stroke-width:2.8; fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .cel-title { font-size:26px; font-weight:800; color:#f5f2ea; letter-spacing:-0.4px; }
@@ -251,7 +253,7 @@
                 radial-gradient(ellipse at 88% 90%, var(--bg-glow2) 0%, transparent 45%), var(--bg); }
 
   .page { position:absolute; inset:0; bottom:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; display:none; padding-bottom:calc(var(--nav-height) + 24px + env(safe-area-inset-bottom, 0px)); }
-  .page.active { display:block; animation:pageIn 0.42s var(--ease); }
+  .page.active { display:block; animation:pageIn var(--motion-page) var(--ease); will-change:transform,opacity; }
   .page::-webkit-scrollbar { display:none; }
 
   .glass-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius);
@@ -769,18 +771,17 @@
   #fab svg { width:31px; height:31px; stroke:#0a0a0a; stroke-width:2.4; }
   #fab:active { transform:scale(0.9) rotate(90deg); }
 
-  .modal-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.55); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-    display:flex; align-items:flex-end; justify-content:center; padding:12px 12px 16px; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+  .modal-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.55);
+    display:none; align-items:flex-end; justify-content:center; padding:12px 12px 16px; opacity:0; pointer-events:none; transition:opacity var(--motion-fast) linear; }
   .modal-overlay.open { opacity:1; pointer-events:all; }
   /* Only the TOP-most open sheet frosts the background. An open overlay that sits under another
      open overlay drops its blur, so second-level popups never stack two backdrop-filters (that
      double-composite is what made stacked popups flash/ghost on the Android WebView). */
-  .modal-overlay.open:has(~ .modal-overlay.open) { backdrop-filter:none; -webkit-backdrop-filter:none; }
   .modal-sheet { width:100%; max-width:480px; max-height:100%; background:var(--modal-bg); border:1px solid var(--glass-border);
     border-radius:28px; overflow-y:auto; overflow-x:hidden; transform:translateY(110%) translateZ(0); -webkit-overflow-scrolling:touch; touch-action:pan-y; overscroll-behavior:contain;
-    backface-visibility:hidden; transition:transform 0.4s var(--ease); padding:0 var(--gutter) 24px; }
+    backface-visibility:hidden; transition:transform 240ms var(--ease); padding:0 var(--gutter) 24px; will-change:transform; }
   .modal-sheet::-webkit-scrollbar { display:none; }
-  .modal-overlay.open .modal-sheet { transform:translateY(0) translateZ(0); transition:transform 0.5s cubic-bezier(0.16, 1.02, 0.3, 1); }
+  .modal-overlay.open .modal-sheet { transform:translateY(0) translateZ(0); transition:transform var(--motion-sheet) cubic-bezier(0.2,0.82,0.2,1); }
   .modal-handle { width:38px; height:4px; background:var(--text-muted); border-radius:2px; margin:12px auto 22px; opacity:0.5; }
   .modal-title { font-size:21px; font-weight:800; color:var(--text); margin-bottom:8px; letter-spacing:-0.3px; position:sticky; top:0; z-index:5; background:var(--modal-bg); padding:4px 0 14px; touch-action:pan-y; }
 
@@ -814,6 +815,8 @@
   .type-btn.active { border-color:var(--gold); color:var(--gold); background:rgba(212,175,55,0.12); transform:translateY(-2px); }
   /* Form C transaction form */
   .txc-hdr { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  #transactionModal .txc-hdr { position:sticky; top:0; z-index:7; padding:10px 0 12px; margin:0 0 10px; background:var(--modal-bg); box-shadow:0 1px 0 var(--input-border); }
+  #editProfileModal .modal-title { box-shadow:0 1px 0 var(--input-border); }
   .txc-chip { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .txc-chip svg { width:21px; height:21px; }
   .txc-chip.txc-i { background:rgba(63,174,90,0.14); color:var(--success); }
@@ -1036,7 +1039,7 @@
   <div class="lock-logo"><svg viewBox="0 0 24 24"><use href="#i-wallet"/></svg></div>
   <div class="lock-title">MONEY MAP</div>
   <div class="lock-subtitle" id="lockSubtitle">Enter your PIN</div>
-  <div class="pin-dots" id="pinDots"><div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div></div>
+  <div class="native-pin-shell" id="nativePinShell" onclick="_focusNativePin()"><div class="pin-dots" id="pinDots"><div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div></div><input id="nativePinInput" class="native-pin-input" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" enterkeyhint="next" autocomplete="off" aria-label="PIN" oninput="_nativePinChanged(this)"></div>
   <div class="lock-error" id="lockError"></div>
   <div class="pin-pad" id="pinPad">
     <button class="pin-btn" onclick="haptic();pinPress('1')">1</button>
@@ -1215,7 +1218,7 @@
       </div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
     </div>
-      <div class="set-foot">Money Map v2.0.3.1</div>
+      <div class="set-foot">Money Map v2.0.3.7</div>
     </div>
   </div>
 
@@ -1362,8 +1365,26 @@ const GOAL_ICONS=['i-target','i-house','i-car','i-invest','i-bank','i-cash','i-g
 
 function ic(id){ return `<svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#${id}"/></svg>`; }
 function icSized(id,px){ return '<svg viewBox="0 0 24 24" style="width:'+px+'px;height:'+px+'px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#'+id+'"/></svg>'; }
-function haptic(ms){ navigator.vibrate&&navigator.vibrate(ms||12); }
-function hapticStrong(){ if(navigator.vibrate){ navigator.vibrate(38); } }
+function _native(){return window.MoneyMapNative||null;}
+var _nativeSystemTheme='';
+window.__moneyMapNativeTheme=function(t){_nativeSystemTheme=t||'';try{if(DB&&DB.theme==='auto')applyTheme();}catch(e){}};
+function _nativeSaveFile(name,mime,text){try{var n=_native();if(n&&n.saveFile){n.saveFile(name,mime,btoa(unescape(encodeURIComponent(text))));return true;}}catch(e){}return false;}
+function _nativeTheme(t){try{var n=_native();if(n&&n.setTheme)n.setTheme(t);}catch(e){}}
+function _nativeModal(){try{var n=_native();if(n&&n.setModalOpen)n.setModalOpen(_modalStack.length>0);}catch(e){}}
+function haptic(kind){try{var n=_native();if(n&&n.haptic){n.haptic(typeof kind==='string'?kind:'light');return;}}catch(e){} try{navigator.vibrate&&navigator.vibrate(typeof kind==='number'?kind:10);}catch(e){}}
+function hapticStrong(){haptic('strong');}
+function _nativeBio(mode){try{var n=_native();if(n&&n.authenticate){_fpBusy=true;_authInProgress=true;n.authenticate(mode);return true;}}catch(e){}return false;}
+function _hasFingerprint(){return !!(DB.fingerprintCredId&&(_native()||window.PublicKeyCredential));}
+window.__moneyMapNativeBiometric=function(ok,mode,msg){
+  _fpBusy=false;_authInProgress=false;
+  var i=document.getElementById('fpIcon'),h=document.getElementById('fpHint');if(i)i.classList.remove('scanning');
+  if(ok){
+    if(mode==='setup'){DB.fingerprintCredId=['native'];saveDB();renderSettings();showToast('Fingerprint enabled!','var(--success)');}
+    else if(mode==='reveal'){_welNwShown=true;renderWelcomeNW();haptic('success');}
+    else if(mode==='welcome'){_leaveWelcomeThen(unlockApp);}
+    else unlockApp();
+  }else if(h){h.textContent=msg||"Couldn't read fingerprint — tap to retry";}
+};
 function _reduceMotion(){ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 function _ovCount(id,to,suffix){
   const el=document.getElementById(id); if(!el) return; suffix=suffix||'';
@@ -1438,6 +1459,7 @@ function renderWelcomeStats(){
 }
 function toggleWelcomeNW(){
   if(_welNwShown){ _welNwShown=false; haptic(12); renderWelcomeNW(); return; }
+  if(_native()&&DB.fingerprintCredId){_nativeBio('reveal');return;}
   if(DB.fingerprintCredId && window.PublicKeyCredential){
     if(_fpBusy) return;
     _fpBusy=true; _authInProgress=true;
@@ -1480,7 +1502,7 @@ function enterFromWelcome(){
   // No PIN yet -> first-time setup happens on the lock screen (create a PIN).
   if(!DB.pin){ _leaveWelcomeThen(startAuth); return; }
   // Fingerprint enrolled -> authenticate straight from the welcome screen (no intermediate lock window).
-  if(DB.fingerprintCredId && window.PublicKeyCredential){ _fpFromWelcome(); return; }
+  if(_hasFingerprint()){ if(_native())_nativeBio('welcome'); else _fpFromWelcome(); return; }
   // PIN-only -> go to the lock screen PIN pad.
   _leaveWelcomeThen(startAuth);
 }
@@ -1512,11 +1534,12 @@ function _welcomeToPin(){
   });
 }
 function startAuth(){
+  _clearPinEntry(true);
   document.getElementById('app').classList.add('hidden');
   var _ls=document.getElementById('lockScreen'); _ls.classList.remove('hidden');
   _ls.classList.remove('entering'); void _ls.offsetWidth; _ls.classList.add('entering'); setTimeout(function(){_ls.classList.remove('entering');},500);
   if(!DB.pin){ isSettingPin=true; document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; showPinPad(); return; }
-  if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
+  if(_hasFingerprint()){ showFpPrompt(); setTimeout(tryFingerprint,280); }
   else { showPinPad(); }
 }
 
@@ -1583,30 +1606,22 @@ function pct(a,b){ return b>0?Math.round((a/b)*100):0; }
 function showToast(m,c){ const t=document.getElementById('toast'); t.textContent=m; t.style.color=c||'var(--text)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
 let _modalStack=[], _modalHistDepth=0, _resettingHistory=false;
 function _resetModalHist(){ if(_modalHistDepth>0){ const n=_modalHistDepth; _modalHistDepth=0; _resettingHistory=true; history.go(-n); } }
+var _modalUnmountTimers={};
+function _mountModal(el){clearTimeout(_modalUnmountTimers[el.id]);el.classList.add('mounted');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('open');});});}
+function _unmountModal(el){if(!el)return;el.querySelectorAll('.modal-sheet').forEach(function(sh){sh.style.translate='';});el.classList.remove('open');clearTimeout(_modalUnmountTimers[el.id]);_modalUnmountTimers[el.id]=setTimeout(function(){el.classList.remove('mounted');el.classList.remove('closing');},260);}
 function openModal(id){
   const el=document.getElementById(id);if(!el||el.classList.contains('open'))return;
-  el.classList.add('open');
-  _modalStack.push(id);
-  if(_modalStack.length>_modalHistDepth){ history.pushState({mmModal:true},''); _modalHistDepth++; }
+  _mountModal(el);_modalStack.push(id);_nativeModal();haptic('light');
+  if(_modalStack.length>_modalHistDepth){history.pushState({mmModal:true},'');_modalHistDepth++;}
 }
 function closeModal(id){
-  const el=document.getElementById(id);if(!el||!el.classList.contains('open'))return;
-  el.classList.remove('open');
-  const i=_modalStack.lastIndexOf(id); if(i!==-1) _modalStack.splice(i,1);
-  if(_modalStack.length===0) _resetModalHist();
-  // Closing a modal that leaves OTHERS open (e.g. drag/backdrop-dismiss a 2nd-level popup):
-  // consume this modal's owed history entry so the next Back isn't wasted peeling a ghost entry.
-  else if(_modalHistDepth>_modalStack.length){ _modalHistDepth--; _resettingHistory=true; history.go(-1); }
+  const el=document.getElementById(id);if(!el||(!el.classList.contains('open')&&!el.classList.contains('mounted')))return;
+  _unmountModal(el);const i=_modalStack.lastIndexOf(id);if(i!==-1)_modalStack.splice(i,1);_nativeModal();
+  if(_modalStack.length===0)_resetModalHist();
+  else if(_modalHistDepth>_modalStack.length){_modalHistDepth--;_resettingHistory=true;history.go(-1);}
 }
-function closeModalQuiet(id){
-  const el=document.getElementById(id);if(!el||!el.classList.contains('open'))return;
-  el.classList.remove('open');
-  const i=_modalStack.lastIndexOf(id); if(i!==-1) _modalStack.splice(i,1);
-}
-function closeAllModals(){
-  for(var k=_modalStack.length-1;k>=0;k--){ const el=document.getElementById(_modalStack[k]); if(el)el.classList.remove('open'); }
-  _modalStack=[]; _resetModalHist();
-}
+function closeModalQuiet(id){const el=document.getElementById(id);if(!el)return;_unmountModal(el);const i=_modalStack.lastIndexOf(id);if(i!==-1)_modalStack.splice(i,1);_nativeModal();}
+function closeAllModals(){for(var k=_modalStack.length-1;k>=0;k--){_unmountModal(document.getElementById(_modalStack[k]));}_modalStack=[];_nativeModal();_resetModalHist();}
 let _confirmCallback=null;
 function askConfirm(title,message,onConfirm,confirmLabel,danger){
   document.getElementById('confirmTitle').textContent=title;
@@ -1620,8 +1635,9 @@ function _confirmProceed(){ const cb=_confirmCallback; _confirmCallback=null; cl
 // ===== THEME =====
 function applyTheme(){
   let t = DB.theme;
-  if(t==='auto'){ t = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark'; }
+  if(t==='auto'){ t=_nativeSystemTheme||((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'); }
   document.documentElement.setAttribute('data-theme', t);
+  _nativeTheme(t);
   // On Android, mutating an existing theme-color <meta> at runtime is unreliable and can leave a
   // stuck status-bar seam/line until the app is relaunched. Replacing the element forces a clean repaint.
   (function(){
@@ -1641,32 +1657,44 @@ if(window.matchMedia){ window.matchMedia('(prefers-color-scheme: light)').addEve
 
 // ===== LOCK =====
 let pinEntry='', isSettingPin=false, pinFirst='';
+function _clearPinEntry(clearFirst){pinEntry='';if(clearFirst)pinFirst='';var n=document.getElementById('nativePinInput');if(n)n.value='';updateDots();}
+function _keepNativePinFocused(stage){
+  if(!_native())return;var n=document.getElementById('nativePinInput');if(!n)return;
+  n.enterKeyHint=stage==='confirm'?'done':'next';
+  [0,70,190].forEach(function(ms){setTimeout(function(){try{n.focus({preventScroll:true});}catch(e){n.focus();}},ms);});
+}
+function _focusNativePin(){if(!_native())return;var n=document.getElementById('nativePinInput');if(n){n.value='';pinEntry='';updateDots();_keepNativePinFocused(pinFirst?'confirm':'first');}}
+function _nativePinChanged(el){var v=(el.value||'').replace(/\D/g,'').slice(0,4);el.value=v;pinEntry=v;updateDots();if(v.length===4)setTimeout(checkPin,100);}
 function initLock(){
   if(!DB.pin){ document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; isSettingPin=true; return; }
   document.getElementById('app').classList.add('hidden');
   document.getElementById('lockScreen').classList.remove('hidden');
-  if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
+  if(_hasFingerprint()){ showFpPrompt(); setTimeout(tryFingerprint,280); }
   else { showPinPad(); }
 }
 function showFpPrompt(){
   document.getElementById('lockSubtitle').textContent='Unlock with fingerprint';
   document.getElementById('pinDots').style.display='none';
+  var ns=document.getElementById('nativePinShell');if(ns)ns.style.display='none';
   document.getElementById('pinPad').style.display='none';
   document.getElementById('fpPrompt').style.display='flex';
 }
 function showPinPad(){
+  _clearPinEntry(false);
   document.getElementById('lockSubtitle').textContent='Enter your PIN';
   const fp=document.getElementById('fpPrompt'); if(fp) fp.style.display='none';
   document.getElementById('pinDots').style.display='flex';
-  document.getElementById('pinPad').style.display='grid';
+  var ns=document.getElementById('nativePinShell');if(ns)ns.style.display='flex';
+  document.getElementById('pinPad').style.display=_native()?'none':'grid';
+  if(_native())setTimeout(_focusNativePin,90);
 }
 function pinPress(n){ if(pinEntry.length>=4)return; pinEntry+=n; updateDots(); if(pinEntry.length===4) setTimeout(checkPin,150); }
 function pinDel(){ pinEntry=pinEntry.slice(0,-1); updateDots(); }
 function updateDots(){ for(let i=0;i<4;i++) document.getElementById('d'+i).classList.toggle('filled', i<pinEntry.length); }
 function checkPin(){
   if(isSettingPin){
-    if(!pinFirst){ pinFirst=pinEntry; pinEntry=''; updateDots(); document.getElementById('lockSubtitle').textContent='Confirm your PIN'; document.getElementById('lockError').textContent=''; }
-    else { if(pinEntry===pinFirst){ DB.pin=pinEntry; saveDB(); unlockApp(); } else { document.getElementById('lockError').textContent='PINs do not match. Try again.'; pinEntry=''; pinFirst=''; updateDots(); } }
+    if(!pinFirst){ pinFirst=pinEntry; pinEntry='';var _ni=document.getElementById('nativePinInput');if(_ni)_ni.value='';updateDots(); document.getElementById('lockSubtitle').textContent='Confirm your PIN'; document.getElementById('lockError').textContent=''; _keepNativePinFocused('confirm'); }
+    else { if(pinEntry===pinFirst){ var _ni2=document.getElementById('nativePinInput');if(_ni2)_ni2.blur(); DB.pin=pinEntry; saveDB(); unlockApp(); } else { document.getElementById('lockError').textContent='PINs do not match. Try again.'; pinEntry=''; pinFirst='';var _ni3=document.getElementById('nativePinInput');if(_ni3)_ni3.value=''; updateDots(); document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; _keepNativePinFocused('first'); } }
   } else {
     if(pinEntry===DB.pin){ if(_welPinReveal){ _welPinReveal=false; hapticStrong(); document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.remove('hidden'); _welNwShown=true; renderWelcomeNW(); } else { unlockApp(); } } else { document.getElementById('lockError').textContent='Incorrect PIN. Try again.'; pinEntry=''; setTimeout(()=>{updateDots(); document.getElementById('lockError').textContent='';},600); }
   }
@@ -1674,6 +1702,7 @@ function checkPin(){
 function unlockApp(){ _justUnlocked=Date.now(); _appUnlocked=true; clearTimeout(_authTimer); _authTimer=setTimeout(function(){_authInProgress=false;},1000); try{ localStorage.setItem('mm_bg', String(Date.now())); }catch(e){} document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.add('hidden'); var _ap=document.getElementById('app'); _ap.classList.remove('hidden'); _ap.classList.remove('entering'); void _ap.offsetWidth; _ap.classList.add('entering'); setTimeout(function(){_ap.classList.remove('entering');},520); initApp(); }
 function tryFingerprint(){
   if(_fpBusy) return;
+  if(_nativeBio('unlock'))return;
   if(!window.PublicKeyCredential){showPinPad();showToast('Biometrics not available on this device','var(--text-dim)');return;}
   if(!DB.fingerprintCredId){showPinPad();showToast('Enable fingerprint in Settings first','var(--text-dim)');return;}
   const icon=document.getElementById('fpIcon'), hint=document.getElementById('fpHint');
@@ -1691,12 +1720,14 @@ function tryFingerprint(){
   });
 }
 function toggleFingerprint(){
+  if(_native()){if(DB.fingerprintCredId){DB.fingerprintCredId=null;saveDB();renderSettings();showToast('Fingerprint off — PIN only','var(--text-dim)');}else setupFingerprint();return;}
   if(!window.PublicKeyCredential){ showToast('This device has no fingerprint support','var(--text-dim)'); return; }
   if(DB.fingerprintCredId){ DB.fingerprintCredId=null; saveDB(); renderSettings(); showToast('Fingerprint off — PIN only','var(--text-dim)'); }
   else { setupFingerprint(); }
 }
 async function setupFingerprint(){
   suppressNextLock();
+  if(_nativeBio('setup'))return;
   if(!window.PublicKeyCredential){showToast('Biometrics not supported on this device','var(--danger)');return;}
   try{
     const challenge=new Uint8Array(32); crypto.getRandomValues(challenge);
@@ -1737,19 +1768,33 @@ function navTo(page){
   if(page==='budget')renderBudget(); if(page==='analytics')renderAnalytics(); if(page==='settings')renderSettings();
   _animatePage(page);
 }
+var _pageMotionObserver=null,_pageMotionPending=[];
+function _clearPageMotion(){
+  if(_pageMotionObserver){_pageMotionObserver.disconnect();_pageMotionObserver=null;}
+  _pageMotionPending.forEach(function(el){el.style.opacity='';el.style.transform='';el.style.willChange='';});
+  _pageMotionPending=[];
+}
+function _playPageElement(el,index){
+  if(!el||el.dataset.mmMotion==='played')return;
+  el.dataset.mmMotion='played';el.style.willChange='transform,opacity';
+  el.getAnimations().forEach(function(a){a.cancel();});
+  var a=el.animate([
+    {opacity:.16,transform:'translate3d(0,18px,0) scale(.99)'},
+    {opacity:1,transform:'translate3d(0,0,0) scale(1)'}
+  ],{duration:390,delay:Math.min((index%6)*34,170),easing:'cubic-bezier(.18,.82,.2,1)',fill:'both'});
+  a.onfinish=function(){el.style.opacity='';el.style.transform='';el.style.willChange='';try{a.cancel();}catch(e){}};
+}
 function _animatePage(page){
-  var pg=document.getElementById('page-'+page); if(!pg)return;
-  var reduce=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var els=pg.querySelectorAll('.glass-card,.section-header,.swipe-stack,.swipe-dots,.txd-dayhead,.txd-row,.set-tile,.bgt-card,.loan-card,.overview-card,.settings-item,.misc-line,.an-chart,.empty-state');
-  var i=0;
-  for(var k=0;k<els.length;k++){
-    var el=els[k]; el.style.animation='none';
-    if(reduce||el.offsetParent===null) continue;
-    void el.offsetWidth;
-    el.style.animation='riseIn 0.5s var(--ease) both';
-    el.style.animationDelay=Math.min(i*0.045,0.42)+'s';
-    i++;
-  }
+  var pg=document.getElementById('page-'+page);if(!pg)return;_clearPageMotion();
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var els=Array.from(pg.querySelectorAll('.overview-card,.glass-card,.swipe-stack,.swipe-card,.txd-dayhead,.txd-row,.bgt-card,.loan-card,.set-card,.set-tiles,.settings-section,.an-chart,.chart-card,.insight-card,.empty-state,.budget-tabs,.goal-card'))
+    .filter(function(el){return el.offsetParent!==null&&el.animate;});
+  els.forEach(function(el){delete el.dataset.mmMotion;});_pageMotionPending=els;
+  if(!('IntersectionObserver' in window)){els.forEach(_playPageElement);return;}
+  _pageMotionObserver=new IntersectionObserver(function(entries){
+    entries.filter(function(e){return e.isIntersecting;}).forEach(function(e,i){_playPageElement(e.target,i);_pageMotionObserver.unobserve(e.target);});
+  },{root:pg,rootMargin:'34px 0px 34px 0px',threshold:.05});
+  els.forEach(function(el){_pageMotionObserver.observe(el);});
 }
 function goSettings(){ navTo('settings'); }
 function _smGo(){ closeModal('settingsMenuModal'); navTo('settings'); }
@@ -2616,7 +2661,7 @@ function buildTxForm(type,existing){
   c.innerHTML=`
     <div class="txc-hdr"><span class="txc-chip ${meta.cls}">${ic(meta.icon)}</span><span class="txc-title">${meta.title}</span></div>
     <div class="txc-amtlab">Amount <span style="color:var(--text)">(${cur()})</span></div>
-    <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
     <div class="txc-grp">
       ${rows}
       <div class="txc-row" onclick="_openDate('txDate')"><span class="txc-k">Date</span><span class="txc-v"><span id="txDateDisp">${fmtDateShort(date)}</span>${ic('i-chevron')}</span><input type="date" class="txc-hiddendate" id="txDate" value="${date}" max="${today()}" onchange="_syncDate('txDate','txDateDisp')"></div>
@@ -2744,10 +2789,10 @@ function showCelebration(amount,dest,type,goalId){
   if(elNote) elNote.textContent=note;
   if(elBar){ if(showBar){ elBar.style.display=''; if(elCap) elCap.textContent=barCap; if(elFill) elFill.style.width='0'; } else { elBar.style.display='none'; } }
   var cc=document.getElementById('celConfetti');
-  if(cc){ var cols=['#e7c24e','#6BA368','#E0554F','#f4d876','#5BA0C9','#B388C9']; var h=''; for(var i=0;i<26;i++){ h+='<i style="left:'+(4+Math.random()*92)+'%;background:'+cols[i%cols.length]+';animation-delay:'+(Math.random()*1.2).toFixed(2)+'s"></i>'; } cc.innerHTML=h; }
+  if(cc){ var cols=['#e7c24e','#6BA368','#E0554F','#f4d876','#5BA0C9','#B388C9']; var h=''; for(var i=0;i<18;i++){ h+='<i style="left:'+(4+Math.random()*92)+'%;background:'+cols[i%cols.length]+';animation-delay:'+(Math.random()*1.2).toFixed(2)+'s"></i>'; } cc.innerHTML=h; }
   ov.classList.add('show');
   if(showBar&&elFill){ setTimeout(function(){ elFill.style.width=barPct+'%'; },160); }
-  try{ navigator.vibrate&&navigator.vibrate(30); }catch(e){}
+  haptic('success');
   clearTimeout(_celTimer); _celTimer=setTimeout(hideCelebration,4800);
 }
 function hideCelebration(){ var ov=document.getElementById('celebrate'); if(ov) ov.classList.remove('show'); clearTimeout(_celTimer); }
@@ -2923,7 +2968,7 @@ function buildBudgetForm(ex){
     catField=`<div class="form-group"><label class="form-label">Name</label><input class="form-input" id="bName" value="${ex?ex.name:''}" placeholder="e.g. Monthly Savings"></div>`;
   }
   document.getElementById('budgetModalContent').innerHTML=catField+`
-    <div class="form-group"><label class="form-label">Budget Amount (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="bAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
+    <div class="form-group"><label class="form-label">Budget Amount (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="bAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
     <button class="btn-gold" onclick="saveBudget('${ex?ex.id:''}')">Save</button><button class="btn-outline" onclick="closeModal('addBudgetModal')">Cancel</button>`;
 }
 function openBudgetCatPicker(){
@@ -2952,7 +2997,7 @@ function openAddLoanModal(ex){
   document.getElementById('loanModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Loan Name</label><input class="form-input" id="lName" value="${ex?ex.name:''}" placeholder="e.g. Bank Loan"></div>
     <div class="form-group"><label class="form-label">Source (who/where)</label><input class="form-input" id="lSource" value="${ex?ex.source:''}" placeholder="e.g. Stanbic Bank"></div>
-    <div class="form-group"><label class="form-label">Total Amount (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="lAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
+    <div class="form-group"><label class="form-label">Total Amount (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="lAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
     <div class="form-group"><label class="form-label">Date Taken</label><input type="date" class="form-input" id="lDate" value="${ex?ex.date:today()}"></div>
     <button class="btn-gold" onclick="saveLoan('${ex?ex.id:''}')">Save Loan</button><button class="btn-outline" onclick="closeModal('addLoanModal')">Cancel</button>`;
   openModal('addLoanModal');
@@ -2982,7 +3027,7 @@ function openLoanForm(preId,existing){
   document.getElementById('txModalContent').innerHTML=`
     <div class="txc-hdr"><span class="txc-chip txc-g">${ic('i-cash')}</span><span class="txc-title">${existing?'Edit repayment':'Pay a loan'}</span></div>
     <div class="txc-amtlab">Amount <span style="color:var(--text)">(${cur()})</span></div>
-    <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
     <div class="txc-grp">
       <div class="txc-row" onclick="openOptionPicker('Loan',DB.loans.map(l=>({value:l.id,label:l.name})),document.getElementById('txLoanId').value,(v,l)=>{document.getElementById('txLoanId').value=v;document.getElementById('txLoanIdDisp').textContent=l;})"><span class="txc-k">Loan</span><span class="txc-v"><span id="txLoanIdDisp">${loan.name}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanId" value="${loan.id}">
       <div class="txc-row" onclick="openOptionPicker('Pay from',[{value:'income',label:'Income'},{value:'savings',label:'Life Savings'},{value:'emergency',label:'Emergency Fund'}],document.getElementById('txLoanFrom').value,(v,l)=>{document.getElementById('txLoanFrom').value=v;document.getElementById('txLoanFromDisp').textContent=l;})"><span class="txc-k">Pay from</span><span class="txc-v"><span id="txLoanFromDisp">${fromNames[from]||'Income'}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanFrom" value="${from}">
@@ -3025,7 +3070,7 @@ function openAddGoalModal(ex){
       <div style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5">Investment goals add to your savings rate and net worth. Lifestyle goals count as planned spending.</div>
       <input type="hidden" id="gKind" value="${gk}"></div>
     <div class="form-group"><label class="form-label">Icon</label><div class="icon-grid" id="gIconGrid">${GOAL_ICONS.map(i=>`<div class="icon-pick ${ex&&ex.icon===i?'selected':(!ex&&i==='i-target'?'selected':'')}" data-icon="${i}" onclick="pickIcon(this,'g')">${ic(i)}</div>`).join('')}</div></div>
-    <div class="form-group"><label class="form-label">Target Amount (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="gTarget" value="${ex?parseInt(ex.target).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.target:''}"></div>
+    <div class="form-group"><label class="form-label">Target Amount (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="gTarget" value="${ex?parseInt(ex.target).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.target:''}"></div>
     <div class="form-group"><label class="form-label">Target Date (when to close)</label><input type="date" class="form-input" id="gDate" value="${ex&&ex.targetDate?ex.targetDate:''}"></div>
     <button class="btn-gold" onclick="saveGoal('${ex?ex.id:''}')">Save Goal</button><button class="btn-outline" onclick="closeModal('addGoalModal')">Cancel</button>`;
   selectedIcon.g=ex?ex.icon:'i-target'; openModal('addGoalModal');
@@ -3167,8 +3212,8 @@ function openAssetModal(id){
   document.getElementById('assetModalTitle').textContent=ex?'Edit Asset':'Add Asset';
   document.getElementById('assetModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Asset name</label><input class="form-input" id="aName" value="${ex?esc(ex.name):''}" placeholder="e.g. Cows, Land in Mukono"></div>
-    <div class="form-group"><label class="form-label">How many</label><input type="text" inputmode="numeric" class="form-input" id="aQty" value="${ex?(ex.qty||''):''}" placeholder="e.g. 5"></div>
-    <div class="form-group"><label class="form-label">Current total value (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="aValue" value="${ex&&ex.value?ex.value.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.value:''}"></div>
+    <div class="form-group"><label class="form-label">How many</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="aQty" value="${ex?(ex.qty||''):''}" placeholder="e.g. 5"></div>
+    <div class="form-group"><label class="form-label">Current total value (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="aValue" value="${ex&&ex.value?ex.value.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.value:''}"></div>
     <button class="btn-gold" onclick="saveAsset('${ex?ex.id:''}')">Save asset</button><button class="btn-outline" onclick="closeModal('assetModal')">Cancel</button>`;
   openModal('assetModal');
 }
@@ -3189,7 +3234,7 @@ function openInvestmentModal(id){
   document.getElementById('investmentModalTitle').textContent=ex?'Edit Investment':'Add Investment';
   document.getElementById('investmentModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Where invested</label><input class="form-input" id="iName" value="${ex?esc(ex.name):''}" placeholder="e.g. Unit Trust, SACCO shares"></div>
-    <div class="form-group"><label class="form-label">Interest earned (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="iInterest" value="${ex&&ex.interest?ex.interest.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.interest:''}"></div>
+    <div class="form-group"><label class="form-label">Interest earned (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="iInterest" value="${ex&&ex.interest?ex.interest.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.interest:''}"></div>
     <div style="font-size:11.5px;color:var(--text-muted);margin:-6px 0 15px;line-height:1.5">Only the interest is added to your net worth — the principal is already counted under Life Savings.</div>
     <button class="btn-gold" onclick="saveInvestment('${ex?ex.id:''}')">Save investment</button><button class="btn-outline" onclick="closeModal('investmentModal')">Cancel</button>`;
   openModal('investmentModal');
@@ -3209,7 +3254,7 @@ function openAccountModal(id){
   document.getElementById('accountModalTitle').textContent=ex?'Edit Account':'Add Cash & Account';
   document.getElementById('accountModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Account name</label><input class="form-input" id="acName" value="${ex?esc(ex.name):''}" placeholder="e.g. NSSF, Bank, Mobile Money"></div>
-    <div class="form-group"><label class="form-label">Current balance (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="acValue" value="${ex&&ex.value?ex.value.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.value:''}"></div>
+    <div class="form-group"><label class="form-label">Current balance (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="acValue" value="${ex&&ex.value?ex.value.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.value:''}"></div>
     <div style="font-size:11.5px;color:var(--text-muted);margin:-6px 0 15px;line-height:1.5">Money sitting in an account — the full balance counts toward your net worth under Assets.</div>
     <button class="btn-gold" onclick="saveAccount('${ex?ex.id:''}')">Save account</button><button class="btn-outline" onclick="closeModal('accountModal')">Cancel</button>`;
   openModal('accountModal');
@@ -3682,8 +3727,8 @@ function _startBalSummaryText(){ const s=(DB.openingSavings||0),e=(DB.openingEme
 function openStartBalModal(){
   document.getElementById('startBalContent').innerHTML=`
     <div style="font-size:12.5px;color:var(--text-muted);margin:-4px 0 16px;line-height:1.5">Enter what you had already saved before you started tracking. It's added to your totals and net worth, but not counted as savings for any single month.</div>
-    <div class="form-group"><label class="form-label">Life Savings starting balance (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="sbSavings" value="${DB.openingSavings?DB.openingSavings.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${DB.openingSavings||''}"></div>
-    <div class="form-group"><label class="form-label">Emergency Fund starting balance (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="sbEmergency" value="${DB.openingEmergency?DB.openingEmergency.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${DB.openingEmergency||''}"></div>
+    <div class="form-group"><label class="form-label">Life Savings starting balance (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="sbSavings" value="${DB.openingSavings?DB.openingSavings.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${DB.openingSavings||''}"></div>
+    <div class="form-group"><label class="form-label">Emergency Fund starting balance (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="sbEmergency" value="${DB.openingEmergency?DB.openingEmergency.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${DB.openingEmergency||''}"></div>
     <button class="btn-gold" onclick="saveStartBal()">Save</button><button class="btn-outline" onclick="closeModal('startBalModal')">Cancel</button>`;
   openModal('startBalModal');
 }
@@ -3825,7 +3870,9 @@ function deleteIncomeType(id){ askConfirm('Remove this source?','',()=>{ DB.inco
 
 // ===== BACKUP & RESTORE =====
 function backupData(){
-  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  var json=JSON.stringify(DB,null,2);
+  if(_nativeSaveFile('MoneyMap_Backup_'+today()+'.json','application/json',json)){showToast('Backup saved to Downloads','var(--success)');return;}
+  const blob=new Blob([json],{type:'application/json'});
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=`MoneyMap_Backup_${today()}.json`;a.click();URL.revokeObjectURL(url);
   showToast('Backup saved successfully','var(--success)');
@@ -3854,6 +3901,7 @@ function exportData(format){
     const rows=[['Date','Type','Amount','Description','Note']];
     [...DB.transactions].sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(t=>rows.push([t.date,t.type,t.amount,getTxLabel(t),t.note||'']));
     const csv=rows.map(r=>r.map(x=>`"${x}"`).join(',')).join('\n');
+    if(_nativeSaveFile('MoneyMap_'+today()+'.csv','text/csv',csv)){showToast('CSV saved to Downloads','var(--success)');return;}
     const blob=new Blob([csv],{type:'text/csv'}),url=URL.createObjectURL(blob),a=document.createElement('a');
     a.href=url;a.download=`MoneyMap_${today()}.csv`;a.click();URL.revokeObjectURL(url); showToast('CSV downloaded','var(--success)');
   } else {
@@ -3862,6 +3910,7 @@ function exportData(format){
     const tS=DB.transactions.filter(t=>t.type==='savings').reduce((s,t)=>s+t.amount,0);
     const tEm=DB.transactions.filter(t=>t.type==='emergency').reduce((s,t)=>s+t.amount,0);
     const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Money Map Report</title><style>body{font-family:Arial;padding:40px;color:#222}h1{color:#D4AF37}table{width:100%;border-collapse:collapse;margin-top:16px}th{background:#D4AF37;color:#fff;padding:8px;text-align:left}td{padding:8px;border-bottom:1px solid #eee}</style></head><body><h1>Money Map — Financial Report</h1><p>Generated ${new Date().toLocaleDateString()} · ${DB.userName}</p><h2>Summary</h2><table><tr><th>Metric</th><th>Amount</th></tr><tr><td>Total Income</td><td>${fmtUGX(tI)}</td></tr><tr><td>Total Expenses</td><td>${fmtUGX(tE)}</td></tr><tr><td>Lifetime Savings</td><td>${fmtUGX(tS)}</td></tr><tr><td>Emergency Fund</td><td>${fmtUGX(tEm)}</td></tr><tr><td>Net Balance</td><td>${fmtUGX(tI-tE-tS-tEm)}</td></tr></table><h2>Transactions</h2><table><tr><th>Date</th><th>Type</th><th>Description</th><th>Amount</th></tr>${[...DB.transactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t=>`<tr><td>${t.date}</td><td>${t.type}</td><td>${getTxLabel(t)}</td><td>${fmtUGX(t.amount)}</td></tr>`).join('')}</table></body></html>`;
+    if(_nativeSaveFile('MoneyMap_Report_'+today()+'.html','text/html',html)){showToast('Report saved to Downloads','var(--success)');return;}
     const blob=new Blob([html],{type:'text/html'}),url=URL.createObjectURL(blob),a=document.createElement('a');
     a.href=url;a.download=`MoneyMap_Report_${today()}.html`;a.click();URL.revokeObjectURL(url); showToast('Report downloaded','var(--success)');
   }
@@ -3887,25 +3936,82 @@ window.addEventListener('popstate',()=>{
   while(_modalStack.length>_modalHistDepth){
     const id=_modalStack.pop();
     const el=document.getElementById(id);
-    if(el)el.classList.remove('open');
+    if(el)_unmountModal(el);
   }
+  _nativeModal();
 });
 document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay')&&e.target.classList.contains('open'))closeModal(e.target.id);
 });
+
+function _nativeImePx(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--native-ime-bottom'))||0;}
+function _keyboardTop(){
+  var ime=_nativeImePx(),top=window.innerHeight-(ime>0?ime:0),vv=window.visualViewport;
+  if(!_native()&&vv&&vv.height<window.innerHeight-40)top=Math.min(top,vv.offsetTop+vv.height);
+  return top;
+}
+function _adjustPinForIme(){
+  var lock=document.getElementById('lockScreen'),ime=_nativeImePx();if(!lock)return;
+  lock.style.translate=ime>0?'0 -'+Math.min(110,Math.round(ime*.34))+'px':'';
+}
+var _focusRevealTimer=0;
+function _prepareSheetForIme(sheet,ime){
+  if(!sheet)return;
+  if(ime>0){
+    if(!sheet.dataset.mmImeHeight){
+      var height=Math.round(sheet.getBoundingClientRect().height);
+      if(height>0){sheet.dataset.mmImeHeight=String(height);sheet.style.boxSizing='border-box';sheet.style.height=height+'px';}
+    }
+    sheet.style.setProperty('--mm-ime-spacer',Math.round(ime+54)+'px');
+    sheet.style.translate='';
+  }else{
+    sheet.style.removeProperty('--mm-ime-spacer');
+    sheet.style.height='';sheet.style.boxSizing='';delete sheet.dataset.mmImeHeight;sheet.style.translate='';
+  }
+}
+function _revealFocusedField(el,delay){
+  if(!_native()||!el||!el.closest)return;
+  if(el.id==='nativePinInput'){_adjustPinForIme();return;}
+  var sheet=el.closest('.modal-sheet');if(!sheet)return;
+  clearTimeout(_focusRevealTimer);
+  _focusRevealTimer=setTimeout(function(){
+    var ime=_nativeImePx();if(ime<=0)return;
+    _prepareSheetForIme(sheet,ime);
+    requestAnimationFrame(function(){
+      var safeBottom=_keyboardTop()-32,r=el.getBoundingClientRect();
+      if(r.bottom>safeBottom){
+        var target=Math.max(0,Math.min(sheet.scrollHeight-sheet.clientHeight,sheet.scrollTop+(r.bottom-safeBottom)));
+        if(Math.abs(target-sheet.scrollTop)>1)sheet.scrollTo({top:target,behavior:'smooth'});
+      }
+    });
+  },typeof delay==='number'?delay:115);
+}
+window.__moneyMapNativeInsets=function(ime){
+  ime=Number(ime)||0;document.documentElement.classList.toggle('ime-open',ime>0);
+  _adjustPinForIme();
+  if(ime<=0){document.querySelectorAll('.modal-sheet[data-mm-ime-height]').forEach(function(sh){_prepareSheetForIme(sh,0);});return;}
+  var active=document.activeElement,sheet=active&&active.closest&&active.closest('.modal-sheet');
+  if(sheet){_prepareSheetForIme(sheet,ime);_revealFocusedField(active,110);}
+};
+document.addEventListener('focusin',function(e){if(_nativeImePx()>0)_revealFocusedField(e.target,90);});
+document.addEventListener('focusout',function(){setTimeout(_adjustPinForIme,80);},true);
+if(window.visualViewport)window.visualViewport.addEventListener('resize',function(){
+  if(_native())return;var a=document.activeElement;if(a)_revealFocusedField(a,100);
+},{passive:true});
+
 // ===== AUTO-LOCK ON BACKGROUND / SCREEN-OFF =====
 let _suppressLock=false, _suppressTimer=null, _justUnlocked=0, _fpBusy=false, _fpTimer=null, _appUnlocked=false, _authInProgress=false, _authTimer=null;
 function suppressNextLock(){ _suppressLock=true; clearTimeout(_suppressTimer); _suppressTimer=setTimeout(()=>{_suppressLock=false;},30000); }
 // Put up the lock screen (without triggering the biometric prompt).
 function _lockNow(){
   if(!DB.pin) return;
-  pinEntry=''; pinFirst=''; isSettingPin=false; updateDots();
+  pinEntry='';pinFirst='';isSettingPin=false;var _ni=document.getElementById('nativePinInput');if(_ni)_ni.value='';updateDots();
   const le=document.getElementById('lockError'); if(le) le.textContent='';
   document.getElementById('app').classList.add('hidden');
   document.getElementById('lockScreen').classList.remove('hidden');
-  if(DB.fingerprintCredId && window.PublicKeyCredential) showFpPrompt(); else showPinPad();
+  if(_hasFingerprint()) showFpPrompt(); else showPinPad();
 }
-function relock(){ _lockNow(); if(DB.pin && DB.fingerprintCredId && window.PublicKeyCredential) setTimeout(tryFingerprint,400); }
+function relock(){ _lockNow(); if(DB.pin && _hasFingerprint()) setTimeout(tryFingerprint,280); }
 // Standard finance-app locking: lock the MOMENT the app goes to the background, so however
 // Android brings it back (fresh load, frozen resume, or state restore) it is ALREADY locked —
 // no reliance on a "you returned" event firing. On return, (re)trigger the fingerprint prompt.
@@ -3933,6 +4039,9 @@ window.addEventListener('focus', _onAppReturn);
 document.addEventListener('resume', _onAppReturn);
 var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anResizeT); _anResizeT=setTimeout(function(){ try{ if(currentPage==='analytics') renderAnalytics(); else if(currentPage==='overview') equalizeOvCards(); }catch(e){} },220); });
 loadDB(); applyTheme(); bootGate();
+requestAnimationFrame(function(){requestAnimationFrame(function(){
+  try{if(_native()&&window.MoneyMapNative&&typeof MoneyMapNative.contentReady==='function')MoneyMapNative.contentReady();}catch(e){}
+});});
 // Ask Android/Chrome to keep our data (mark storage persistent so it isn't evicted under storage pressure)
 try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ if(!p) navigator.storage.persist().catch(function(){}); }).catch(function(){}); } }catch(e){}
 // ===== DRAG POPUP DOWN TO CLOSE =====
@@ -4061,6 +4170,50 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .quick-action-btn:active { background:var(--glass-hover); transform:scale(0.97); transition:none; }
   .picker-item:active { background:var(--glass); transition:none; }
   *:focus, *:focus-visible { outline:none !important; }
+
+  /* Money Map final native motion + keyboard layer v2.0.3.5 */
+  html[data-native-shell="true"],html[data-native-shell="true"] body,html[data-native-shell="true"] #app,html[data-native-shell="true"] .page,html[data-native-shell="true"] .app-bg{background:var(--bg)!important;background-image:none!important;}
+  html[data-native-shell="true"] body{transition:none!important;}
+  html[data-native-shell="true"] .overview-header,html[data-native-shell="true"] .page-header{padding-top:calc(18px + var(--native-inset-top));padding-left:calc(var(--gutter) + var(--native-inset-left));padding-right:calc(var(--gutter) + var(--native-inset-right));}
+  html[data-native-shell="true"] .set-hdr{height:calc(150px + var(--native-inset-top));}
+  html[data-native-shell="true"] .set-back{top:calc(14px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
+  html[data-native-shell="true"] .set-pencil{top:calc(14px + var(--native-inset-top));right:calc(16px + var(--native-inset-right));}
+  html[data-native-shell="true"] .page{padding-bottom:calc(142px + var(--native-inset-bottom));scroll-padding-bottom:calc(142px + var(--native-inset-bottom));overscroll-behavior-y:auto!important;touch-action:pan-y;}
+  html[data-native-shell="true"] #bottomNav{left:0;right:0;bottom:0;height:calc(68px + var(--native-inset-bottom));padding:2px calc(9px + var(--native-inset-right)) calc(1px + var(--native-inset-bottom)) calc(9px + var(--native-inset-left));border-radius:0;border:0;border-top:1px solid rgba(255,255,255,.08);background:#000;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;align-items:center;animation:navDockIn 320ms cubic-bezier(.18,.82,.2,1) both;}
+  html[data-native-shell="true"][data-theme="light"] #bottomNav{background:#fff;border-top-color:rgba(30,28,22,.10);box-shadow:none!important;}
+  @keyframes navDockIn{from{opacity:.25;transform:translate3d(0,12px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+  html[data-native-shell="true"] .nav-item{gap:2px;padding:1px 2px 0;border-radius:14px;align-self:center;}
+  html[data-native-shell="true"] .nav-icon{padding:4px 14px;border-radius:15px;}
+  html[data-native-shell="true"] .nav-icon svg{width:25px;height:25px;stroke-width:2;}
+  html[data-native-shell="true"] .nav-label{font-size:10.5px;font-weight:650;}
+  html[data-native-shell="true"] .nav-item.active .nav-icon{background:rgba(212,175,55,.19);box-shadow:none;}
+  html[data-native-shell="true"] #fab{width:56px;height:56px;margin:0 6px;align-self:center;border:1px solid rgba(255,255,255,.30);box-shadow:0 5px 13px -7px rgba(90,68,8,.75);animation:fabIn 360ms 50ms cubic-bezier(.18,.82,.2,1) both;}
+  html[data-native-shell="true"] #fab svg{width:28px;height:28px;}
+  @keyframes fabIn{from{opacity:0;transform:translate3d(0,10px,0) scale(.9)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+  .modal-overlay{display:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(5,5,5,.64);contain:layout paint;}
+  .modal-overlay.mounted{display:flex!important;}
+  .modal-overlay.open{opacity:1;pointer-events:all;}
+  html[data-native-shell="true"][data-theme="light"] .modal-overlay{background:rgba(18,16,10,.40);}
+  html[data-native-shell="true"] .modal-overlay{padding:12px calc(12px + var(--native-inset-right)) calc(10px + var(--native-inset-bottom)) calc(12px + var(--native-inset-left));}
+  html[data-native-shell="true"] .modal-sheet{max-height:calc(100dvh - var(--native-inset-top) - 14px);scroll-padding-bottom:calc(var(--native-ime-bottom) + 28px);contain:layout paint;transition:transform 320ms cubic-bezier(.18,.82,.2,1);}
+  html[data-native-shell="true"] .modal-sheet::after{content:"";display:block;width:1px;height:var(--mm-ime-spacer,0px);flex:0 0 var(--mm-ime-spacer,0px);pointer-events:none;}
+  html[data-native-shell="true"] .modal-overlay.open .modal-sheet{transition:transform 320ms cubic-bezier(.18,.82,.2,1);}
+  html[data-native-shell="true"] #celebrate{padding-bottom:calc(7vh + var(--native-inset-bottom));}
+  html[data-native-shell="true"] #celebrate .cel-scrim{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+  html[data-native-shell="true"] .page.active{will-change:auto;animation-duration:330ms;}
+  html[data-native-shell="true"] #app.entering,html[data-native-shell="true"] #welcomeScreen:not(.hidden){animation:nativeHomeReveal 430ms cubic-bezier(.18,.82,.2,1) both;}
+  @keyframes nativeHomeReveal{from{opacity:0;transform:translate3d(0,9px,0) scale(.994)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+  html[data-native-shell="true"] .native-pin-shell{display:flex;position:relative;align-items:center;justify-content:center;min-width:224px;min-height:66px;padding:10px 20px;border-radius:22px;border:1px solid var(--glass-border);background:var(--glass);box-shadow:0 8px 22px -18px var(--shadow);}
+  .native-pin-input{position:absolute;inset:0;width:100%;height:100%;opacity:.01;border:0;background:transparent;color:transparent;caret-color:transparent;font-size:18px;}
+  html[data-native-shell="true"] .pin-pad{display:none!important;}
+  html[data-native-shell="true"] .pin-dots{margin:0;pointer-events:none;}
+  html[data-native-shell="true"] #lockScreen{background:var(--bg);background-image:none;animation:lockFadeIn 300ms ease-out both;transition:translate 280ms cubic-bezier(.18,.82,.2,1);}
+  @keyframes lockFadeIn{from{opacity:0}to{opacity:1}}
+  .bar-fill,.bsum-fill,.budget-bar-fill,.budget-full-fill,.goal-fill,.cel-bar-fill{transition-duration:460ms!important;}
+  .nav-item,.quick-action-btn,.set-tile,.overview-card,.bgt-card,.loan-card,.btn-gold,.btn-outline,.btn-danger{transform:translateZ(0);transition:transform 130ms ease-out,background-color 190ms linear;}
+  .quick-action-btn:active,.set-tile:active,.overview-card:active,.bgt-card:active,.loan-card:active,.btn-gold:active,.btn-outline:active,.btn-danger:active{transform:scale(.978) translateZ(0);}
+  .set-back,.set-pencil{transition:transform 130ms ease-out;}
+  .set-back:active,.set-pencil:active{transform:scale(.92);}
 </style>
 
 <script>
