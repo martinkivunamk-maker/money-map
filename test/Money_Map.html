@@ -25,26 +25,26 @@
   }
   /* DARK THEME */
   [data-theme="dark"] {
-    --bg: #060606;
+    --bg: #000000;
     --bg-glow1: rgba(212,175,55,0.13);
     --bg-glow2: rgba(212,175,55,0.06);
-    --surface: #111111;
-    --surface2: #1a1a1a;
-    --glass: rgba(255,255,255,0.05);
+    --surface: #050505;
+    --surface2: #0a0a0a;
+    --glass: rgba(255,255,255,0.045);
     --glass-hover: rgba(255,255,255,0.09);
     --glass-border: rgba(212,175,55,0.22);
     --glass-line: rgba(212,175,55,0.4);
     --text: #f5f5f5;
     --text-dim: #8a8a8a;
     --text-muted: #555;
-    --nav-bg: rgba(18,18,18,0.93);
-    --nav-glass: rgba(20,20,20,0.6);
-    --modal-bg: linear-gradient(180deg, #161616 0%, #0d0d0d 100%);
+    --nav-bg: #000000;
+    --nav-glass: rgba(0,0,0,0.92);
+    --modal-bg: linear-gradient(180deg, #0b0b0b 0%, #000000 100%);
     --input-bg: rgba(255,255,255,0.06);
     --input-border: rgba(255,255,255,0.1);
     --track: rgba(255,255,255,0.08);
     --shadow: rgba(0,0,0,0.6);
-    --card-bg: linear-gradient(165deg, rgba(38,36,30,0.9) 0%, rgba(20,19,16,0.92) 100%);
+    --card-bg: linear-gradient(165deg, rgba(16,16,16,0.98) 0%, rgba(4,4,4,0.99) 100%);
     --card-border: rgba(212,175,55,0.18);
     --card-hi: rgba(255,255,255,0.07);
   }
@@ -815,6 +815,8 @@
   .type-btn.active { border-color:var(--gold); color:var(--gold); background:rgba(212,175,55,0.12); transform:translateY(-2px); }
   /* Form C transaction form */
   .txc-hdr { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  #transactionModal .txc-hdr { position:sticky; top:0; z-index:7; padding:10px 0 12px; margin:0 0 10px; background:var(--modal-bg); box-shadow:0 1px 0 var(--input-border); }
+  #editProfileModal .modal-title { box-shadow:0 1px 0 var(--input-border); }
   .txc-chip { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .txc-chip svg { width:21px; height:21px; }
   .txc-chip.txc-i { background:rgba(63,174,90,0.14); color:var(--success); }
@@ -1037,7 +1039,7 @@
   <div class="lock-logo"><svg viewBox="0 0 24 24"><use href="#i-wallet"/></svg></div>
   <div class="lock-title">MONEY MAP</div>
   <div class="lock-subtitle" id="lockSubtitle">Enter your PIN</div>
-  <div class="native-pin-shell" id="nativePinShell" onclick="_focusNativePin()"><div class="pin-dots" id="pinDots"><div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div></div><input id="nativePinInput" class="native-pin-input" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" aria-label="PIN" oninput="_nativePinChanged(this)"></div>
+  <div class="native-pin-shell" id="nativePinShell" onclick="_focusNativePin()"><div class="pin-dots" id="pinDots"><div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div></div><input id="nativePinInput" class="native-pin-input" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" enterkeyhint="next" autocomplete="off" aria-label="PIN" oninput="_nativePinChanged(this)"></div>
   <div class="lock-error" id="lockError"></div>
   <div class="pin-pad" id="pinPad">
     <button class="pin-btn" onclick="haptic();pinPress('1')">1</button>
@@ -1216,7 +1218,7 @@
       </div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
     </div>
-      <div class="set-foot">Money Map v2.0.3.6</div>
+      <div class="set-foot">Money Map v2.0.3.7</div>
     </div>
   </div>
 
@@ -1656,8 +1658,13 @@ if(window.matchMedia){ window.matchMedia('(prefers-color-scheme: light)').addEve
 // ===== LOCK =====
 let pinEntry='', isSettingPin=false, pinFirst='';
 function _clearPinEntry(clearFirst){pinEntry='';if(clearFirst)pinFirst='';var n=document.getElementById('nativePinInput');if(n)n.value='';updateDots();}
-function _focusNativePin(){if(!_native())return;var n=document.getElementById('nativePinInput');if(n){n.value='';pinEntry='';updateDots();setTimeout(function(){n.focus();},40);}}
-function _nativePinChanged(el){var v=(el.value||'').replace(/\D/g,'').slice(0,4);el.value=v;pinEntry=v;updateDots();if(v.length===4){el.blur();setTimeout(checkPin,120);}}
+function _keepNativePinFocused(stage){
+  if(!_native())return;var n=document.getElementById('nativePinInput');if(!n)return;
+  n.enterKeyHint=stage==='confirm'?'done':'next';
+  [0,70,190].forEach(function(ms){setTimeout(function(){try{n.focus({preventScroll:true});}catch(e){n.focus();}},ms);});
+}
+function _focusNativePin(){if(!_native())return;var n=document.getElementById('nativePinInput');if(n){n.value='';pinEntry='';updateDots();_keepNativePinFocused(pinFirst?'confirm':'first');}}
+function _nativePinChanged(el){var v=(el.value||'').replace(/\D/g,'').slice(0,4);el.value=v;pinEntry=v;updateDots();if(v.length===4)setTimeout(checkPin,100);}
 function initLock(){
   if(!DB.pin){ document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; isSettingPin=true; return; }
   document.getElementById('app').classList.add('hidden');
@@ -1686,8 +1693,8 @@ function pinDel(){ pinEntry=pinEntry.slice(0,-1); updateDots(); }
 function updateDots(){ for(let i=0;i<4;i++) document.getElementById('d'+i).classList.toggle('filled', i<pinEntry.length); }
 function checkPin(){
   if(isSettingPin){
-    if(!pinFirst){ pinFirst=pinEntry; pinEntry='';var _ni=document.getElementById('nativePinInput');if(_ni)_ni.value='';updateDots(); document.getElementById('lockSubtitle').textContent='Confirm your PIN'; document.getElementById('lockError').textContent=''; }
-    else { if(pinEntry===pinFirst){ DB.pin=pinEntry; saveDB(); unlockApp(); } else { document.getElementById('lockError').textContent='PINs do not match. Try again.'; pinEntry=''; pinFirst=''; updateDots(); } }
+    if(!pinFirst){ pinFirst=pinEntry; pinEntry='';var _ni=document.getElementById('nativePinInput');if(_ni)_ni.value='';updateDots(); document.getElementById('lockSubtitle').textContent='Confirm your PIN'; document.getElementById('lockError').textContent=''; _keepNativePinFocused('confirm'); }
+    else { if(pinEntry===pinFirst){ var _ni2=document.getElementById('nativePinInput');if(_ni2)_ni2.blur(); DB.pin=pinEntry; saveDB(); unlockApp(); } else { document.getElementById('lockError').textContent='PINs do not match. Try again.'; pinEntry=''; pinFirst='';var _ni3=document.getElementById('nativePinInput');if(_ni3)_ni3.value=''; updateDots(); document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; _keepNativePinFocused('first'); } }
   } else {
     if(pinEntry===DB.pin){ if(_welPinReveal){ _welPinReveal=false; hapticStrong(); document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.remove('hidden'); _welNwShown=true; renderWelcomeNW(); } else { unlockApp(); } } else { document.getElementById('lockError').textContent='Incorrect PIN. Try again.'; pinEntry=''; setTimeout(()=>{updateDots(); document.getElementById('lockError').textContent='';},600); }
   }
@@ -4172,15 +4179,15 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   html[data-native-shell="true"] .set-back{top:calc(14px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
   html[data-native-shell="true"] .set-pencil{top:calc(14px + var(--native-inset-top));right:calc(16px + var(--native-inset-right));}
   html[data-native-shell="true"] .page{padding-bottom:calc(142px + var(--native-inset-bottom));scroll-padding-bottom:calc(142px + var(--native-inset-bottom));overscroll-behavior-y:auto!important;touch-action:pan-y;}
-  html[data-native-shell="true"] #bottomNav{left:0;right:0;bottom:0;height:calc(68px + var(--native-inset-bottom));padding:2px calc(9px + var(--native-inset-right)) calc(1px + var(--native-inset-bottom)) calc(9px + var(--native-inset-left));border-radius:0;border:0;border-top:1px solid rgba(255,255,255,.08);background:rgba(12,12,11,.995);box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;align-items:flex-end;animation:navDockIn 320ms cubic-bezier(.18,.82,.2,1) both;}
+  html[data-native-shell="true"] #bottomNav{left:0;right:0;bottom:0;height:calc(68px + var(--native-inset-bottom));padding:2px calc(9px + var(--native-inset-right)) calc(1px + var(--native-inset-bottom)) calc(9px + var(--native-inset-left));border-radius:0;border:0;border-top:1px solid rgba(255,255,255,.08);background:#000;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;align-items:center;animation:navDockIn 320ms cubic-bezier(.18,.82,.2,1) both;}
   html[data-native-shell="true"][data-theme="light"] #bottomNav{background:#fff;border-top-color:rgba(30,28,22,.10);box-shadow:none!important;}
   @keyframes navDockIn{from{opacity:.25;transform:translate3d(0,12px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
-  html[data-native-shell="true"] .nav-item{gap:2px;padding:1px 2px 0;border-radius:14px;align-self:flex-end;}
+  html[data-native-shell="true"] .nav-item{gap:2px;padding:1px 2px 0;border-radius:14px;align-self:center;}
   html[data-native-shell="true"] .nav-icon{padding:4px 14px;border-radius:15px;}
   html[data-native-shell="true"] .nav-icon svg{width:25px;height:25px;stroke-width:2;}
   html[data-native-shell="true"] .nav-label{font-size:10.5px;font-weight:650;}
   html[data-native-shell="true"] .nav-item.active .nav-icon{background:rgba(212,175,55,.19);box-shadow:none;}
-  html[data-native-shell="true"] #fab{width:56px;height:56px;margin:-9px 6px 0;align-self:flex-end;border:1px solid rgba(255,255,255,.30);box-shadow:0 5px 13px -7px rgba(90,68,8,.75);animation:fabIn 360ms 50ms cubic-bezier(.18,.82,.2,1) both;}
+  html[data-native-shell="true"] #fab{width:56px;height:56px;margin:0 6px;align-self:center;border:1px solid rgba(255,255,255,.30);box-shadow:0 5px 13px -7px rgba(90,68,8,.75);animation:fabIn 360ms 50ms cubic-bezier(.18,.82,.2,1) both;}
   html[data-native-shell="true"] #fab svg{width:28px;height:28px;}
   @keyframes fabIn{from{opacity:0;transform:translate3d(0,10px,0) scale(.9)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
   .modal-overlay{display:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(5,5,5,.64);contain:layout paint;}
