@@ -1216,7 +1216,7 @@
       </div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
     </div>
-      <div class="set-foot">Money Map v2.0.3.4</div>
+      <div class="set-foot">Money Map v2.0.3.5</div>
     </div>
   </div>
 
@@ -1764,12 +1764,15 @@ function navTo(page){
 function _animatePage(page){
   var pg=document.getElementById('page-'+page);if(!pg)return;
   if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  var els=pg.querySelectorAll('.overview-card,.glass-card,.swipe-stack,.txd-dayhead,.txd-row,.bgt-card,.loan-card,.set-card,.set-tiles,.settings-section,.an-chart,.empty-state');
-  var max=Math.min(els.length,8);
+  var els=pg.querySelectorAll('.overview-card,.glass-card,.swipe-stack,.txd-dayhead,.txd-row,.bgt-card,.loan-card,.set-card,.set-tiles,.settings-section,.an-chart,.empty-state,.budget-tabs');
+  var max=Math.min(els.length,9);
   for(var i=0;i<max;i++){
     var el=els[i];if(!el||el.offsetParent===null||!el.animate)continue;
     el.getAnimations().forEach(function(a){a.cancel();});
-    var a=el.animate([{opacity:.78,transform:'translate3d(0,8px,0)'},{opacity:1,transform:'translate3d(0,0,0)'}],{duration:260,delay:Math.min(i*20,80),easing:'cubic-bezier(.22,.78,.2,1)'});
+    var a=el.animate([
+      {opacity:.38,transform:'translate3d(0,14px,0) scale(.992)'},
+      {opacity:1,transform:'translate3d(0,0,0) scale(1)'}
+    ],{duration:360,delay:Math.min(i*26,130),easing:'cubic-bezier(.18,.82,.2,1)'});
     a.onfinish=function(){try{this.cancel();}catch(e){}};
   }
 }
@@ -2638,7 +2641,7 @@ function buildTxForm(type,existing){
   c.innerHTML=`
     <div class="txc-hdr"><span class="txc-chip ${meta.cls}">${ic(meta.icon)}</span><span class="txc-title">${meta.title}</span></div>
     <div class="txc-amtlab">Amount <span style="color:var(--text)">(${cur()})</span></div>
-    <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
     <div class="txc-grp">
       ${rows}
       <div class="txc-row" onclick="_openDate('txDate')"><span class="txc-k">Date</span><span class="txc-v"><span id="txDateDisp">${fmtDateShort(date)}</span>${ic('i-chevron')}</span><input type="date" class="txc-hiddendate" id="txDate" value="${date}" max="${today()}" onchange="_syncDate('txDate','txDateDisp')"></div>
@@ -2945,7 +2948,7 @@ function buildBudgetForm(ex){
     catField=`<div class="form-group"><label class="form-label">Name</label><input class="form-input" id="bName" value="${ex?ex.name:''}" placeholder="e.g. Monthly Savings"></div>`;
   }
   document.getElementById('budgetModalContent').innerHTML=catField+`
-    <div class="form-group"><label class="form-label">Budget Amount (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="bAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
+    <div class="form-group"><label class="form-label">Budget Amount (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="bAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
     <button class="btn-gold" onclick="saveBudget('${ex?ex.id:''}')">Save</button><button class="btn-outline" onclick="closeModal('addBudgetModal')">Cancel</button>`;
 }
 function openBudgetCatPicker(){
@@ -2974,7 +2977,7 @@ function openAddLoanModal(ex){
   document.getElementById('loanModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Loan Name</label><input class="form-input" id="lName" value="${ex?ex.name:''}" placeholder="e.g. Bank Loan"></div>
     <div class="form-group"><label class="form-label">Source (who/where)</label><input class="form-input" id="lSource" value="${ex?ex.source:''}" placeholder="e.g. Stanbic Bank"></div>
-    <div class="form-group"><label class="form-label">Total Amount (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="lAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
+    <div class="form-group"><label class="form-label">Total Amount (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="lAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
     <div class="form-group"><label class="form-label">Date Taken</label><input type="date" class="form-input" id="lDate" value="${ex?ex.date:today()}"></div>
     <button class="btn-gold" onclick="saveLoan('${ex?ex.id:''}')">Save Loan</button><button class="btn-outline" onclick="closeModal('addLoanModal')">Cancel</button>`;
   openModal('addLoanModal');
@@ -3004,7 +3007,7 @@ function openLoanForm(preId,existing){
   document.getElementById('txModalContent').innerHTML=`
     <div class="txc-hdr"><span class="txc-chip txc-g">${ic('i-cash')}</span><span class="txc-title">${existing?'Edit repayment':'Pay a loan'}</span></div>
     <div class="txc-amtlab">Amount <span style="color:var(--text)">(${cur()})</span></div>
-    <input type="text" inputmode="numeric" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input txc-amt" id="txAmount" value="${valDisplay}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${val||''}">
     <div class="txc-grp">
       <div class="txc-row" onclick="openOptionPicker('Loan',DB.loans.map(l=>({value:l.id,label:l.name})),document.getElementById('txLoanId').value,(v,l)=>{document.getElementById('txLoanId').value=v;document.getElementById('txLoanIdDisp').textContent=l;})"><span class="txc-k">Loan</span><span class="txc-v"><span id="txLoanIdDisp">${loan.name}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanId" value="${loan.id}">
       <div class="txc-row" onclick="openOptionPicker('Pay from',[{value:'income',label:'Income'},{value:'savings',label:'Life Savings'},{value:'emergency',label:'Emergency Fund'}],document.getElementById('txLoanFrom').value,(v,l)=>{document.getElementById('txLoanFrom').value=v;document.getElementById('txLoanFromDisp').textContent=l;})"><span class="txc-k">Pay from</span><span class="txc-v"><span id="txLoanFromDisp">${fromNames[from]||'Income'}</span>${ic('i-chevron')}</span></div><input type="hidden" id="txLoanFrom" value="${from}">
@@ -3047,7 +3050,7 @@ function openAddGoalModal(ex){
       <div style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5">Investment goals add to your savings rate and net worth. Lifestyle goals count as planned spending.</div>
       <input type="hidden" id="gKind" value="${gk}"></div>
     <div class="form-group"><label class="form-label">Icon</label><div class="icon-grid" id="gIconGrid">${GOAL_ICONS.map(i=>`<div class="icon-pick ${ex&&ex.icon===i?'selected':(!ex&&i==='i-target'?'selected':'')}" data-icon="${i}" onclick="pickIcon(this,'g')">${ic(i)}</div>`).join('')}</div></div>
-    <div class="form-group"><label class="form-label">Target Amount (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="gTarget" value="${ex?parseInt(ex.target).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.target:''}"></div>
+    <div class="form-group"><label class="form-label">Target Amount (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="gTarget" value="${ex?parseInt(ex.target).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.target:''}"></div>
     <div class="form-group"><label class="form-label">Target Date (when to close)</label><input type="date" class="form-input" id="gDate" value="${ex&&ex.targetDate?ex.targetDate:''}"></div>
     <button class="btn-gold" onclick="saveGoal('${ex?ex.id:''}')">Save Goal</button><button class="btn-outline" onclick="closeModal('addGoalModal')">Cancel</button>`;
   selectedIcon.g=ex?ex.icon:'i-target'; openModal('addGoalModal');
@@ -3189,8 +3192,8 @@ function openAssetModal(id){
   document.getElementById('assetModalTitle').textContent=ex?'Edit Asset':'Add Asset';
   document.getElementById('assetModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Asset name</label><input class="form-input" id="aName" value="${ex?esc(ex.name):''}" placeholder="e.g. Cows, Land in Mukono"></div>
-    <div class="form-group"><label class="form-label">How many</label><input type="text" inputmode="numeric" class="form-input" id="aQty" value="${ex?(ex.qty||''):''}" placeholder="e.g. 5"></div>
-    <div class="form-group"><label class="form-label">Current total value (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="aValue" value="${ex&&ex.value?ex.value.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.value:''}"></div>
+    <div class="form-group"><label class="form-label">How many</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="aQty" value="${ex?(ex.qty||''):''}" placeholder="e.g. 5"></div>
+    <div class="form-group"><label class="form-label">Current total value (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="aValue" value="${ex&&ex.value?ex.value.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.value:''}"></div>
     <button class="btn-gold" onclick="saveAsset('${ex?ex.id:''}')">Save asset</button><button class="btn-outline" onclick="closeModal('assetModal')">Cancel</button>`;
   openModal('assetModal');
 }
@@ -3211,7 +3214,7 @@ function openInvestmentModal(id){
   document.getElementById('investmentModalTitle').textContent=ex?'Edit Investment':'Add Investment';
   document.getElementById('investmentModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Where invested</label><input class="form-input" id="iName" value="${ex?esc(ex.name):''}" placeholder="e.g. Unit Trust, SACCO shares"></div>
-    <div class="form-group"><label class="form-label">Interest earned (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="iInterest" value="${ex&&ex.interest?ex.interest.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.interest:''}"></div>
+    <div class="form-group"><label class="form-label">Interest earned (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="iInterest" value="${ex&&ex.interest?ex.interest.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.interest:''}"></div>
     <div style="font-size:11.5px;color:var(--text-muted);margin:-6px 0 15px;line-height:1.5">Only the interest is added to your net worth — the principal is already counted under Life Savings.</div>
     <button class="btn-gold" onclick="saveInvestment('${ex?ex.id:''}')">Save investment</button><button class="btn-outline" onclick="closeModal('investmentModal')">Cancel</button>`;
   openModal('investmentModal');
@@ -3231,7 +3234,7 @@ function openAccountModal(id){
   document.getElementById('accountModalTitle').textContent=ex?'Edit Account':'Add Cash & Account';
   document.getElementById('accountModalContent').innerHTML=`
     <div class="form-group"><label class="form-label">Account name</label><input class="form-input" id="acName" value="${ex?esc(ex.name):''}" placeholder="e.g. NSSF, Bank, Mobile Money"></div>
-    <div class="form-group"><label class="form-label">Current balance (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="acValue" value="${ex&&ex.value?ex.value.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.value:''}"></div>
+    <div class="form-group"><label class="form-label">Current balance (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="acValue" value="${ex&&ex.value?ex.value.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.value:''}"></div>
     <div style="font-size:11.5px;color:var(--text-muted);margin:-6px 0 15px;line-height:1.5">Money sitting in an account — the full balance counts toward your net worth under Assets.</div>
     <button class="btn-gold" onclick="saveAccount('${ex?ex.id:''}')">Save account</button><button class="btn-outline" onclick="closeModal('accountModal')">Cancel</button>`;
   openModal('accountModal');
@@ -3704,8 +3707,8 @@ function _startBalSummaryText(){ const s=(DB.openingSavings||0),e=(DB.openingEme
 function openStartBalModal(){
   document.getElementById('startBalContent').innerHTML=`
     <div style="font-size:12.5px;color:var(--text-muted);margin:-4px 0 16px;line-height:1.5">Enter what you had already saved before you started tracking. It's added to your totals and net worth, but not counted as savings for any single month.</div>
-    <div class="form-group"><label class="form-label">Life Savings starting balance (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="sbSavings" value="${DB.openingSavings?DB.openingSavings.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${DB.openingSavings||''}"></div>
-    <div class="form-group"><label class="form-label">Emergency Fund starting balance (${cur()})</label><input type="text" inputmode="numeric" class="form-input" id="sbEmergency" value="${DB.openingEmergency?DB.openingEmergency.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${DB.openingEmergency||''}"></div>
+    <div class="form-group"><label class="form-label">Life Savings starting balance (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="sbSavings" value="${DB.openingSavings?DB.openingSavings.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${DB.openingSavings||''}"></div>
+    <div class="form-group"><label class="form-label">Emergency Fund starting balance (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="sbEmergency" value="${DB.openingEmergency?DB.openingEmergency.toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${DB.openingEmergency||''}"></div>
     <button class="btn-gold" onclick="saveStartBal()">Save</button><button class="btn-outline" onclick="closeModal('startBalModal')">Cancel</button>`;
   openModal('startBalModal');
 }
@@ -3922,20 +3925,47 @@ document.addEventListener('click',e=>{
 });
 
 function _nativeImePx(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--native-ime-bottom'))||0;}
-function _revealFocusedField(el){
-  if(!_native()||!el||!el.closest)return;var sheet=el.closest('.modal-sheet');if(!sheet)return;
-  sheet.style.translate='';
-  setTimeout(function(){
-    var ime=_nativeImePx();if(ime<=0){sheet.style.translate='';return;}
-    var r=el.getBoundingClientRect(),limit=window.innerHeight-ime-18;
-    if(r.bottom>limit){
-      sheet.scrollBy({top:r.bottom-limit+18,behavior:'smooth'});
-      setTimeout(function(){var rr=el.getBoundingClientRect(),remain=rr.bottom-limit;if(remain>0)sheet.style.translate='0 -'+Math.min(72,Math.ceil(remain+10))+'px';},190);
-    }
-  },140);
+function _keyboardTop(){
+  var ime=_nativeImePx(),top=window.innerHeight-(ime>0?ime:0),vv=window.visualViewport;
+  if(vv&&vv.height<window.innerHeight-40)top=Math.min(top,vv.offsetTop+vv.height);
+  return top;
 }
-document.addEventListener('focusin',function(e){_revealFocusedField(e.target);});
-document.addEventListener('focusout',function(e){var sh=e.target&&e.target.closest&&e.target.closest('.modal-sheet');if(sh)setTimeout(function(){if(_nativeImePx()<=0)sh.style.translate='';},120);},true);
+function _adjustPinForIme(){
+  var lock=document.getElementById('lockScreen'),ime=_nativeImePx();if(!lock)return;
+  lock.style.translate=ime>0?'0 -'+Math.min(110,Math.round(ime*.34))+'px':'';
+}
+function _revealFocusedField(el,fast){
+  if(!_native()||!el||!el.closest)return;
+  if(el.id==='nativePinInput'){_adjustPinForIme();return;}
+  var sheet=el.closest('.modal-sheet');if(!sheet)return;
+  sheet.style.translate='';
+  var run=function(){
+    var top=_keyboardTop();if(top>=window.innerHeight-20)return;
+    var r=el.getBoundingClientRect(),safeTop=top-22;
+    if(r.bottom>safeTop){
+      var target=Math.max(0,sheet.scrollTop+(r.bottom-safeTop)+20);
+      sheet.scrollTo({top:target,behavior:'smooth'});
+      setTimeout(function(){
+        var rr=el.getBoundingClientRect(),remain=rr.bottom-safeTop;
+        if(remain>2)sheet.style.translate='0 -'+Math.min(56,Math.ceil(remain+8))+'px';
+      },210);
+    }
+  };
+  setTimeout(run,fast?35:130);
+}
+window.__moneyMapNativeInsets=function(ime){
+  document.documentElement.classList.toggle('ime-open',Number(ime)>0);
+  _adjustPinForIme();
+  var active=document.activeElement;
+  if(active){_revealFocusedField(active,true);setTimeout(function(){_revealFocusedField(active,true);},220);}
+};
+document.addEventListener('focusin',function(e){_revealFocusedField(e.target,false);});
+document.addEventListener('focusout',function(e){
+  var sh=e.target&&e.target.closest&&e.target.closest('.modal-sheet');
+  if(sh)setTimeout(function(){if(_nativeImePx()<=0)sh.style.translate='';},120);
+  setTimeout(_adjustPinForIme,80);
+},true);
+if(window.visualViewport)window.visualViewport.addEventListener('resize',function(){var a=document.activeElement;if(a)_revealFocusedField(a,true);},{passive:true});
 
 // ===== AUTO-LOCK ON BACKGROUND / SCREEN-OFF =====
 let _suppressLock=false, _suppressTimer=null, _justUnlocked=0, _fpBusy=false, _fpTimer=null, _appUnlocked=false, _authInProgress=false, _authTimer=null;
@@ -4106,44 +4136,47 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .picker-item:active { background:var(--glass); transition:none; }
   *:focus, *:focus-visible { outline:none !important; }
 
-  /* Money Map native stability + motion layer v2.0.3.4 */
+  /* Money Map final native motion + keyboard layer v2.0.3.5 */
   html[data-native-shell="true"],html[data-native-shell="true"] body,html[data-native-shell="true"] #app,html[data-native-shell="true"] .page,html[data-native-shell="true"] .app-bg{background:var(--bg)!important;background-image:none!important;}
   html[data-native-shell="true"] body{transition:none!important;}
   html[data-native-shell="true"] .overview-header,html[data-native-shell="true"] .page-header{padding-top:calc(18px + var(--native-inset-top));padding-left:calc(var(--gutter) + var(--native-inset-left));padding-right:calc(var(--gutter) + var(--native-inset-right));}
   html[data-native-shell="true"] .set-hdr{height:calc(150px + var(--native-inset-top));}
   html[data-native-shell="true"] .set-back{top:calc(14px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
   html[data-native-shell="true"] .set-pencil{top:calc(14px + var(--native-inset-top));right:calc(16px + var(--native-inset-right));}
-  html[data-native-shell="true"] .page{padding-bottom:calc(94px + var(--native-inset-bottom));}
-  html[data-native-shell="true"] #bottomNav{left:0;right:0;bottom:0;height:calc(78px + var(--native-inset-bottom));padding:8px calc(10px + var(--native-inset-right)) calc(4px + var(--native-inset-bottom)) calc(10px + var(--native-inset-left));border-radius:28px 28px 0 0;border:1px solid rgba(212,175,55,.17);border-bottom:0;background:linear-gradient(180deg,rgba(22,21,18,.99),rgba(10,10,9,.995));box-shadow:0 -1px 0 rgba(255,255,255,.06) inset,0 -14px 38px -24px rgba(0,0,0,.8),0 -4px 16px -10px rgba(0,0,0,.55);backdrop-filter:none!important;-webkit-backdrop-filter:none!important;animation:navDockIn 360ms cubic-bezier(.22,.78,.2,1) both;}
-  html[data-native-shell="true"][data-theme="light"] #bottomNav{background:linear-gradient(180deg,#fff,#f8f7f3);border-color:rgba(73,58,15,.12);box-shadow:0 -1px 0 rgba(255,255,255,.95) inset,0 -18px 42px -28px rgba(34,27,10,.34),0 -5px 18px -12px rgba(34,27,10,.24);}
-  @keyframes navDockIn{from{opacity:.4;transform:translate3d(0,18px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
-  html[data-native-shell="true"] .nav-item{gap:4px;padding:5px 2px 2px;border-radius:17px;}
-  html[data-native-shell="true"] .nav-icon{padding:6px 16px;border-radius:17px;}
-  html[data-native-shell="true"] .nav-icon svg{width:26px;height:26px;stroke-width:2;}
-  html[data-native-shell="true"] .nav-label{font-size:11px;font-weight:650;}
-  html[data-native-shell="true"] .nav-item.active .nav-icon{background:rgba(212,175,55,.24);box-shadow:0 1px 0 rgba(255,255,255,.16) inset,0 5px 14px -10px rgba(212,175,55,.8);}
-  html[data-native-shell="true"] #fab{width:66px;height:66px;margin:-28px 8px 0;border:1px solid rgba(255,255,255,.36);box-shadow:0 12px 26px -10px rgba(184,144,31,.82),0 2px 5px rgba(0,0,0,.24);animation:fabIn 420ms 80ms cubic-bezier(.18,.82,.2,1) both;}
-  @keyframes fabIn{from{opacity:0;transform:translate3d(0,14px,0) scale(.88)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+  html[data-native-shell="true"] .page{padding-bottom:calc(142px + var(--native-inset-bottom));scroll-padding-bottom:calc(142px + var(--native-inset-bottom));overscroll-behavior-y:auto!important;touch-action:pan-y;}
+  html[data-native-shell="true"] #bottomNav{left:0;right:0;bottom:0;height:calc(68px + var(--native-inset-bottom));padding:2px calc(9px + var(--native-inset-right)) calc(2px + var(--native-inset-bottom)) calc(9px + var(--native-inset-left));border-radius:0;border:0;border-top:1px solid rgba(255,255,255,.08);background:rgba(12,12,11,.995);box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;align-items:flex-start;animation:navDockIn 320ms cubic-bezier(.18,.82,.2,1) both;}
+  html[data-native-shell="true"][data-theme="light"] #bottomNav{background:#fff;border-top-color:rgba(30,28,22,.10);box-shadow:none!important;}
+  @keyframes navDockIn{from{opacity:.25;transform:translate3d(0,12px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+  html[data-native-shell="true"] .nav-item{gap:2px;padding:1px 2px 0;border-radius:14px;align-self:flex-start;}
+  html[data-native-shell="true"] .nav-icon{padding:4px 14px;border-radius:15px;}
+  html[data-native-shell="true"] .nav-icon svg{width:25px;height:25px;stroke-width:2;}
+  html[data-native-shell="true"] .nav-label{font-size:10.5px;font-weight:650;}
+  html[data-native-shell="true"] .nav-item.active .nav-icon{background:rgba(212,175,55,.19);box-shadow:none;}
+  html[data-native-shell="true"] #fab{width:56px;height:56px;margin:-9px 6px 0;align-self:flex-start;border:1px solid rgba(255,255,255,.30);box-shadow:0 5px 13px -7px rgba(90,68,8,.75);animation:fabIn 360ms 50ms cubic-bezier(.18,.82,.2,1) both;}
+  html[data-native-shell="true"] #fab svg{width:28px;height:28px;}
+  @keyframes fabIn{from{opacity:0;transform:translate3d(0,10px,0) scale(.9)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
   .modal-overlay{display:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(5,5,5,.64);contain:layout paint;}
   .modal-overlay.mounted{display:flex!important;}
   .modal-overlay.open{opacity:1;pointer-events:all;}
   html[data-native-shell="true"][data-theme="light"] .modal-overlay{background:rgba(18,16,10,.40);}
   html[data-native-shell="true"] .modal-overlay{padding:12px calc(12px + var(--native-inset-right)) calc(10px + var(--native-inset-bottom)) calc(12px + var(--native-inset-left));}
-  html[data-native-shell="true"] .modal-sheet{max-height:calc(100dvh - var(--native-inset-top) - 14px);scroll-padding-bottom:24px;contain:layout paint;}
+  html[data-native-shell="true"] .modal-sheet{max-height:calc(100dvh - var(--native-inset-top) - 14px);scroll-padding-bottom:calc(var(--native-ime-bottom) + 28px);contain:layout paint;transition:transform 320ms cubic-bezier(.18,.82,.2,1);}
+  html[data-native-shell="true"] .modal-overlay.open .modal-sheet{transition:transform 320ms cubic-bezier(.18,.82,.2,1);}
   html[data-native-shell="true"] #celebrate{padding-bottom:calc(7vh + var(--native-inset-bottom));}
   html[data-native-shell="true"] #celebrate .cel-scrim{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
-  html[data-native-shell="true"] .page.active{will-change:auto;animation-duration:240ms;}
+  html[data-native-shell="true"] .page.active{will-change:auto;animation-duration:330ms;}
+  html[data-native-shell="true"] #app.entering,html[data-native-shell="true"] #welcomeScreen:not(.hidden){animation:nativeHomeReveal 430ms cubic-bezier(.18,.82,.2,1) both;}
+  @keyframes nativeHomeReveal{from{opacity:0;transform:translate3d(0,9px,0) scale(.994)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
   html[data-native-shell="true"] .native-pin-shell{display:flex;position:relative;align-items:center;justify-content:center;min-width:224px;min-height:66px;padding:10px 20px;border-radius:22px;border:1px solid var(--glass-border);background:var(--glass);box-shadow:0 8px 22px -18px var(--shadow);}
   .native-pin-input{position:absolute;inset:0;width:100%;height:100%;opacity:.01;border:0;background:transparent;color:transparent;caret-color:transparent;font-size:18px;}
   html[data-native-shell="true"] .pin-pad{display:none!important;}
   html[data-native-shell="true"] .pin-dots{margin:0;pointer-events:none;}
-  html[data-native-shell="true"] #lockScreen{background:var(--bg);background-image:none;animation:lockFadeIn 260ms ease-out both;}
+  html[data-native-shell="true"] #lockScreen{background:var(--bg);background-image:none;animation:lockFadeIn 300ms ease-out both;transition:translate 280ms cubic-bezier(.18,.82,.2,1);}
   @keyframes lockFadeIn{from{opacity:0}to{opacity:1}}
-  #budgetStatusCard,.gl-card,.settings-section,.overview-header,.page-header,.chart-card,.insight-card,.set-card,.set-tiles,#fab{animation:none;}
-  .bar-fill,.bsum-fill,.budget-bar-fill,.budget-full-fill,.goal-fill,.cel-bar-fill{transition-duration:420ms!important;}
-  .nav-item,.quick-action-btn,.set-tile,.overview-card,.bgt-card,.loan-card,.btn-gold,.btn-outline,.btn-danger{transform:translateZ(0);transition:transform 110ms ease-out,background-color 180ms linear;}
-  .quick-action-btn:active,.set-tile:active,.overview-card:active,.bgt-card:active,.loan-card:active,.btn-gold:active,.btn-outline:active,.btn-danger:active{transform:scale(.982) translateZ(0);}
-  .set-back,.set-pencil{transition:transform 110ms ease-out;}
+  .bar-fill,.bsum-fill,.budget-bar-fill,.budget-full-fill,.goal-fill,.cel-bar-fill{transition-duration:460ms!important;}
+  .nav-item,.quick-action-btn,.set-tile,.overview-card,.bgt-card,.loan-card,.btn-gold,.btn-outline,.btn-danger{transform:translateZ(0);transition:transform 130ms ease-out,background-color 190ms linear;}
+  .quick-action-btn:active,.set-tile:active,.overview-card:active,.bgt-card:active,.loan-card:active,.btn-gold:active,.btn-outline:active,.btn-danger:active{transform:scale(.978) translateZ(0);}
+  .set-back,.set-pencil{transition:transform 130ms ease-out;}
   .set-back:active,.set-pencil:active{transform:scale(.92);}
 </style>
 
