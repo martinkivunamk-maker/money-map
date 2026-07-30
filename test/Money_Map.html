@@ -21,7 +21,7 @@
     --gutter: 24px;
     --ease: cubic-bezier(0.32, 0.72, 0, 1);
     --motion-fast: 180ms; --motion-page:220ms; --motion-sheet:300ms;
-    --native-inset-top:0px; --native-inset-bottom:0px; --native-inset-left:0px; --native-inset-right:0px;
+    --native-inset-top:0px; --native-inset-bottom:0px; --native-inset-left:0px; --native-inset-right:0px; --native-ime-bottom:0px;
   }
   /* DARK THEME */
   [data-theme="dark"] {
@@ -771,13 +771,12 @@
   #fab svg { width:31px; height:31px; stroke:#0a0a0a; stroke-width:2.4; }
   #fab:active { transform:scale(0.9) rotate(90deg); }
 
-  .modal-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.55); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-    display:flex; align-items:flex-end; justify-content:center; padding:12px 12px 16px; opacity:0; pointer-events:none; transition:opacity var(--motion-fast) linear; }
+  .modal-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.55);
+    display:none; align-items:flex-end; justify-content:center; padding:12px 12px 16px; opacity:0; pointer-events:none; transition:opacity var(--motion-fast) linear; }
   .modal-overlay.open { opacity:1; pointer-events:all; }
   /* Only the TOP-most open sheet frosts the background. An open overlay that sits under another
      open overlay drops its blur, so second-level popups never stack two backdrop-filters (that
      double-composite is what made stacked popups flash/ghost on the Android WebView). */
-  .modal-overlay.open:has(~ .modal-overlay.open) { backdrop-filter:none; -webkit-backdrop-filter:none; }
   .modal-sheet { width:100%; max-width:480px; max-height:100%; background:var(--modal-bg); border:1px solid var(--glass-border);
     border-radius:28px; overflow-y:auto; overflow-x:hidden; transform:translateY(110%) translateZ(0); -webkit-overflow-scrolling:touch; touch-action:pan-y; overscroll-behavior:contain;
     backface-visibility:hidden; transition:transform 240ms var(--ease); padding:0 var(--gutter) 24px; will-change:transform; }
@@ -1038,7 +1037,7 @@
   <div class="lock-logo"><svg viewBox="0 0 24 24"><use href="#i-wallet"/></svg></div>
   <div class="lock-title">MONEY MAP</div>
   <div class="lock-subtitle" id="lockSubtitle">Enter your PIN</div>
-  <div class="pin-dots" id="pinDots"><div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div></div>
+  <div class="native-pin-shell" id="nativePinShell" onclick="_focusNativePin()"><div class="pin-dots" id="pinDots"><div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div></div><input id="nativePinInput" class="native-pin-input" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" aria-label="PIN" oninput="_nativePinChanged(this)"></div>
   <div class="lock-error" id="lockError"></div>
   <div class="pin-pad" id="pinPad">
     <button class="pin-btn" onclick="haptic();pinPress('1')">1</button>
@@ -1217,7 +1216,7 @@
       </div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
     </div>
-      <div class="set-foot">Money Map v2.0.3.3</div>
+      <div class="set-foot">Money Map v2.0.3.4</div>
     </div>
   </div>
 
@@ -1373,7 +1372,17 @@ function _nativeModal(){try{var n=_native();if(n&&n.setModalOpen)n.setModalOpen(
 function haptic(kind){try{var n=_native();if(n&&n.haptic){n.haptic(typeof kind==='string'?kind:'light');return;}}catch(e){} try{navigator.vibrate&&navigator.vibrate(typeof kind==='number'?kind:10);}catch(e){}}
 function hapticStrong(){haptic('strong');}
 function _nativeBio(mode){try{var n=_native();if(n&&n.authenticate){_fpBusy=true;_authInProgress=true;n.authenticate(mode);return true;}}catch(e){}return false;}
-window.__moneyMapNativeBiometric=function(ok,mode,msg){_fpBusy=false;_authInProgress=false;var i=document.getElementById('fpIcon'),h=document.getElementById('fpHint');if(i)i.classList.remove('scanning');if(ok){if(mode==='setup'){DB.fingerprintCredId=['native'];saveDB();renderSettings();showToast('Fingerprint enabled!','var(--success)');}else unlockApp();}else if(h)h.textContent=msg||"Couldn't read fingerprint — tap to retry";};
+function _hasFingerprint(){return !!(DB.fingerprintCredId&&(_native()||window.PublicKeyCredential));}
+window.__moneyMapNativeBiometric=function(ok,mode,msg){
+  _fpBusy=false;_authInProgress=false;
+  var i=document.getElementById('fpIcon'),h=document.getElementById('fpHint');if(i)i.classList.remove('scanning');
+  if(ok){
+    if(mode==='setup'){DB.fingerprintCredId=['native'];saveDB();renderSettings();showToast('Fingerprint enabled!','var(--success)');}
+    else if(mode==='reveal'){_welNwShown=true;renderWelcomeNW();haptic('success');}
+    else if(mode==='welcome'){_leaveWelcomeThen(unlockApp);}
+    else unlockApp();
+  }else if(h){h.textContent=msg||"Couldn't read fingerprint — tap to retry";}
+};
 function _reduceMotion(){ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 function _ovCount(id,to,suffix){
   const el=document.getElementById(id); if(!el) return; suffix=suffix||'';
@@ -1448,6 +1457,7 @@ function renderWelcomeStats(){
 }
 function toggleWelcomeNW(){
   if(_welNwShown){ _welNwShown=false; haptic(12); renderWelcomeNW(); return; }
+  if(_native()&&DB.fingerprintCredId){_nativeBio('reveal');return;}
   if(DB.fingerprintCredId && window.PublicKeyCredential){
     if(_fpBusy) return;
     _fpBusy=true; _authInProgress=true;
@@ -1490,7 +1500,7 @@ function enterFromWelcome(){
   // No PIN yet -> first-time setup happens on the lock screen (create a PIN).
   if(!DB.pin){ _leaveWelcomeThen(startAuth); return; }
   // Fingerprint enrolled -> authenticate straight from the welcome screen (no intermediate lock window).
-  if(DB.fingerprintCredId && window.PublicKeyCredential){ _fpFromWelcome(); return; }
+  if(_hasFingerprint()){ if(_native())_nativeBio('welcome'); else _fpFromWelcome(); return; }
   // PIN-only -> go to the lock screen PIN pad.
   _leaveWelcomeThen(startAuth);
 }
@@ -1522,11 +1532,12 @@ function _welcomeToPin(){
   });
 }
 function startAuth(){
+  _clearPinEntry(true);
   document.getElementById('app').classList.add('hidden');
   var _ls=document.getElementById('lockScreen'); _ls.classList.remove('hidden');
   _ls.classList.remove('entering'); void _ls.offsetWidth; _ls.classList.add('entering'); setTimeout(function(){_ls.classList.remove('entering');},500);
   if(!DB.pin){ isSettingPin=true; document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; showPinPad(); return; }
-  if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
+  if(_hasFingerprint()){ showFpPrompt(); setTimeout(tryFingerprint,280); }
   else { showPinPad(); }
 }
 
@@ -1593,31 +1604,22 @@ function pct(a,b){ return b>0?Math.round((a/b)*100):0; }
 function showToast(m,c){ const t=document.getElementById('toast'); t.textContent=m; t.style.color=c||'var(--text)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
 let _modalStack=[], _modalHistDepth=0, _resettingHistory=false;
 function _resetModalHist(){ if(_modalHistDepth>0){ const n=_modalHistDepth; _modalHistDepth=0; _resettingHistory=true; history.go(-n); } }
+var _modalUnmountTimers={};
+function _mountModal(el){clearTimeout(_modalUnmountTimers[el.id]);el.classList.add('mounted');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('open');});});}
+function _unmountModal(el){if(!el)return;el.querySelectorAll('.modal-sheet').forEach(function(sh){sh.style.translate='';});el.classList.remove('open');clearTimeout(_modalUnmountTimers[el.id]);_modalUnmountTimers[el.id]=setTimeout(function(){el.classList.remove('mounted');el.classList.remove('closing');},260);}
 function openModal(id){
   const el=document.getElementById(id);if(!el||el.classList.contains('open'))return;
-  el.classList.add('open');
-  _modalStack.push(id); _nativeModal(); haptic('light');
-  if(_modalStack.length>_modalHistDepth){ history.pushState({mmModal:true},''); _modalHistDepth++; }
+  _mountModal(el);_modalStack.push(id);_nativeModal();haptic('light');
+  if(_modalStack.length>_modalHistDepth){history.pushState({mmModal:true},'');_modalHistDepth++;}
 }
 function closeModal(id){
-  const el=document.getElementById(id);if(!el||!el.classList.contains('open'))return;
-  el.classList.remove('open');
-  const i=_modalStack.lastIndexOf(id); if(i!==-1) _modalStack.splice(i,1);
-  _nativeModal();
-  if(_modalStack.length===0) _resetModalHist();
-  // Closing a modal that leaves OTHERS open (e.g. drag/backdrop-dismiss a 2nd-level popup):
-  // consume this modal's owed history entry so the next Back isn't wasted peeling a ghost entry.
-  else if(_modalHistDepth>_modalStack.length){ _modalHistDepth--; _resettingHistory=true; history.go(-1); }
+  const el=document.getElementById(id);if(!el||(!el.classList.contains('open')&&!el.classList.contains('mounted')))return;
+  _unmountModal(el);const i=_modalStack.lastIndexOf(id);if(i!==-1)_modalStack.splice(i,1);_nativeModal();
+  if(_modalStack.length===0)_resetModalHist();
+  else if(_modalHistDepth>_modalStack.length){_modalHistDepth--;_resettingHistory=true;history.go(-1);}
 }
-function closeModalQuiet(id){
-  const el=document.getElementById(id);if(!el||!el.classList.contains('open'))return;
-  el.classList.remove('open');
-  const i=_modalStack.lastIndexOf(id); if(i!==-1) _modalStack.splice(i,1);
-}
-function closeAllModals(){
-  for(var k=_modalStack.length-1;k>=0;k--){ const el=document.getElementById(_modalStack[k]); if(el)el.classList.remove('open'); }
-  _modalStack=[]; _nativeModal(); _resetModalHist();
-}
+function closeModalQuiet(id){const el=document.getElementById(id);if(!el)return;_unmountModal(el);const i=_modalStack.lastIndexOf(id);if(i!==-1)_modalStack.splice(i,1);_nativeModal();}
+function closeAllModals(){for(var k=_modalStack.length-1;k>=0;k--){_unmountModal(document.getElementById(_modalStack[k]));}_modalStack=[];_nativeModal();_resetModalHist();}
 let _confirmCallback=null;
 function askConfirm(title,message,onConfirm,confirmLabel,danger){
   document.getElementById('confirmTitle').textContent=title;
@@ -1653,31 +1655,38 @@ if(window.matchMedia){ window.matchMedia('(prefers-color-scheme: light)').addEve
 
 // ===== LOCK =====
 let pinEntry='', isSettingPin=false, pinFirst='';
+function _clearPinEntry(clearFirst){pinEntry='';if(clearFirst)pinFirst='';var n=document.getElementById('nativePinInput');if(n)n.value='';updateDots();}
+function _focusNativePin(){if(!_native())return;var n=document.getElementById('nativePinInput');if(n){n.value='';pinEntry='';updateDots();setTimeout(function(){n.focus();},40);}}
+function _nativePinChanged(el){var v=(el.value||'').replace(/\D/g,'').slice(0,4);el.value=v;pinEntry=v;updateDots();if(v.length===4){el.blur();setTimeout(checkPin,120);}}
 function initLock(){
   if(!DB.pin){ document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; isSettingPin=true; return; }
   document.getElementById('app').classList.add('hidden');
   document.getElementById('lockScreen').classList.remove('hidden');
-  if(DB.fingerprintCredId && window.PublicKeyCredential){ showFpPrompt(); setTimeout(tryFingerprint,400); }
+  if(_hasFingerprint()){ showFpPrompt(); setTimeout(tryFingerprint,280); }
   else { showPinPad(); }
 }
 function showFpPrompt(){
   document.getElementById('lockSubtitle').textContent='Unlock with fingerprint';
   document.getElementById('pinDots').style.display='none';
+  var ns=document.getElementById('nativePinShell');if(ns)ns.style.display='none';
   document.getElementById('pinPad').style.display='none';
   document.getElementById('fpPrompt').style.display='flex';
 }
 function showPinPad(){
+  _clearPinEntry(false);
   document.getElementById('lockSubtitle').textContent='Enter your PIN';
   const fp=document.getElementById('fpPrompt'); if(fp) fp.style.display='none';
   document.getElementById('pinDots').style.display='flex';
-  document.getElementById('pinPad').style.display='grid';
+  var ns=document.getElementById('nativePinShell');if(ns)ns.style.display='flex';
+  document.getElementById('pinPad').style.display=_native()?'none':'grid';
+  if(_native())setTimeout(_focusNativePin,90);
 }
 function pinPress(n){ if(pinEntry.length>=4)return; pinEntry+=n; updateDots(); if(pinEntry.length===4) setTimeout(checkPin,150); }
 function pinDel(){ pinEntry=pinEntry.slice(0,-1); updateDots(); }
 function updateDots(){ for(let i=0;i<4;i++) document.getElementById('d'+i).classList.toggle('filled', i<pinEntry.length); }
 function checkPin(){
   if(isSettingPin){
-    if(!pinFirst){ pinFirst=pinEntry; pinEntry=''; updateDots(); document.getElementById('lockSubtitle').textContent='Confirm your PIN'; document.getElementById('lockError').textContent=''; }
+    if(!pinFirst){ pinFirst=pinEntry; pinEntry='';var _ni=document.getElementById('nativePinInput');if(_ni)_ni.value='';updateDots(); document.getElementById('lockSubtitle').textContent='Confirm your PIN'; document.getElementById('lockError').textContent=''; }
     else { if(pinEntry===pinFirst){ DB.pin=pinEntry; saveDB(); unlockApp(); } else { document.getElementById('lockError').textContent='PINs do not match. Try again.'; pinEntry=''; pinFirst=''; updateDots(); } }
   } else {
     if(pinEntry===DB.pin){ if(_welPinReveal){ _welPinReveal=false; hapticStrong(); document.getElementById('lockScreen').classList.add('hidden'); const w=document.getElementById('welcomeScreen'); if(w) w.classList.remove('hidden'); _welNwShown=true; renderWelcomeNW(); } else { unlockApp(); } } else { document.getElementById('lockError').textContent='Incorrect PIN. Try again.'; pinEntry=''; setTimeout(()=>{updateDots(); document.getElementById('lockError').textContent='';},600); }
@@ -1756,10 +1765,12 @@ function _animatePage(page){
   var pg=document.getElementById('page-'+page);if(!pg)return;
   if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   var els=pg.querySelectorAll('.overview-card,.glass-card,.swipe-stack,.txd-dayhead,.txd-row,.bgt-card,.loan-card,.set-card,.set-tiles,.settings-section,.an-chart,.empty-state');
-  var max=Math.min(els.length,10);
+  var max=Math.min(els.length,8);
   for(var i=0;i<max;i++){
     var el=els[i];if(!el||el.offsetParent===null||!el.animate)continue;
-    el.animate([{opacity:.72,transform:'translate3d(0,7px,0)'},{opacity:1,transform:'translate3d(0,0,0)'}],{duration:230,delay:Math.min(i*18,90),easing:'cubic-bezier(.22,.78,.2,1)',fill:'both'});
+    el.getAnimations().forEach(function(a){a.cancel();});
+    var a=el.animate([{opacity:.78,transform:'translate3d(0,8px,0)'},{opacity:1,transform:'translate3d(0,0,0)'}],{duration:260,delay:Math.min(i*20,80),easing:'cubic-bezier(.22,.78,.2,1)'});
+    a.onfinish=function(){try{this.cancel();}catch(e){}};
   }
 }
 function goSettings(){ navTo('settings'); }
@@ -3902,25 +3913,43 @@ window.addEventListener('popstate',()=>{
   while(_modalStack.length>_modalHistDepth){
     const id=_modalStack.pop();
     const el=document.getElementById(id);
-    if(el)el.classList.remove('open');
+    if(el)_unmountModal(el);
   }
+  _nativeModal();
 });
 document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay')&&e.target.classList.contains('open'))closeModal(e.target.id);
 });
+
+function _nativeImePx(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--native-ime-bottom'))||0;}
+function _revealFocusedField(el){
+  if(!_native()||!el||!el.closest)return;var sheet=el.closest('.modal-sheet');if(!sheet)return;
+  sheet.style.translate='';
+  setTimeout(function(){
+    var ime=_nativeImePx();if(ime<=0){sheet.style.translate='';return;}
+    var r=el.getBoundingClientRect(),limit=window.innerHeight-ime-18;
+    if(r.bottom>limit){
+      sheet.scrollBy({top:r.bottom-limit+18,behavior:'smooth'});
+      setTimeout(function(){var rr=el.getBoundingClientRect(),remain=rr.bottom-limit;if(remain>0)sheet.style.translate='0 -'+Math.min(72,Math.ceil(remain+10))+'px';},190);
+    }
+  },140);
+}
+document.addEventListener('focusin',function(e){_revealFocusedField(e.target);});
+document.addEventListener('focusout',function(e){var sh=e.target&&e.target.closest&&e.target.closest('.modal-sheet');if(sh)setTimeout(function(){if(_nativeImePx()<=0)sh.style.translate='';},120);},true);
+
 // ===== AUTO-LOCK ON BACKGROUND / SCREEN-OFF =====
 let _suppressLock=false, _suppressTimer=null, _justUnlocked=0, _fpBusy=false, _fpTimer=null, _appUnlocked=false, _authInProgress=false, _authTimer=null;
 function suppressNextLock(){ _suppressLock=true; clearTimeout(_suppressTimer); _suppressTimer=setTimeout(()=>{_suppressLock=false;},30000); }
 // Put up the lock screen (without triggering the biometric prompt).
 function _lockNow(){
   if(!DB.pin) return;
-  pinEntry=''; pinFirst=''; isSettingPin=false; updateDots();
+  pinEntry='';pinFirst='';isSettingPin=false;var _ni=document.getElementById('nativePinInput');if(_ni)_ni.value='';updateDots();
   const le=document.getElementById('lockError'); if(le) le.textContent='';
   document.getElementById('app').classList.add('hidden');
   document.getElementById('lockScreen').classList.remove('hidden');
-  if(DB.fingerprintCredId && window.PublicKeyCredential) showFpPrompt(); else showPinPad();
+  if(_hasFingerprint()) showFpPrompt(); else showPinPad();
 }
-function relock(){ _lockNow(); if(DB.pin && DB.fingerprintCredId && window.PublicKeyCredential) setTimeout(tryFingerprint,400); }
+function relock(){ _lockNow(); if(DB.pin && _hasFingerprint()) setTimeout(tryFingerprint,280); }
 // Standard finance-app locking: lock the MOMENT the app goes to the background, so however
 // Android brings it back (fresh load, frozen resume, or state restore) it is ALREADY locked —
 // no reliance on a "you returned" event firing. On return, (re)trigger the fingerprint prompt.
@@ -4077,25 +4106,40 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .picker-item:active { background:var(--glass); transition:none; }
   *:focus, *:focus-visible { outline:none !important; }
 
-  /* Money Map native motion + edge layer v2.0.3.3 */
-  html[data-native-shell="true"] .overview-header,html[data-native-shell="true"] .page-header{
-    padding-top:calc(18px + var(--native-inset-top));
-    padding-left:calc(var(--gutter) + var(--native-inset-left));
-    padding-right:calc(var(--gutter) + var(--native-inset-right));
-  }
+  /* Money Map native stability + motion layer v2.0.3.4 */
+  html[data-native-shell="true"],html[data-native-shell="true"] body,html[data-native-shell="true"] #app,html[data-native-shell="true"] .page,html[data-native-shell="true"] .app-bg{background:var(--bg)!important;background-image:none!important;}
+  html[data-native-shell="true"] body{transition:none!important;}
+  html[data-native-shell="true"] .overview-header,html[data-native-shell="true"] .page-header{padding-top:calc(18px + var(--native-inset-top));padding-left:calc(var(--gutter) + var(--native-inset-left));padding-right:calc(var(--gutter) + var(--native-inset-right));}
   html[data-native-shell="true"] .set-hdr{height:calc(150px + var(--native-inset-top));}
   html[data-native-shell="true"] .set-back{top:calc(14px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
   html[data-native-shell="true"] .set-pencil{top:calc(14px + var(--native-inset-top));right:calc(16px + var(--native-inset-right));}
-  html[data-native-shell="true"] #bottomNav{bottom:calc(6px + var(--native-inset-bottom));left:calc(8px + var(--native-inset-left));right:calc(8px + var(--native-inset-right));}
-  html[data-native-shell="true"] .page{padding-bottom:calc(var(--nav-height) + 24px + var(--native-inset-bottom));}
-  html[data-native-shell="true"] .modal-overlay{padding:12px calc(12px + var(--native-inset-right)) calc(16px + var(--native-inset-bottom)) calc(12px + var(--native-inset-left));backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(5,5,5,.62);}
-  html[data-native-shell="true"][data-theme="light"] .modal-overlay{background:rgba(18,16,10,.38);}
-  html[data-native-shell="true"] .modal-sheet{max-height:calc(100dvh - var(--native-inset-top) - var(--native-inset-bottom) - 18px);}
+  html[data-native-shell="true"] .page{padding-bottom:calc(94px + var(--native-inset-bottom));}
+  html[data-native-shell="true"] #bottomNav{left:0;right:0;bottom:0;height:calc(78px + var(--native-inset-bottom));padding:8px calc(10px + var(--native-inset-right)) calc(4px + var(--native-inset-bottom)) calc(10px + var(--native-inset-left));border-radius:28px 28px 0 0;border:1px solid rgba(212,175,55,.17);border-bottom:0;background:linear-gradient(180deg,rgba(22,21,18,.99),rgba(10,10,9,.995));box-shadow:0 -1px 0 rgba(255,255,255,.06) inset,0 -14px 38px -24px rgba(0,0,0,.8),0 -4px 16px -10px rgba(0,0,0,.55);backdrop-filter:none!important;-webkit-backdrop-filter:none!important;animation:navDockIn 360ms cubic-bezier(.22,.78,.2,1) both;}
+  html[data-native-shell="true"][data-theme="light"] #bottomNav{background:linear-gradient(180deg,#fff,#f8f7f3);border-color:rgba(73,58,15,.12);box-shadow:0 -1px 0 rgba(255,255,255,.95) inset,0 -18px 42px -28px rgba(34,27,10,.34),0 -5px 18px -12px rgba(34,27,10,.24);}
+  @keyframes navDockIn{from{opacity:.4;transform:translate3d(0,18px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+  html[data-native-shell="true"] .nav-item{gap:4px;padding:5px 2px 2px;border-radius:17px;}
+  html[data-native-shell="true"] .nav-icon{padding:6px 16px;border-radius:17px;}
+  html[data-native-shell="true"] .nav-icon svg{width:26px;height:26px;stroke-width:2;}
+  html[data-native-shell="true"] .nav-label{font-size:11px;font-weight:650;}
+  html[data-native-shell="true"] .nav-item.active .nav-icon{background:rgba(212,175,55,.24);box-shadow:0 1px 0 rgba(255,255,255,.16) inset,0 5px 14px -10px rgba(212,175,55,.8);}
+  html[data-native-shell="true"] #fab{width:66px;height:66px;margin:-28px 8px 0;border:1px solid rgba(255,255,255,.36);box-shadow:0 12px 26px -10px rgba(184,144,31,.82),0 2px 5px rgba(0,0,0,.24);animation:fabIn 420ms 80ms cubic-bezier(.18,.82,.2,1) both;}
+  @keyframes fabIn{from{opacity:0;transform:translate3d(0,14px,0) scale(.88)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+  .modal-overlay{display:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(5,5,5,.64);contain:layout paint;}
+  .modal-overlay.mounted{display:flex!important;}
+  .modal-overlay.open{opacity:1;pointer-events:all;}
+  html[data-native-shell="true"][data-theme="light"] .modal-overlay{background:rgba(18,16,10,.40);}
+  html[data-native-shell="true"] .modal-overlay{padding:12px calc(12px + var(--native-inset-right)) calc(10px + var(--native-inset-bottom)) calc(12px + var(--native-inset-left));}
+  html[data-native-shell="true"] .modal-sheet{max-height:calc(100dvh - var(--native-inset-top) - 14px);scroll-padding-bottom:24px;contain:layout paint;}
   html[data-native-shell="true"] #celebrate{padding-bottom:calc(7vh + var(--native-inset-bottom));}
-  html[data-native-shell="true"] #celebrate .cel-scrim,html[data-native-shell="true"] #bottomNav{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
-  html[data-native-shell="true"] .app-bg{transform:translateZ(0);backface-visibility:hidden;}
+  html[data-native-shell="true"] #celebrate .cel-scrim{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+  html[data-native-shell="true"] .page.active{will-change:auto;animation-duration:240ms;}
+  html[data-native-shell="true"] .native-pin-shell{display:flex;position:relative;align-items:center;justify-content:center;min-width:224px;min-height:66px;padding:10px 20px;border-radius:22px;border:1px solid var(--glass-border);background:var(--glass);box-shadow:0 8px 22px -18px var(--shadow);}
+  .native-pin-input{position:absolute;inset:0;width:100%;height:100%;opacity:.01;border:0;background:transparent;color:transparent;caret-color:transparent;font-size:18px;}
+  html[data-native-shell="true"] .pin-pad{display:none!important;}
+  html[data-native-shell="true"] .pin-dots{margin:0;pointer-events:none;}
+  html[data-native-shell="true"] #lockScreen{background:var(--bg);background-image:none;animation:lockFadeIn 260ms ease-out both;}
+  @keyframes lockFadeIn{from{opacity:0}to{opacity:1}}
   #budgetStatusCard,.gl-card,.settings-section,.overview-header,.page-header,.chart-card,.insight-card,.set-card,.set-tiles,#fab{animation:none;}
-  .page.active{animation-duration:220ms;}
   .bar-fill,.bsum-fill,.budget-bar-fill,.budget-full-fill,.goal-fill,.cel-bar-fill{transition-duration:420ms!important;}
   .nav-item,.quick-action-btn,.set-tile,.overview-card,.bgt-card,.loan-card,.btn-gold,.btn-outline,.btn-danger{transform:translateZ(0);transition:transform 110ms ease-out,background-color 180ms linear;}
   .quick-action-btn:active,.set-tile:active,.overview-card:active,.bgt-card:active,.loan-card:active,.btn-gold:active,.btn-outline:active,.btn-danger:active{transform:scale(.982) translateZ(0);}
