@@ -931,6 +931,29 @@
   .btn-sm svg { width:16px; height:16px; }
   .btn-sm-edit { background:rgba(212,175,55,0.15); color:var(--gold); }
   .btn-sm-del { background:rgba(224,85,85,0.13); color:var(--danger); }
+
+  /* Money Map v2.0.3.10 approved visual correction */
+  .set-hdr{height:226px;overflow:visible;background:linear-gradient(145deg,#c9aa55 0%,#b4933d 52%,#a9852f 100%);}
+  .set-hdr-copy{position:absolute;top:18px;left:var(--gutter);z-index:7;color:#241a06;}
+  .set-hdr-title{font-size:27px;font-weight:800;line-height:1.08;letter-spacing:-.6px;}
+  .set-hdr-sub{font-size:12px;font-weight:500;color:rgba(36,26,6,.62);margin-top:5px;}
+  .settings-edit:not(.settings-edit-sticky){left:auto;right:16px;top:16px;width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,.58);box-shadow:none;}
+  .set-panel{margin-top:-22px;padding:68px var(--gutter) 24px;min-height:calc(100vh - 204px);}
+  .set-av{top:-50px;width:100px;height:100px;border-width:4px;}
+  .settings-hub{gap:10px;padding-top:8px;}
+  .settings-destination{min-height:59px;padding:10px 13px;border-radius:15px;}
+  .settings-destination .sd-icon{width:35px;height:35px;margin-right:12px;border-radius:10px;}
+  .settings-destination .sd-name{font-size:14.5px;}
+  .settings-destination .sd-value{font-size:12px;color:var(--text-dim);margin:0 8px 0 10px;max-width:36%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;}
+  .settings-sticky{position:fixed;top:0;left:0;right:0;height:calc(47px + var(--native-inset-top));padding:var(--native-inset-top) 16px 0;margin:0;justify-content:flex-start;font-size:18px;letter-spacing:-.35px;}
+  .settings-edit-sticky{top:calc(var(--native-inset-top) + 8px);left:auto;right:11px;width:31px;height:31px;border-radius:10px;background:transparent;box-shadow:none;}
+  .sum-ring-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 14px;}
+  .sum-ring-item{text-align:center;min-width:0;}.sum-ring-item>.gl-ring{margin:0 auto;}.sum-ring-item>span{display:block;margin-top:7px;font-size:11px;color:var(--text-dim);line-height:1.25;}
+  html[data-native-shell="true"] .set-hdr{height:calc(226px + var(--native-inset-top));padding-top:var(--native-inset-top);}
+  html[data-native-shell="true"] .set-hdr-copy{top:calc(18px + var(--native-inset-top));left:calc(var(--gutter) + var(--native-inset-left));}
+  html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:calc(16px + var(--native-inset-top));right:calc(16px + var(--native-inset-right));left:auto;}
+  html[data-native-shell="true"] #page-settings{background:linear-gradient(to bottom,#c9aa55 0 calc(226px + var(--native-inset-top)),var(--bg) calc(226px + var(--native-inset-top)))!important;}
+
 </style>
 </head>
 <body>
@@ -1139,8 +1162,9 @@
 
   <!-- SETTINGS -->
   <div class="page" id="page-settings" onscroll="_settingsScroll(this)">
-    <div class="settings-sticky" id="settingsSticky"><button class="settings-edit settings-edit-sticky" onclick="openEditProfile()" aria-label="Edit profile"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg></button><div>Settings</div></div>
+    <div class="settings-sticky" id="settingsSticky"><div>Settings</div><button class="settings-edit settings-edit-sticky" onclick="openEditProfile()" aria-label="Edit profile"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg></button></div>
     <div class="set-hdr">
+      <div class="set-hdr-copy"><div class="set-hdr-title">Settings</div><div class="set-hdr-sub">Manage your Money Map</div></div>
       <button class="settings-edit" onclick="openEditProfile()" aria-label="Edit profile"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>
       <svg class="set-doodles" viewBox="0 0 390 220" preserveAspectRatio="none" aria-hidden="true">
         <g><circle cx="38" cy="43" r="12"/><path d="M30 43h16M38 35v16M95 28l8 8-8 8-8-8zM148 18v24M136 30h24M205 21c9 0 15 5 15 12s-6 12-15 12-15-5-15-12 6-12 15-12zM276 20l18 12-18 12zM344 25v26M335 34l18 8M335 42l18-8"/>
@@ -1158,7 +1182,7 @@
       <div class="settings-hub" id="settingsHub"></div>
       <div class="settings-detail" id="settingsDetail" style="display:none"></div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-      <div class="set-foot">Money Map v2.0.3.9</div>
+      <div class="set-foot">Money Map v2.0.3.10</div>
     </div>
   </div>
 
@@ -2801,22 +2825,23 @@ function expandBudgetSummary(tab){
   var stat=function(v,l,col){return '<div class="lg-exp-stat"><div style="color:'+(col||'var(--text)')+'">'+v+'</div><span>'+l+'</span></div>';};
   var intel=function(label,value,note){return '<div class="sum-intel-row"><div><span>'+label+'</span><b>'+value+'</b></div>'+(note?'<strong>'+note+'</strong>':'')+'</div>';};
   var status=function(text){return '<div class="sum-status">'+text+'</div>';};
-  var mix=function(label,a,al,b,bl,ca,cb){var total=a+b,ap=total?Math.round(a/total*100):0,bp=100-ap;return '<div class="sum-mix"><div class="sum-mix-title">'+label+'</div><div class="sum-mix-bar"><i style="width:'+ap+'%;background:'+(ca||'var(--gold)')+'"></i><i style="width:'+bp+'%;background:'+(cb||'var(--text-muted)')+'"></i></div><div class="sum-mix-legend"><span>'+al+' '+ap+'%</span><span>'+bl+' '+bp+'%</span></div></div>';};
+  var ring=function(pc,label,col){pc=Math.max(0,Math.min(100,Math.round(pc||0)));return '<div class="sum-ring-item">'+glRing(pc,col||'var(--gold)',76)+'<span>'+label+'</span></div>';};
+  var rings=function(items){return '<div class="sum-ring-row">'+items.join('')+'</div>';};
   if(tab==='expenses'){
     title='Expense budget · '+periodLabel();var mult=getSelectedPeriod().month==='all'?12:1,bs=(DB.budgets||[]).filter(function(b){return b.type==='expense';});
     var lines=bs.map(function(b){var used=txs.filter(function(t){return t.type==='expense'&&t.categoryId===b.categoryId;}).reduce(function(a,t){return a+(t.amount||0);},0),lim=(b.amount||0)*mult;return {b:b,used:used,lim:lim,pc:lim?used/lim*100:0};});
-    var total=lines.reduce(function(a,x){return a+x.lim;},0),spent=lines.reduce(function(a,x){return a+x.used;},0),left=total-spent,largest=lines.slice().sort(function(a,b){return b.lim-a.lim;})[0],fastest=lines.slice().sort(function(a,b){return b.pc-a.pc;})[0],unused=lines.filter(function(x){return x.used===0;});
-    body='<div class="lg-exp-stats">'+stat(fmtShort(total),'total budget')+stat(fmtShort(spent),'spent',spent>total?'var(--danger)':'var(--success)')+stat(fmtShort(Math.abs(left)),left>=0?'remaining':'over',left>=0?'var(--text)':'var(--danger)')+'</div><div class="sum-intel">'+intel('Largest allocation',largest?largest.b.name:'No budget yet',largest?fmtShort(largest.lim):'')+intel('Unused budgets',unused.length+' of '+lines.length,unused.length?fmtShort(unused.reduce(function(a,x){return a+x.lim;},0))+' untouched':'All are active')+intel('Fastest used',fastest?fastest.b.name:'No activity',fastest?Math.round(fastest.pc)+'% used':'')+'</div>'+status(total?((left>=0?'You still have '+fmtShort(left)+' available.':'Spending is '+fmtShort(-left)+' above budget.') ): 'Add a budget to start tracking this view.');
+    var total=lines.reduce(function(a,x){return a+x.lim;},0),spent=lines.reduce(function(a,x){return a+x.used;},0),left=total-spent,largest=lines.slice().sort(function(a,b){return b.lim-a.lim;})[0],fastest=lines.slice().sort(function(a,b){return b.pc-a.pc;})[0],unused=lines.filter(function(x){return x.used===0;}),usedPc=total?spent/total*100:0,activePc=lines.length?(lines.length-unused.length)/lines.length*100:0,remainPc=total?Math.max(0,left)/total*100:0;
+    body='<div class="lg-exp-stats">'+stat(fmtShort(total),'total budget')+stat(fmtShort(spent),'spent',spent>total?'var(--danger)':'var(--success)')+stat(fmtShort(Math.abs(left)),left>=0?'remaining':'over',left>=0?'var(--text)':'var(--danger)')+'</div>'+rings([ring(usedPc,'Budget used',usedPc>100?'var(--danger)':'var(--gold)'),ring(activePc,'Budgets active','var(--success)'),ring(remainPc,'Still available','var(--gold)')])+'<div class="sum-intel">'+intel('Largest allocation',largest?largest.b.name:'No budget yet',largest?fmtShort(largest.lim):'')+intel('Unused budgets',unused.length+' of '+lines.length,unused.length?fmtShort(unused.reduce(function(a,x){return a+x.lim;},0))+' untouched':'All are active')+intel('Fastest used',fastest?fastest.b.name:'No activity',fastest?Math.round(fastest.pc)+'% used':'')+'</div>'+status(total?(left>=0?'You still have '+fmtShort(left)+' available.':'Spending is '+fmtShort(-left)+' above budget.'):'Add a budget to start tracking this view.');
   }else if(tab==='loans'){
     title='Loans overview';var loans=(DB.loans||[]).map(function(l){var rep=(DB.transactions||[]).filter(function(t){return t.type==='loan_repay'&&t.loanId===l.id;}).reduce(function(a,t){return a+(t.amount||0);},0);return {l:l,rep:rep,rem:Math.max(0,(l.amount||0)-rep)};}),borrowed=loans.reduce(function(a,x){return a+(x.l.amount||0);},0),repaid=loans.reduce(function(a,x){return a+Math.min(x.rep,x.l.amount||0);},0),rem=loans.reduce(function(a,x){return a+x.rem;},0),active=loans.filter(function(x){return x.rem>0;}),done=loans.length-active.length,types={};
     loans.forEach(function(x){var k=(x.l.source||'Other').trim()||'Other';types[k]=(types[k]||0)+1;});var typeText=Object.keys(types).sort(function(a,b){return types[b]-types[a];}).slice(0,3).map(function(k){return k+' '+types[k];}).join(' · ')||'No loan types yet';
-    body='<div class="lg-exp-stats">'+stat(fmtShort(borrowed),'borrowed')+stat(fmtShort(repaid),'repaid','var(--success)')+stat(fmtShort(rem),'remaining',rem?'var(--danger)':'var(--success)')+'</div><div class="sum-intel">'+intel('Loan count',String(loans.length),active.length+' active · '+done+' completed')+intel('Loan types',typeText,'')+'</div>'+status(loans.length?(rem?'You have '+active.length+' active loan'+(active.length===1?'':'s')+' with '+fmtShort(rem)+' to clear.':'All recorded loans are completed.'):'No loans have been recorded.');
+    body='<div class="lg-exp-stats">'+stat(fmtShort(borrowed),'borrowed')+stat(fmtShort(repaid),'repaid','var(--success)')+stat(fmtShort(rem),'remaining',rem?'var(--danger)':'var(--success)')+'</div>'+rings([ring(borrowed?repaid/borrowed*100:0,'Loans repaid','#9d70b5'),ring(loans.length?active.length/loans.length*100:0,'Still active','var(--gold)'),ring(loans.length?done/loans.length*100:0,'Completed','var(--success)')])+'<div class="sum-intel">'+intel('Loan count',String(loans.length),active.length+' active · '+done+' completed')+intel('Loan types',typeText,'')+'</div>'+status(loans.length?(rem?'You have '+active.length+' active loan'+(active.length===1?'':'s')+' with '+fmtShort(rem)+' to clear.':'All recorded loans are completed.'):'No loans have been recorded.');
   }else if(tab==='goals'){
-    title='Goals overview';var gs=(DB.goals||[]),target=gs.reduce(function(a,g){return a+(g.target||0);},0),saved=gs.reduce(function(a,g){return a+Math.min(g.saved||0,g.target||0);},0),left=Math.max(0,target-saved),active=gs.filter(function(g){return (g.saved||0)<(g.target||0);}),done=gs.length-active.length,inv=gs.filter(function(g){return goalKind(g.id)==='investment';}).reduce(function(a,g){return a+(g.target||0);},0),life=Math.max(0,target-inv),fund=target?Math.round(saved/target*100):0;
-    body='<div class="lg-exp-stats">'+stat(fmtShort(target),'total goal amount')+stat(fmtShort(saved),'saved','var(--success)')+stat(fmtShort(left),'to go')+'</div><div class="sum-intel">'+intel('Goal count',String(gs.length),active.length+' active · '+done+' completed')+intel('Overall funding',fund+'%',fmtShort(saved)+' secured')+'</div>'+mix('Goal direction',inv,'Investment',life,'Lifestyle','var(--success)','var(--gold)')+status(gs.length?(inv>=life?'More of your goal value is building assets.':'Lifestyle goals currently take the larger share of your targets.'):'No goals have been recorded.');
+    title='Goals overview';var gs=(DB.goals||[]),target=gs.reduce(function(a,g){return a+(g.target||0);},0),saved=gs.reduce(function(a,g){return a+Math.min(g.saved||0,g.target||0);},0),left=Math.max(0,target-saved),active=gs.filter(function(g){return (g.saved||0)<(g.target||0);}),done=gs.length-active.length,inv=gs.filter(function(g){return goalKind(g.id)==='investment';}).reduce(function(a,g){return a+(g.target||0);},0),life=Math.max(0,target-inv),fund=target?saved/target*100:0;
+    body='<div class="lg-exp-stats">'+stat(fmtShort(target),'total goal amount')+stat(fmtShort(saved),'saved','var(--success)')+stat(fmtShort(left),'to go')+'</div>'+rings([ring(fund,'Goals funded','var(--gold)'),ring(target?inv/target*100:0,'Investment goals','var(--success)'),ring(gs.length?done/gs.length*100:0,'Completed','#9d70b5')])+'<div class="sum-intel">'+intel('Goal count',String(gs.length),active.length+' active · '+done+' completed')+intel('Overall funding',Math.round(fund)+'%',fmtShort(saved)+' secured')+intel('Goal direction',(target?Math.round(inv/target*100):0)+'% Investment',(target?Math.round(life/target*100):0)+'% Lifestyle')+'</div>'+status(gs.length?(inv>=life?'More of your goal value is building assets.':'Lifestyle goals currently take the larger share of your targets.'):'No goals have been recorded.');
   }else{
-    title='Assets overview';var physical=(DB.assets||[]).reduce(function(a,x){return a+(x.value||0);},0),cash=(DB.accounts||[]).reduce(function(a,x){return a+(x.value||0);},0),interest=(DB.investments||[]).reduce(function(a,x){return a+(x.interest||0);},0),total=physical+cash+interest,groups=[{n:'Physical assets',v:physical},{n:'Cash & accounts',v:cash},{n:'Investment growth',v:interest}].sort(function(a,b){return b.v-a.v;}),liquid=total?Math.round((cash+interest)/total*100):0;
-    body='<div class="lg-exp-stats">'+stat(fmtShort(total),'total value')+stat(fmtShort(physical),'physical assets')+stat(fmtShort(cash+interest),'liquid & growth','var(--success)')+'</div><div class="sum-intel">'+intel('Largest group',groups[0].v?groups[0].n:'No assets yet',groups[0].v?fmtShort(groups[0].v):'')+intel('Liquid share',liquid+'%',fmtShort(cash+interest))+'</div>'+mix('Asset distribution',physical,'Physical',cash+interest,'Liquid & growth','var(--gold)','var(--success)')+status(total?(liquid>=30?'Your asset mix keeps a useful liquid share.':'Most value is tied to physical assets; keep liquidity in view.'):'Add assets to see your distribution.');
+    title='Assets overview';var physical=(DB.assets||[]).reduce(function(a,x){return a+(x.value||0);},0),cash=(DB.accounts||[]).reduce(function(a,x){return a+(x.value||0);},0),interest=(DB.investments||[]).reduce(function(a,x){return a+(x.interest||0);},0),total=physical+cash+interest,groups=[{n:'Physical assets',v:physical},{n:'Cash & accounts',v:cash},{n:'Investment growth',v:interest}].sort(function(a,b){return b.v-a.v;}),liquid=total?(cash+interest)/total*100:0;
+    body='<div class="lg-exp-stats">'+stat(fmtShort(total),'total value')+stat(fmtShort(physical),'physical assets')+stat(fmtShort(cash+interest),'liquid & growth','var(--success)')+'</div>'+rings([ring(total?physical/total*100:0,'Physical assets','var(--gold)'),ring(liquid,'Liquid share','var(--success)'),ring(total?interest/total*100:0,'Investment growth','#9d70b5')])+'<div class="sum-intel">'+intel('Largest group',groups[0].v?groups[0].n:'No assets yet',groups[0].v?fmtShort(groups[0].v):'')+intel('Liquid share',Math.round(liquid)+'%',fmtShort(cash+interest))+'</div>'+status(total?(liquid>=30?'Your asset mix keeps a useful liquid share.':'Most value is tied to physical assets; keep liquidity in view.'):'Add assets to see your distribution.');
   }
   c.innerHTML='<div class="modal-title">'+title+'</div>'+body+'<button class="btn-outline" onclick="closeModal(\'expandModal\')" style="margin-top:16px">Close</button>';openModal('expandModal');
 }
@@ -3681,7 +3706,7 @@ let _settingsTab='categories';
 function switchSettingsTab(tab){_settingsTab=tab;}
 function _settingsScroll(pg){var st=document.getElementById('settingsSticky');if(st)st.classList.toggle('visible',pg.scrollTop>145);}
 function _settingsIcon(name){return '<div class="sd-icon">'+ic(name)+'</div>';}
-function _settingsHubRow(key,label,sub,icon){return '<div class="settings-destination" data-settings-key="'+key+'" onclick="openSettingsSection(\''+key+'\',true)">'+_settingsIcon(icon)+'<div class="sd-copy"><div class="sd-name">'+label+'</div><div class="sd-sub">'+sub+'</div></div><div class="chevron">'+ic('i-chevron')+'</div></div>';}
+function _settingsHubRow(key,label,sub,icon){return '<div class="settings-destination" data-settings-key="'+key+'" onclick="openSettingsSection(\''+key+'\',true)">'+_settingsIcon(icon)+'<div class="sd-copy"><div class="sd-name">'+label+'</div></div><div class="sd-value">'+sub+'</div><div class="chevron">'+ic('i-chevron')+'</div></div>'; }
 function renderSettingsHub(){
   var el=document.getElementById('settingsHub');if(!el)return;
   el.innerHTML=_settingsHubRow('appearance','Appearance',(DB.theme||'auto').replace(/^./,function(x){return x.toUpperCase();})+' theme','i-moon')+_settingsHubRow('currency','Currency',cur(),'i-cash')+_settingsHubRow('balances','Starting balances',_startBalSummaryText(),'i-bank')+_settingsHubRow('income','Income sources',(DB.incomeTypes||[]).length+' sources','i-income')+_settingsHubRow('categories','Expense categories',(DB.categories||[]).length+' categories','i-tag')+_settingsHubRow('holdings','Income holdings',(DB.holdings||[]).length+' places','i-wallet')+_settingsHubRow('security','Security',DB.fingerprintCredId?'PIN and fingerprint':'PIN protection','i-lock')+_settingsHubRow('data','Data','Export your records','i-export')+_settingsHubRow('backup','Backup & restore','Protect or restore your data','i-download');
@@ -4194,7 +4219,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .set-back:active,.set-pencil:active{transform:scale(.92);}
 
 
-  /* Money Map v2.0.3.9 — dedicated Settings and concise summary sheets */
+  /* Money Map v2.0.3.10 — dedicated Settings and concise summary sheets */
   #page-settings{padding:0 0 142px;scroll-padding-top:58px;}
   .set-hdr{height:218px;background:linear-gradient(145deg,#c9ac5b 0%,#b69843 48%,#a88732 100%);overflow:hidden;position:relative;}
   .set-doodles{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#5f4917;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;opacity:.075;pointer-events:none;}
@@ -4248,7 +4273,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   html[data-native-shell="true"] .set-hdr{height:calc(218px + var(--native-inset-top));}
   html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:calc(16px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
 
-  /* Money Map v2.0.3.9 approved interaction layer */
+  /* Money Map v2.0.3.10 approved interaction layer */
   .nav-item.nav-bounce-in .nav-icon{animation:mmNavSelect 430ms cubic-bezier(.2,.9,.25,1) both;}
   .nav-item.nav-bounce-out .nav-icon{animation:mmNavRelease 360ms cubic-bezier(.2,.75,.25,1) both;}
   @keyframes mmNavSelect{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-5px) scale(1.12)}62%{transform:translateY(1px) scale(.96)}82%{transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
