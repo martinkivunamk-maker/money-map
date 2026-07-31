@@ -932,7 +932,7 @@
   .btn-sm-edit { background:rgba(212,175,55,0.15); color:var(--gold); }
   .btn-sm-del { background:rgba(224,85,85,0.13); color:var(--danger); }
 
-  /* Money Map v2.0.3.12 approved visual correction */
+  /* Money Map v2.0.3.13 approved visual correction */
   .set-hdr{height:226px;overflow:visible;background:linear-gradient(145deg,#c9aa55 0%,#b4933d 52%,#a9852f 100%);}
   .set-hdr-copy{position:absolute;top:18px;left:var(--gutter);z-index:7;color:#241a06;}
   .set-hdr-title{font-size:27px;font-weight:800;line-height:1.08;letter-spacing:-.6px;}
@@ -982,6 +982,17 @@ html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:cal
 .settings-sticky-title.page-title{font-size:20px!important;font-weight:800!important;letter-spacing:-.4px!important;margin:0!important;color:var(--text)!important}.settings-edit-sticky{position:static!important;width:34px!important;height:34px!important;background:var(--glass-hover)!important;color:var(--text)!important}
 .settings-section-open .settings-detail{padding:0 14px 28px!important}.settings-detail-head{position:sticky!important;top:0!important;margin:0 -14px 14px!important;padding:var(--native-inset-top) 14px 0!important;height:calc(56px + var(--native-inset-top))!important;display:flex!important;align-items:flex-end!important;padding-bottom:8px!important;background:var(--bg)!important;border-bottom:1px solid var(--input-border)!important}.settings-detail-title{font-size:21px!important;line-height:34px!important}.settings-detail-back{height:34px!important;width:34px!important;margin-right:8px!important}.settings-detail-back svg{width:25px!important;height:25px!important}
 .summary-donut-wrap{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;width:100%!important;margin:17px auto 8px!important;text-align:center!important}.summary-donut{width:112px!important;height:112px!important;border-radius:50%!important;display:grid!important;place-items:center!important;position:relative!important;margin:0 auto!important}.summary-donut>div{position:absolute!important;inset:16px!important;border-radius:50%!important;background:var(--modal-bg)!important;display:grid!important;place-items:center!important}.summary-donut b{font-size:21px!important;color:var(--text)!important}.summary-donut-wrap>span{font-size:11px!important;color:var(--text-dim)!important;margin-top:8px!important}.summary-donut-legend{display:flex!important;justify-content:center!important;gap:12px!important;flex-wrap:wrap!important;margin:0 auto 13px!important;font-size:9.5px!important;color:var(--text-dim)!important}.summary-donut-legend span:before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--dot);margin-right:4px}
+
+/* v2.0.3.13 exact Settings typography, profile scale and haptic targeting */
+.set-hdr-title.page-title{ font-size:26px; font-weight:800; color:var(--text); flex:1; letter-spacing:-0.5px; }
+.set-panel{margin-top:-10px!important;padding-top:72px!important}
+.set-av{top:-54px!important;width:108px!important;height:108px!important;border-width:4px!important}
+.set-name{font-size:22px!important;font-weight:800!important;line-height:1.15!important;margin-top:0!important}
+.set-meta{font-size:11px!important;margin:4px 0 12px!important}
+</style>
+
+<style id="v20313-title-lock">
+.set-hdr-title.page-title{font-size:26px!important;font-weight:800!important;color:var(--text)!important;letter-spacing:-0.5px!important;line-height:normal!important;margin:0!important}
 </style>
 </head>
 <body>
@@ -1210,7 +1221,7 @@ html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:cal
       <div class="settings-hub" id="settingsHub"></div>
       <div class="settings-detail" id="settingsDetail" style="display:none"></div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-      <div class="set-foot">Money Map v2.0.3.12</div>
+      <div class="set-foot">Money Map v2.0.3.13</div>
     </div>
   </div>
 
@@ -3766,14 +3777,14 @@ function renderSettingsSection(){
 }
 var _lastSettingsHaptic=0;
 function _settingsHaptic(){var now=Date.now();if(now-_lastSettingsHaptic<240)return;_lastSettingsHaptic=now;try{if(window.MoneyMapNative&&typeof MoneyMapNative.haptic==='function')MoneyMapNative.haptic('light');else if(navigator.vibrate)navigator.vibrate(8);}catch(e){}}
-document.addEventListener('pointerdown',function(e){if(e.target&&e.target.closest&&e.target.closest('[data-settings-key],.settings-menu-item,.settings-menu-row,.sm-item'))_settingsHaptic();},true);
+document.addEventListener('pointerdown',function(e){if(e.target&&e.target.closest&&e.target.closest('#settingsMenuModal [onclick]'))_settingsHaptic();},true);
 function _applySettingsRoute(section){
   _settingsSection=section||null;var hub=document.getElementById('settingsHub'),detail=document.getElementById('settingsDetail'),pg=document.getElementById('page-settings');
   document.body.classList.toggle('settings-section-open',!!_settingsSection);if(pg)pg.classList.toggle('settings-section-open',!!_settingsSection);
   if(hub)hub.style.display=_settingsSection?'none':'block';if(detail){detail.style.display=_settingsSection?'block':'none';if(!_settingsSection)detail.innerHTML='';}
   if(_settingsSection)renderSettingsSection();else renderSettingsHub();if(pg)pg.scrollTop=0;
 }
-function openSettingsSection(section,push){_settingsHaptic();_applySettingsRoute(section);if(push!==false&&!(history.state&&history.state.mmSettingsSection===section))history.pushState({mmSettingsSection:section},'');}
+function openSettingsSection(section,push){_applySettingsRoute(section);if(push!==false&&!(history.state&&history.state.mmSettingsSection===section))history.pushState({mmSettingsSection:section},'');}
 function closeSettingsSection(fromPop){if(!_settingsSection)return;if(!fromPop&&history.state&&history.state.mmSettingsSection){history.back();return;}_applySettingsRoute(null);}
 function _settingsBack(){if(_settingsSection){closeSettingsSection(true);return;}document.body.classList.remove('settings-section-open');navTo(_settingsReturnPage||'overview',{fromBack:true});}
 function renderSettings(){
@@ -4254,7 +4265,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .set-back:active,.set-pencil:active{transform:scale(.92);}
 
 
-  /* Money Map v2.0.3.12 — dedicated Settings and concise summary sheets */
+  /* Money Map v2.0.3.13 — dedicated Settings and concise summary sheets */
   #page-settings{padding:0 0 142px;scroll-padding-top:58px;}
   .set-hdr{height:218px;background:linear-gradient(145deg,#c9ac5b 0%,#b69843 48%,#a88732 100%);overflow:hidden;position:relative;}
   .set-doodles{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#5f4917;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;opacity:.075;pointer-events:none;}
@@ -4308,7 +4319,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   html[data-native-shell="true"] .set-hdr{height:calc(218px + var(--native-inset-top));}
   html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:calc(16px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
 
-  /* Money Map v2.0.3.12 approved interaction layer */
+  /* Money Map v2.0.3.13 approved interaction layer */
   .nav-item.nav-bounce-in .nav-icon{animation:mmNavSelect 430ms cubic-bezier(.2,.9,.25,1) both;}
   .nav-item.nav-bounce-out .nav-icon{animation:mmNavRelease 360ms cubic-bezier(.2,.75,.25,1) both;}
   @keyframes mmNavSelect{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-5px) scale(1.12)}62%{transform:translateY(1px) scale(.96)}82%{transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
