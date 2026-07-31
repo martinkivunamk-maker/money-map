@@ -1138,87 +1138,27 @@
   </div>
 
   <!-- SETTINGS -->
-  <div class="page" id="page-settings">
-    <div class="set-hdr"><div class="set-back" onclick="navTo('overview')" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div><div class="set-pencil" onclick="openEditProfile()"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg></div></div>
+  <div class="page" id="page-settings" onscroll="_settingsScroll(this)">
+    <div class="settings-sticky" id="settingsSticky"><button class="settings-edit settings-edit-sticky" onclick="openEditProfile()" aria-label="Edit profile"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg></button><div>Settings</div></div>
+    <div class="set-hdr">
+      <button class="settings-edit" onclick="openEditProfile()" aria-label="Edit profile"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>
+      <svg class="set-doodles" viewBox="0 0 390 220" preserveAspectRatio="none" aria-hidden="true">
+        <g><circle cx="38" cy="43" r="12"/><path d="M30 43h16M38 35v16M95 28l8 8-8 8-8-8zM148 18v24M136 30h24M205 21c9 0 15 5 15 12s-6 12-15 12-15-5-15-12 6-12 15-12zM276 20l18 12-18 12zM344 25v26M335 34l18 8M335 42l18-8"/>
+        <path d="M19 96h35v23H19zM25 89h23v7M71 93c15-9 31 1 31 14s-16 22-31 13M130 88l12 12-12 12-12-12zM177 88h35v28h-35zM181 94h27M194 88v28M247 91c14 0 24 7 24 17s-10 17-24 17-24-7-24-17 10-17 24-17zM307 88h39l-5 30h-29zM314 88l5-10h16l5 10"/>
+        <path d="M34 160c0-12 10-21 22-21s22 9 22 21-10 21-22 21-22-9-22-21zM45 160h22M56 149v22M105 143h43v35h-43zM111 150h31M123 143v35M185 144l15 10-15 10-15-10zM236 143h38v32h-38zM244 151h22M244 159h17M307 144c18 0 30 8 30 18s-12 18-30 18-30-8-30-18 12-18 30-18z"/>
+        <circle cx="366" cy="82" r="6"/><circle cx="158" cy="130" r="5"/><path d="M7 133l12 6-12 6M362 142l14 8-14 8"/></g>
+      </svg>
+    </div>
     <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
     <input type="file" id="photoCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(event)">
     <div class="set-panel">
       <div class="set-av" id="settingsAvatar" onclick="openEditProfile()"></div>
       <div class="set-name" id="settingsNameDisplay"></div>
       <div class="set-meta" id="settingsSince"></div>
-    <div class="settings-section">
-      <div class="settings-section-title">Appearance</div>
-      <div class="settings-list"><div class="settings-item" style="cursor:default">
-        <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-moon"/></svg></div><div><div class="s-label">Theme</div></div></div>
-        <div class="theme-toggle">
-          <div class="theme-opt" data-theme-opt="light" onclick="setTheme('light')"><svg viewBox="0 0 24 24"><use href="#i-sun"/></svg></div>
-          <div class="theme-opt" data-theme-opt="dark" onclick="setTheme('dark')"><svg viewBox="0 0 24 24"><use href="#i-moon"/></svg></div>
-          <div class="theme-opt" data-theme-opt="auto" onclick="setTheme('auto')"><svg viewBox="0 0 24 24"><use href="#i-auto"/></svg>Auto</div>
-        </div>
-      </div>
-      <div class="settings-item" onclick="openCurrencyPicker()">
-        <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-cash"/></svg></div><div class="s-label">Currency</div></div>
-        <div style="display:flex;align-items:center;gap:8px"><span id="settingsCurrency" style="color:var(--text-dim);font-size:14px;font-weight:600"></span><div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div></div>
-      </div></div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-section-title">Security</div>
-      <div class="settings-list">
-        <div class="settings-item" onclick="openPinSetup()">
-          <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-lock"/></svg></div><div class="s-label">Change PIN</div></div>
-          <div class="chevron"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div>
-        </div>
-        <div class="settings-item" onclick="toggleFingerprint()">
-          <div class="settings-item-left"><div class="settings-item-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24"><use href="#i-finger"/></svg></div><div class="s-label">Fingerprint</div></div>
-          <span class="fp-sw" id="fpSwitch"></span>
-        </div>
-      </div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-section-title">Categories, income &amp; savings</div>
-      <div class="settings-tabs">
-        <div class="settings-tab active" id="stab-categories" onclick="switchSettingsTab('categories')">Categories</div>
-        <div class="settings-tab" id="stab-income" onclick="switchSettingsTab('income')">Income</div>
-        <div class="settings-tab" id="stab-savings" onclick="switchSettingsTab('savings')">Savings</div>
-      </div>
-      <div id="stab-categories-panel">
-        <div class="bgt-list" id="categoriesList"></div>
-        <button class="btn-outline" onclick="openAddCategoryModal()" style="margin-top:10px;">+ Add Category</button>
-      </div>
-      <div id="stab-income-panel" style="display:none">
-        <div class="bgt-list" id="incomeTypesList"></div>
-        <button class="btn-outline" onclick="openAddIncomeTypeModal()" style="margin-top:10px;">+ Add Income Source</button>
-      </div>
-      <div id="stab-savings-panel" style="display:none">
-        <div style="font-size:12px;color:var(--text-dim);margin:0 0 12px;line-height:1.5">Where you keep your money — bank, mobile money, unit trust, etc.</div>
-        <div class="bgt-list" id="holdingsList"></div>
-        <button class="btn-outline" onclick="openAddHoldingModal(false)" style="margin-top:10px;">+ Add a place</button>
-      </div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-section-title">Starting balances</div>
-      <div style="font-size:12px;color:var(--text-dim);margin:-6px 0 12px;line-height:1.5">Savings you had before Money Map — counts toward net worth, not monthly savings.</div>
-      <div class="bgt-list">
-        <div class="bgt-card" onclick="openStartBalModal()">
-          <div class="bgt-head">
-            <div class="bgt-chip"><svg viewBox="0 0 24 24"><use href="#i-bank"/></svg></div>
-            <div class="bgt-info"><div class="bgt-name">Set starting balances</div></div>
-            <span id="startBalSummary" style="color:var(--text-dim);font-size:13px;font-weight:600;margin-right:6px"></span>
-            <div class="bgt-chev"><svg viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-section-title">Data</div>
-      <div class="set-tiles">
-        <div class="set-tile" onclick="backupData()"><div class="set-tile-ic"><svg viewBox="0 0 24 24"><use href="#i-download"/></svg></div><div class="set-tile-l">Backup</div></div>
-        <div class="set-tile" onclick="suppressNextLock();document.getElementById('restoreInput').click()"><div class="set-tile-ic"><svg viewBox="0 0 24 24"><use href="#i-upload"/></svg></div><div class="set-tile-l">Restore</div></div>
-        <div class="set-tile" onclick="openExport()"><div class="set-tile-ic"><svg viewBox="0 0 24 24"><use href="#i-export"/></svg></div><div class="set-tile-l">Export</div></div>
-      </div>
+      <div class="settings-hub" id="settingsHub"></div>
+      <div class="settings-detail" id="settingsDetail" style="display:none"></div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-    </div>
-      <div class="set-foot">Money Map v2.0.3.8</div>
+      <div class="set-foot">Money Map v2.0.3.9</div>
     </div>
   </div>
 
@@ -1241,7 +1181,7 @@
 <div class="modal-overlay" id="transactionModal"><div class="modal-sheet"><div class="modal-handle"></div><div id="txModalContent"></div></div></div>
 <div class="modal-overlay" id="viewTxModal"><div class="modal-sheet"><div class="modal-handle"></div><div id="viewTxContent"></div></div></div>
 <div class="modal-overlay" id="expandModal"><div class="modal-sheet"><div class="modal-handle"></div><div id="expandContent"></div></div></div>
-<div class="modal-overlay" id="addBudgetModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="budgetModalTitle">Add Budget Line</div><div id="budgetModalContent"></div></div></div>
+<div class="modal-overlay compact-editor-modal" id="addBudgetModal"><div class="modal-sheet compact-editor-sheet"><div class="modal-handle"></div><div class="modal-title" id="budgetModalTitle">Add Budget Line</div><div id="budgetModalContent"></div></div></div>
 <div class="modal-overlay" id="addLoanModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="loanModalTitle">Add Loan</div><div id="loanModalContent"></div></div></div>
 <div class="modal-overlay" id="addGoalModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="goalModalTitle">Add Goal</div><div id="goalModalContent"></div></div></div>
 <div class="modal-overlay" id="assetChoiceModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Add to net worth</div>
@@ -1758,18 +1698,22 @@ function saveNewPin(){ const p1=document.getElementById('newPin1').value,p2=docu
 
 // ===== NAV =====
 let currentPage='overview';
-function navTo(page){
+let _settingsReturnPage='overview',_settingsSection=null;
+function navTo(page,opts){
+  opts=opts||{};
+  if(page==='settings'&&currentPage!=='settings'&&!opts.fromBack){_settingsReturnPage=currentPage||'overview';history.pushState({mmSettingsHub:true},'');}
   var previous=document.querySelector('.nav-item.active');
   var next=document.getElementById('nav-'+page);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  if(previous){ previous.classList.remove('nav-bounce-in','nav-bounce-out'); void previous.offsetWidth; if(previous!==next)previous.classList.add('nav-bounce-out'); }
+  if(previous){previous.classList.remove('nav-bounce-in','nav-bounce-out');void previous.offsetWidth;if(previous!==next)previous.classList.add('nav-bounce-out');}
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  if(next){ next.classList.add('active'); next.classList.remove('nav-bounce-in','nav-bounce-out'); void next.offsetWidth; next.classList.add('nav-bounce-in'); }
-  setTimeout(function(){ document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('nav-bounce-in','nav-bounce-out');}); },460);
+  if(next){next.classList.add('active');next.classList.remove('nav-bounce-in','nav-bounce-out');void next.offsetWidth;next.classList.add('nav-bounce-in');}
+  setTimeout(function(){document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('nav-bounce-in','nav-bounce-out');});},460);
   currentPage=page;
-  if(page==='overview')updateOverview(); if(page==='transactions')renderTransactions();
-  if(page==='budget')renderBudget(); if(page==='analytics')renderAnalytics(); if(page==='settings')renderSettings();
+  if(page!=='settings')_settingsSection=null;
+  if(page==='overview')updateOverview();if(page==='transactions')renderTransactions();
+  if(page==='budget')renderBudget();if(page==='analytics')renderAnalytics();if(page==='settings')renderSettings();
   _animatePage(page);
 }
 var _pageMotionObserver=null,_pageMotionPending=[];
@@ -1800,38 +1744,23 @@ function _animatePage(page){
   },{root:pg,rootMargin:'34px 0px 34px 0px',threshold:.05});
   els.forEach(function(el){_pageMotionObserver.observe(el);});
 }
-function goSettings(){ navTo('settings'); }
-function _smGo(){ closeModal('settingsMenuModal'); navTo('settings'); }
-function _smSection(index,tab){
-  closeModal('settingsMenuModal'); navTo('settings');
-  setTimeout(function(){
-    if(tab) switchSettingsTab(tab);
-    var sections=document.querySelectorAll('#page-settings .settings-section');
-    if(sections[index]) sections[index].scrollIntoView({behavior:'smooth',block:'start'});
-  },100);
+function goSettings(){navTo('settings');}
+function _smOpen(section){
+  closeModal('settingsMenuModal');
+  setTimeout(function(){navTo('settings');if(section)openSettingsSection(section,true);},170);
 }
+function _smGo(){_smOpen(null);}
+function _smSection(section){_smOpen(section);}
 function _smRoute(target){
-  if(target==='profile'){ closeModal('settingsMenuModal'); openEditProfile(); return; }
-  if(target==='appearance'){ _smSection(0); return; }
-  if(target==='currency'){ closeModal('settingsMenuModal'); navTo('settings'); setTimeout(openCurrencyPicker,120); return; }
-  if(target==='savings'){ _smSection(2,'savings'); return; }
-  if(target==='categories'){ _smSection(2,'categories'); return; }
-  if(target==='security'){ _smSection(1); return; }
-  if(target==='data'){ _smSection(4); return; }
-  _smGo();
+  if(target==='profile'){closeModal('settingsMenuModal');setTimeout(openEditProfile,170);return;}
+  var routes={appearance:'appearance',currency:'currency',savings:'holdings',categories:'categories',security:'security',data:'backup'};
+  _smOpen(routes[target]||null);
 }
 function openSettingsMenu(){
-  var el=document.getElementById('settingsMenuContent'); if(!el){ goSettings(); return; }
-  var themeLbl=(DB.theme||'auto'); themeLbl=themeLbl.charAt(0).toUpperCase()+themeLbl.slice(1);
-  function row(target,label,val){ return '<div class="sm-row sm-simple-row" onclick="_smRoute(\''+target+'\')"><div class="sm-lab">'+label+'</div>'+(val?'<div class="sm-val">'+val+'</div>':'')+'<svg class="sm-chev" viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div>'; }
-  el.innerHTML=
-    row('profile','Profile',DB.userName||'You')+
-    row('appearance','Appearance',themeLbl)+
-    row('currency','Currency',cur())+
-    row('savings','Savings holdings')+
-    row('categories','Categories')+
-    row('security','Security','PIN & biometric')+
-    row('data','Backup & restore');
+  var el=document.getElementById('settingsMenuContent');if(!el){goSettings();return;}
+  var themeLbl=(DB.theme||'auto');themeLbl=themeLbl.charAt(0).toUpperCase()+themeLbl.slice(1);
+  function row(target,label,val){return '<div class="sm-row sm-simple-row" onclick="_smRoute(\''+target+'\')"><div class="sm-lab">'+label+'</div>'+(val?'<div class="sm-val">'+val+'</div>':'')+'<svg class="sm-chev" viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div>';}
+  el.innerHTML=row('profile','Profile',DB.userName||'You')+row('appearance','Appearance',themeLbl)+row('currency','Currency',cur())+row('savings','Income holdings')+row('categories','Categories')+row('security','Security','PIN & biometric')+row('data','Backup & restore');
   openModal('settingsMenuModal');
 }
 
@@ -2684,14 +2613,7 @@ function saveHolding(){
   else if(currentPage==='settings'){ renderHoldingsList(); }
   showToast('Place added','var(--success)');
 }
-function renderHoldingsList(){
-  var el=document.getElementById('holdingsList'); if(!el)return;
-  var list=DB.holdings||[];
-  el.innerHTML=list.length?list.map(function(h){
-    var sv=DB.transactions.filter(function(t){return (t.type==='savings'||t.type==='emergency')&&t.holding===h.id;}).reduce(function(s,t){return s+t.amount;},0);
-    return '<div class="bgt-card" style="margin-bottom:8px"><div class="bgt-head" onclick="toggleBudget(\'hold-'+h.id+'\')"><div class="bgt-chip">'+ic('i-bank')+'</div><div class="bgt-info"><div class="bgt-name">'+h.name+'</div><div class="bgt-sub">'+fmtShort(sv)+' placed here</div></div><div class="bgt-chev">'+ic('i-chevron')+'</div></div><div class="bgt-detail" id="bgtd-hold-'+h.id+'" style="display:none"><div class="bgt-stats"><div><div class="bgt-sl">Balance placed here</div><div class="bgt-sv">'+fmtShort(sv)+'</div></div></div><div class="bgt-actions"><button class="btn-outline" onclick="openAddHoldingModal(false,DB.holdings.find(function(x){return x.id===\''+h.id+'\';}))">Edit</button><button class="btn-outline bgt-del" onclick="deleteHolding(\''+h.id+'\')">Delete</button></div></div></div>';
-  }).join(''):'<div class="bgt-empty">No places yet — add where you keep savings.</div>';
-}
+function renderHoldingsList(){if(_settingsSection==='holdings')renderSettingsSection();}
 function deleteHolding(id){
   askConfirm('Remove this place?','Transfers tagged to it become “Unspecified”.',function(){ DB.holdings=(DB.holdings||[]).filter(function(h){return h.id!==id;}); saveDB(); renderHoldingsList(); showToast('Place removed','var(--danger)'); },'Remove',true);
 }
@@ -2875,24 +2797,28 @@ function renderBudget(){
   }).join('');
 }
 function expandBudgetSummary(tab){
-  var c=document.getElementById('expandContent'), txs=getTxForPeriod(getSelectedPeriod().month,getSelectedPeriod().year), title='', body='';
+  var c=document.getElementById('expandContent'),txs=getTxForPeriod(getSelectedPeriod().month,getSelectedPeriod().year),title='',body='';
   var stat=function(v,l,col){return '<div class="lg-exp-stat"><div style="color:'+(col||'var(--text)')+'">'+v+'</div><span>'+l+'</span></div>';};
-  var row=function(icon,name,sub,val,col,pctv){return '<div class="lg-exp-row"><div class="lg-exp-icon" style="color:'+(col||'var(--gold)')+'">'+ic(icon)+'</div><div class="lg-exp-copy"><b>'+esc(name)+'</b><span>'+sub+'</span></div>'+(pctv==null?'<strong style="font-size:13px;color:'+(col||'var(--text)')+'">'+val+'</strong>':glRing(pctv,col||'var(--gold)',46))+'</div>';};
+  var intel=function(label,value,note){return '<div class="sum-intel-row"><div><span>'+label+'</span><b>'+value+'</b></div>'+(note?'<strong>'+note+'</strong>':'')+'</div>';};
+  var status=function(text){return '<div class="sum-status">'+text+'</div>';};
+  var mix=function(label,a,al,b,bl,ca,cb){var total=a+b,ap=total?Math.round(a/total*100):0,bp=100-ap;return '<div class="sum-mix"><div class="sum-mix-title">'+label+'</div><div class="sum-mix-bar"><i style="width:'+ap+'%;background:'+(ca||'var(--gold)')+'"></i><i style="width:'+bp+'%;background:'+(cb||'var(--text-muted)')+'"></i></div><div class="sum-mix-legend"><span>'+al+' '+ap+'%</span><span>'+bl+' '+bp+'%</span></div></div>';};
   if(tab==='expenses'){
-    title='Expense budget · '+periodLabel(); var mult=getSelectedPeriod().month==='all'?12:1, bs=(DB.budgets||[]).filter(function(b){return b.type==='expense';}), total=bs.reduce(function(a,b){return a+b.amount*mult;},0), spent=bs.reduce(function(a,b){return a+txs.filter(function(t){return t.type==='expense'&&t.categoryId===b.categoryId;}).reduce(function(x,t){return x+t.amount;},0);},0), left=total-spent;
-    var details=bs.map(function(b){var used=txs.filter(function(t){return t.type==='expense'&&t.categoryId===b.categoryId;}).reduce(function(a,t){return a+t.amount;},0), lim=b.amount*mult, pc=lim?used/lim*100:0;return {b:b,used:used,lim:lim,pc:pc};}).sort(function(a,b){return b.pc-a.pc;});
-    body='<div class="lg-exp-stats">'+stat(fmtShort(total),'total budget')+stat(fmtShort(spent),'spent',spent>total?'var(--danger)':'var(--success)')+stat(fmtShort(Math.abs(left)),left>=0?'remaining':'over',left>=0?'var(--text)':'var(--danger)')+'</div><div class="lg-exp-label goal">Budget position</div>'+details.map(function(x){return row(x.b.icon||'i-budget',x.b.name,fmtShort(x.used)+' of '+fmtShort(x.lim),Math.round(x.pc)+'%',x.pc>100?'var(--danger)':x.pc>=96?'var(--warning)':'var(--success)',x.pc);}).join('');
-  } else if(tab==='loans'){
-    title='Loans overview'; var loans=(DB.loans||[]).map(function(l){var rep=(DB.transactions||[]).filter(function(t){return t.type==='loan_repay'&&t.loanId===l.id;}).reduce(function(a,t){return a+t.amount;},0);return {l:l,rep:rep,rem:Math.max(0,l.amount-rep),p:l.amount?Math.min(100,rep/l.amount*100):0};}), active=loans.filter(function(x){return x.rem>0;}), total=active.reduce(function(a,x){return a+x.l.amount;},0), repaid=active.reduce(function(a,x){return a+x.rep;},0), rem=active.reduce(function(a,x){return a+x.rem;},0);
-    body='<div class="lg-exp-stats">'+stat(fmtShort(total),'total loan amount')+stat(fmtShort(repaid),'repaid','var(--success)')+stat(fmtShort(rem),'outstanding','var(--danger)')+'</div><div class="lg-exp-label loan">Active loans</div>'+active.map(function(x){return row('i-cash',x.l.name,fmtShort(x.rem)+' remaining','', '#9d6fb8',x.p);}).join('')+(active.length?'':'<div class="exp-empty">No active loans</div>');
-  } else if(tab==='goals'){
-    title='Goals overview'; var gs=(DB.goals||[]).filter(function(g){return g.target>0&&(g.saved||0)<g.target;}), target=gs.reduce(function(a,g){return a+g.target;},0), saved=gs.reduce(function(a,g){return a+(g.saved||0);},0), left=target-saved;
-    body='<div class="lg-exp-stats">'+stat(fmtShort(target),'total goal amount')+stat(fmtShort(saved),'saved','var(--success)')+stat(fmtShort(left),'to go')+'</div><div class="lg-exp-label goal">Goals in progress</div>'+gs.map(function(g){var pc=g.target?Math.min(100,(g.saved||0)/g.target*100):0;return row(g.icon||'i-target',g.name,fmtShort(g.target-(g.saved||0))+' to go','', 'var(--gold)',pc);}).join('')+(gs.length?'':'<div class="exp-empty">No goals in progress</div>');
-  } else {
-    title='Assets overview'; var physical=(DB.assets||[]).reduce(function(a,x){return a+(x.value||0);},0), cash=(DB.accounts||[]).reduce(function(a,x){return a+(x.value||0);},0), interest=(DB.investments||[]).reduce(function(a,x){return a+(x.interest||0);},0);
-    body='<div class="lg-exp-stats">'+stat(fmtShort(physical),'physical assets')+stat(fmtShort(cash),'cash & accounts')+stat(fmtShort(interest),'interest','var(--success)')+'</div><div class="lg-exp-label goal">Largest contributors</div>'+(DB.assets||[]).map(function(x){return row(x.icon||'i-house',x.name,'Physical asset',fmtShort(x.value||0));}).join('')+(DB.accounts||[]).map(function(x){return row(x.icon||'i-wallet',x.name,'Cash & account',fmtShort(x.value||0));}).join('')+(DB.investments||[]).map(function(x){return row('i-invest',x.name,'Interest earned',fmtShort(x.interest||0),'var(--success)');}).join('');
+    title='Expense budget · '+periodLabel();var mult=getSelectedPeriod().month==='all'?12:1,bs=(DB.budgets||[]).filter(function(b){return b.type==='expense';});
+    var lines=bs.map(function(b){var used=txs.filter(function(t){return t.type==='expense'&&t.categoryId===b.categoryId;}).reduce(function(a,t){return a+(t.amount||0);},0),lim=(b.amount||0)*mult;return {b:b,used:used,lim:lim,pc:lim?used/lim*100:0};});
+    var total=lines.reduce(function(a,x){return a+x.lim;},0),spent=lines.reduce(function(a,x){return a+x.used;},0),left=total-spent,largest=lines.slice().sort(function(a,b){return b.lim-a.lim;})[0],fastest=lines.slice().sort(function(a,b){return b.pc-a.pc;})[0],unused=lines.filter(function(x){return x.used===0;});
+    body='<div class="lg-exp-stats">'+stat(fmtShort(total),'total budget')+stat(fmtShort(spent),'spent',spent>total?'var(--danger)':'var(--success)')+stat(fmtShort(Math.abs(left)),left>=0?'remaining':'over',left>=0?'var(--text)':'var(--danger)')+'</div><div class="sum-intel">'+intel('Largest allocation',largest?largest.b.name:'No budget yet',largest?fmtShort(largest.lim):'')+intel('Unused budgets',unused.length+' of '+lines.length,unused.length?fmtShort(unused.reduce(function(a,x){return a+x.lim;},0))+' untouched':'All are active')+intel('Fastest used',fastest?fastest.b.name:'No activity',fastest?Math.round(fastest.pc)+'% used':'')+'</div>'+status(total?((left>=0?'You still have '+fmtShort(left)+' available.':'Spending is '+fmtShort(-left)+' above budget.') ): 'Add a budget to start tracking this view.');
+  }else if(tab==='loans'){
+    title='Loans overview';var loans=(DB.loans||[]).map(function(l){var rep=(DB.transactions||[]).filter(function(t){return t.type==='loan_repay'&&t.loanId===l.id;}).reduce(function(a,t){return a+(t.amount||0);},0);return {l:l,rep:rep,rem:Math.max(0,(l.amount||0)-rep)};}),borrowed=loans.reduce(function(a,x){return a+(x.l.amount||0);},0),repaid=loans.reduce(function(a,x){return a+Math.min(x.rep,x.l.amount||0);},0),rem=loans.reduce(function(a,x){return a+x.rem;},0),active=loans.filter(function(x){return x.rem>0;}),done=loans.length-active.length,types={};
+    loans.forEach(function(x){var k=(x.l.source||'Other').trim()||'Other';types[k]=(types[k]||0)+1;});var typeText=Object.keys(types).sort(function(a,b){return types[b]-types[a];}).slice(0,3).map(function(k){return k+' '+types[k];}).join(' · ')||'No loan types yet';
+    body='<div class="lg-exp-stats">'+stat(fmtShort(borrowed),'borrowed')+stat(fmtShort(repaid),'repaid','var(--success)')+stat(fmtShort(rem),'remaining',rem?'var(--danger)':'var(--success)')+'</div><div class="sum-intel">'+intel('Loan count',String(loans.length),active.length+' active · '+done+' completed')+intel('Loan types',typeText,'')+'</div>'+status(loans.length?(rem?'You have '+active.length+' active loan'+(active.length===1?'':'s')+' with '+fmtShort(rem)+' to clear.':'All recorded loans are completed.'):'No loans have been recorded.');
+  }else if(tab==='goals'){
+    title='Goals overview';var gs=(DB.goals||[]),target=gs.reduce(function(a,g){return a+(g.target||0);},0),saved=gs.reduce(function(a,g){return a+Math.min(g.saved||0,g.target||0);},0),left=Math.max(0,target-saved),active=gs.filter(function(g){return (g.saved||0)<(g.target||0);}),done=gs.length-active.length,inv=gs.filter(function(g){return goalKind(g.id)==='investment';}).reduce(function(a,g){return a+(g.target||0);},0),life=Math.max(0,target-inv),fund=target?Math.round(saved/target*100):0;
+    body='<div class="lg-exp-stats">'+stat(fmtShort(target),'total goal amount')+stat(fmtShort(saved),'saved','var(--success)')+stat(fmtShort(left),'to go')+'</div><div class="sum-intel">'+intel('Goal count',String(gs.length),active.length+' active · '+done+' completed')+intel('Overall funding',fund+'%',fmtShort(saved)+' secured')+'</div>'+mix('Goal direction',inv,'Investment',life,'Lifestyle','var(--success)','var(--gold)')+status(gs.length?(inv>=life?'More of your goal value is building assets.':'Lifestyle goals currently take the larger share of your targets.'):'No goals have been recorded.');
+  }else{
+    title='Assets overview';var physical=(DB.assets||[]).reduce(function(a,x){return a+(x.value||0);},0),cash=(DB.accounts||[]).reduce(function(a,x){return a+(x.value||0);},0),interest=(DB.investments||[]).reduce(function(a,x){return a+(x.interest||0);},0),total=physical+cash+interest,groups=[{n:'Physical assets',v:physical},{n:'Cash & accounts',v:cash},{n:'Investment growth',v:interest}].sort(function(a,b){return b.v-a.v;}),liquid=total?Math.round((cash+interest)/total*100):0;
+    body='<div class="lg-exp-stats">'+stat(fmtShort(total),'total value')+stat(fmtShort(physical),'physical assets')+stat(fmtShort(cash+interest),'liquid & growth','var(--success)')+'</div><div class="sum-intel">'+intel('Largest group',groups[0].v?groups[0].n:'No assets yet',groups[0].v?fmtShort(groups[0].v):'')+intel('Liquid share',liquid+'%',fmtShort(cash+interest))+'</div>'+mix('Asset distribution',physical,'Physical',cash+interest,'Liquid & growth','var(--gold)','var(--success)')+status(total?(liquid>=30?'Your asset mix keeps a useful liquid share.':'Most value is tied to physical assets; keep liquidity in view.'):'Add assets to see your distribution.');
   }
-  c.innerHTML='<div class="modal-title">'+title+'</div>'+body+'<button class="btn-outline" onclick="closeModal(\'expandModal\')" style="margin-top:16px">Close</button>'; openModal('expandModal');
+  c.innerHTML='<div class="modal-title">'+title+'</div>'+body+'<button class="btn-outline" onclick="closeModal(\'expandModal\')" style="margin-top:16px">Close</button>';openModal('expandModal');
 }
 function toggleBudget(id){
   var d=document.getElementById('bgtd-'+id); if(!d)return;
@@ -2991,9 +2917,9 @@ function buildBudgetForm(ex){
   } else {
     catField=`<div class="form-group"><label class="form-label">Name</label><input class="form-input" id="bName" value="${ex?ex.name:''}" placeholder="e.g. Monthly Savings"></div>`;
   }
-  document.getElementById('budgetModalContent').innerHTML=catField+`
-    <div class="form-group"><label class="form-label">Budget Amount (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="bAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div>
-    <button class="btn-gold" onclick="saveBudget('${ex?ex.id:''}')">Save</button><button class="btn-outline" onclick="closeModal('addBudgetModal')">Cancel</button>`;
+  document.getElementById('budgetModalContent').innerHTML='<div class="compact-editor-body">'+catField+`
+    <div class="form-group"><label class="form-label">Budget Amount (${cur()})</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="bAmount" value="${ex?parseInt(ex.amount).toLocaleString():''}" placeholder="0" oninput="formatAmountInput(this)" data-raw="${ex?ex.amount:''}"></div></div>
+    <div class="compact-editor-actions"><button class="btn-gold" onclick="saveBudget('${ex?ex.id:''}')">Save</button><button class="btn-outline" onclick="closeModal('addBudgetModal')">Cancel</button></div>`;
 }
 function openBudgetCatPicker(){
   const curVal=document.getElementById('bCat').value;
@@ -3752,31 +3678,49 @@ function _renderAnalyticsLegacyUnused(){
 
 // ===== SETTINGS =====
 let _settingsTab='categories';
-function switchSettingsTab(tab){
-  _settingsTab=tab;
-  ['categories','income','savings'].forEach(function(t){
-    var tb=document.getElementById('stab-'+t); if(tb) tb.classList.toggle('active',tab===t);
-    var pn=document.getElementById('stab-'+t+'-panel'); if(pn) pn.style.display=tab===t?'':'none';
-  });
+function switchSettingsTab(tab){_settingsTab=tab;}
+function _settingsScroll(pg){var st=document.getElementById('settingsSticky');if(st)st.classList.toggle('visible',pg.scrollTop>145);}
+function _settingsIcon(name){return '<div class="sd-icon">'+ic(name)+'</div>';}
+function _settingsHubRow(key,label,sub,icon){return '<div class="settings-destination" data-settings-key="'+key+'" onclick="openSettingsSection(\''+key+'\',true)">'+_settingsIcon(icon)+'<div class="sd-copy"><div class="sd-name">'+label+'</div><div class="sd-sub">'+sub+'</div></div><div class="chevron">'+ic('i-chevron')+'</div></div>';}
+function renderSettingsHub(){
+  var el=document.getElementById('settingsHub');if(!el)return;
+  el.innerHTML=_settingsHubRow('appearance','Appearance',(DB.theme||'auto').replace(/^./,function(x){return x.toUpperCase();})+' theme','i-moon')+_settingsHubRow('currency','Currency',cur(),'i-cash')+_settingsHubRow('balances','Starting balances',_startBalSummaryText(),'i-bank')+_settingsHubRow('income','Income sources',(DB.incomeTypes||[]).length+' sources','i-income')+_settingsHubRow('categories','Expense categories',(DB.categories||[]).length+' categories','i-tag')+_settingsHubRow('holdings','Income holdings',(DB.holdings||[]).length+' places','i-wallet')+_settingsHubRow('security','Security',DB.fingerprintCredId?'PIN and fingerprint':'PIN protection','i-lock')+_settingsHubRow('data','Data','Export your records','i-export')+_settingsHubRow('backup','Backup & restore','Protect or restore your data','i-download');
 }
+function _settingsHead(title){return '<div class="settings-detail-head"><button class="settings-detail-back" onclick="closeSettingsSection()" aria-label="Settings directory"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><div class="settings-detail-title">'+title+'</div></div>';}
+function _editableRows(kind,list){
+  if(!list.length)return '<div class="bgt-empty">No entries yet.</div>';
+  return list.map(function(x){var id=(kind==='categories'?'setcat-':kind==='income'?'setinc-':'hold-')+x.id,icon=kind==='categories'?(x.icon||'i-tag'):kind==='income'?(x.icon||'i-income'):'i-bank',about=x.about||'';
+    if(kind==='holdings'){var sv=(DB.transactions||[]).filter(function(t){return (t.type==='savings'||t.type==='emergency')&&t.holding===x.id;}).reduce(function(a,t){return a+(t.amount||0);},0);about=fmtShort(sv)+' is currently placed here.';}
+    var edit=kind==='categories'?"openAddCategoryModal('"+x.id+"')":kind==='income'?"openAddIncomeTypeModal('"+x.id+"')":"openAddHoldingModal(false,DB.holdings.find(function(h){return h.id==='"+x.id+"';}))";
+    var del=kind==='categories'?"deleteCategory('"+x.id+"')":kind==='income'?"deleteIncomeType('"+x.id+"')":"deleteHolding('"+x.id+"')";
+    var canDelete=!(kind==='income'&&x.id==='i5');
+    return '<div class="bgt-card"><div class="bgt-head" onclick="toggleBudget(\''+id+'\')"><div class="bgt-chip">'+ic(icon)+'</div><div class="bgt-info"><div class="bgt-name">'+esc(x.name)+'</div></div><div class="bgt-chev">'+ic('i-chevron')+'</div></div><div class="bgt-detail" id="bgtd-'+id+'" style="display:none"><div class="set-about'+(about?'':' empty')+'">'+(about?esc(about):'No explanation yet. Add one when you edit this entry.')+'</div><div class="set-cat-actions"><button class="btn-outline set-mini" onclick="event.stopPropagation();'+edit+'">Edit</button>'+(canDelete?'<button class="btn-outline set-mini del" onclick="event.stopPropagation();'+del+'">Delete</button>':'')+'</div></div></div>';
+  }).join('');
+}
+function renderSettingsSection(){
+  var el=document.getElementById('settingsDetail');if(!el||!_settingsSection)return;var h='';
+  if(_settingsSection==='appearance')h=_settingsHead('Appearance')+'<div class="settings-list"><div class="settings-item" style="cursor:default"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-moon')+'</div><div class="s-label">Theme</div></div><div class="theme-toggle"><div class="theme-opt" data-theme-opt="light" onclick="setTheme(\'light\')">'+ic('i-sun')+'</div><div class="theme-opt" data-theme-opt="dark" onclick="setTheme(\'dark\')">'+ic('i-moon')+'</div><div class="theme-opt" data-theme-opt="auto" onclick="setTheme(\'auto\')">'+ic('i-auto')+'Auto</div></div></div></div>';
+  else if(_settingsSection==='currency')h=_settingsHead('Currency')+'<div class="settings-detail-copy">Choose the currency used for every amount in Money Map.</div><div class="settings-list"><div class="settings-item" onclick="openCurrencyPicker()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-cash')+'</div><div><div class="s-label">App currency</div><div class="s-sub">Used across reports and records</div></div></div><div style="display:flex;align-items:center;gap:8px"><b id="settingsCurrency">'+cur()+'</b><div class="chevron">'+ic('i-chevron')+'</div></div></div></div>';
+  else if(_settingsSection==='balances')h=_settingsHead('Starting balances')+'<div class="settings-detail-copy">Savings held before Money Map count toward net worth without changing a tracked month.</div><div class="settings-list"><div class="settings-item" onclick="openStartBalModal()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-bank')+'</div><div><div class="s-label">Life savings & emergency fund</div><div class="s-sub">Set your opening amounts</div></div></div><b id="startBalSummary">'+_startBalSummaryText()+'</b></div></div>';
+  else if(_settingsSection==='income')h=_settingsHead('Income sources')+'<div class="settings-detail-copy">Tap an entry to see its explanation and edit or delete controls.</div><div class="bgt-list" id="incomeTypesList">'+_editableRows('income',DB.incomeTypes||[])+'</div><button class="btn-outline settings-add" onclick="openAddIncomeTypeModal()">+ Add income source</button>';
+  else if(_settingsSection==='categories')h=_settingsHead('Expense categories')+'<div class="settings-detail-copy">Tap an entry to see its explanation and edit or delete controls.</div><div class="bgt-list" id="categoriesList">'+_editableRows('categories',DB.categories||[])+'</div><button class="btn-outline settings-add" onclick="openAddCategoryModal()">+ Add category</button>';
+  else if(_settingsSection==='holdings')h=_settingsHead('Income holdings')+'<div class="settings-detail-copy">Places where you keep savings, such as a bank, mobile money or unit trust.</div><div class="bgt-list" id="holdingsList">'+_editableRows('holdings',DB.holdings||[])+'</div><button class="btn-outline settings-add" onclick="openAddHoldingModal(false)">+ Add a place</button>';
+  else if(_settingsSection==='security')h=_settingsHead('Security')+'<div class="settings-list"><div class="settings-item" onclick="openPinSetup()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-lock')+'</div><div class="s-label">Change PIN</div></div><div class="chevron">'+ic('i-chevron')+'</div></div><div class="settings-item" onclick="toggleFingerprint()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-finger')+'</div><div><div class="s-label">Fingerprint</div><div class="s-sub">Unlock Money Map securely</div></div></div><span class="fp-sw" id="fpSwitch"></span></div></div>';
+  else if(_settingsSection==='data')h=_settingsHead('Data')+'<div class="settings-list"><div class="settings-item" onclick="openExport()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-export')+'</div><div><div class="s-label">Export records</div><div class="s-sub">Create a report or spreadsheet</div></div></div><div class="chevron">'+ic('i-chevron')+'</div></div></div>';
+  else h=_settingsHead('Backup & restore')+'<div class="settings-detail-copy">Keep a safe copy of your Money Map data or restore an existing backup.</div><div class="settings-list"><div class="settings-item" onclick="backupData()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-download')+'</div><div><div class="s-label">Backup data</div><div class="s-sub">Save a complete copy</div></div></div><div class="chevron">'+ic('i-chevron')+'</div></div><div class="settings-item" onclick="suppressNextLock();document.getElementById(\'restoreInput\').click()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-upload')+'</div><div><div class="s-label">Restore data</div><div class="s-sub">Choose a Money Map backup</div></div></div><div class="chevron">'+ic('i-chevron')+'</div></div></div>';
+  el.innerHTML=h;applyTheme();var fsw=document.getElementById('fpSwitch');if(fsw)fsw.classList.toggle('on',!!DB.fingerprintCredId);
+}
+function openSettingsSection(section,push){
+  _settingsSection=section;var hub=document.getElementById('settingsHub'),detail=document.getElementById('settingsDetail');if(hub)hub.style.display='none';if(detail)detail.style.display='block';renderSettingsSection();var pg=document.getElementById('page-settings');if(pg)pg.scrollTop=0;if(push!==false)history.pushState({mmSettingsSection:section},'');
+}
+function closeSettingsSection(){
+  if(!_settingsSection)return;_settingsSection=null;var hub=document.getElementById('settingsHub'),detail=document.getElementById('settingsDetail');if(hub)hub.style.display='flex';if(detail){detail.style.display='none';detail.innerHTML='';}renderSettingsHub();var pg=document.getElementById('page-settings');if(pg)pg.scrollTop=0;
+}
+function _settingsBack(){if(_settingsSection){closeSettingsSection();return;}navTo(_settingsReturnPage||'overview',{fromBack:true});}
 function renderSettings(){
-  document.getElementById('settingsNameDisplay').textContent=DB.userName;
-  renderAvatar();
-  applyTheme();
-  const since=document.getElementById('settingsSince');
-  if(since){ if(DB.transactions.length){ const e=DB.transactions.reduce((m,t)=>(t.date&&t.date<m)?t.date:m, DB.transactions[0].date); const d=new Date(e+'T00:00:00'); since.textContent='Tracking since '+MONTHS[d.getMonth()]+' '+d.getFullYear(); since.style.display=''; } else { since.style.display='none'; } }
-  const fsub=document.getElementById('fingerprintSub');
-  if(fsub) fsub.textContent='Unlock with your fingerprint';
-  const fsw=document.getElementById('fpSwitch');
-  if(fsw) fsw.classList.toggle('on',!!DB.fingerprintCredId);
-  const curEl=document.getElementById('settingsCurrency');
-  if(curEl) curEl.textContent=cur();
-  const cl=document.getElementById('categoriesList');
-  cl.innerHTML=DB.categories.map(cat=>`<div class="bgt-card"><div class="bgt-head" onclick="toggleBudget('setcat-${cat.id}')"><div class="bgt-chip">${ic(cat.icon)}</div><div class="bgt-info"><div class="bgt-name">${cat.name}</div></div><div class="bgt-chev">${ic('i-chevron')}</div></div><div class="bgt-detail" id="bgtd-setcat-${cat.id}" style="display:none"><div class="set-about${cat.about?'':' empty'}">${cat.about?cat.about:'No description yet — tap Edit to add one.'}</div><div class="set-cat-actions"><button class="btn-outline set-mini" onclick="openAddCategoryModal('${cat.id}')">Edit</button><button class="btn-outline set-mini del" onclick="deleteCategory('${cat.id}')">Delete</button></div></div></div>`).join('');
-  const il=document.getElementById('incomeTypesList');
-  il.innerHTML=DB.incomeTypes.map(it=>`<div class="bgt-card"><div class="bgt-head" onclick="toggleBudget('setinc-${it.id}')"><div class="bgt-chip" style="background:rgba(63,174,90,0.15);color:var(--success)">${ic(it.icon)}</div><div class="bgt-info"><div class="bgt-name">${it.name}</div></div><div class="bgt-chev">${ic('i-chevron')}</div></div><div class="bgt-detail" id="bgtd-setinc-${it.id}" style="display:none"><div class="set-about${it.about?'':' empty'}">${it.about?it.about:'No description yet — tap Edit to add one.'}</div><div class="set-cat-actions"><button class="btn-outline set-mini" onclick="openAddIncomeTypeModal('${it.id}')">Edit</button>${it.id==='i5'?'':`<button class="btn-outline set-mini del" onclick="deleteIncomeType('${it.id}')">Delete</button>`}</div></div></div>`).join('');
-  const sbEl=document.getElementById('startBalSummary'); if(sbEl) sbEl.textContent=_startBalSummaryText();
-  renderHoldingsList();
+  var name=document.getElementById('settingsNameDisplay');if(name)name.textContent=DB.userName;renderAvatar();applyTheme();
+  var since=document.getElementById('settingsSince');if(since){if(DB.transactions.length){var e=DB.transactions.reduce(function(m,t){return t.date&&t.date<m?t.date:m;},DB.transactions[0].date),d=new Date(e+'T00:00:00');since.textContent='Tracking since '+MONTHS[d.getMonth()]+' '+d.getFullYear();since.style.display='';}else since.style.display='none';}
+  renderSettingsHub();if(_settingsSection){document.getElementById('settingsHub').style.display='none';document.getElementById('settingsDetail').style.display='block';renderSettingsSection();}
 }
 function _startBalSummaryText(){ const s=(DB.openingSavings||0),e=(DB.openingEmergency||0); if(!s&&!e) return 'Not set'; return fmtShort(s+e); }
 function openStartBalModal(){
@@ -3986,14 +3930,9 @@ function setupOvSwipe(){
 }
 function initApp(){ initPeriodSelectors(); updateOverview(); renderSettings(); setupOvSwipe(); syncOwnedGoals(); }
 window.addEventListener('popstate',()=>{
-  if(_resettingHistory){ _resettingHistory=false; return; }
-  if(_modalHistDepth>0)_modalHistDepth--;
-  while(_modalStack.length>_modalHistDepth){
-    const id=_modalStack.pop();
-    const el=document.getElementById(id);
-    if(el)_unmountModal(el);
-  }
-  _nativeModal();
+  if(_resettingHistory){_resettingHistory=false;return;}
+  if(_modalHistDepth>0){_modalHistDepth--;while(_modalStack.length>_modalHistDepth){const id=_modalStack.pop();const el=document.getElementById(id);if(el)_unmountModal(el);}_nativeModal();return;}
+  if(currentPage==='settings'){_settingsBack();return;}
 });
 document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay')&&e.target.classList.contains('open'))closeModal(e.target.id);
@@ -4009,37 +3948,21 @@ function _adjustPinForIme(){
   var lock=document.getElementById('lockScreen'),ime=_nativeImePx();if(!lock)return;
   lock.style.translate=ime>0?'0 -'+Math.min(110,Math.round(ime*.34))+'px':'';
 }
-var _focusRevealTimer=0;
+var _focusRevealTimer=0,_compactImeTimer=0,_compactImePending=0;
+function _applyCompactIme(sheet,ime){
+  if(!sheet||!sheet.isConnected)return;var ov=sheet.closest('.modal-overlay');if(!ov)return;
+  if(ime>0){var topInset=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--native-inset-top'))||0;ov.classList.add('mm-compact-ime');ov.style.paddingBottom=Math.round(ime+10)+'px';sheet.style.height='auto';sheet.style.maxHeight=Math.max(270,Math.round(_keyboardTop()-topInset-20))+'px';}
+  else{ov.classList.remove('mm-compact-ime');ov.style.paddingBottom='';sheet.style.height='';sheet.style.maxHeight='';}
+}
 function _prepareSheetForIme(sheet,ime){
   if(!sheet)return;
-  if(ime>0){
-    if(!sheet.dataset.mmImeHeight){
-      var height=Math.round(sheet.getBoundingClientRect().height);
-      if(height>0){sheet.dataset.mmImeHeight=String(height);sheet.style.boxSizing='border-box';sheet.style.height=height+'px';}
-    }
-    sheet.style.setProperty('--mm-ime-spacer',Math.round(ime+54)+'px');
-    sheet.style.translate='';
-  }else{
-    sheet.style.removeProperty('--mm-ime-spacer');
-    sheet.style.height='';sheet.style.boxSizing='';delete sheet.dataset.mmImeHeight;sheet.style.translate='';
-  }
+  if(sheet.classList.contains('compact-editor-sheet')){_compactImePending=ime;clearTimeout(_compactImeTimer);_compactImeTimer=setTimeout(function(){_applyCompactIme(sheet,_compactImePending);},110);return;}
+  if(ime>0){if(!sheet.dataset.mmImeHeight){var height=Math.round(sheet.getBoundingClientRect().height);if(height>0){sheet.dataset.mmImeHeight=String(height);sheet.style.boxSizing='border-box';sheet.style.height=height+'px';}}sheet.style.setProperty('--mm-ime-spacer',Math.round(ime+54)+'px');sheet.style.translate='';}
+  else{sheet.style.removeProperty('--mm-ime-spacer');sheet.style.height='';sheet.style.boxSizing='';delete sheet.dataset.mmImeHeight;sheet.style.translate='';}
 }
 function _revealFocusedField(el,delay){
-  if(!_native()||!el||!el.closest)return;
-  if(el.id==='nativePinInput'){_adjustPinForIme();return;}
-  var sheet=el.closest('.modal-sheet');if(!sheet)return;
-  clearTimeout(_focusRevealTimer);
-  _focusRevealTimer=setTimeout(function(){
-    var ime=_nativeImePx();if(ime<=0)return;
-    _prepareSheetForIme(sheet,ime);
-    requestAnimationFrame(function(){
-      var safeBottom=_keyboardTop()-32,r=el.getBoundingClientRect();
-      if(r.bottom>safeBottom){
-        var target=Math.max(0,Math.min(sheet.scrollHeight-sheet.clientHeight,sheet.scrollTop+(r.bottom-safeBottom)));
-        if(Math.abs(target-sheet.scrollTop)>1)sheet.scrollTo({top:target,behavior:'smooth'});
-      }
-    });
-  },typeof delay==='number'?delay:115);
+  if(!_native()||!el||!el.closest)return;if(el.id==='nativePinInput'){_adjustPinForIme();return;}var sheet=el.closest('.modal-sheet');if(!sheet)return;
+  clearTimeout(_focusRevealTimer);_focusRevealTimer=setTimeout(function(){var ime=_nativeImePx();if(ime<=0)return;if(sheet.classList.contains('compact-editor-sheet')){var body=el.closest('.compact-editor-body');if(body){var er=el.getBoundingClientRect(),br=body.getBoundingClientRect();if(er.bottom>br.bottom-10||er.top<br.top+8)el.scrollIntoView({block:'center',behavior:'auto'});}return;}var r=el.getBoundingClientRect(),top=_keyboardTop(),safe=top-24;if(r.bottom>safe){var by=Math.min(r.top-16,r.bottom-safe+18);sheet.scrollTo({top:sheet.scrollTop+Math.max(0,by),behavior:'smooth'});}},delay==null?80:delay);
 }
 window.__moneyMapNativeInsets=function(ime){
   ime=Number(ime)||0;document.documentElement.classList.toggle('ime-open',ime>0);
@@ -4270,7 +4193,62 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .set-back,.set-pencil{transition:transform 130ms ease-out;}
   .set-back:active,.set-pencil:active{transform:scale(.92);}
 
-  /* Money Map v2.0.3.8 approved interaction layer */
+
+  /* Money Map v2.0.3.9 — dedicated Settings and concise summary sheets */
+  #page-settings{padding:0 0 142px;scroll-padding-top:58px;}
+  .set-hdr{height:218px;background:linear-gradient(145deg,#c9ac5b 0%,#b69843 48%,#a88732 100%);overflow:hidden;position:relative;}
+  .set-doodles{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#5f4917;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;opacity:.075;pointer-events:none;}
+  .settings-edit{position:absolute;top:16px;left:16px;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;z-index:6;box-shadow:0 3px 12px rgba(78,57,6,.12);}
+  .settings-edit svg{width:18px;height:18px;stroke:#705713;}
+  .settings-edit:active{transform:scale(.91)}
+  .set-panel{margin-top:-27px;border-radius:30px 30px 0 0;padding:82px var(--gutter) 24px;min-height:calc(100vh - 191px);}
+  .set-av{top:-62px;width:118px;height:118px;}
+  .settings-sticky{position:sticky;top:0;height:calc(56px + var(--native-inset-top));padding-top:var(--native-inset-top);margin-bottom:calc(-56px - var(--native-inset-top));z-index:28;background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);border-bottom:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:var(--text);opacity:0;pointer-events:none;transition:opacity .16s linear,border-color .16s linear;}
+  .settings-sticky.visible{opacity:1;pointer-events:auto;border-bottom-color:var(--input-border);}
+  .settings-edit-sticky{top:calc(var(--native-inset-top) + 9px);left:16px;background:transparent;box-shadow:none;}
+  .settings-hub,.settings-detail{max-width:560px;margin:0 auto;}
+  .settings-hub{display:flex;flex-direction:column;gap:11px;padding-top:7px;}
+  .settings-destination{display:flex;align-items:center;min-height:62px;padding:12px 15px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:16px;cursor:pointer;box-shadow:0 1px 1px var(--card-hi) inset,0 8px 22px -17px var(--shadow);}
+  .settings-destination:active{background:var(--glass-hover);transform:scale(.992);}
+  .settings-destination .sd-icon{width:36px;height:36px;border-radius:11px;background:rgba(212,175,55,.13);color:var(--gold);display:flex;align-items:center;justify-content:center;flex:none;margin-right:13px;}
+  .settings-destination .sd-icon svg{width:19px;height:19px;}
+  .settings-destination .sd-copy{min-width:0;flex:1;}
+  .settings-destination .sd-name{font-size:15px;font-weight:700;color:var(--text);}
+  .settings-destination .sd-sub{font-size:12px;color:var(--text-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .settings-destination>.chevron svg{width:18px;height:18px;}
+  .settings-detail-head{display:flex;align-items:center;gap:12px;margin:3px 0 18px;}
+  .settings-detail-back{width:38px;height:38px;border:1px solid var(--card-border);border-radius:12px;background:var(--card-bg);color:var(--text);display:flex;align-items:center;justify-content:center;flex:none;}
+  .settings-detail-back svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;}
+  .settings-detail-title{font-size:22px;font-weight:850;letter-spacing:-.35px;color:var(--text);}
+  .settings-detail-copy{font-size:12.5px;color:var(--text-dim);line-height:1.48;margin:-9px 2px 15px;}
+  .settings-detail .settings-list{margin-bottom:12px;}
+  .settings-detail .bgt-card{margin-bottom:0;}
+  .settings-detail .bgt-list{gap:10px;}
+  .settings-detail .bgt-detail{border-top:1px solid var(--input-border);padding:13px 14px 14px;}
+  .settings-detail .set-about{font-size:12.5px;line-height:1.48;color:var(--text-dim);margin-bottom:12px;}
+  .settings-detail .set-about.empty{font-style:italic;color:var(--text-muted);}
+  .settings-detail .set-cat-actions,.settings-detail .bgt-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .settings-detail .set-mini,.settings-detail .bgt-actions .btn-outline{margin:0;padding:11px 12px;font-size:13px;}
+  .settings-detail .set-mini.del,.settings-detail .bgt-del{color:var(--danger);border-color:rgba(224,85,85,.3);}
+  .settings-add{margin-top:12px;}
+  .sum-intel{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+  .sum-intel-row{display:flex;align-items:center;gap:12px;padding:12px 13px;border:1px solid var(--card-border);border-radius:14px;background:var(--card-bg);}
+  .sum-intel-row>div{flex:1;min-width:0;}.sum-intel-row span{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:2px}.sum-intel-row b{font-size:14px;color:var(--text)}
+  .sum-intel-row strong{font-size:13px;color:var(--gold);text-align:right;max-width:48%;}
+  .sum-status{margin-top:12px;padding:11px 13px;border-radius:13px;background:rgba(212,175,55,.1);color:var(--text-dim);font-size:12.5px;line-height:1.4;}
+  .sum-mix{margin-top:12px;padding:13px;border:1px solid var(--card-border);border-radius:14px;background:var(--card-bg);}
+  .sum-mix-title{font-size:11.5px;color:var(--text-dim);margin-bottom:8px}.sum-mix-bar{height:8px;background:var(--track);border-radius:99px;overflow:hidden;display:flex}.sum-mix-bar i{display:block;height:100%}.sum-mix-legend{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:11.5px;color:var(--text-dim)}
+  .compact-editor-sheet{overflow:hidden!important;display:flex;flex-direction:column;}
+  #budgetModalContent{display:flex;flex-direction:column;min-height:0;flex:1;}
+  .compact-editor-body{overflow-y:auto;overscroll-behavior:contain;padding:1px 1px 8px;min-height:0;}
+  .compact-editor-actions{flex:none;padding:7px 0 0;background:var(--modal-bg);border-top:1px solid var(--input-border);}
+  .compact-editor-actions .btn-gold,.compact-editor-actions .btn-outline{margin-top:7px;}
+  .compact-editor-modal.mm-compact-ime{transition:none!important;}
+  .compact-editor-modal.mm-compact-ime .modal-sheet{transition:none!important;}
+  html[data-native-shell="true"] .set-hdr{height:calc(218px + var(--native-inset-top));}
+  html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:calc(16px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
+
+  /* Money Map v2.0.3.9 approved interaction layer */
   .nav-item.nav-bounce-in .nav-icon{animation:mmNavSelect 430ms cubic-bezier(.2,.9,.25,1) both;}
   .nav-item.nav-bounce-out .nav-icon{animation:mmNavRelease 360ms cubic-bezier(.2,.75,.25,1) both;}
   @keyframes mmNavSelect{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-5px) scale(1.12)}62%{transform:translateY(1px) scale(.96)}82%{transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
