@@ -932,7 +932,7 @@
   .btn-sm-edit { background:rgba(212,175,55,0.15); color:var(--gold); }
   .btn-sm-del { background:rgba(224,85,85,0.13); color:var(--danger); }
 
-  /* Money Map v2.0.3.13 approved visual correction */
+  /* Money Map v2.0.3.14 approved visual correction */
   .set-hdr{height:226px;overflow:visible;background:linear-gradient(145deg,#c9aa55 0%,#b4933d 52%,#a9852f 100%);}
   .set-hdr-copy{position:absolute;top:18px;left:var(--gutter);z-index:7;color:#241a06;}
   .set-hdr-title{font-size:27px;font-weight:800;line-height:1.08;letter-spacing:-.6px;}
@@ -989,6 +989,35 @@ html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:cal
 .set-av{top:-54px!important;width:108px!important;height:108px!important;border-width:4px!important}
 .set-name{font-size:22px!important;font-weight:800!important;line-height:1.15!important;margin-top:0!important}
 .set-meta{font-size:11px!important;margin:4px 0 12px!important}
+
+/* v2.0.3.14 approved Settings and modal architecture */
+.set-panel{margin-top:-8px!important;padding-top:80px!important}
+.set-av{top:-60px!important;width:120px!important;height:120px!important;border-width:4px!important}
+.set-name{font-size:24px!important;font-weight:800!important;line-height:1.15!important;letter-spacing:-.4px!important}
+.settings-destination{min-height:61px!important;padding:9px 12px!important;align-items:center!important}
+.settings-destination .sd-copy{min-width:0!important;flex:1!important}
+.settings-destination .sd-name{font-size:14px!important;font-weight:720!important;line-height:1.2!important}
+.settings-destination .sd-sub{display:block!important;font-size:10.5px!important;line-height:1.25!important;color:var(--text-dim)!important;margin-top:4px!important;white-space:normal!important}
+.settings-destination .sd-value,.settings-destination>.chevron{display:none!important}
+.settings-edit,.settings-edit-sticky{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;width:30px!important;height:34px!important;padding:4px!important;color:inherit!important}
+.settings-edit svg,.settings-edit-sticky svg{width:23px!important;height:23px!important;stroke-width:1.9!important}
+.settings-sticky{opacity:var(--settings-collapse,0)!important;transition:opacity .16s linear!important}
+.settings-sticky-title.page-title{font-size:26px!important;font-weight:800!important;letter-spacing:-.5px!important;line-height:1!important}
+#settingsMenuContent .sm-row{height:43px!important;min-height:43px!important;padding:0 3px!important;border-bottom:1px solid var(--input-border)!important;display:flex!important;align-items:center!important}
+#settingsMenuContent .sm-lab{font-size:14px!important;font-weight:650!important}
+#settingsMenuContent .sm-val,#settingsMenuContent .sm-chev,#settingsMenuContent .sd-icon{display:none!important}
+.settings-section-open .settings-detail{padding:0 14px calc(26px + var(--native-inset-bottom))!important;overscroll-behavior:contain!important}
+.settings-detail-head{position:sticky!important;top:0!important;height:calc(54px + var(--native-inset-top))!important;margin:0 -14px 12px!important;padding:var(--native-inset-top) 14px 0!important;display:flex!important;align-items:center!important;gap:8px!important;background:var(--bg)!important;border-bottom:1px solid var(--input-border)!important;z-index:5!important}
+.settings-detail-back{width:30px!important;height:40px!important;margin:0 2px 0 0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;display:flex!important;align-items:center!important;justify-content:flex-start!important}
+.settings-detail-back svg{width:23px!important;height:23px!important}.settings-detail-back path{stroke-width:2.1!important}
+.settings-detail-title{font-size:22px!important;font-weight:800!important;line-height:1.15!important;letter-spacing:-.4px!important}
+.settings-detail-copy{font-size:12px!important;line-height:1.4!important;margin:0 2px 14px!important;padding:0!important;color:var(--text-dim)!important}
+.settings-add{position:sticky!important;bottom:calc(8px + var(--native-inset-bottom))!important;z-index:6!important;width:100%!important;margin:12px 0 0!important;background:var(--bg)!important;box-shadow:0 -12px 20px 5px var(--bg)!important}
+.settings-detail .bgt-list{padding-bottom:12px!important}
+.modal-overlay.mm-compact-ime{align-items:flex-end!important;overflow:hidden!important}
+.modal-overlay.mm-compact-ime .modal-sheet{margin:0 auto!important;transform:none!important;translate:0 0!important;overflow:auto!important;overscroll-behavior:contain!important}
+.modal-sheet[data-mm-ime-managed]{box-sizing:border-box!important;overflow:auto!important;overscroll-behavior:contain!important}
+.compact-editor-sheet{display:flex!important;flex-direction:column!important;overflow:hidden!important}.compact-editor-body{overflow:auto!important;min-height:0!important;flex:1!important}.compact-editor-actions{flex:none!important;background:var(--modal-bg)!important;position:sticky!important;bottom:0!important;z-index:3!important}
 </style>
 
 <style id="v20313-title-lock">
@@ -1221,7 +1250,7 @@ html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:cal
       <div class="settings-hub" id="settingsHub"></div>
       <div class="settings-detail" id="settingsDetail" style="display:none"></div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-      <div class="set-foot">Money Map v2.0.3.13</div>
+      <div class="set-foot">Money Map v2.0.3.14</div>
     </div>
   </div>
 
@@ -1261,7 +1290,7 @@ html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:cal
 <div class="modal-overlay" id="accountModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="accountModalTitle">Add Account</div><div id="accountModalContent"></div></div></div>
 <div class="modal-overlay" id="holdingModal" style="z-index:660"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="holdingModalTitle">Add a place</div><div id="holdingModalContent"></div></div></div>
 <div class="modal-overlay" id="startBalModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Starting balances</div><div id="startBalContent"></div></div></div>
-<div class="modal-overlay" id="settingsMenuModal" style="z-index:640"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Settings</div><div id="settingsMenuContent"></div><button class="btn-outline" onclick="_smGo()" style="margin-top:6px">Open all settings</button></div></div>
+<div class="modal-overlay" id="settingsMenuModal" style="z-index:640"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Settings</div><div id="settingsMenuContent"></div><button class="btn-outline" data-sm-action="all" onclick="_smGo()" style="margin-top:6px">Open all settings</button></div></div>
 <div class="modal-overlay" id="pinSetupModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Set New PIN</div><div id="pinSetupContent"></div></div></div>
 <div class="modal-overlay" id="categoryModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="catModalTitle">Add Category</div><div id="catModalContent"></div></div></div>
 <div class="modal-overlay" id="incomeTypeModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title">Add Income Source</div><div id="incomeTypeContent"></div></div></div>
@@ -1611,9 +1640,11 @@ let _modalStack=[], _modalHistDepth=0, _resettingHistory=false;
 function _resetModalHist(){ if(_modalHistDepth>0){ const n=_modalHistDepth; _modalHistDepth=0; _resettingHistory=true; history.go(-n); } }
 var _modalUnmountTimers={};
 function _mountModal(el){clearTimeout(_modalUnmountTimers[el.id]);el.classList.add('mounted');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('open');});});}
-function _unmountModal(el){if(!el)return;el.querySelectorAll('.modal-sheet').forEach(function(sh){sh.style.translate='';});el.classList.remove('open');clearTimeout(_modalUnmountTimers[el.id]);_modalUnmountTimers[el.id]=setTimeout(function(){el.classList.remove('mounted');el.classList.remove('closing');},260);}
+function _resetModalSheet(sh){if(!sh)return;sh.style.translate='';sh.style.height='';sh.style.maxHeight='';sh.style.boxSizing='';sh.style.removeProperty('--mm-ime-spacer');delete sh.dataset.mmImeHeight;delete sh.dataset.mmImeManaged;sh.classList.remove('mm-auto-compact');}
+function _unmountModal(el){if(!el)return;var active=document.activeElement;if(active&&el.contains(active)&&active.blur)active.blur();el.querySelectorAll('.modal-sheet').forEach(_resetModalSheet);el.classList.remove('open','mm-compact-ime');el.style.paddingBottom='';clearTimeout(_modalUnmountTimers[el.id]);_modalUnmountTimers[el.id]=setTimeout(function(){el.classList.remove('mounted','closing','mm-compact-ime');el.style.paddingBottom='';},230);}
 function openModal(id){
   const el=document.getElementById(id);if(!el||el.classList.contains('open'))return;
+  clearTimeout(_modalUnmountTimers[id]);el.classList.remove('closing');_modalStack=_modalStack.filter(function(x){return x!==id;});
   _mountModal(el);_modalStack.push(id);_nativeModal();haptic('light');
   if(_modalStack.length>_modalHistDepth){history.pushState({mmModal:true},'');_modalHistDepth++;}
 }
@@ -1816,14 +1847,13 @@ function _smGo(){_smOpen(null);}
 function _smSection(section){_smOpen(section);}
 function _smRoute(target){
   if(target==='profile'){closeModal('settingsMenuModal');setTimeout(openEditProfile,170);return;}
-  var routes={appearance:'appearance',currency:'currency',savings:'holdings',categories:'categories',security:'security',data:'backup'};
+  var routes={appearance:'appearance',currency:'currency',balances:'balances',income:'income',savings:'holdings',holdings:'holdings',categories:'categories',security:'security',data:'data'};
   _smOpen(routes[target]||null);
 }
 function openSettingsMenu(){
   var el=document.getElementById('settingsMenuContent');if(!el){goSettings();return;}
-  var themeLbl=(DB.theme||'auto');themeLbl=themeLbl.charAt(0).toUpperCase()+themeLbl.slice(1);
-  function row(target,label,val){return '<div class="sm-row sm-simple-row" onclick="_smRoute(\''+target+'\')"><div class="sm-lab">'+label+'</div>'+(val?'<div class="sm-val">'+val+'</div>':'')+'<svg class="sm-chev" viewBox="0 0 24 24"><use href="#i-chevron"/></svg></div>';}
-  el.innerHTML=row('profile','Profile',DB.userName||'You')+row('appearance','Appearance',themeLbl)+row('currency','Currency',cur())+row('savings','Income holdings')+row('categories','Categories')+row('security','Security','PIN & biometric')+row('data','Backup & restore');
+  function row(target,label){return '<div class="sm-row sm-simple-row" data-sm-action="'+target+'" onclick="_smRoute(\''+target+'\')"><div class="sm-lab">'+label+'</div></div>';}
+  el.innerHTML=row('profile','Profile')+row('appearance','Appearance')+row('currency','Currency')+row('balances','Starting balances')+row('income','Income sources')+row('categories','Expense categories')+row('holdings','Income holdings')+row('security','Security')+row('data','Data');
   openModal('settingsMenuModal');
 }
 
@@ -3745,14 +3775,14 @@ function _renderAnalyticsLegacyUnused(){
 // ===== SETTINGS =====
 let _settingsTab='categories';
 function switchSettingsTab(tab){_settingsTab=tab;}
-function _settingsScroll(pg){var st=document.getElementById('settingsSticky');if(st)st.classList.toggle('visible',pg.scrollTop>145);}
+function _settingsScroll(pg){var st=document.getElementById('settingsSticky'),p=Math.max(0,Math.min(1,((pg&&pg.scrollTop)||0)-72)/82);if(st){st.style.setProperty('--settings-collapse',p.toFixed(3));st.classList.toggle('visible',p>.015);st.style.pointerEvents=p>.7?'auto':'none';}var hero=document.querySelector('#page-settings .set-hdr-copy'),edit=document.querySelector('#page-settings .set-hdr>.settings-edit');if(hero)hero.style.opacity=String(1-p);if(edit)edit.style.opacity=String(1-p);}
 function _settingsIcon(name){return '<div class="sd-icon">'+ic(name)+'</div>';}
-function _settingsHubRow(key,label,sub,icon){return '<div class="settings-destination" data-settings-key="'+key+'" onclick="openSettingsSection(\''+key+'\',true)">'+_settingsIcon(icon)+'<div class="sd-copy"><div class="sd-name">'+label+'</div></div><div class="sd-value">'+sub+'</div><div class="chevron">'+ic('i-chevron')+'</div></div>'; }
+function _settingsHubRow(key,label,sub,icon){return '<div class="settings-destination" data-settings-key="'+key+'" onclick="openSettingsSection(\''+key+'\',true)">'+_settingsIcon(icon)+'<div class="sd-copy"><div class="sd-name">'+label+'</div><div class="sd-sub">'+sub+'</div></div></div>'; }
 function renderSettingsHub(){
   var el=document.getElementById('settingsHub');if(!el)return;
-  el.innerHTML=_settingsHubRow('appearance','Appearance',(DB.theme||'auto').replace(/^./,function(x){return x.toUpperCase();})+' theme','i-moon')+_settingsHubRow('currency','Currency',cur(),'i-cash')+_settingsHubRow('balances','Starting balances',_startBalSummaryText(),'i-bank')+_settingsHubRow('income','Income sources',(DB.incomeTypes||[]).length+' sources','i-income')+_settingsHubRow('categories','Expense categories',(DB.categories||[]).length+' categories','i-tag')+_settingsHubRow('holdings','Income holdings',(DB.holdings||[]).length+' places','i-wallet')+_settingsHubRow('security','Security',DB.fingerprintCredId?'PIN and fingerprint':'PIN protection','i-lock')+_settingsHubRow('data','Data','Export, backup & restore','i-export');
+  el.innerHTML=_settingsHubRow('appearance','Appearance','Explore light, dark and automatic themes','i-moon')+_settingsHubRow('currency','Currency','Choose the currency used across Money Map','i-cash')+_settingsHubRow('balances','Starting balances','Set the amounts you started tracking with','i-bank')+_settingsHubRow('income','Income sources','Manage where your income comes from','i-income')+_settingsHubRow('categories','Expense categories','Organise the different ways you spend','i-tag')+_settingsHubRow('holdings','Income holdings','Manage the places where you keep money','i-wallet')+_settingsHubRow('security','Security','PIN and fingerprint protection','i-lock')+_settingsHubRow('data','Data','Export, back up or restore your information','i-export');
 }
-function _settingsHead(title){return '<div class="settings-detail-head"><button class="settings-detail-back" onclick="closeSettingsSection()" aria-label="Settings directory"><svg viewBox="0 0 24 24"><path d="M20 12H5m6-6-6 6 6 6"/></svg></button><div class="settings-detail-title">'+title+'</div></div>';}
+function _settingsHead(title){return '<div class="settings-detail-head"><button class="settings-detail-back" onclick="closeSettingsSection()" aria-label="Settings directory"><svg viewBox="0 0 24 24"><path d="M18 12H7m5-5-5 5 5 5"/></svg></button><div class="settings-detail-title">'+title+'</div></div>';}
 function _editableRows(kind,list){
   if(!list.length)return '<div class="bgt-empty">No entries yet.</div>';
   return list.map(function(x){var id=(kind==='categories'?'setcat-':kind==='income'?'setinc-':'hold-')+x.id,icon=kind==='categories'?(x.icon||'i-tag'):kind==='income'?(x.icon||'i-income'):'i-bank',about=x.about||'';
@@ -3777,7 +3807,11 @@ function renderSettingsSection(){
 }
 var _lastSettingsHaptic=0;
 function _settingsHaptic(){var now=Date.now();if(now-_lastSettingsHaptic<240)return;_lastSettingsHaptic=now;try{if(window.MoneyMapNative&&typeof MoneyMapNative.haptic==='function')MoneyMapNative.haptic('light');else if(navigator.vibrate)navigator.vibrate(8);}catch(e){}}
-document.addEventListener('pointerdown',function(e){if(e.target&&e.target.closest&&e.target.closest('#settingsMenuModal [onclick]'))_settingsHaptic();},true);
+var _settingsMenuTap=null;
+document.addEventListener('pointerdown',function(e){var t=e.target&&e.target.closest&&e.target.closest('#settingsMenuModal [data-sm-action]');_settingsMenuTap=t?{el:t,id:e.pointerId,x:e.clientX,y:e.clientY,at:Date.now(),moved:false}:null;},true);
+document.addEventListener('pointermove',function(e){var t=_settingsMenuTap;if(!t||t.id!==e.pointerId)return;if(Math.hypot(e.clientX-t.x,e.clientY-t.y)>9)t.moved=true;},true);
+document.addEventListener('pointercancel',function(e){if(_settingsMenuTap&&_settingsMenuTap.id===e.pointerId)_settingsMenuTap=null;},true);
+document.addEventListener('pointerup',function(e){var t=_settingsMenuTap;_settingsMenuTap=null;if(!t||t.id!==e.pointerId||t.moved||Date.now()-t.at>650||!t.el.isConnected)return;_settingsHaptic();},true);
 function _applySettingsRoute(section){
   _settingsSection=section||null;var hub=document.getElementById('settingsHub'),detail=document.getElementById('settingsDetail'),pg=document.getElementById('page-settings');
   document.body.classList.toggle('settings-section-open',!!_settingsSection);if(pg)pg.classList.toggle('settings-section-open',!!_settingsSection);
@@ -4021,15 +4055,11 @@ function _adjustPinForIme(){
 var _focusRevealTimer=0,_compactImeTimer=0,_compactImePending=0;
 function _applyCompactIme(sheet,ime){
   if(!sheet||!sheet.isConnected)return;var ov=sheet.closest('.modal-overlay');if(!ov)return;
-  if(ime>0){var topInset=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--native-inset-top'))||0;ov.classList.add('mm-compact-ime');ov.style.paddingBottom=Math.round(ime+10)+'px';sheet.style.height='auto';sheet.style.maxHeight=Math.max(270,Math.round(_keyboardTop()-topInset-20))+'px';}
-  else{ov.classList.remove('mm-compact-ime');ov.style.paddingBottom='';sheet.style.height='';sheet.style.maxHeight='';}
+  if(ime>0){var topInset=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--native-inset-top'))||0;ov.classList.add('mm-compact-ime');ov.style.paddingBottom=Math.round(ime)+'px';sheet.dataset.mmImeManaged='1';sheet.style.height='';sheet.style.translate='';sheet.style.maxHeight=Math.max(270,Math.round(_keyboardTop()-topInset-14))+'px';}
+  else{ov.classList.remove('mm-compact-ime');ov.style.paddingBottom='';_resetModalSheet(sheet);}
 }
 function _prepareSheetForIme(sheet,ime){
-  if(!sheet)return;
-  if(!sheet.classList.contains('compact-editor-sheet'))sheet.classList.add('compact-editor-sheet','mm-auto-compact');
-  if(sheet.classList.contains('compact-editor-sheet')){_compactImePending=ime;clearTimeout(_compactImeTimer);_compactImeTimer=setTimeout(function(){_applyCompactIme(sheet,_compactImePending);},110);return;}
-  if(ime>0){if(!sheet.dataset.mmImeHeight){var height=Math.round(sheet.getBoundingClientRect().height);if(height>0){sheet.dataset.mmImeHeight=String(height);sheet.style.boxSizing='border-box';sheet.style.height=height+'px';}}sheet.style.setProperty('--mm-ime-spacer',Math.round(ime+54)+'px');sheet.style.translate='';}
-  else{sheet.style.removeProperty('--mm-ime-spacer');sheet.style.height='';sheet.style.boxSizing='';delete sheet.dataset.mmImeHeight;sheet.style.translate='';}
+  if(!sheet)return;_compactImePending=ime;clearTimeout(_compactImeTimer);_compactImeTimer=setTimeout(function(){_applyCompactIme(sheet,_compactImePending);},70);
 }
 function _revealFocusedField(el,delay){
   if(!_native()||!el||!el.closest)return;if(el.id==='nativePinInput'){_adjustPinForIme();return;}var sheet=el.closest('.modal-sheet');if(!sheet)return;
@@ -4038,7 +4068,7 @@ function _revealFocusedField(el,delay){
 window.__moneyMapNativeInsets=function(ime){
   ime=Number(ime)||0;document.documentElement.classList.toggle('ime-open',ime>0);
   _adjustPinForIme();
-  if(ime<=0){document.querySelectorAll('.modal-sheet[data-mm-ime-height]').forEach(function(sh){_prepareSheetForIme(sh,0);});return;}
+  if(ime<=0){document.querySelectorAll('.modal-sheet[data-mm-ime-managed],.modal-sheet[data-mm-ime-height]').forEach(function(sh){_prepareSheetForIme(sh,0);});return;}
   var active=document.activeElement,sheet=active&&active.closest&&active.closest('.modal-sheet');
   if(sheet){_prepareSheetForIme(sheet,ime);_revealFocusedField(active,110);}
 };
@@ -4265,7 +4295,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .set-back:active,.set-pencil:active{transform:scale(.92);}
 
 
-  /* Money Map v2.0.3.13 — dedicated Settings and concise summary sheets */
+  /* Money Map v2.0.3.14 — dedicated Settings and concise summary sheets */
   #page-settings{padding:0 0 142px;scroll-padding-top:58px;}
   .set-hdr{height:218px;background:linear-gradient(145deg,#c9ac5b 0%,#b69843 48%,#a88732 100%);overflow:hidden;position:relative;}
   .set-doodles{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#5f4917;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;opacity:.075;pointer-events:none;}
@@ -4319,7 +4349,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   html[data-native-shell="true"] .set-hdr{height:calc(218px + var(--native-inset-top));}
   html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:calc(16px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
 
-  /* Money Map v2.0.3.13 approved interaction layer */
+  /* Money Map v2.0.3.14 approved interaction layer */
   .nav-item.nav-bounce-in .nav-icon{animation:mmNavSelect 430ms cubic-bezier(.2,.9,.25,1) both;}
   .nav-item.nav-bounce-out .nav-icon{animation:mmNavRelease 360ms cubic-bezier(.2,.75,.25,1) both;}
   @keyframes mmNavSelect{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-5px) scale(1.12)}62%{transform:translateY(1px) scale(.96)}82%{transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
