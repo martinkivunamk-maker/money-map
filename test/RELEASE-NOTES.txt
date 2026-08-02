@@ -1,11 +1,7 @@
-Money Map v2.0.3.17 Test
-
-- Automatic one-time previous-month budget inheritance
-- Recurring income, expenses and transfers
-- Compact floating-pill confirmations
-- Clear notification controls with native sound wording
-- Unified typography and corrected Settings alignment
-- Improved profile spacing and Overview rings
-- Friendly empty Loans and Goals states
-- Green bouncing celebrations with richer particles
-- Gold enabled-state controls
+Money Map v2.0.3.18 Test
+- Removed the permanent Budget explanation
+- Reduced confirmation pills to a compact single line
+- Enlarged the profile name
+- Removed untouched starter goals
+- Continuous celebration bounce with 90 particles
+- Launcher and notification mark traced directly from the approved artwork
