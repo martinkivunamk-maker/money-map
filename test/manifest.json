@@ -1,12 +1,12 @@
 {
-  "name": "Money Map",
-  "short_name": "Money Map",
+  "name": "Money Map Test",
+  "short_name": "MM Test",
   "description": "Personal finance tracker - income, expenses, savings and goals",
   "start_url": "./Money_Map.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#060606",
-  "theme_color": "#ffffff",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -21,5 +21,6 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "id": "/money-map/"
 }
