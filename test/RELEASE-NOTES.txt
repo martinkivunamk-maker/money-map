@@ -1,7 +1,5 @@
-Money Map v2.0.3.18 Test
-- Removed the permanent Budget explanation
-- Reduced confirmation pills to a compact single line
-- Enlarged the profile name
-- Removed untouched starter goals
-- Continuous celebration bounce with 90 particles
-- Launcher and notification mark traced directly from the approved artwork
+Money Map v2.0.3.19 Test
+- Budget edits are isolated to the selected month
+- Older budget months remain selectable even without transactions
+- Approved launcher mark is centered with wider safe margins
+- Gold lines remain deliberately thick

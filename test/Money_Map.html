@@ -932,7 +932,7 @@
   .btn-sm-edit { background:rgba(212,175,55,0.15); color:var(--gold); }
   .btn-sm-del { background:rgba(224,85,85,0.13); color:var(--danger); }
 
-  /* Money Map v2.0.3.18 Test approved visual correction */
+  /* Money Map v2.0.3.19 Test approved visual correction */
   .set-hdr{height:226px;overflow:visible;background:linear-gradient(145deg,#c9aa55 0%,#b4933d 52%,#a9852f 100%);}
   .set-hdr-copy{position:absolute;top:18px;left:var(--gutter);z-index:7;color:#241a06;}
   .set-hdr-title{font-size:27px;font-weight:800;line-height:1.08;letter-spacing:-.6px;}
@@ -1264,7 +1264,7 @@ body.settings-section-open>#settingsSticky{display:none!important}
       <div class="settings-hub" id="settingsHub"></div>
       <div class="settings-detail" id="settingsDetail" style="display:none"></div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-      <div class="set-foot">Money Map v2.0.3.18 Test</div>
+      <div class="set-foot">Money Map v2.0.3.19 Test</div>
     </div>
   </div>
 
@@ -1898,6 +1898,7 @@ function openPeriodPicker(mode){
     html+=`<div class="picker-item${selMonth==='all'?' picker-active':''}" onclick="selectPeriod('month','all')">All Months</div>`;
     const active=new Set();
     DB.transactions.forEach(t=>{const d=new Date(t.date);if(d.getFullYear()===selYear)active.add(d.getMonth());});
+    (DB.budgets||[]).forEach(function(b){Object.keys(b.periodAmounts||{}).forEach(function(k){var p=k.split('-').map(Number);if(p[0]===selYear&&Number(b.periodAmounts[k]||0)>0)active.add(p[1]-1);});});
     if(selYear===new Date().getFullYear())active.add(new Date().getMonth());
     if(active.size===0){html+=`<div style="padding:14px 20px;color:var(--text-dim);font-size:14px">No transactions in ${selYear} yet</div>`;}
     else{[...active].sort((a,b)=>a-b).forEach(m=>{html+=`<div class="picker-item${selMonth===m?' picker-active':''}" onclick="selectPeriod('month',${m})">${MONTHS[m]}</div>`;});}
@@ -1913,6 +1914,7 @@ function selectPeriod(mode,val){
     if(selMonth!=='all'){
       const active=new Set();
       DB.transactions.forEach(t=>{const d=new Date(t.date);if(d.getFullYear()===selYear)active.add(d.getMonth());});
+    (DB.budgets||[]).forEach(function(b){Object.keys(b.periodAmounts||{}).forEach(function(k){var p=k.split('-').map(Number);if(p[0]===selYear&&Number(b.periodAmounts[k]||0)>0)active.add(p[1]-1);});});
       if(selYear===new Date().getFullYear())active.add(new Date().getMonth());
       if(!active.has(selMonth))selMonth='all';
     }
@@ -4138,7 +4140,7 @@ var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anRes
 
 
 // ===== Money Map v2.0.3.16 TEST coordinated upgrade =====
-var MM_TEST_VERSION='2.0.3.18-test.1', _snTimer=null, _snAction=null, _pendingRecurringContext=null;
+var MM_TEST_VERSION='2.0.3.19-test.1', _snTimer=null, _snAction=null, _pendingRecurringContext=null;
 function _snKindFromColor(c){c=String(c||'');return c.indexOf('danger')>-1?'error':c.indexOf('warning')>-1?'warning':c.indexOf('success')>-1?'success':'info';}
 function showSnackbar(message,kind,actionLabel,action,duration){
   var t=document.getElementById('toast');if(!t)return;clearTimeout(_snTimer);_snAction=typeof action==='function'?action:null;
@@ -4161,7 +4163,7 @@ function _ensureV20316Data(){
   DB.notificationSettings=Object.assign({enabled:true,daily:true,dailyTime:'20:00',weekly:true,weeklyDay:0,weeklyTime:'18:00',savings:true,loans:false,recurring:true,sound:true,vibration:true,showAmounts:false,planVersion:1},DB.notificationSettings||{});
   var keys=new Set();(DB.transactions||[]).forEach(function(t){if(t.date)keys.add(t.date.slice(0,7));});var n=new Date();keys.add(n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0'));
   (DB.budgets||[]).forEach(function(b){if(b.type!=='expense')return;if(!b.periodAmounts){b.periodAmounts={};keys.forEach(function(k){b.periodAmounts[k]=Number(b.amount||0);});}});
-  DB.budgetSchemaVersion=2;DB.appDataVersion='2.0.3.18';_activateBudgetPeriod(selMonth,selYear);saveDB();
+  DB.budgetSchemaVersion=2;DB.appDataVersion='2.0.3.19';_activateBudgetPeriod(selMonth,selYear);saveDB();
 }
 
 var _renderBudget20315=renderBudget;
@@ -4394,7 +4396,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .set-back:active,.set-pencil:active{transform:scale(.92);}
 
 
-  /* Money Map v2.0.3.18 Test — dedicated Settings and concise summary sheets */
+  /* Money Map v2.0.3.19 Test — dedicated Settings and concise summary sheets */
   #page-settings{padding:0 0 142px;scroll-padding-top:58px;}
   .set-hdr{height:218px;background:linear-gradient(145deg,#c9ac5b 0%,#b69843 48%,#a88732 100%);overflow:hidden;position:relative;}
   .set-doodles{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#5f4917;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;opacity:.075;pointer-events:none;}
@@ -4448,7 +4450,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   html[data-native-shell="true"] .set-hdr{height:calc(218px + var(--native-inset-top));}
   html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:calc(16px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
 
-  /* Money Map v2.0.3.18 Test approved interaction layer */
+  /* Money Map v2.0.3.19 Test approved interaction layer */
   .nav-item.nav-bounce-in .nav-icon{animation:mmNavSelect 430ms cubic-bezier(.2,.9,.25,1) both;}
   .nav-item.nav-bounce-out .nav-icon{animation:mmNavRelease 360ms cubic-bezier(.2,.75,.25,1) both;}
   @keyframes mmNavSelect{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-5px) scale(1.12)}62%{transform:translateY(1px) scale(.96)}82%{transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
@@ -4541,12 +4543,12 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 </style>
 <script id="v20317-approved-logic">
 (function(){
-  window.MM_TEST_VERSION='2.0.3.18-test.1';
-  DB.appDataVersion='2.0.3.18';
+  window.MM_TEST_VERSION='2.0.3.19-test.1';
+  DB.appDataVersion='2.0.3.19';
   DB.budgetAutoSeeded=DB.budgetAutoSeeded||{};
   (DB.recurringExpenses||[]).forEach(function(r){if(!r.type)r.type='expense';});
   saveDB();
-  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.18 Test';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.19 Test';
 
   /* Compact pill messages, one at a time. */
   showSnackbar=function(message,kind,actionLabel,action,duration){
@@ -4631,13 +4633,45 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 </style>
 <script id="v20318-final-logic">
 (function(){
- window.MM_TEST_VERSION='2.0.3.18-test.1';DB.appDataVersion='2.0.3.18';
- var f=document.querySelector('.set-foot');if(f)f.textContent='Money Map v2.0.3.18 Test';
+ window.MM_TEST_VERSION='2.0.3.19-test.1';DB.appDataVersion='2.0.3.19';
+ var f=document.querySelector('.set-foot');if(f)f.textContent='Money Map v2.0.3.19 Test';
  /* Remove only untouched starter examples; never remove a user goal. */
  if(!DB.defaultGoalExamplesRemoved){var used={};(DB.transactions||[]).forEach(function(t){if(t.goalId)used[t.goalId]=1;});DB.goals=(DB.goals||[]).filter(function(g){var starter=(g.id==='g1'&&g.name==='Car'&&Number(g.target)===25000000)||(g.id==='g2'&&g.name==='Monitor'&&Number(g.target)===3000000);return !(starter&&Number(g.saved||0)===0&&!used[g.id]);});DB.defaultGoalExamplesRemoved=true;saveDB();}
  /* Ninety green-and-gold particles, replenished for every celebration. */
  var prevCelebration=showCelebration;showCelebration=function(){prevCelebration.apply(this,arguments);var cc=document.getElementById('celConfetti');if(cc){var cols=['#2ea05a','#d4af37','#78d397','#f1d56d','#ffffff'],h='';for(var i=0;i<90;i++){var sz=5+Math.round(Math.random()*8);h+='<i style="left:'+(1+Math.random()*98)+'%;width:'+sz+'px;height:'+sz+'px;background:'+cols[i%cols.length]+';animation-delay:'+(Math.random()*1.8).toFixed(2)+'s;animation-duration:'+(1.4+Math.random()*1.8).toFixed(2)+'s"></i>';}cc.innerHTML=h;}};
  saveDB();if(currentPage==='overview')updateOverview();
+})();
+</script>
+
+
+<script id="v20319-budget-isolation">
+(function(){
+  window.MM_TEST_VERSION='2.0.3.19-test.1';DB.appDataVersion='2.0.3.19';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.19 Test';
+  /* Never mutate a shared budget object's amount when changing months. */
+  function scopedAmount(b){
+    var key=_selectedBudgetKey();
+    if(key)return _budgetAmountFor(b,key);
+    var total=0;for(var m=0;m<12;m++)total+=_budgetAmountFor(b,_periodKey(m,selYear));
+    return total/12;
+  }
+  _activateBudgetPeriod=function(){return;};
+  activeBudgetRecords=function(){
+    return (DB.budgets||[]).filter(function(b){return b.type==='expense';}).map(function(b){var copy=Object.assign({},b);copy.amount=scopedAmount(b);return copy;}).filter(function(b){return Number(b.amount||0)>0;});
+  };
+  editBudget=function(id){
+    var b=(DB.budgets||[]).find(function(x){return x.id===id;});if(!b)return;
+    var scoped=Object.assign({},b,{amount:scopedAmount(b)});buildBudgetForm(scoped);openModal('addBudgetModal');
+  };
+  saveBudget=function(id){
+    var key=_selectedBudgetKey();if(!key){showSnackbar('Select one month before saving a budget','warning');return;}
+    var amount=getRawAmount(document.getElementById('bAmount'));if(!amount||amount<=0){showSnackbar('Enter a valid amount','error');return;}
+    var b=id?(DB.budgets||[]).find(function(x){return x.id===id;}):null;
+    if(!b){var cid=document.getElementById('bCat').value;b=(DB.budgets||[]).find(function(x){return x.type==='expense'&&x.categoryId===cid;});var cat=DB.categories.find(function(c){return c.id===cid;});if(!b){b={id:genId(),categoryId:cid,name:cat?cat.name:'Expense',icon:cat?cat.icon:'i-cash',type:'expense',periodAmounts:{},amount:amount};DB.budgets.push(b);}}
+    b.periodAmounts=b.periodAmounts||{};b.periodAmounts[key]=amount;if(!Number(b.amount||0))b.amount=amount;
+    saveDB();closeModal('addBudgetModal');renderBudget();showSnackbar('Budget saved for '+MONTHS[selMonth],'success');
+  };
+  saveDB();
 })();
 </script>
 
