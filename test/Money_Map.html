@@ -932,7 +932,7 @@
   .btn-sm-edit { background:rgba(212,175,55,0.15); color:var(--gold); }
   .btn-sm-del { background:rgba(224,85,85,0.13); color:var(--danger); }
 
-  /* Money Map v2.0.3.21 Test approved visual correction */
+  /* Money Map v2.0.3.22 Test approved visual correction */
   .set-hdr{height:226px;overflow:visible;background:linear-gradient(145deg,#c9aa55 0%,#b4933d 52%,#a9852f 100%);}
   .set-hdr-copy{position:absolute;top:18px;left:var(--gutter);z-index:7;color:#241a06;}
   .set-hdr-title{font-size:27px;font-weight:800;line-height:1.08;letter-spacing:-.6px;}
@@ -1264,7 +1264,7 @@ body.settings-section-open>#settingsSticky{display:none!important}
       <div class="settings-hub" id="settingsHub"></div>
       <div class="settings-detail" id="settingsDetail" style="display:none"></div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-      <div class="set-foot">Money Map v2.0.3.21 Test</div>
+      <div class="set-foot">Money Map v2.0.3.22 Test</div>
     </div>
   </div>
 
@@ -4140,7 +4140,7 @@ var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anRes
 
 
 // ===== Money Map v2.0.3.16 TEST coordinated upgrade =====
-var MM_TEST_VERSION='2.0.3.21-test.1', _snTimer=null, _snAction=null, _pendingRecurringContext=null;
+var MM_TEST_VERSION='2.0.3.22-test.1', _snTimer=null, _snAction=null, _pendingRecurringContext=null;
 function _snKindFromColor(c){c=String(c||'');return c.indexOf('danger')>-1?'error':c.indexOf('warning')>-1?'warning':c.indexOf('success')>-1?'success':'info';}
 function showSnackbar(message,kind,actionLabel,action,duration){
   var t=document.getElementById('toast');if(!t)return;clearTimeout(_snTimer);_snAction=typeof action==='function'?action:null;
@@ -4163,7 +4163,7 @@ function _ensureV20316Data(){
   DB.notificationSettings=Object.assign({enabled:true,daily:true,dailyTime:'20:00',weekly:true,weeklyDay:0,weeklyTime:'18:00',savings:true,loans:false,recurring:true,sound:true,vibration:true,showAmounts:false,planVersion:1},DB.notificationSettings||{});
   var keys=new Set();(DB.transactions||[]).forEach(function(t){if(t.date)keys.add(t.date.slice(0,7));});var n=new Date();keys.add(n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0'));
   (DB.budgets||[]).forEach(function(b){if(b.type!=='expense')return;if(!b.periodAmounts){b.periodAmounts={};keys.forEach(function(k){b.periodAmounts[k]=Number(b.amount||0);});}});
-  DB.budgetSchemaVersion=2;DB.appDataVersion='2.0.3.21';_activateBudgetPeriod(selMonth,selYear);saveDB();
+  DB.budgetSchemaVersion=2;DB.appDataVersion='2.0.3.22';_activateBudgetPeriod(selMonth,selYear);saveDB();
 }
 
 var _renderBudget20315=renderBudget;
@@ -4396,7 +4396,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .set-back:active,.set-pencil:active{transform:scale(.92);}
 
 
-  /* Money Map v2.0.3.21 Test — dedicated Settings and concise summary sheets */
+  /* Money Map v2.0.3.22 Test — dedicated Settings and concise summary sheets */
   #page-settings{padding:0 0 142px;scroll-padding-top:58px;}
   .set-hdr{height:218px;background:linear-gradient(145deg,#c9ac5b 0%,#b69843 48%,#a88732 100%);overflow:hidden;position:relative;}
   .set-doodles{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#5f4917;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;opacity:.075;pointer-events:none;}
@@ -4450,7 +4450,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   html[data-native-shell="true"] .set-hdr{height:calc(218px + var(--native-inset-top));}
   html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:calc(16px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
 
-  /* Money Map v2.0.3.21 Test approved interaction layer */
+  /* Money Map v2.0.3.22 Test approved interaction layer */
   .nav-item.nav-bounce-in .nav-icon{animation:mmNavSelect 430ms cubic-bezier(.2,.9,.25,1) both;}
   .nav-item.nav-bounce-out .nav-icon{animation:mmNavRelease 360ms cubic-bezier(.2,.75,.25,1) both;}
   @keyframes mmNavSelect{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-5px) scale(1.12)}62%{transform:translateY(1px) scale(.96)}82%{transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
@@ -4543,12 +4543,12 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 </style>
 <script id="v20317-approved-logic">
 (function(){
-  window.MM_TEST_VERSION='2.0.3.21-test.1';
-  DB.appDataVersion='2.0.3.21';
+  window.MM_TEST_VERSION='2.0.3.22-test.1';
+  DB.appDataVersion='2.0.3.22';
   DB.budgetAutoSeeded=DB.budgetAutoSeeded||{};
   (DB.recurringExpenses||[]).forEach(function(r){if(!r.type)r.type='expense';});
   saveDB();
-  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.21 Test';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.22 Test';
 
   /* Compact pill messages, one at a time. */
   showSnackbar=function(message,kind,actionLabel,action,duration){
@@ -4633,8 +4633,8 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 </style>
 <script id="v20318-final-logic">
 (function(){
- window.MM_TEST_VERSION='2.0.3.21-test.1';DB.appDataVersion='2.0.3.21';
- var f=document.querySelector('.set-foot');if(f)f.textContent='Money Map v2.0.3.21 Test';
+ window.MM_TEST_VERSION='2.0.3.22-test.1';DB.appDataVersion='2.0.3.22';
+ var f=document.querySelector('.set-foot');if(f)f.textContent='Money Map v2.0.3.22 Test';
  /* Remove only untouched starter examples; never remove a user goal. */
  if(!DB.defaultGoalExamplesRemoved){var used={};(DB.transactions||[]).forEach(function(t){if(t.goalId)used[t.goalId]=1;});DB.goals=(DB.goals||[]).filter(function(g){var starter=(g.id==='g1'&&g.name==='Car'&&Number(g.target)===25000000)||(g.id==='g2'&&g.name==='Monitor'&&Number(g.target)===3000000);return !(starter&&Number(g.saved||0)===0&&!used[g.id]);});DB.defaultGoalExamplesRemoved=true;saveDB();}
  /* Ninety green-and-gold particles, replenished for every celebration. */
@@ -4646,8 +4646,8 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 
 <script id="v20319-budget-isolation">
 (function(){
-  window.MM_TEST_VERSION='2.0.3.21-test.1';DB.appDataVersion='2.0.3.21';
-  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.21 Test';
+  window.MM_TEST_VERSION='2.0.3.22-test.1';DB.appDataVersion='2.0.3.22';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.22 Test';
   /* Never mutate a shared budget object's amount when changing months. */
   function scopedAmount(b){
     var key=_selectedBudgetKey();
@@ -4700,10 +4700,10 @@ if('serviceWorker' in navigator){
 </style>
 <script id="v20320-final-web">
 (function(){
-  window.MM_TEST_VERSION='2.0.3.21-test.1';
-  DB.appDataVersion='2.0.3.21';
+  window.MM_TEST_VERSION='2.0.3.22-test.1';
+  DB.appDataVersion='2.0.3.22';
   DB.budgetPeriodTouched=DB.budgetPeriodTouched||{};
-  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.21 Test';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.22 Test';
 
   /* Retry automatic rollover for untouched empty months, even if an older build
      previously marked that month as checked before a prior budget existed. */
@@ -4836,6 +4836,81 @@ if('serviceWorker' in navigator){
   /* QA hook: confirms camera and gallery remain separate sources. */
   window.__mmCameraInputId='txImgCameraInput';
   window.__mmGalleryInputId='txImgInput';
+})();
+</script>
+
+
+<style id="v20322-settings-header-tune">
+/* Lower independent Settings titles slightly while retaining breathing room above the divider. */
+.settings-detail-head{
+  height:calc(56px + var(--native-inset-top))!important;
+  margin-bottom:10px!important;
+  padding-top:var(--native-inset-top)!important;
+  padding-bottom:0!important;
+  align-items:center!important;
+}
+.settings-detail-title{height:auto!important;transform:translateY(3px)!important}
+.settings-detail-back{transform:translateY(3px)!important}
+.settings-detail-back{height:36px!important}
+.settings-detail-copy{
+  margin:0 2px 12px!important;
+  font-size:12.5px!important;
+  line-height:1.35!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+</style>
+<script id="v20322-settings-and-rollover">
+(function(){
+  window.MM_TEST_VERSION='2.0.3.22-test.1';
+  DB.appDataVersion='2.0.3.22';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.22 Test';
+
+  var shortSettingsCopy={
+    currency:'Currency used throughout Money Map.',
+    balances:'Opening savings included in your net worth.',
+    income:'View, edit or remove income sources.',
+    categories:'View, edit or remove expense categories.',
+    holdings:'Where your saved money is kept.',
+    data:'Export, back up or restore your records.',
+    notifications:'Manage private reminders on this phone.',
+    recurring:'Manage automatic recurring transactions.'
+  };
+  function shortenSettingsCopy20322(){
+    var copy=document.querySelector('#settingsDetail .settings-detail-copy');
+    if(copy&&shortSettingsCopy[_settingsSection])copy.textContent=shortSettingsCopy[_settingsSection];
+  }
+  var renderSettingsSection20321=renderSettingsSection;
+  renderSettingsSection=function(){renderSettingsSection20321();shortenSettingsCopy20322();};
+
+  /* Copy the previous month's budgets synchronously when a month is selected. */
+  function immediateBudgetRollover20322(){
+    var key=_selectedBudgetKey();
+    if(!key||DB.budgetPeriodTouched&&DB.budgetPeriodTouched[key])return false;
+    var hasCurrent=(DB.budgets||[]).some(function(b){return b.type==='expense'&&_budgetAmountFor(b,key)>0;});
+    if(hasCurrent)return false;
+    var d=new Date(Number(selYear),Number(selMonth)-1,1);
+    var prev=_periodKey(d.getMonth(),d.getFullYear()),changed=0;
+    (DB.budgets||[]).forEach(function(b){
+      var amount=_budgetAmountFor(b,prev);
+      if(b.type==='expense'&&amount>0){b.periodAmounts=b.periodAmounts||{};b.periodAmounts[key]=amount;changed++;}
+    });
+    if(!changed)return false;
+    DB.budgetAutoSeeded=DB.budgetAutoSeeded||{};DB.budgetAutoSeeded[key]=true;saveDB();return true;
+  }
+  window.immediateBudgetRollover20322=immediateBudgetRollover20322;
+  var selectPeriod20321=selectPeriod;
+  selectPeriod=function(mode,val){
+    selectPeriod20321(mode,val);
+    if(immediateBudgetRollover20322()){
+      updateOverview();
+      if(currentPage==='budget')renderBudget();
+      if(currentPage==='analytics')renderAnalytics();
+    }
+  };
+  var initPeriodSelectors20321=initPeriodSelectors;
+  initPeriodSelectors=function(){initPeriodSelectors20321();immediateBudgetRollover20322();};
 })();
 </script>
 
