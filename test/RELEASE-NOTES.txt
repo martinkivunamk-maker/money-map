@@ -1,5 +1,7 @@
-Money Map v2.0.3.19 Test
-- Budget edits are isolated to the selected month
-- Older budget months remain selectable even without transactions
-- Approved launcher mark is centered with wider safe margins
-- Gold lines remain deliberately thick
+Money Map v2.0.3.21 Test
+
+- Preserved the full transaction form through Notes.
+- Replaced the large receipt and repeat sections with two adjacent text actions: Attach receipt and Enable auto update.
+- Auto update displays a tick and its frequency when enabled; removed the explanatory footer.
+- Preserved automatic previous-month budget rollover and monthly isolation.
+- Added a dedicated camera-capture path in the accompanying Android Test shell so Camera opens the camera rather than the gallery.

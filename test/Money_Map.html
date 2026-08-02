@@ -932,7 +932,7 @@
   .btn-sm-edit { background:rgba(212,175,55,0.15); color:var(--gold); }
   .btn-sm-del { background:rgba(224,85,85,0.13); color:var(--danger); }
 
-  /* Money Map v2.0.3.19 Test approved visual correction */
+  /* Money Map v2.0.3.21 Test approved visual correction */
   .set-hdr{height:226px;overflow:visible;background:linear-gradient(145deg,#c9aa55 0%,#b4933d 52%,#a9852f 100%);}
   .set-hdr-copy{position:absolute;top:18px;left:var(--gutter);z-index:7;color:#241a06;}
   .set-hdr-title{font-size:27px;font-weight:800;line-height:1.08;letter-spacing:-.6px;}
@@ -1264,7 +1264,7 @@ body.settings-section-open>#settingsSticky{display:none!important}
       <div class="settings-hub" id="settingsHub"></div>
       <div class="settings-detail" id="settingsDetail" style="display:none"></div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-      <div class="set-foot">Money Map v2.0.3.19 Test</div>
+      <div class="set-foot">Money Map v2.0.3.21 Test</div>
     </div>
   </div>
 
@@ -4140,7 +4140,7 @@ var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anRes
 
 
 // ===== Money Map v2.0.3.16 TEST coordinated upgrade =====
-var MM_TEST_VERSION='2.0.3.19-test.1', _snTimer=null, _snAction=null, _pendingRecurringContext=null;
+var MM_TEST_VERSION='2.0.3.21-test.1', _snTimer=null, _snAction=null, _pendingRecurringContext=null;
 function _snKindFromColor(c){c=String(c||'');return c.indexOf('danger')>-1?'error':c.indexOf('warning')>-1?'warning':c.indexOf('success')>-1?'success':'info';}
 function showSnackbar(message,kind,actionLabel,action,duration){
   var t=document.getElementById('toast');if(!t)return;clearTimeout(_snTimer);_snAction=typeof action==='function'?action:null;
@@ -4163,7 +4163,7 @@ function _ensureV20316Data(){
   DB.notificationSettings=Object.assign({enabled:true,daily:true,dailyTime:'20:00',weekly:true,weeklyDay:0,weeklyTime:'18:00',savings:true,loans:false,recurring:true,sound:true,vibration:true,showAmounts:false,planVersion:1},DB.notificationSettings||{});
   var keys=new Set();(DB.transactions||[]).forEach(function(t){if(t.date)keys.add(t.date.slice(0,7));});var n=new Date();keys.add(n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0'));
   (DB.budgets||[]).forEach(function(b){if(b.type!=='expense')return;if(!b.periodAmounts){b.periodAmounts={};keys.forEach(function(k){b.periodAmounts[k]=Number(b.amount||0);});}});
-  DB.budgetSchemaVersion=2;DB.appDataVersion='2.0.3.19';_activateBudgetPeriod(selMonth,selYear);saveDB();
+  DB.budgetSchemaVersion=2;DB.appDataVersion='2.0.3.21';_activateBudgetPeriod(selMonth,selYear);saveDB();
 }
 
 var _renderBudget20315=renderBudget;
@@ -4396,7 +4396,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .set-back:active,.set-pencil:active{transform:scale(.92);}
 
 
-  /* Money Map v2.0.3.19 Test — dedicated Settings and concise summary sheets */
+  /* Money Map v2.0.3.21 Test — dedicated Settings and concise summary sheets */
   #page-settings{padding:0 0 142px;scroll-padding-top:58px;}
   .set-hdr{height:218px;background:linear-gradient(145deg,#c9ac5b 0%,#b69843 48%,#a88732 100%);overflow:hidden;position:relative;}
   .set-doodles{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#5f4917;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;opacity:.075;pointer-events:none;}
@@ -4450,7 +4450,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   html[data-native-shell="true"] .set-hdr{height:calc(218px + var(--native-inset-top));}
   html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:calc(16px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
 
-  /* Money Map v2.0.3.19 Test approved interaction layer */
+  /* Money Map v2.0.3.21 Test approved interaction layer */
   .nav-item.nav-bounce-in .nav-icon{animation:mmNavSelect 430ms cubic-bezier(.2,.9,.25,1) both;}
   .nav-item.nav-bounce-out .nav-icon{animation:mmNavRelease 360ms cubic-bezier(.2,.75,.25,1) both;}
   @keyframes mmNavSelect{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-5px) scale(1.12)}62%{transform:translateY(1px) scale(.96)}82%{transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
@@ -4543,12 +4543,12 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 </style>
 <script id="v20317-approved-logic">
 (function(){
-  window.MM_TEST_VERSION='2.0.3.19-test.1';
-  DB.appDataVersion='2.0.3.19';
+  window.MM_TEST_VERSION='2.0.3.21-test.1';
+  DB.appDataVersion='2.0.3.21';
   DB.budgetAutoSeeded=DB.budgetAutoSeeded||{};
   (DB.recurringExpenses||[]).forEach(function(r){if(!r.type)r.type='expense';});
   saveDB();
-  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.19 Test';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.21 Test';
 
   /* Compact pill messages, one at a time. */
   showSnackbar=function(message,kind,actionLabel,action,duration){
@@ -4633,8 +4633,8 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 </style>
 <script id="v20318-final-logic">
 (function(){
- window.MM_TEST_VERSION='2.0.3.19-test.1';DB.appDataVersion='2.0.3.19';
- var f=document.querySelector('.set-foot');if(f)f.textContent='Money Map v2.0.3.19 Test';
+ window.MM_TEST_VERSION='2.0.3.21-test.1';DB.appDataVersion='2.0.3.21';
+ var f=document.querySelector('.set-foot');if(f)f.textContent='Money Map v2.0.3.21 Test';
  /* Remove only untouched starter examples; never remove a user goal. */
  if(!DB.defaultGoalExamplesRemoved){var used={};(DB.transactions||[]).forEach(function(t){if(t.goalId)used[t.goalId]=1;});DB.goals=(DB.goals||[]).filter(function(g){var starter=(g.id==='g1'&&g.name==='Car'&&Number(g.target)===25000000)||(g.id==='g2'&&g.name==='Monitor'&&Number(g.target)===3000000);return !(starter&&Number(g.saved||0)===0&&!used[g.id]);});DB.defaultGoalExamplesRemoved=true;saveDB();}
  /* Ninety green-and-gold particles, replenished for every celebration. */
@@ -4646,8 +4646,8 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 
 <script id="v20319-budget-isolation">
 (function(){
-  window.MM_TEST_VERSION='2.0.3.19-test.1';DB.appDataVersion='2.0.3.19';
-  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.19 Test';
+  window.MM_TEST_VERSION='2.0.3.21-test.1';DB.appDataVersion='2.0.3.21';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.21 Test';
   /* Never mutate a shared budget object's amount when changing months. */
   function scopedAmount(b){
     var key=_selectedBudgetKey();
@@ -4680,5 +4680,164 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 </script>
+
+<style id="v20320-final-web-style">
+/* Final: preserve the complete transaction form and turn Receipt into a small camera dock. */
+.txc-noterow{position:relative!important}
+.txc-noteinput{padding-right:116px!important}
+#txRcptRow.mm-receipt-dock{position:absolute!important;right:11px!important;bottom:10px!important;width:auto!important;margin:0!important;z-index:3!important}
+.mm-receipt-add,.mm-receipt-added{height:38px;border:1px solid rgba(212,175,55,.42);border-radius:999px;background:color-mix(in srgb,var(--gold) 13%,var(--card-bg));color:var(--text);display:flex;align-items:center;gap:7px;padding:0 11px;box-shadow:0 5px 14px -11px var(--shadow);font:750 12px/1 inherit;cursor:pointer}
+.mm-receipt-add svg{width:17px;height:17px;color:var(--gold)}
+.mm-receipt-added{padding:3px 5px 3px 4px;gap:6px}
+.mm-receipt-thumb{width:30px;height:30px;border-radius:50%;overflow:hidden;background:var(--track);flex:none;border:1px solid var(--card-border)}
+.mm-receipt-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.mm-receipt-added>span{font-size:11.5px;font-weight:780;white-space:nowrap}
+.mm-receipt-remove{width:27px;height:27px;border:0;border-radius:50%;background:var(--glass-hover);color:var(--text-dim);display:grid;place-items:center;font-size:18px;line-height:1;cursor:pointer}
+/* Shorter independent Settings app bar; content begins immediately below it. */
+.settings-detail-head{height:calc(48px + var(--native-inset-top))!important;margin-bottom:8px!important}
+.settings-detail-title{font-size:22px!important;line-height:1.05!important}
+.settings-detail-back{height:34px!important}
+</style>
+<script id="v20320-final-web">
+(function(){
+  window.MM_TEST_VERSION='2.0.3.21-test.1';
+  DB.appDataVersion='2.0.3.21';
+  DB.budgetPeriodTouched=DB.budgetPeriodTouched||{};
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.21 Test';
+
+  /* Retry automatic rollover for untouched empty months, even if an older build
+     previously marked that month as checked before a prior budget existed. */
+  function autoUpdateBudgetPeriod(){
+    var key=_selectedBudgetKey();
+    if(!key||DB.budgetPeriodTouched[key])return false;
+    var hasCurrent=(DB.budgets||[]).some(function(b){return b.type==='expense'&&_budgetAmountFor(b,key)>0;});
+    if(hasCurrent)return false;
+    var d=new Date(Number(selYear),Number(selMonth)-1,1);
+    var prev=_periodKey(d.getMonth(),d.getFullYear()),changed=0;
+    (DB.budgets||[]).forEach(function(b){
+      var v=_budgetAmountFor(b,prev);
+      if(b.type==='expense'&&v>0){b.periodAmounts=b.periodAmounts||{};b.periodAmounts[key]=v;changed++;}
+    });
+    if(!changed)return false;
+    DB.budgetAutoSeeded=DB.budgetAutoSeeded||{};
+    DB.budgetAutoSeeded[key]=true;saveDB();return true;
+  }
+  var renderBudget20320=renderBudget;
+  renderBudget=function(){var key=_selectedBudgetKey();if(key&&DB.budgetPeriodTouched[key]){DB.budgetAutoSeeded=DB.budgetAutoSeeded||{};DB.budgetAutoSeeded[key]=true;}autoUpdateBudgetPeriod();return renderBudget20320();};
+
+  var saveBudget20320=saveBudget;
+  saveBudget=function(id){
+    var key=_selectedBudgetKey(),amount=getRawAmount(document.getElementById('bAmount'));
+    saveBudget20320(id);
+    if(key&&amount>0){DB.budgetPeriodTouched[key]=true;saveDB();}
+  };
+  deleteBudget=function(id){
+    var key=_selectedBudgetKey();if(!key){showSnackbar('Select one month first','warning');return;}
+    askConfirm('Remove this month’s budget?','Other months and the category will stay unchanged.',function(){
+      var b=(DB.budgets||[]).find(function(x){return x.id===id;});if(b&&b.periodAmounts)delete b.periodAmounts[key];
+      DB.budgetPeriodTouched[key]=true;saveDB();renderBudget();showSnackbar('Budget removed from '+MONTHS[selMonth],'success');
+    },'Remove',true);
+  };
+
+  /* Compact receipt camera dock. Amount, transaction rows, note and Repeat stay unchanged. */
+  txRcptHTML=function(){
+    if(txImageData)return '<div class="mm-receipt-added" role="button" tabindex="0" onclick="openPhotoChoice(\'tx\')"><span class="mm-receipt-thumb"><img src="'+txImageData+'" alt="Receipt"></span><span>Receipt added</span><button type="button" class="mm-receipt-remove" aria-label="Remove receipt" onclick="event.stopPropagation();removeTxImage()">×</button></div>';
+    return '<button type="button" class="mm-receipt-add" onclick="openPhotoChoice(\'tx\')">'+ic('i-camera')+'<span>Receipt</span></button>';
+  };
+  function mountReceiptDock(){
+    var row=document.getElementById('txRcptRow');if(!row)return;
+    var sheet=row.closest('.modal-sheet')||document;
+    var note=sheet.querySelector('.txc-noterow');if(!note)return;
+    row.classList.add('mm-receipt-dock');note.appendChild(row);
+  }
+  refreshTxRcpt=function(){var row=document.getElementById('txRcptRow');if(row){row.innerHTML=txRcptHTML();mountReceiptDock();}};
+  var buildTxForm20320=buildTxForm;
+  buildTxForm=function(type,existing){var out=buildTxForm20320(type,existing);mountReceiptDock();return out;};
+  if(typeof openLoanRepaymentModal==='function'){
+    var openLoanRepayment20320=openLoanRepaymentModal;
+    openLoanRepaymentModal=function(){var out=openLoanRepayment20320.apply(this,arguments);mountReceiptDock();return out;};
+  }
+  saveDB();
+})();
+</script>
+
+
+<style id="v20321-inline-transaction-tools">
+/* Final compact transaction actions: two simple adjacent text controls below Notes. */
+.txc-noteinput{padding-right:14px!important}
+.txc-noterow.mm-has-receipt-dock{position:relative!important}
+.tx-inline-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;margin:7px 2px 9px;min-height:36px}
+.tx-inline-tools>#txRcptRow,.tx-inline-auto{min-width:0;display:flex;align-items:center;justify-content:center}
+.tx-inline-auto{border-left:1px solid var(--input-border)}
+.tx-tool-btn{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:var(--text-dim);min-width:0;min-height:34px;padding:6px 8px;display:flex;align-items:center;justify-content:center;gap:7px;font:inherit;font-size:12.5px;font-weight:760;line-height:1.1;white-space:nowrap;cursor:pointer}
+.tx-tool-btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9;flex:none}
+.tx-tool-btn.is-on{color:var(--gold)}
+.tx-tool-check{width:17px;height:17px;border:1.5px solid currentColor;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;flex:none;font-size:12px;line-height:1;font-weight:950}
+.tx-tool-check.off{color:var(--text-faint)}
+.tx-tool-remove{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:var(--danger);width:25px;height:30px;padding:0;font-size:17px;font-weight:850;cursor:pointer}
+#txRcptRow{margin:0!important;position:static!important;inset:auto!important;width:auto!important;max-width:none!important;z-index:auto!important}
+#txRcptRow.mm-receipt-dock{position:static!important;right:auto!important;bottom:auto!important}
+@media(max-width:360px){.tx-tool-btn{font-size:11.7px;padding-left:4px;padding-right:4px;gap:5px}.tx-tool-check{width:16px;height:16px}}
+</style>
+<script id="v20321-inline-transaction-tools">
+(function(){
+  var freqNames={weekly:'Weekly',biweekly:'Every 2 weeks',monthly:'Monthly',quarterly:'Quarterly',yearly:'Yearly'};
+  txRcptHTML=function(){
+    if(txImageData){
+      return '<div style="display:flex;align-items:center;justify-content:center;min-width:0"><button type="button" class="tx-tool-btn is-on" onclick="openPhotoChoice(\'tx\')" aria-label="Change attached receipt"><span class="tx-tool-check">✓</span><span>Receipt attached</span></button><button type="button" class="tx-tool-remove" onclick="event.stopPropagation();removeTxImage()" aria-label="Remove receipt">×</button></div>';
+    }
+    return '<button type="button" class="tx-tool-btn" onclick="openPhotoChoice(\'tx\')" aria-label="Attach receipt">'+ic('i-camera')+'<span>Attach receipt</span></button>';
+  };
+  refreshTxRcpt=function(){var row=document.getElementById('txRcptRow');if(row)row.innerHTML=txRcptHTML();};
+
+  window.refreshAutoUpdate20321=function(){
+    var btn=document.getElementById('txAutoUpdateAction'),el=document.getElementById('txRepeat');if(!btn||!el)return;
+    var freq=el.value||'never',on=freq!=='never';
+    btn.className='tx-tool-btn'+(on?' is-on':'');
+    btn.innerHTML='<span class="tx-tool-check'+(on?'':' off')+'">'+(on?'✓':'')+'</span><span>'+(on?'Auto update · '+(freqNames[freq]||freq):'Enable auto update')+'</span>';
+    btn.setAttribute('aria-pressed',on?'true':'false');
+  };
+  window.openAutoUpdate20321=function(){
+    var el=document.getElementById('txRepeat');if(!el)return;
+    openOptionPicker('Auto update frequency',[
+      {value:'never',label:'Off'},
+      {value:'weekly',label:'Weekly'},
+      {value:'biweekly',label:'Every two weeks'},
+      {value:'monthly',label:'Monthly'},
+      {value:'quarterly',label:'Quarterly'},
+      {value:'yearly',label:'Yearly'}
+    ],el.value||'never',function(v){
+      el.value=v;var mode=document.getElementById('txRepeatMode');if(mode)mode.value='auto';refreshAutoUpdate20321();
+    });
+  };
+
+  function installInlineTools(type,existing){
+    var content=document.getElementById('txModalContent'),row=document.getElementById('txRcptRow');if(!content||!row)return;
+    var repeat=content.querySelector('#txRepeat'),freq=repeat?repeat.value:'never';
+    if(existing&&existing.recurringRuleId){
+      var rule=(DB.recurringExpenses||[]).find(function(r){return r.id===existing.recurringRuleId;});
+      freq=(rule&&rule.frequency)||'monthly';
+    }
+    content.querySelectorAll('.repeat-panel').forEach(function(p){p.remove();});
+    var oldBar=document.getElementById('txInlineTools20321');if(oldBar)oldBar.remove();
+    var noteRow=content.querySelector('.txc-noterow');if(noteRow)noteRow.classList.remove('mm-has-receipt-dock');
+    row.className='';row.removeAttribute('style');row.innerHTML=txRcptHTML();
+    var bar=document.createElement('div');bar.className='tx-inline-tools';bar.id='txInlineTools20321';
+    row.parentNode&&row.parentNode.removeChild(row);bar.appendChild(row);
+    var auto=document.createElement('div');auto.className='tx-inline-auto';
+    auto.innerHTML='<button type="button" id="txAutoUpdateAction" class="tx-tool-btn" onclick="openAutoUpdate20321()"></button><input type="hidden" id="txRepeat" value="'+freq+'"><input type="hidden" id="txRepeatMode" value="auto">';
+    bar.appendChild(auto);
+    var grp=content.querySelector('.txc-grp');if(grp)grp.parentNode.insertBefore(bar,grp.nextSibling);
+    refreshAutoUpdate20321();
+  }
+  var build20320=buildTxForm;
+  buildTxForm=function(type,existing){build20320(type,existing);installInlineTools(type,existing);};
+
+  /* QA hook: confirms camera and gallery remain separate sources. */
+  window.__mmCameraInputId='txImgCameraInput';
+  window.__mmGalleryInputId='txImgInput';
+})();
+</script>
+
 </body>
 </html>
