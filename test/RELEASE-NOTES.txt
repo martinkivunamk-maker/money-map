@@ -1,14 +1,11 @@
-Money Map v2.0.3.16 TEST
+Money Map v2.0.3.17 Test
 
-TEST ONLY — upload to /money-map/test/. Do not replace production.
-
-Included:
-- Period-specific budget snapshots, selected-month add/edit/delete and copy previous month.
-- Recurring fixed expenses with review mode, duplicate keys and available-income protection.
-- Local notification settings and a versioned native bridge contract.
-- Bottom floating snackbars replacing top toasts.
-- Matte OLED dark theme with light theme preserved.
-- Overscroll and scrollbar suppression for the web shell.
-- Existing v2.0.3.15 Settings, profile, transaction and analytics behaviour retained.
-
-Native Test APK still requires the Android repository/source and signing/build workflow.
+- Automatic one-time previous-month budget inheritance
+- Recurring income, expenses and transfers
+- Compact floating-pill confirmations
+- Clear notification controls with native sound wording
+- Unified typography and corrected Settings alignment
+- Improved profile spacing and Overview rings
+- Friendly empty Loans and Goals states
+- Green bouncing celebrations with richer particles
+- Gold enabled-state controls
