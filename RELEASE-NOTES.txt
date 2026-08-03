@@ -1,13 +1,15 @@
-Money Map v2.0.3.22 — Production
+Money Map v2.0.3.23 — Production
 
-Production promotion of the approved Test build.
+Approved production release:
+- Compact top-right menu with Settings, Notification center and Recurring transactions.
+- Clean tap-only haptics on the three-dot menu and its actions.
+- Independent Notification center and Recurring transactions screens.
+- Monthly history for physical assets, cash/accounts and investment interest.
+- App-styled Month and Year pickers with right-facing arrows.
+- Each item’s history begins in the month its first monthly value is recorded.
+- Pickers never show periods before that starting month or after the current month.
+- New months and years appear automatically as time advances.
+- Same-month saves replace that month; historical values are never double-counted.
+- Investment principal remains under Life Savings; only earned interest is counted in Assets.
 
-Included:
-- Independent Settings headers positioned slightly lower with balanced divider spacing.
-- Brief, single-line Settings explainers.
-- Immediate untouched-month budget inheritance without restarting the app.
-- Approved compact transaction card retained.
-- Correct Android camera routing retained.
-
-Production web URL:
-https://martinkivunamk-maker.github.io/money-map/Money_Map.html
+Production cache: moneymap-v20323-1
