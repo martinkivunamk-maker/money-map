@@ -1,6 +1,13 @@
-Money Map v2.0.3.22 Test
+Money Map v2.0.3.23-test1 — Test
 
-- Lowered independent Settings titles slightly while keeping clear spacing above the divider.
-- Replaced Settings explanations with brief single-line descriptions.
-- Made previous-month budget rollover run immediately when a new month is selected.
-- Preserved the approved transaction card and Android camera behavior.
+Included:
+- Clear top-right three-dot menu card with Settings, Notification center and Recurring transactions.
+- Existing Settings profile window retained; Notifications and Recurring transactions moved to independent windows.
+- Monthly year/month history for physical assets, cash/accounts and investment interest.
+- Physical asset quantity × per-item value accumulation.
+- Compact scrollable history with editing for each saved month.
+- One snapshot per item per month; editing replaces the month and historical balances are never double-counted.
+- Investment principal remains under Life Savings; only interest is added under Assets.
+
+Test URL:
+https://martinkivunamk-maker.github.io/money-map/test/Money_Map.html
