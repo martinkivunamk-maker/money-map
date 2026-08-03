@@ -932,7 +932,7 @@
   .btn-sm-edit { background:rgba(212,175,55,0.15); color:var(--gold); }
   .btn-sm-del { background:rgba(224,85,85,0.13); color:var(--danger); }
 
-  /* Money Map v2.0.3.23-test1 approved visual correction */
+  /* Money Map v2.0.3.23-test2 approved visual correction */
   .set-hdr{height:226px;overflow:visible;background:linear-gradient(145deg,#c9aa55 0%,#b4933d 52%,#a9852f 100%);}
   .set-hdr-copy{position:absolute;top:18px;left:var(--gutter);z-index:7;color:#241a06;}
   .set-hdr-title{font-size:27px;font-weight:800;line-height:1.08;letter-spacing:-.6px;}
@@ -1264,7 +1264,7 @@ body.settings-section-open>#settingsSticky{display:none!important}
       <div class="settings-hub" id="settingsHub"></div>
       <div class="settings-detail" id="settingsDetail" style="display:none"></div>
       <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-      <div class="set-foot">Money Map v2.0.3.23-test1</div>
+      <div class="set-foot">Money Map v2.0.3.23-test2</div>
     </div>
   </div>
 
@@ -4140,7 +4140,7 @@ var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anRes
 
 
 // ===== Money Map v2.0.3.16 TEST coordinated upgrade =====
-var MM_TEST_VERSION='2.0.3.23-test1', _snTimer=null, _snAction=null, _pendingRecurringContext=null;
+var MM_TEST_VERSION='2.0.3.23-test2', _snTimer=null, _snAction=null, _pendingRecurringContext=null;
 function _snKindFromColor(c){c=String(c||'');return c.indexOf('danger')>-1?'error':c.indexOf('warning')>-1?'warning':c.indexOf('success')>-1?'success':'info';}
 function showSnackbar(message,kind,actionLabel,action,duration){
   var t=document.getElementById('toast');if(!t)return;clearTimeout(_snTimer);_snAction=typeof action==='function'?action:null;
@@ -4163,7 +4163,7 @@ function _ensureV20316Data(){
   DB.notificationSettings=Object.assign({enabled:true,daily:true,dailyTime:'20:00',weekly:true,weeklyDay:0,weeklyTime:'18:00',savings:true,loans:false,recurring:true,sound:true,vibration:true,showAmounts:false,planVersion:1},DB.notificationSettings||{});
   var keys=new Set();(DB.transactions||[]).forEach(function(t){if(t.date)keys.add(t.date.slice(0,7));});var n=new Date();keys.add(n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0'));
   (DB.budgets||[]).forEach(function(b){if(b.type!=='expense')return;if(!b.periodAmounts){b.periodAmounts={};keys.forEach(function(k){b.periodAmounts[k]=Number(b.amount||0);});}});
-  DB.budgetSchemaVersion=2;DB.appDataVersion='2.0.3.23-test1';_activateBudgetPeriod(selMonth,selYear);saveDB();
+  DB.budgetSchemaVersion=2;DB.appDataVersion='2.0.3.23-test2';_activateBudgetPeriod(selMonth,selYear);saveDB();
 }
 
 var _renderBudget20315=renderBudget;
@@ -4396,7 +4396,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   .set-back:active,.set-pencil:active{transform:scale(.92);}
 
 
-  /* Money Map v2.0.3.23-test1 — dedicated Settings and concise summary sheets */
+  /* Money Map v2.0.3.23-test2 — dedicated Settings and concise summary sheets */
   #page-settings{padding:0 0 142px;scroll-padding-top:58px;}
   .set-hdr{height:218px;background:linear-gradient(145deg,#c9ac5b 0%,#b69843 48%,#a88732 100%);overflow:hidden;position:relative;}
   .set-doodles{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#5f4917;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;opacity:.075;pointer-events:none;}
@@ -4450,7 +4450,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   html[data-native-shell="true"] .set-hdr{height:calc(218px + var(--native-inset-top));}
   html[data-native-shell="true"] .settings-edit:not(.settings-edit-sticky){top:calc(16px + var(--native-inset-top));left:calc(16px + var(--native-inset-left));}
 
-  /* Money Map v2.0.3.23-test1 approved interaction layer */
+  /* Money Map v2.0.3.23-test2 approved interaction layer */
   .nav-item.nav-bounce-in .nav-icon{animation:mmNavSelect 430ms cubic-bezier(.2,.9,.25,1) both;}
   .nav-item.nav-bounce-out .nav-icon{animation:mmNavRelease 360ms cubic-bezier(.2,.75,.25,1) both;}
   @keyframes mmNavSelect{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-5px) scale(1.12)}62%{transform:translateY(1px) scale(.96)}82%{transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
@@ -4543,12 +4543,12 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 </style>
 <script id="v20317-approved-logic">
 (function(){
-  window.MM_TEST_VERSION='2.0.3.23-test1';
-  DB.appDataVersion='2.0.3.23-test1';
+  window.MM_TEST_VERSION='2.0.3.23-test2';
+  DB.appDataVersion='2.0.3.23-test2';
   DB.budgetAutoSeeded=DB.budgetAutoSeeded||{};
   (DB.recurringExpenses||[]).forEach(function(r){if(!r.type)r.type='expense';});
   saveDB();
-  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.23-test1';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.23-test2';
 
   /* Compact pill messages, one at a time. */
   showSnackbar=function(message,kind,actionLabel,action,duration){
@@ -4633,8 +4633,8 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 </style>
 <script id="v20318-final-logic">
 (function(){
- window.MM_TEST_VERSION='2.0.3.23-test1';DB.appDataVersion='2.0.3.23-test1';
- var f=document.querySelector('.set-foot');if(f)f.textContent='Money Map v2.0.3.23-test1';
+ window.MM_TEST_VERSION='2.0.3.23-test2';DB.appDataVersion='2.0.3.23-test2';
+ var f=document.querySelector('.set-foot');if(f)f.textContent='Money Map v2.0.3.23-test2';
  /* Remove only untouched starter examples; never remove a user goal. */
  if(!DB.defaultGoalExamplesRemoved){var used={};(DB.transactions||[]).forEach(function(t){if(t.goalId)used[t.goalId]=1;});DB.goals=(DB.goals||[]).filter(function(g){var starter=(g.id==='g1'&&g.name==='Car'&&Number(g.target)===25000000)||(g.id==='g2'&&g.name==='Monitor'&&Number(g.target)===3000000);return !(starter&&Number(g.saved||0)===0&&!used[g.id]);});DB.defaultGoalExamplesRemoved=true;saveDB();}
  /* Ninety green-and-gold particles, replenished for every celebration. */
@@ -4646,8 +4646,8 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 
 <script id="v20319-budget-isolation">
 (function(){
-  window.MM_TEST_VERSION='2.0.3.23-test1';DB.appDataVersion='2.0.3.23-test1';
-  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.23-test1';
+  window.MM_TEST_VERSION='2.0.3.23-test2';DB.appDataVersion='2.0.3.23-test2';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.23-test2';
   /* Never mutate a shared budget object's amount when changing months. */
   function scopedAmount(b){
     var key=_selectedBudgetKey();
@@ -4700,10 +4700,10 @@ if('serviceWorker' in navigator){
 </style>
 <script id="v20320-final-web">
 (function(){
-  window.MM_TEST_VERSION='2.0.3.23-test1';
-  DB.appDataVersion='2.0.3.23-test1';
+  window.MM_TEST_VERSION='2.0.3.23-test2';
+  DB.appDataVersion='2.0.3.23-test2';
   DB.budgetPeriodTouched=DB.budgetPeriodTouched||{};
-  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.23-test1';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.23-test2';
 
   /* Retry automatic rollover for untouched empty months, even if an older build
      previously marked that month as checked before a prior budget existed. */
@@ -4863,9 +4863,9 @@ if('serviceWorker' in navigator){
 </style>
 <script id="v20322-settings-and-rollover">
 (function(){
-  window.MM_TEST_VERSION='2.0.3.23-test1';
-  DB.appDataVersion='2.0.3.23-test1';
-  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.23-test1';
+  window.MM_TEST_VERSION='2.0.3.23-test2';
+  DB.appDataVersion='2.0.3.23-test2';
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.23-test2';
 
   var shortSettingsCopy={
     currency:'Currency used throughout Money Map.',
@@ -4916,18 +4916,18 @@ if('serviceWorker' in navigator){
 
 
 <style id="v20323-navigation-assets">
-/* v2.0.3.23-test1 — clear phone typography and anchored menu card */
+/* v2.0.3.23-test2 — clear phone typography and anchored menu card */
 #settingsMenuModal{display:none!important}
-.mm-quick-menu{position:fixed;z-index:920;display:none;width:min(286px,calc(100vw - 28px));background:var(--surface);border:1px solid var(--input-border);border-radius:18px;box-shadow:0 14px 38px rgba(0,0,0,.24);overflow:hidden;color:var(--text)}
+.mm-quick-menu{position:fixed;z-index:920;display:none;width:max-content;max-width:calc(100vw - 24px);background:var(--surface);border:1px solid var(--input-border);border-radius:18px;box-shadow:0 14px 38px rgba(0,0,0,.24);overflow:hidden;color:var(--text)}
 .mm-quick-menu.open{display:block;animation:mmQuickIn .16s ease-out}
 @keyframes mmQuickIn{from{opacity:0;transform:translateY(-5px) scale(.98)}to{opacity:1;transform:none}}
-.mm-quick-row{width:100%;min-height:58px;padding:0 18px;border:0;border-bottom:1px solid var(--input-border);background:transparent;color:var(--text);font-family:inherit;font-size:17px!important;line-height:1.25;font-weight:700;text-align:left;display:flex;align-items:center;cursor:pointer}
-.mm-quick-row:last-child{border-bottom:0}.mm-quick-row:active{background:var(--surface-2);transform:none}
+.mm-quick-row{width:100%;min-height:56px;padding:0 16px;border:0;background:transparent;color:var(--text);font-family:inherit;font-size:17px!important;line-height:1.25;font-weight:700;text-align:left;display:flex;align-items:center;white-space:nowrap;cursor:pointer}
+.mm-quick-row:active{background:var(--surface-2);transform:none}
 .asset-snapshot-summary{margin:2px 0 12px;padding:12px;border:1px solid var(--input-border);border-radius:14px;background:var(--surface-2)}
 .asset-snapshot-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:4px}.asset-snapshot-copy{font-size:13px;line-height:1.45;color:var(--text-dim)}
 .asset-history-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 8px}.asset-history-actions .btn-outline{margin:0!important;min-height:44px;font-size:14px!important}
 .asset-item-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.asset-item-actions .btn-outline{margin:0!important;min-height:42px;font-size:13.5px!important}
-.asset-period-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.asset-period-grid .form-input{font-size:16px!important;min-height:50px}
+.asset-period-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.asset-period-grid .form-input{font-size:16px!important;min-height:50px}.mm-period-button{width:100%;min-height:50px;padding:0 14px;border:1px solid var(--input-border);border-radius:var(--radius-sm);background:var(--input-bg);color:var(--text);font-family:inherit;font-size:16px;font-weight:700;line-height:1.2;display:flex;align-items:center;justify-content:space-between;text-align:left}.mm-period-button:active{border-color:var(--gold);background:var(--glass);transform:none}.mm-period-chev{font-size:24px;line-height:1;color:var(--text-muted);transform:rotate(90deg)}
 .asset-calc{border:1px solid var(--gold);background:rgba(212,175,55,.10);border-radius:14px;padding:12px 14px;margin:-2px 0 14px}.asset-calc small{display:block;font-size:13px;color:var(--text-dim);margin-bottom:4px}.asset-calc strong{font-size:18px;color:var(--text)}
 .asset-calc.green{border-color:var(--success);background:rgba(63,174,90,.10)}
 .asset-history-scroll{max-height:48vh;overflow:auto;padding-right:2px;overscroll-behavior:contain}.asset-history-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border:1px solid var(--input-border);border-radius:14px;padding:12px;margin-bottom:9px;background:var(--surface)}
@@ -4937,10 +4937,10 @@ if('serviceWorker' in navigator){
 <script id="v20323-navigation-assets-script">
 (function(){
  'use strict';
- window.MM_TEST_VERSION='2.0.3.23-test1';DB.appDataVersion='2.0.3.23-test1';var vf=document.querySelector('.set-foot');if(vf)vf.textContent='Money Map v2.0.3.23-test1';
- function qmenu(){var m=document.getElementById('mmQuickMenu20323');if(m)return m;m=document.createElement('div');m.id='mmQuickMenu20323';m.className='mm-quick-menu';m.setAttribute('role','menu');m.innerHTML='<button class="mm-quick-row" onclick="openMainSettings20323()">Settings</button><button class="mm-quick-row" onclick="openStandaloneSettings20323(\'notifications\')">Notification center</button><button class="mm-quick-row" onclick="openStandaloneSettings20323(\'recurring\')">Recurring transactions</button>';document.body.appendChild(m);return m;}
+ window.MM_TEST_VERSION='2.0.3.23-test2';DB.appDataVersion='2.0.3.23-test2';var vf=document.querySelector('.set-foot');if(vf)vf.textContent='Money Map v2.0.3.23-test2';
+ function qmenu(){var m=document.getElementById('mmQuickMenu20323');if(m)return m;m=document.createElement('div');m.id='mmQuickMenu20323';m.className='mm-quick-menu';m.setAttribute('role','menu');m.innerHTML='<button class="mm-quick-row" onclick="haptic(\'light\');openMainSettings20323()">Settings</button><button class="mm-quick-row" onclick="haptic(\'light\');openStandaloneSettings20323(\'notifications\')">Notification center</button><button class="mm-quick-row" onclick="haptic(\'light\');openStandaloneSettings20323(\'recurring\')">Recurring transactions</button>';document.body.appendChild(m);return m;}
  window.closeQuickMenu20323=function(){var m=document.getElementById('mmQuickMenu20323');if(m)m.classList.remove('open');};
- window.openSettingsMenu=function(ev){var m=qmenu(),a=ev&&ev.currentTarget;if(!a&&window.event)a=window.event.currentTarget;if(!a)a=document.querySelector('.page.active .kebab')||document.querySelector('.kebab');var r=a&&a.getBoundingClientRect?a.getBoundingClientRect():{bottom:64,right:innerWidth-14};m.style.top=Math.max(8,r.bottom+6)+'px';m.style.right=Math.max(10,innerWidth-r.right)+'px';m.classList.add('open');};
+ window.openSettingsMenu=function(ev){haptic('light');var m=qmenu(),a=ev&&ev.currentTarget;if(!a&&window.event)a=window.event.currentTarget;if(!a)a=document.querySelector('.page.active .kebab')||document.querySelector('.kebab');var r=a&&a.getBoundingClientRect?a.getBoundingClientRect():{bottom:64,right:innerWidth-14};m.style.top=Math.max(8,r.bottom+6)+'px';m.style.right=Math.max(10,innerWidth-r.right)+'px';m.classList.add('open');};
  window.openMainSettings20323=function(){closeQuickMenu20323();window._mmStandalone20323=false;goSettings();};
  window.openStandaloneSettings20323=function(section){closeQuickMenu20323();window._mmStandalone20323=true;window._mmStandaloneReturn20323=currentPage&&currentPage!=='settings'?currentPage:'overview';navTo('settings');_applySettingsRoute(section);if(section==='notifications'){var t=document.querySelector('.settings-detail-title');if(t)t.textContent='Notification center';}};
  document.querySelectorAll('.kebab').forEach(function(k){k.setAttribute('onclick','openSettingsMenu(event)');});
@@ -4963,14 +4963,15 @@ if('serviceWorker' in navigator){
  function currentCopy(kind,x,s){if(kind==='asset')return 'Qty '+(s?s.qty:x.qty||0)+' · accumulated '+fmtVal(s?s.value:x.value);if(kind==='account')return 'Closing balance '+fmtVal(s?s.value:x.value);var inc=s?(Number(s.interest)||0)-Number((prior(kind,x.id,s.period)||{}).interest||0):0;return 'Interest to date '+fmtVal(s?s.interest:x.interest)+(inc?' · last increase '+fmtVal(inc):'');}
  function injectActions(c){['asset','account','investment'].forEach(function(kind){list(kind).forEach(function(x){var prefix=kind==='asset'?'asset-':kind==='account'?'acct-':'inv-',d=c.querySelector('#bgtd-'+prefix+x.id);if(!d)return;var s=latest(kind,x.id),old=d.querySelector('.asset-snapshot-summary');if(old)old.remove();var box=document.createElement('div');box.className='asset-snapshot-summary';box.innerHTML='<div class="asset-snapshot-title">Latest monthly record'+(s?' · '+monthLabel(s.period):'')+'</div><div class="asset-snapshot-copy">'+currentCopy(kind,x,s)+'</div>';d.insertBefore(box,d.querySelector('.bgt-actions'));var acts=d.querySelector('.bgt-actions');if(acts){var edit=kind==='asset'?"openAssetModal('"+x.id+"')":kind==='account'?"openAccountModal('"+x.id+"')":"openInvestmentModal('"+x.id+"')",del=kind==='asset'?"deleteAsset('"+x.id+"')":kind==='account'?"deleteAccount('"+x.id+"')":"deleteInvestment('"+x.id+"')";acts.className='';acts.innerHTML='<div class="asset-history-actions"><button class="btn-outline" onclick="openAssetMonth20323(\''+kind+'\',\''+x.id+'\')">Update month</button><button class="btn-outline" onclick="openAssetHistory20323(\''+kind+'\',\''+x.id+'\')">View history</button></div><div class="asset-item-actions"><button class="btn-outline" onclick="'+edit+'">Edit details</button><button class="btn-outline bgt-del" onclick="'+del+'">Delete</button></div>';}});});}
  var renderAssetsBase20323=renderAssets;renderAssets=function(c){seedHistory();renderAssetsBase20323(c);injectActions(c);};
- function years(selected){var now=new Date().getFullYear(),out='';for(var y=2020;y<=now+5;y++)out+='<option value="'+y+'"'+(y===selected?' selected':'')+'>'+y+'</option>';return out;}
+ function years(selected){var now=new Date().getFullYear(),out='';for(var y=2020;y<=now;y++)out+='<option value="'+y+'"'+(y===selected?' selected':'')+'>'+y+'</option>';return out;}
  function months(selected){return MONTHS.map(function(m,i){var n=i+1;return '<option value="'+n+'"'+(n===selected?' selected':'')+'>'+m+'</option>';}).join('');}
  function modalClass(history){var sh=document.querySelector('#assetModal .modal-sheet');if(sh)sh.classList.toggle('asset-history-mode',!!history);}
- window.openAssetMonth20323=function(kind,id,period){seedHistory();var x=item(kind,id);if(!x)return;var h=sorted(kind,id),rec=period?h.find(function(r){return r.period===period;}):latest(kind,id),base=period||((Number(selYear)||new Date().getFullYear())+'-'+String(Number(selMonth)||new Date().getMonth()+1).padStart(2,'0'));var ap=base.split('-'),yr=Number(ap[0]),mo=Number(ap[1]);rec=rec||{};modalClass(false);document.getElementById('assetModalTitle').textContent=(period?'Edit ':'Update ')+x.name;var fields='';if(kind==='asset'){var q=rec.qty!=null?rec.qty:(x.qty||0),u=rec.unitValue!=null?rec.unitValue:(q?(x.value||0)/q:(x.value||0));fields='<div class="form-group"><label class="form-label">Quantity</label><input class="form-input" type="number" min="0" step="1" id="mmAssetQty" value="'+q+'" oninput="recalcAsset20323()"></div><div class="form-group"><label class="form-label">Current value per item ('+cur()+')</label><input class="form-input" type="tel" inputmode="numeric" id="mmAssetUnit" value="'+(u?Math.round(u).toLocaleString():'')+'" data-raw="'+(u||'')+'" oninput="formatAmountInput(this);recalcAsset20323()"></div><div class="asset-calc"><small>Accumulated asset value</small><strong id="mmAssetTotal">'+fmtUGX(q*u)+'</strong></div>';}else if(kind==='account'){var v=rec.value!=null?rec.value:(x.value||0),pv=Number((prior(kind,id,base)||{}).value||0);fields='<div class="form-group"><label class="form-label">Closing account balance ('+cur()+')</label><input class="form-input" type="tel" inputmode="numeric" id="mmAssetValue" value="'+(v?v.toLocaleString():'')+'" data-raw="'+(v||'')+'" oninput="formatAmountInput(this);recalcAsset20323()"></div><div class="asset-calc"><small>Change from previous saved month</small><strong id="mmAssetDelta">'+fmtUGX(v-pv)+'</strong></div>';}else{var iv=rec.interest!=null?rec.interest:(x.interest||0),pi=Number((prior(kind,id,base)||{}).interest||0);fields='<div class="form-group"><label class="form-label">Total interest earned to date ('+cur()+')</label><input class="form-input" type="tel" inputmode="numeric" id="mmAssetValue" value="'+(iv?iv.toLocaleString():'')+'" data-raw="'+(iv||'')+'" oninput="formatAmountInput(this);recalcAsset20323()"></div><div class="asset-calc green"><small>Interest added in this month</small><strong id="mmAssetDelta">'+fmtUGX(iv-pi)+'</strong></div><div class="asset-help">Only interest is counted here. The investment principal remains under Life Savings.</div>';}
- document.getElementById('assetModalContent').innerHTML='<div class="asset-period-grid"><div class="form-group"><label class="form-label">Year</label><select class="form-input" id="mmAssetYear" onchange="reloadAssetPeriod20323(\''+kind+'\',\''+id+'\')">'+years(yr)+'</select></div><div class="form-group"><label class="form-label">Month</label><select class="form-input" id="mmAssetMonth" onchange="reloadAssetPeriod20323(\''+kind+'\',\''+id+'\')">'+months(mo)+'</select></div></div>'+fields+'<div class="asset-help">One record is kept per month. Saving the same month replaces it; historical months are never added together.</div><button class="btn-gold" onclick="saveAssetMonth20323(\''+kind+'\',\''+id+'\')">Save monthly update</button><button class="btn-outline" onclick="closeModal(\'assetModal\')">Cancel</button>';openModal('assetModal');};
- window.reloadAssetPeriod20323=function(kind,id){var y=Number(document.getElementById('mmAssetYear').value),m=Number(document.getElementById('mmAssetMonth').value),p=y+'-'+String(m).padStart(2,'0');openAssetMonth20323(kind,id,p);};
+ window.openAssetMonth20323=function(kind,id,period){seedHistory();var x=item(kind,id);if(!x)return;var now=new Date(),cy=now.getFullYear(),cm=now.getMonth()+1,chosenMonth=selMonth==='all'?cm:Number(selMonth)+1,base=period||((Number(selYear)||cy)+'-'+String(chosenMonth).padStart(2,'0')),ap=base.split('-'),yr=Number(ap[0]),mo=Number(ap[1]);if(yr>cy||(yr===cy&&mo>cm)){yr=cy;mo=cm;base=yr+'-'+String(mo).padStart(2,'0');}if(yr<2020){yr=2020;base=yr+'-'+String(mo).padStart(2,'0');}var h=sorted(kind,id),rec=period?h.find(function(r){return r.period===base;}):latest(kind,id);rec=rec||{};modalClass(false);document.getElementById('assetModalTitle').textContent=(period?'Edit ':'Update ')+x.name;var fields='';if(kind==='asset'){var q=rec.qty!=null?rec.qty:(x.qty||0),u=rec.unitValue!=null?rec.unitValue:(q?(x.value||0)/q:(x.value||0));fields='<div class="form-group"><label class="form-label">Quantity</label><input class="form-input" type="number" min="0" step="1" id="mmAssetQty" value="'+q+'" oninput="recalcAsset20323()"></div><div class="form-group"><label class="form-label">Current value per item ('+cur()+')</label><input class="form-input" type="tel" inputmode="numeric" id="mmAssetUnit" value="'+(u?Math.round(u).toLocaleString():'')+'" data-raw="'+(u||'')+'" oninput="formatAmountInput(this);recalcAsset20323()"></div><div class="asset-calc"><small>Accumulated asset value</small><strong id="mmAssetTotal">'+fmtUGX(q*u)+'</strong></div>';}else if(kind==='account'){var v=rec.value!=null?rec.value:(x.value||0),pv=Number((prior(kind,id,base)||{}).value||0);fields='<div class="form-group"><label class="form-label">Closing account balance ('+cur()+')</label><input class="form-input" type="tel" inputmode="numeric" id="mmAssetValue" value="'+(v?v.toLocaleString():'')+'" data-raw="'+(v||'')+'" oninput="formatAmountInput(this);recalcAsset20323()"></div><div class="asset-calc"><small>Change from previous saved month</small><strong id="mmAssetDelta">'+fmtUGX(v-pv)+'</strong></div>';}else{var iv=rec.interest!=null?rec.interest:(x.interest||0),pi=Number((prior(kind,id,base)||{}).interest||0);fields='<div class="form-group"><label class="form-label">Total interest earned to date ('+cur()+')</label><input class="form-input" type="tel" inputmode="numeric" id="mmAssetValue" value="'+(iv?iv.toLocaleString():'')+'" data-raw="'+(iv||'')+'" oninput="formatAmountInput(this);recalcAsset20323()"></div><div class="asset-calc green"><small>Interest added in this month</small><strong id="mmAssetDelta">'+fmtUGX(iv-pi)+'</strong></div><div class="asset-help">Only interest is counted here. The investment principal remains under Life Savings.</div>';}
+ document.getElementById('assetModalContent').innerHTML='<div class="asset-period-grid"><div class="form-group"><label class="form-label">Year</label><button type="button" class="mm-period-button" onclick="openAssetPeriodPicker20323(\'year\',\''+kind+'\',\''+id+'\')"><span id="mmAssetYearLabel">'+yr+'</span><span class="mm-period-chev">›</span></button><input type="hidden" id="mmAssetYear" value="'+yr+'"></div><div class="form-group"><label class="form-label">Month</label><button type="button" class="mm-period-button" onclick="openAssetPeriodPicker20323(\'month\',\''+kind+'\',\''+id+'\')"><span id="mmAssetMonthLabel">'+MONTHS[mo-1]+'</span><span class="mm-period-chev">›</span></button><input type="hidden" id="mmAssetMonth" value="'+mo+'"></div></div>'+fields+'<div class="asset-help">One record is kept per month. Saving the same month replaces it; historical months are never added together.</div><button class="btn-gold" onclick="saveAssetMonth20323(\''+kind+'\',\''+id+'\')">Save monthly update</button><button class="btn-outline" onclick="closeModal(\'assetModal\')">Cancel</button>';openModal('assetModal');};
+ window.openAssetPeriodPicker20323=function(mode,kind,id){var yEl=document.getElementById('mmAssetYear'),mEl=document.getElementById('mmAssetMonth');if(!yEl||!mEl)return;var now=new Date(),cy=now.getFullYear(),cm=now.getMonth()+1,y=Number(yEl.value),m=Number(mEl.value),opts=[];if(mode==='year'){for(var yr=2020;yr<=cy;yr++)opts.push({value:yr,label:String(yr)});}else{var max=y===cy?cm:12;for(var i=1;i<=max;i++)opts.push({value:i,label:MONTHS[i-1]});}openOptionPicker(mode==='year'?'Select year':'Select month',opts,mode==='year'?y:m,function(v,label){if(mode==='year'){yEl.value=String(v);document.getElementById('mmAssetYearLabel').textContent=label;if(Number(v)===cy&&Number(mEl.value)>cm){mEl.value=String(cm);document.getElementById('mmAssetMonthLabel').textContent=MONTHS[cm-1];}}else{mEl.value=String(v);document.getElementById('mmAssetMonthLabel').textContent=label;}reloadAssetPeriod20323(kind,id);});};
+window.reloadAssetPeriod20323=function(kind,id){var y=Number(document.getElementById('mmAssetYear').value),m=Number(document.getElementById('mmAssetMonth').value),p=y+'-'+String(m).padStart(2,'0');openAssetMonth20323(kind,id,p);};
  window.recalcAsset20323=function(){var q=document.getElementById('mmAssetQty'),u=document.getElementById('mmAssetUnit'),v=document.getElementById('mmAssetValue'),t=document.getElementById('mmAssetTotal'),d=document.getElementById('mmAssetDelta'),y=document.getElementById('mmAssetYear'),m=document.getElementById('mmAssetMonth');if(t)t.textContent=fmtUGX((Number(q&&q.value)||0)*getRawAmount(u));if(d&&v&&y&&m){var p=y.value+'-'+String(m.value).padStart(2,'0'),kind=document.getElementById('assetModalContent').dataset.kind,id=document.getElementById('assetModalContent').dataset.id,pr=prior(kind,id,p),base=kind==='investment'?Number((pr||{}).interest||0):Number((pr||{}).value||0);d.textContent=fmtUGX(getRawAmount(v)-base);}};
- window.saveAssetMonth20323=function(kind,id){var x=item(kind,id),y=Number(document.getElementById('mmAssetYear').value),m=Number(document.getElementById('mmAssetMonth').value),p=y+'-'+String(m).padStart(2,'0'),h=hist(kind,id),rec={period:p,updatedAt:Date.now()};if(kind==='asset'){rec.qty=Number(document.getElementById('mmAssetQty').value)||0;rec.unitValue=getRawAmount(document.getElementById('mmAssetUnit'));rec.value=rec.qty*rec.unitValue;if(!rec.qty||!rec.unitValue){showToast('Enter quantity and current value','var(--danger)');return;}}else if(kind==='account'){rec.value=getRawAmount(document.getElementById('mmAssetValue'));}else{rec.interest=getRawAmount(document.getElementById('mmAssetValue'));}var idx=h.findIndex(function(r){return r.period===p;});if(idx>=0)h[idx]=rec;else h.push(rec);h.sort(function(a,b){return a.period.localeCompare(b.period);});var last=h[h.length-1];if(last.period===p){if(kind==='asset'){x.qty=rec.qty;x.value=rec.value;}else if(kind==='account')x.value=rec.value;else x.interest=rec.interest;}saveDB();closeModal('assetModal');renderBudget();showToast('Monthly update saved','var(--success)');};
+ window.saveAssetMonth20323=function(kind,id){var x=item(kind,id),y=Number(document.getElementById('mmAssetYear').value),m=Number(document.getElementById('mmAssetMonth').value),now=new Date(),cy=now.getFullYear(),cm=now.getMonth()+1;if(y>cy||(y===cy&&m>cm)){showToast('Choose this month or an earlier month','var(--danger)');return;}var p=y+'-'+String(m).padStart(2,'0'),h=hist(kind,id),rec={period:p,updatedAt:Date.now()};if(kind==='asset'){rec.qty=Number(document.getElementById('mmAssetQty').value)||0;rec.unitValue=getRawAmount(document.getElementById('mmAssetUnit'));rec.value=rec.qty*rec.unitValue;if(!rec.qty||!rec.unitValue){showToast('Enter quantity and current value','var(--danger)');return;}}else if(kind==='account'){rec.value=getRawAmount(document.getElementById('mmAssetValue'));}else{rec.interest=getRawAmount(document.getElementById('mmAssetValue'));}var idx=h.findIndex(function(r){return r.period===p;});if(idx>=0)h[idx]=rec;else h.push(rec);h.sort(function(a,b){return a.period.localeCompare(b.period);});var last=h[h.length-1];if(last.period===p){if(kind==='asset'){x.qty=rec.qty;x.value=rec.value;}else if(kind==='account')x.value=rec.value;else x.interest=rec.interest;}saveDB();closeModal('assetModal');renderBudget();showToast('Monthly update saved','var(--success)');};
  window.openAssetHistory20323=function(kind,id){seedHistory();var x=item(kind,id),h=sorted(kind,id).reverse();if(!x)return;modalClass(true);document.getElementById('assetModalTitle').textContent=x.name+' history';var rows=h.map(function(r){var sub=kind==='asset'?(r.qty+' item'+(r.qty===1?'':'s')+' · '+fmtVal(r.unitValue)+' each'):kind==='account'?'Closing balance':('Interest to date · increase '+fmtVal((Number(r.interest)||0)-Number((prior(kind,id,r.period)||{}).interest||0))),val=kind==='investment'?r.interest:r.value;return '<div class="asset-history-row"><div><b>'+monthLabel(r.period)+'</b><span>'+sub+'</span><b style="margin-top:5px">'+fmtVal(val)+'</b></div><button class="asset-history-edit" onclick="openAssetMonth20323(\''+kind+'\',\''+id+'\',\''+r.period+'\')">Edit</button></div>';}).join('');document.getElementById('assetModalContent').innerHTML='<div class="asset-help">Scroll inside this panel to see older records. Editing a month replaces only that month.</div><div class="asset-history-scroll">'+(rows||'<div class="bgt-empty">No monthly records yet.</div>')+'</div><button class="btn-outline" onclick="closeModal(\'assetModal\')">Close</button>';openModal('assetModal');};
  var openMonthBase20323=window.openAssetMonth20323;window.openAssetMonth20323=function(kind,id,period){openMonthBase20323(kind,id,period);var c=document.getElementById('assetModalContent');if(c){c.dataset.kind=kind;c.dataset.id=id;}};
  seedHistory();
