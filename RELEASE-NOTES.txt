@@ -1,0 +1,13 @@
+Money Map v2.0.3.22 — Production
+
+Production promotion of the approved Test build.
+
+Included:
+- Independent Settings headers positioned slightly lower with balanced divider spacing.
+- Brief, single-line Settings explainers.
+- Immediate untouched-month budget inheritance without restarting the app.
+- Approved compact transaction card retained.
+- Correct Android camera routing retained.
+
+Production web URL:
+https://martinkivunamk-maker.github.io/money-map/Money_Map.html
