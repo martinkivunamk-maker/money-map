@@ -1,13 +1,11 @@
-Money Map v2.0.3.24 Test 1
+Money Map v2.0.3.24 Test 2
 
 TEST ONLY — Production remains unchanged.
 
-- Approved standalone Money Map logo in onboarding and security screens.
-- Real inline Money Map SVG icons; no placeholder boxes.
-- Step-by-step profile, PIN, fingerprint, pillars and completion flow.
-- Android back gesture returns to the previous onboarding step.
-- Daily transaction reminder is suppressed after an entry dated today.
-- Weekly monthly-asset reminder runs only while current-month updates remain incomplete.
-- Saving the last outstanding asset update suppresses the reminder.
-- No financial amounts appear in the asset reminder.
-- Smoother sheet motion, regular-weight quick menu, and tighter spacing.
+- Transaction note field now matches the compact Date and To/Where row height.
+- Approved Money Map mark enlarged on welcome, lock and setup screens.
+- Three-dot popup uses the app font stack at regular weight.
+- Notification time control tightened to remove redundant trailing space.
+- Android adaptive launcher mark reduced inside its safe area for clearer internal spacing.
+- Launcher vector keeps rounded joins and ends.
+- All Test 1 onboarding, back navigation and notification logic retained.
