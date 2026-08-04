@@ -1,17 +1,13 @@
-Money Map v2.0.3.23-test2 — Final Test
+Money Map v2.0.3.24 Test 1
 
-Changes from test1:
-- Tightened the top-right menu to fit its labels cleanly.
-- Removed the unnecessary divider lines between menu items.
-- Replaced Android white select dialogs with Money Map’s own in-app picker.
-- Limited year choices to 2020 through the current year.
-- Limited the current year to the current month; future periods cannot be saved.
-- Corrected the new monthly update default to the month shown in the app header.
-- Added clean tap haptics to the three-dot button and all three menu actions.
-- Scrolling does not trigger haptics.
+TEST ONLY — Production remains unchanged.
 
-Financial logic retained:
-- One snapshot per item per month.
-- Saving the same month replaces that month.
-- Historical values are not added into net worth.
-- Investment principal remains under Life Savings; only interest is counted in Assets.
+- Approved standalone Money Map logo in onboarding and security screens.
+- Real inline Money Map SVG icons; no placeholder boxes.
+- Step-by-step profile, PIN, fingerprint, pillars and completion flow.
+- Android back gesture returns to the previous onboarding step.
+- Daily transaction reminder is suppressed after an entry dated today.
+- Weekly monthly-asset reminder runs only while current-month updates remain incomplete.
+- Saving the last outstanding asset update suppresses the reminder.
+- No financial amounts appear in the asset reminder.
+- Smoother sheet motion, regular-weight quick menu, and tighter spacing.
