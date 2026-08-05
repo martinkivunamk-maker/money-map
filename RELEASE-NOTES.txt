@@ -1,8 +1,11 @@
-Money Map v2.0.3.24 — Production revision
+Money Map v2.0.3.24 — Live Production
 
-- Uses the X Dim near-black palette: #0F1419 background, #16181C surfaces and #2F3336 borders.
-- Keeps light-mode bottom navigation white instead of inheriting the dark cover.
-- Removes the logo only from the returning Welcome screen and moves the welcome message upward.
-- Keeps the approved logo in first-time signup/setup and on the launcher.
-- Retains the smooth first-paint transition, matte treatment, notification suppression and approved overview rings.
-- Financial calculations and stored data remain unchanged.
+- Approved icon on X Dim #0F1419 launcher cover.
+- Theme-aware Android splash plus saved-theme WebView background prevents opposite-colour opening flashes.
+- Smooth 260ms native reveal with a 650ms fallback.
+- Financial Health ring increased to 10/78 (12.8%), matching the other Analytics and Overview rings.
+- Returning Welcome copy lowered to 68px safe-area spacing; signup logo remains.
+- Welcome blur now suggests a contained object behind the page without reaching phone edges.
+- Biometric title changed to “Verify fingerprint” to avoid repeating Money Map.
+- Closed-app alarms, daily transaction suppression, monthly asset suppression and restart restoration retained.
+- Financial calculations and stored data are unchanged.

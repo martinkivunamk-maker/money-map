@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#ffffff">
-<script>try{var _d=JSON.parse(localStorage.getItem('moneymap_v2')||'{}');var _t=_d.theme||'auto';if(_t==='auto')_t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.querySelector('meta[name=theme-color]').setAttribute('content',_t==='dark'?'#0f1419':'#ffffff');}catch(e){}</script>
+<script>try{var _d=JSON.parse(localStorage.getItem('moneymap_v2')||'{}');var _t=_d.theme||'auto';if(_t==='auto')_t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.querySelector('meta[name=theme-color]').setAttribute('content',_t==='dark'?'#0f1419':'#ffffff');document.documentElement.setAttribute('data-theme',_t);document.documentElement.style.colorScheme=_t;}catch(e){}</script>
 <script id="mm-production-boot">(function(){var h=document.documentElement;h.classList.add('mm-booting');var done=function(){requestAnimationFrame(function(){requestAnimationFrame(function(){h.classList.remove('mm-booting');h.classList.add('mm-ready')})})};addEventListener('DOMContentLoaded',done,{once:true});setTimeout(done,1400)})();</script>
 <style id="mm-production-first-paint">html{background:#f7f6f1}html[data-theme="dark"]{background:#0f1419}html.mm-booting body{opacity:0!important}html.mm-ready body{opacity:1!important;transition:opacity 260ms cubic-bezier(.22,1,.36,1),background-color 220ms ease!important}</style>
 <link rel="manifest" href="manifest.json">
@@ -3517,7 +3517,7 @@ function an_stack(months,S,E,G){
 }
 function an_health(d){
   const C=2*Math.PI*34, fill=d.score/100*C;
-  const ring='<svg viewBox="0 0 78 78" style="width:78px;height:78px;transform:rotate(-90deg)"><circle cx="39" cy="39" r="34" fill="none" stroke="rgba(127,127,127,0.18)" stroke-width="8"/><circle cx="39" cy="39" r="34" fill="none" style="stroke:'+d.sColor+'" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+fill.toFixed(1)+' '+(C-fill).toFixed(1)+'"/></svg>';
+  const ring='<svg viewBox="0 0 78 78" style="width:78px;height:78px;transform:rotate(-90deg)"><circle cx="39" cy="39" r="34" fill="none" stroke="rgba(127,127,127,0.18)" stroke-width="10"/><circle cx="39" cy="39" r="34" fill="none" style="stroke:'+d.sColor+'" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+fill.toFixed(1)+' '+(C-fill).toFixed(1)+'"/></svg>';
   const rt=d.runway>=99?'plenty':Math.max(0,d.runway).toFixed(1)+' mo';
   const surplus=(d.avgSurplus<0?'-':'')+fmtShort(d.avgSurplus);
   return '<div class="an-tag">'+periodLabel()+'</div><div class="an-health-hdr"><div class="an-ring">'+ring+'<div class="an-ring-c"><div class="an-ring-v">'+d.score+'</div><div class="an-ring-l">/ 100</div></div></div><div><div class="an-ttl">Financial Health</div><div class="an-badge" style="color:'+d.sColor+';background:'+d.sBg+'">'+d.sLabel+'</div></div></div><div class="an-tiles"><div class="an-tile"><div class="an-tile-v">'+d.savingsRate+'%</div><div class="an-tile-l">Savings rate</div></div><div class="an-tile"><div class="an-tile-v">'+rt+'</div><div class="an-tile-l">Emergency runway</div></div><div class="an-tile"><div class="an-tile-v">'+surplus+'</div><div class="an-tile-l">Avg monthly surplus</div></div><div class="an-tile"><div class="an-tile-v">'+(d.totalBudgets?d.onBudget+' / '+d.totalBudgets:'—')+'</div><div class="an-tile-l">Categories on budget</div></div></div>'+(d.biggest&&d.totalExp>0?'<div class="an-foot">Biggest expense: <b>'+d.biggest.name+'</b> · '+pct(d.biggest.v,d.totalExp)+'% of spending</div>':'');
@@ -5151,6 +5151,14 @@ html[data-native-shell="true"][data-theme="light"] #bottomNav{background:#ffffff
 #welcomeScreen .w2-hi{margin-top:0!important}
 #welcomeScreen .w2-name{margin-top:5px!important}
 #welcomeScreen .w2-sub{margin-top:12px!important}
+</style>
+
+<style id="mm-production-live-finish">
+/* Welcome copy lowered after removing its returning-user logo. */
+#welcomeScreen .w2-wrap{padding-top:calc(env(safe-area-inset-top,0px) + 68px)!important}
+/* A contained soft object behind the copy: blurred, but never touching phone edges. */
+[data-theme="dark"] #welcomeScreen .w2-bg{inset:14% 10% 18%!important;border-radius:38%!important;filter:blur(32px)!important;opacity:.78!important;background:radial-gradient(ellipse at 48% 40%,rgba(212,175,55,.22) 0 20%,transparent 54%),radial-gradient(ellipse at 28% 63%,rgba(75,112,92,.18) 0 17%,transparent 48%),radial-gradient(ellipse at 72% 66%,rgba(92,72,36,.24) 0 18%,transparent 52%),#16181c!important}
+[data-theme="light"] #welcomeScreen .w2-bg{inset:14% 10% 18%!important;border-radius:38%!important;filter:blur(32px)!important;opacity:.62!important;background:radial-gradient(ellipse at 48% 40%,rgba(214,178,74,.34) 0 20%,transparent 54%),radial-gradient(ellipse at 28% 63%,rgba(150,180,120,.24) 0 17%,transparent 48%),radial-gradient(ellipse at 72% 66%,rgba(224,196,120,.30) 0 18%,transparent 52%),#f7f6f1!important}
 </style>
 </body>
 </html>
