@@ -1,11 +1,9 @@
-Money Map v2.0.3.24 — Live Production
+Money Map v2.0.3.25 — Production
 
-- Approved icon on X Dim #0F1419 launcher cover.
-- Theme-aware Android splash plus saved-theme WebView background prevents opposite-colour opening flashes.
-- Smooth 260ms native reveal with a 650ms fallback.
-- Financial Health ring increased to 10/78 (12.8%), matching the other Analytics and Overview rings.
-- Returning Welcome copy lowered to 68px safe-area spacing; signup logo remains.
-- Welcome blur now suggests a contained object behind the page without reaching phone edges.
-- Biometric title changed to “Verify fingerprint” to avoid repeating Money Map.
-- Closed-app alarms, daily transaction suppression, monthly asset suppression and restart restoration retained.
+- Replaces the WebView fade with a native theme-matched startup cover that hides all unpainted WebView frames.
+- Uses transparent/no-preview Android starting windows so the system cannot insert an opposite-colour screen.
+- Reveals the ready app by fading the cover for 220ms; fallback reduced to 350ms after page finish.
+- Consolidates page, welcome, lock, setup, modal, navigation, card and progress motion into one faster native-style curve.
+- Removes exaggerated navigation bounce and all stagger delays.
+- Retains X Dim dark mode, approved icon, contained welcome blur, ring thickness and notification logic.
 - Financial calculations and stored data are unchanged.
