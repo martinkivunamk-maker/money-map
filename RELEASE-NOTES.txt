@@ -1,9 +1,8 @@
-Money Map v2.0.3.24 — Production
+Money Map v2.0.3.24 — Production revision
 
-- Promotes the approved Final Test logo and measured spacing.
-- Uses matte charcoal launcher and dark-mode surfaces instead of deep OLED black.
-- Removes the shining welcome/setup glow and glossy dark-card treatment.
-- Adds coordinated first-paint and smoother welcome, lock, setup and app transitions.
-- Retains the 12.5% overview rings approved in Final Test.
-- Retains closed-app notification scheduling, daily transaction suppression, monthly asset-update suppression and restart restoration.
-- Financial calculations, data storage, backup/restore and budget isolation are unchanged.
+- Uses the X Dim near-black palette: #0F1419 background, #16181C surfaces and #2F3336 borders.
+- Keeps light-mode bottom navigation white instead of inheriting the dark cover.
+- Removes the logo only from the returning Welcome screen and moves the welcome message upward.
+- Keeps the approved logo in first-time signup/setup and on the launcher.
+- Retains the smooth first-paint transition, matte treatment, notification suppression and approved overview rings.
+- Financial calculations and stored data remain unchanged.

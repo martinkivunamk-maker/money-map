@@ -6,9 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#ffffff">
-<script>try{var _d=JSON.parse(localStorage.getItem('moneymap_v2')||'{}');var _t=_d.theme||'auto';if(_t==='auto')_t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.querySelector('meta[name=theme-color]').setAttribute('content',_t==='dark'?'#1b1b18':'#ffffff');}catch(e){}</script>
+<script>try{var _d=JSON.parse(localStorage.getItem('moneymap_v2')||'{}');var _t=_d.theme||'auto';if(_t==='auto')_t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.querySelector('meta[name=theme-color]').setAttribute('content',_t==='dark'?'#0f1419':'#ffffff');}catch(e){}</script>
 <script id="mm-production-boot">(function(){var h=document.documentElement;h.classList.add('mm-booting');var done=function(){requestAnimationFrame(function(){requestAnimationFrame(function(){h.classList.remove('mm-booting');h.classList.add('mm-ready')})})};addEventListener('DOMContentLoaded',done,{once:true});setTimeout(done,1400)})();</script>
-<style id="mm-production-first-paint">html{background:#f7f6f1}html[data-theme="dark"]{background:#1b1b18}html.mm-booting body{opacity:0!important}html.mm-ready body{opacity:1!important;transition:opacity 260ms cubic-bezier(.22,1,.36,1),background-color 220ms ease!important}</style>
+<style id="mm-production-first-paint">html{background:#f7f6f1}html[data-theme="dark"]{background:#0f1419}html.mm-booting body{opacity:0!important}html.mm-ready body{opacity:1!important;transition:opacity 260ms cubic-bezier(.22,1,.36,1),background-color 220ms ease!important}</style>
 <link rel="manifest" href="manifest.json">
 <title>Money Map</title>
 <style>
@@ -5125,6 +5125,32 @@ html[data-native-shell="true"] #bottomNav{background:#1b1b18!important;border-to
 @keyframes mmProductionLeave{to{opacity:0;transform:scale(1.012)}}
 @keyframes mmProductionSheet{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){html.mm-ready body,#app.entering,#lockScreen.entering,#welcomeScreen.leaving,.mms-panel{animation:none!important;transition:none!important}}
+</style>
+
+<style id="mm-production-x-dim-final">
+/* X-style Dim palette: recognisably black, without OLED-black depth or polish. */
+[data-theme="dark"]{
+ --bg:#0f1419!important;--bg-glow1:transparent!important;--bg-glow2:transparent!important;
+ --surface:#16181c!important;--surface2:#202327!important;--nav-bg:#0f1419!important;--nav-glass:#0f1419!important;
+ --glass:rgba(255,255,255,.045)!important;--glass-hover:rgba(255,255,255,.075)!important;
+ --glass-border:#2f3336!important;--glass-line:rgba(212,175,55,.17)!important;
+ --card-bg:#16181c!important;--card-border:#2f3336!important;--card-hi:transparent!important;
+ --modal-bg:#16181c!important;--input-bg:#202327!important;--input-border:#2f3336!important;
+ --track:rgba(239,243,244,.10)!important;--shadow:rgba(0,0,0,.25)!important;
+ --text:#eff3f4!important;--text-dim:#8b98a5!important;--text-muted:#71767b!important;
+}
+[data-theme="dark"] body,[data-theme="dark"] #app,[data-theme="dark"] .app-bg,[data-theme="dark"] #welcomeScreen,[data-theme="dark"] #lockScreen{background:#0f1419!important;background-image:none!important}
+[data-theme="dark"] .w2-bg{background:#0f1419!important;filter:none!important;opacity:1!important}
+[data-theme="dark"] .overview-card,[data-theme="dark"] .bgt-card,[data-theme="dark"] .settings-destination,[data-theme="dark"] .gl-card,[data-theme="dark"] .bal-card,[data-theme="dark"] .misc-line{background:#16181c!important;background-image:none!important;border-color:#2f3336!important;box-shadow:none!important}
+#mmSetup{background:#0f1419!important}.mms-glow{display:none!important}.mms-panel{background:#16181c!important;border-color:#2f3336!important;box-shadow:0 -9px 24px rgba(0,0,0,.18)!important}
+html[data-native-shell="true"][data-theme="dark"] #bottomNav{background:#0f1419!important;border-top-color:#2f3336!important}
+html[data-native-shell="true"][data-theme="light"] #bottomNav{background:#ffffff!important;border-top-color:rgba(15,20,25,.12)!important;color:#14171a!important}
+[data-theme="light"] #bottomNav{background:#ffffff!important}
+#welcomeScreen .w2-logo{display:none!important}
+#welcomeScreen .w2-wrap{padding-top:calc(env(safe-area-inset-top,0px) + 30px)!important}
+#welcomeScreen .w2-hi{margin-top:0!important}
+#welcomeScreen .w2-name{margin-top:5px!important}
+#welcomeScreen .w2-sub{margin-top:12px!important}
 </style>
 </body>
 </html>
