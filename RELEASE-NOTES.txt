@@ -1,15 +1,9 @@
-Money Map v2.0.3.23 — Production
+Money Map v2.0.3.24 — Production
 
-Approved production release:
-- Compact top-right menu with Settings, Notification center and Recurring transactions.
-- Clean tap-only haptics on the three-dot menu and its actions.
-- Independent Notification center and Recurring transactions screens.
-- Monthly history for physical assets, cash/accounts and investment interest.
-- App-styled Month and Year pickers with right-facing arrows.
-- Each item’s history begins in the month its first monthly value is recorded.
-- Pickers never show periods before that starting month or after the current month.
-- New months and years appear automatically as time advances.
-- Same-month saves replace that month; historical values are never double-counted.
-- Investment principal remains under Life Savings; only earned interest is counted in Assets.
-
-Production cache: moneymap-v20323-1
+- Promotes the approved Final Test logo and measured spacing.
+- Uses matte charcoal launcher and dark-mode surfaces instead of deep OLED black.
+- Removes the shining welcome/setup glow and glossy dark-card treatment.
+- Adds coordinated first-paint and smoother welcome, lock, setup and app transitions.
+- Retains the 12.5% overview rings approved in Final Test.
+- Retains closed-app notification scheduling, daily transaction suppression, monthly asset-update suppression and restart restoration.
+- Financial calculations, data storage, backup/restore and budget isolation are unchanged.
