@@ -1,9 +1,10 @@
-Money Map v2.0.3.24 Test 3
+Money Map v2.0.3.24 Final Test 4
 
-FINAL LOGO TEST ONLY — Production remains unchanged.
+FINAL TEST — Production remains unchanged.
 
-- Rebuilt the approved interlocking Money Map mark as clean rounded threads.
-- Increased the internal negative space so the folds remain visible at launcher size.
-- Balanced the foreground inside the black adaptive-icon safe area.
-- Enlarged and opened the same mark on welcome, lock and setup screens.
-- All Test 2 layout, onboarding, notification and Android behavior remains unchanged.
+- Uses the exact approved Money Map artwork with Threads-matched line thickness and safe margins.
+- Applies the same clean transparent artwork on Welcome, Lock and Setup.
+- Keeps daily reminders scheduled while the app is closed, but suppresses them when today already has a transaction.
+- Keeps monthly asset reminders scheduled, suppressing them when all configured assets are updated.
+- Restores reminder schedules after phone restart and avoids scheduling overdue recurring reminders merely on app open.
+- Increases Budget Discipline and Income vs Expenses overview rings to 12.5% thickness, matching Analytics while preserving centre-label clearance.
