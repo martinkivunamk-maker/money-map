@@ -1,11 +1,10 @@
-Money Map v2.0.3.27 — Production Web
+Money Map v2.0.3.28 — Production Web
 
-- Applies the approved grouped Settings design while preserving the profile cover, photo, name and membership details.
-- Keeps Notification center and Recurring transactions as independent options in the three-dot menu.
-- Keeps Security and Data as single Settings destinations that open their existing detail windows.
-- Groups all notification controls and adds Budget alerts at 95% plus a 90-day backup reminder.
-- Shows a green tick inside enabled toggles and a grey x inside disabled toggles.
-- Budget alerts fire once per category per month when a saved transaction crosses the threshold.
-- Backup reminders are checked at app launch/resume and reset after each successful backup.
-- Existing Android closed-app schedules remain unchanged; no APK update is included.
-- Financial calculations, stored records, profile, PIN/fingerprint, backup/restore, recurring transactions, assets/history and the approved logo are preserved.
+- Rebuilds from the clean v2.0.3.25 Production source.
+- Fixes Notification center and Recurring transactions so they open as standalone pages without the Settings directory underneath.
+- Applies one clean grouped card per Settings section and removes the unwanted outer card.
+- Restores the original Settings typography scale while preserving the profile cover, photo, name and membership details.
+- Keeps Security and Data as single destinations opening their existing detail windows.
+- Groups only the existing notification controls and keeps the approved green tick / grey x toggle design.
+- Removes the proposed Budget alert and 90-day backup reminder additions for now.
+- Financial calculations, stored records, PIN/fingerprint, backup/restore, recurring transactions, assets/history and the approved logo are unchanged.
