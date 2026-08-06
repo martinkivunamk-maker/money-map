@@ -5185,5 +5185,101 @@ html.mm-booting *,html:not(.mm-ready) *{animation:none!important;transition:none
 button,a,[onclick]{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){.page.active,#app.entering,#lockScreen.entering,#welcomeScreen.leaving,.mms-panel{animation:none!important}.modal-sheet,.nav-icon{transition:none!important}}
 </style>
+
+<style id="v20327-approved-settings-notifications">
+/* Approved Settings directory: grouped destinations, profile area untouched. */
+#settingsHub{display:block!important}
+.mm-settings-section{margin:0 0 15px}
+.mm-settings-section-title,.mm-notify-section-title{margin:0 3px 7px;color:var(--text-muted);font-size:11px;font-weight:850;letter-spacing:1.35px;text-transform:uppercase}
+.mm-settings-group,.mm-notify-group{overflow:hidden;border:1px solid var(--card-border);border-radius:18px;background:var(--card-bg);box-shadow:0 1px 0 var(--card-hi) inset,0 12px 28px -25px var(--shadow)}
+#settingsHub .mm-settings-group .settings-destination{min-height:64px!important;padding:10px 12px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+#settingsHub .mm-settings-group .settings-destination+.settings-destination{border-top:1px solid var(--input-border)!important}
+#settingsHub .settings-destination .sd-icon{width:36px!important;height:36px!important;border-radius:11px!important;margin-right:12px!important;background:rgba(212,175,55,.12)!important}
+#settingsHub .settings-destination .sd-icon svg{width:18px!important;height:18px!important}
+#settingsHub .settings-destination .sd-name{font-size:15px!important;font-weight:760!important}
+#settingsHub .settings-destination .sd-sub{display:block!important;margin-top:3px!important;font-size:11px!important;line-height:1.35!important;white-space:normal!important;color:var(--text-dim)!important}
+#settingsHub .settings-destination>.chevron{display:flex!important;color:var(--text-muted);margin-left:7px}
+#settingsHub .settings-destination>.chevron svg{width:17px;height:17px}
+.mm-setting-value{max-width:31%;margin-left:8px;color:var(--text-dim);font-size:11px;font-weight:720;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Approved Notification centre grouping. */
+.mm-notify-intro{margin:-2px 1px 17px;color:var(--text-dim);font-size:12.5px;line-height:1.5}
+.mm-notify-section{margin:0 0 15px}
+.mm-notify-group.master{border-color:rgba(212,175,55,.42);background:color-mix(in srgb,var(--gold) 5%,var(--card-bg))}
+.mm-notify-group .settings-item{min-height:65px;padding:10px 12px;border:0;background:transparent}
+.mm-notify-group .settings-item+.settings-item{border-top:1px solid var(--input-border)}
+.mm-notify-group .settings-item-icon{width:35px;height:35px;border-radius:11px;background:rgba(212,175,55,.12);color:var(--gold)}
+.mm-notify-group .settings-item-icon svg{width:18px;height:18px}
+.mm-notify-group .s-label{font-size:14.5px;font-weight:760}
+.mm-notify-group .s-sub{margin-top:3px;font-size:11px;line-height:1.35;color:var(--text-dim)}
+.mm-notify-test{width:100%;margin-top:1px!important}
+/* Status-bearing switches: green tick when on, grey x when off. */
+.setting-switch{width:50px!important;height:30px!important;margin:0!important;border:0!important;border-radius:99px!important;background:#343a40!important;position:relative!important;appearance:none!important;-webkit-appearance:none!important;outline:0!important;flex:none!important;cursor:pointer!important;transition:background-color .2s ease!important}
+.setting-switch::after{content:"×"!important;box-sizing:border-box!important;position:absolute!important;left:3px!important;top:3px!important;width:24px!important;height:24px!important;border-radius:50%!important;background:#d8dadd!important;color:#737980!important;display:flex!important;align-items:center!important;justify-content:center!important;font:900 15px/1 Arial,sans-serif!important;box-shadow:0 2px 7px rgba(0,0,0,.22)!important;transform:none!important;transition:left .2s ease,background-color .2s ease!important}
+.setting-switch:checked{background:var(--gold)!important}
+.setting-switch:checked::after{content:"✓"!important;left:23px!important;transform:none!important;background:#fff!important;color:#3fae5a!important}
+.fp-sw{width:50px!important;height:30px!important;border-radius:99px!important;background:#343a40!important}
+.fp-sw::after{content:"×"!important;box-sizing:border-box!important;left:3px!important;top:3px!important;width:24px!important;height:24px!important;background:#d8dadd!important;color:#737980!important;display:flex!important;align-items:center!important;justify-content:center!important;font:900 15px/1 Arial,sans-serif!important}
+.fp-sw.on{background:var(--gold)!important}
+.fp-sw.on::after{content:"✓"!important;left:23px!important;background:#fff!important;color:#3fae5a!important}
+@media(max-width:390px){.mm-setting-value{display:none}.mm-notify-group .settings-item{padding-left:10px;padding-right:10px}}
+</style>
+<script id="v20327-approved-settings-notifications-script">
+(function(){
+  'use strict';
+  var VERSION='2.0.3.27',THRESHOLD=95,DAY=86400000;
+  window.MM_TEST_VERSION=VERSION;DB.appDataVersion=VERSION;
+  var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v'+VERSION;
+  DB.notificationSettings=Object.assign({budgetAlerts:true,backupReminder:true,budgetAlertThreshold:95,backupIntervalDays:90},DB.notificationSettings||{});
+  DB.notificationAlertState=DB.notificationAlertState&&typeof DB.notificationAlertState==='object'?DB.notificationAlertState:{};
+  DB.notificationAlertState.budget=DB.notificationAlertState.budget&&typeof DB.notificationAlertState.budget==='object'?DB.notificationAlertState.budget:{};
+  if(!DB.backupReminderStartedAt)DB.backupReminderStartedAt=new Date().toISOString();
+
+  function settingRow(key,label,sub,icon,value){return '<div class="settings-destination mm-setting-row" data-settings-key="'+key+'" onclick="openSettingsSection(\''+key+'\',true)">'+_settingsIcon(icon)+'<div class="sd-copy"><div class="sd-name">'+label+'</div><div class="sd-sub">'+sub+'</div></div>'+(value?'<div class="mm-setting-value">'+esc(String(value))+'</div>':'')+'<div class="chevron">'+ic('i-chevron')+'</div></div>';}
+  function settingGroup(title,rows){return '<section class="mm-settings-section"><div class="mm-settings-section-title">'+title+'</div><div class="mm-settings-group">'+rows+'</div></section>';}
+  renderSettingsHub=function(){
+    var el=document.getElementById('settingsHub');if(!el)return;
+    var theme=DB.theme==='auto'?'Automatic':DB.theme==='dark'?'Dark':'Light';
+    var incomes=(DB.incomeTypes||[]).length+' sources',cats=(DB.categories||[]).length+' categories',holds=(DB.holdings||[]).length+' places';
+    var prefs=settingRow('appearance','Appearance','Light, dark or automatic theme','i-moon',theme)+settingRow('currency','Currency','Used across Money Map reports and records','i-cash',cur());
+    var money=settingRow('balances','Starting balances','Amounts held before tracking began','i-bank',_startBalSummaryText())+settingRow('income','Income sources','Manage where your income comes from','i-income',incomes)+settingRow('categories','Expense categories','Organise the different ways you spend','i-tag',cats)+settingRow('holdings','Income holdings','Manage the places where you keep money','i-wallet',holds);
+    var security=settingRow('security','Security','PIN and fingerprint protection','i-lock',DB.fingerprintCredId?'Protected':'PIN');
+    var data=settingRow('data','Data','Export, back up or restore your information','i-export','3 tools');
+    el.innerHTML=settingGroup('Preferences',prefs)+settingGroup('Money setup',money)+settingGroup('Security & privacy',security)+settingGroup('Data',data);
+  };
+
+  function notifyRow(label,sub,key,icon){var n=DB.notificationSettings;return '<div class="settings-item mm-notify-row" data-notify-key="'+key+'"><div class="settings-item-left"><div class="settings-item-icon">'+ic(icon)+'</div><div><div class="s-label">'+label+'</div><div class="s-sub">'+sub+'</div></div></div><input aria-label="'+label+'" class="setting-switch" type="checkbox" '+(n[key]?'checked':'')+' onchange="saveNotifySetting(\''+key+'\',this.checked)"></div>';}
+  function timeRow(){var n=DB.notificationSettings;return '<div class="settings-item mm-notify-row" data-notify-key="dailyTime"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-sun')+'</div><div><div class="s-label">Daily time</div><div class="s-sub">Uses this phone’s local time</div></div></div><input aria-label="Daily notification time" class="settings-control" type="time" value="'+n.dailyTime+'" onchange="saveNotifySetting(\'dailyTime\',this.value)"></div>';}
+  function notifyGroup(title,rows,cls){return '<section class="mm-notify-section"><div class="mm-notify-section-title">'+title+'</div><div class="mm-notify-group '+(cls||'')+'">'+rows+'</div></section>';}
+  renderNotificationSettings=function(){
+    var master='<div class="mm-notify-group master">'+notifyRow('All notifications','Pause or restore every Money Map reminder','enabled','i-bulb')+'</div>';
+    var daily=notifyGroup('Daily routine',notifyRow('Daily check-in','Remind me if today has no entry','daily','i-check')+timeRow());
+    var progress=notifyGroup('Progress & budget alerts',notifyRow('Weekly insight','A private weekly spending summary','weekly','i-chart')+notifyRow('Savings encouragement','Progress without lock-screen amounts','savings','i-invest')+notifyRow('Monthly asset updates','Remind me weekly until this month is updated','assetUpdates','i-bank')+notifyRow('Budget alerts','Alert once per category when spending reaches 95%','budgetAlerts','i-budget'));
+    var commitments=notifyGroup('Commitments',notifyRow('Loan reminders','Optional due reminders','loans','i-cash')+notifyRow('Recurring transactions','Due and review reminders','recurring','i-recycle'));
+    var protection=notifyGroup('Data protection',notifyRow('Backup reminder','Remind me 90 days after a successful backup','backupReminder','i-download'));
+    var delivery=notifyGroup('Delivery & privacy',notifyRow('Sound','Use the phone’s native notification sound','sound','i-bulb')+notifyRow('Vibration','Use the phone’s notification vibration','vibration','i-phone')+notifyRow('Show amounts','Display financial figures on the lock screen','showAmounts','i-cash'));
+    return _settingsHead('Notifications')+'<div class="mm-notify-intro">Private reminders stay on this phone. Amounts remain hidden unless you choose to show them.</div>'+master+daily+progress+commitments+protection+delivery+'<button class="btn-outline mm-notify-test" onclick="sendNativeTestNotification()">Send test notification</button>';
+  };
+
+  function localMonthKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+  function budgetRows(){var key=localMonthKey(),spent={};(DB.transactions||[]).forEach(function(t){if(t.type==='expense'&&t.categoryId&&(t.date||'').slice(0,7)===key)spent[t.categoryId]=(spent[t.categoryId]||0)+Number(t.amount||0);});return (DB.budgets||[]).filter(function(b){return b.type==='expense'&&b.categoryId;}).map(function(b){var amount=b.periodAmounts&&Object.prototype.hasOwnProperty.call(b.periodAmounts,key)?Number(b.periodAmounts[key]||0):Number(b.amount||0);var used=Number(spent[b.categoryId]||0),cat=(DB.categories||[]).find(function(c){return c.id===b.categoryId;});return {id:b.categoryId,key:key,name:(cat&&cat.name)||b.name||'Budget category',budget:amount,spent:used,ratio:amount>0?(used/amount)*100:0};}).filter(function(x){return x.budget>0;});}
+  window._mmBudgetSnapshot27=function(){var out={};budgetRows().forEach(function(x){out[x.id]=x.ratio;});return out;};
+  function sendAlert(title,body,route){var b=_nativeBridge();try{if(b&&typeof b.sendTestNotification==='function'){b.sendTestNotification(title,body,route||'overview');return true;}}catch(e){}try{if('Notification' in window&&Notification.permission==='granted'){new Notification(title,{body:body});return true;}}catch(e){}showSnackbar(body,'warning',null,null,5000);return false;}
+  window._mmCheckBudgetAlertCrossings27=function(before){var n=DB.notificationSettings||{},changed=false;if(!n.enabled||!n.budgetAlerts)return 0;var threshold=Number(n.budgetAlertThreshold||THRESHOLD),hits=0;budgetRows().forEach(function(x){var stateKey=x.key+':'+x.id,prior=Number((before||{})[x.id]||0);if(prior<threshold&&x.ratio>=threshold&&!DB.notificationAlertState.budget[stateKey]){DB.notificationAlertState.budget[stateKey]=new Date().toISOString();changed=true;hits++;var pc=Math.round(x.ratio),body=n.showAmounts?(x.name+' has reached '+pc+'% — '+fmtShort(x.spent)+' of '+fmtShort(x.budget)+'.'):(x.name+' has reached '+pc+'% of its monthly budget.');sendAlert('Budget alert',body,'budget');}});if(changed)saveDB();return hits;};
+  var saveTx27=saveTx;saveTx=function(type){var before=window._mmBudgetSnapshot27();var result=saveTx27.apply(this,arguments);setTimeout(function(){window._mmCheckBudgetAlertCrossings27(before);},0);return result;};
+  if(typeof _addRecurringOccurrence==='function'){var addRecurring27=_addRecurringOccurrence;_addRecurringOccurrence=function(){var before=window._mmBudgetSnapshot27(),ok=addRecurring27.apply(this,arguments);if(ok)setTimeout(function(){window._mmCheckBudgetAlertCrossings27(before);},0);return ok;};}
+
+  function validTime(v){var t=Date.parse(v||'');return Number.isFinite(t)?t:0;}
+  function backupBase(){var v=Math.max(validTime(DB.lastSuccessfulBackupAt),validTime(DB.notificationAlertState.lastBackupReminderAt),validTime(DB.backupReminderStartedAt));return v||Date.now();}
+  function backupNext(){return new Date(backupBase()+Number((DB.notificationSettings||{}).backupIntervalDays||90)*DAY);}
+  function isoDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  window._mmCheckBackupReminder27=function(){var n=DB.notificationSettings||{};if(!n.enabled||!n.backupReminder)return false;var start=Math.max(validTime(DB.lastSuccessfulBackupAt),validTime(DB.notificationAlertState.lastBackupReminderAt),validTime(DB.backupReminderStartedAt));if(!start||Date.now()<start+Number(n.backupIntervalDays||90)*DAY)return false;DB.notificationAlertState.lastBackupReminderAt=new Date().toISOString();saveDB();sendAlert('Back up Money Map','It has been 90 days since your last successful backup. Save a fresh copy now.','settings');return true;};
+  backupData=function(){var stamp=new Date().toISOString();DB.lastSuccessfulBackupAt=stamp;DB.backupReminderStartedAt=stamp;DB.notificationAlertState.lastBackupReminderAt=null;saveDB();var json=JSON.stringify(DB,null,2);if(_nativeSaveFile('MoneyMap_Backup_'+today()+'.json','application/json',json)){showSnackbar('Backup saved to Downloads','success');return;}var blob=new Blob([json],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='MoneyMap_Backup_'+today()+'.json';a.click();URL.revokeObjectURL(url);showSnackbar('Backup saved successfully','success');};
+  var plan27=_notificationPlan;_notificationPlan=function(){var p=plan27(),n=DB.notificationSettings||{};p.plans=(p.plans||[]).filter(function(x){return x.id!=='backup-reminder'&&x.id!=='budget-alerts';});p.plans.push({id:'budget-alerts',enabled:!!(n.enabled&&n.budgetAlerts),threshold:Number(n.budgetAlertThreshold||95)});p.plans.push({id:'backup-reminder',enabled:!!(n.enabled&&n.backupReminder),nextDate:isoDate(backupNext()),time:'09:00'});p.generatedAt=new Date().toISOString();return p;};
+
+  saveDB();renderSettingsHub();setTimeout(window._mmCheckBackupReminder27,1300);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(window._mmCheckBackupReminder27,500);});
+})();
+</script>
+
 </body>
 </html>
