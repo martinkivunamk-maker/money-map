@@ -1,10 +1,9 @@
-Money Map v2.0.3.28 — Production Web
+Money Map v2.0.3.25 — Production
 
-- Rebuilds from the clean v2.0.3.25 Production source.
-- Fixes Notification center and Recurring transactions so they open as standalone pages without the Settings directory underneath.
-- Applies one clean grouped card per Settings section and removes the unwanted outer card.
-- Restores the original Settings typography scale while preserving the profile cover, photo, name and membership details.
-- Keeps Security and Data as single destinations opening their existing detail windows.
-- Groups only the existing notification controls and keeps the approved green tick / grey x toggle design.
-- Removes the proposed Budget alert and 90-day backup reminder additions for now.
-- Financial calculations, stored records, PIN/fingerprint, backup/restore, recurring transactions, assets/history and the approved logo are unchanged.
+- Replaces the WebView fade with a native theme-matched startup cover that hides all unpainted WebView frames.
+- Uses transparent/no-preview Android starting windows so the system cannot insert an opposite-colour screen.
+- Reveals the ready app by fading the cover for 220ms; fallback reduced to 350ms after page finish.
+- Consolidates page, welcome, lock, setup, modal, navigation, card and progress motion into one faster native-style curve.
+- Removes exaggerated navigation bounce and all stagger delays.
+- Retains X Dim dark mode, approved icon, contained welcome blur, ring thickness and notification logic.
+- Financial calculations and stored data are unchanged.
