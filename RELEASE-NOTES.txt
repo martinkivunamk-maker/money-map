@@ -1,12 +1,11 @@
-Money Map v2.0.3.35 — Production
+Money Map Production v2.0.3.36
 
-Settings refinement
-- Anchored the gold profile cover while the Settings sheet scrolls over it.
-- Removed the moving Settings title and duplicate edit pencil; the single profile edit stays fixed at the top-left.
-- Added slightly more breathing room above grouped Settings headings.
-- Moved Security to the first position in the App group.
-- Replaced Appearance with a vertical theme list.
-- Shows all currencies directly with the selected currency highlighted.
-- Split Starting balances into separate Life Savings and Emergency Fund cards with individual value-entry sheets.
-- Includes the v2.0.3.33 navigation and Settings clearance fixes and the v2.0.3.34 welcome quote animation.
-- Financial calculations, stored data, profile photo, PIN/fingerprint, backup/restore, recurring transactions, assets/history, budget isolation, notifications and all 365 quotes remain intact.
+Focused Settings clean-up based on v2.0.3.35:
+- Fixed the standalone profile-edit pencil at the top-right with no circular card.
+- Simplified Appearance choices to Light, Dark and Automatic only.
+- Added the correct symbol and full currency name/code for all 12 currencies.
+- Removed explanations from the Life Savings and Emergency Fund cards.
+- Replaced the Starting balances header copy with one brief line.
+- Removed the duplicate balance-card haptic; opening a balance now produces one response.
+
+Also includes all v2.0.3.33 navigation/clearance work, v2.0.3.34 welcome quote motion and v2.0.3.35 Settings refinements. Financial calculations, existing user data, security, backup/restore, recurring transactions, assets, budgets, notifications and daily quotes are unchanged.

@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20335-settings-refinement';
+const CACHE = 'moneymap-v20336-settings-cleanout';
 
 self.addEventListener('install', () => self.skipWaiting());
 
