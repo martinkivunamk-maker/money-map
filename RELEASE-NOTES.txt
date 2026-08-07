@@ -1,18 +1,10 @@
-Money Map v2.0.3.29 — Production
+Money Map v2.0.3.30 — Production
 
-Daily financial motivation
-- Added 365 offline-first daily financial quotes to the returning-user Welcome screen.
-- Mixed 345 original Money Map guidance quotes with 20 recognised quotations.
-- Displays one quote per local calendar day and keeps the same quote throughout that day.
-- Changes automatically at local midnight and works without mobile data or Wi-Fi.
-- Quote library is not exposed anywhere else in the app.
-
-Welcome visual refinement
-- Uses the approved first mockup style: clean centred text with a gold author line.
-- Reduced the Welcome background blur from 32px to 18px.
-- Confined the blurred object behind the quote so the rest of the screen remains clean.
-- Increased quote contrast so the words stay sharp in light and dark themes.
-
-Release consistency
-- Aligned the visible footer, active runtime version markers and service-worker cache to v2.0.3.29.
-- No changes to transactions, calculations, budgets, recurring items, assets, notifications, backups, profile photo, PIN, fingerprint or stored financial data.
+- Approved single-layer Settings cards with balanced APP spacing.
+- Existing profile typography and all Settings routes preserved.
+- Notification center and Recurring transactions remain independent routes.
+- Smart Insights now handles unchanged, rising, falling and unavailable savings comparisons accurately.
+- Fixed costs such as rent are planning signals for the next period, not unrealistic mid-period cuts.
+- Runway, loan pressure and savings-rate history use the selected period and correct funding sources.
+- Insights are limited to five strongest factual observations.
+- Daily quotes and all unrelated app behavior remain unchanged.

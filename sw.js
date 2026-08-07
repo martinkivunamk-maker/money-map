@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20329-daily-quotes';
+const CACHE = 'moneymap-v20330-settings-insights';
 
 self.addEventListener('install', () => self.skipWaiting());
 
