@@ -1,10 +1,9 @@
-Money Map v2.0.3.30 — Production
+Money Map v2.0.3.31 — Production
 
-- Approved single-layer Settings cards with balanced APP spacing.
-- Existing profile typography and all Settings routes preserved.
-- Notification center and Recurring transactions remain independent routes.
-- Smart Insights now handles unchanged, rising, falling and unavailable savings comparisons accurately.
-- Fixed costs such as rent are planning signals for the next period, not unrealistic mid-period cuts.
-- Runway, loan pressure and savings-rate history use the selected period and correct funding sources.
-- Insights are limited to five strongest factual observations.
-- Daily quotes and all unrelated app behavior remain unchanged.
+Settings sizing correction
+- Reduced Settings cards to the compact height used elsewhere in Money Map.
+- Matched the left and right card gutters used by Transactions and Budget.
+- Moved APP, MONEY SETUP and PRIVACY & DATA closer to their own card groups.
+- Preserved the centred profile, current typography, icons and all eight Settings destinations.
+- Settings, Notification center, Recurring transactions and back-navigation functions are byte-for-byte unchanged from v2.0.3.30.
+- Smart Insights and daily quotes are unchanged from v2.0.3.30.

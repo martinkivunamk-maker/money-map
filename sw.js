@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20330-settings-insights';
+const CACHE = 'moneymap-v20331-settings-card-sizing';
 
 self.addEventListener('install', () => self.skipWaiting());
 
