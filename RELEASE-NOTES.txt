@@ -1,9 +1,8 @@
-Money Map v2.0.3.31 — Production
+Money Map v2.0.3.32 — Production
 
-Settings sizing correction
-- Reduced Settings cards to the compact height used elsewhere in Money Map.
-- Matched the left and right card gutters used by Transactions and Budget.
-- Moved APP, MONEY SETUP and PRIVACY & DATA closer to their own card groups.
-- Preserved the centred profile, current typography, icons and all eight Settings destinations.
-- Settings, Notification center, Recurring transactions and back-navigation functions are byte-for-byte unchanged from v2.0.3.30.
-- Smart Insights and daily quotes are unchanged from v2.0.3.30.
+Settings scroll-sheet correction
+- Restored one opaque Settings sheet moving beneath the gold header.
+- Removed the transparent-layer effect that exposed gold inside the Settings content while scrolling.
+- Restored the rounded top cover without adding another nested card.
+- Kept the approved compact card size, card gutters and group-heading spacing from v2.0.3.31.
+- Settings routing, Notification center, Recurring transactions, Smart Insights and daily quotes are unchanged.
