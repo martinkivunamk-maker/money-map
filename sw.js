@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20326-native';
+const CACHE = 'moneymap-v20327-native';
 
 self.addEventListener('install', () => self.skipWaiting());
 
