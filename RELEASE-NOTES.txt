@@ -1,9 +1,18 @@
-Money Map v2.0.3.25 — Production
+Money Map v2.0.3.29 — Production
 
-- Replaces the WebView fade with a native theme-matched startup cover that hides all unpainted WebView frames.
-- Uses transparent/no-preview Android starting windows so the system cannot insert an opposite-colour screen.
-- Reveals the ready app by fading the cover for 220ms; fallback reduced to 350ms after page finish.
-- Consolidates page, welcome, lock, setup, modal, navigation, card and progress motion into one faster native-style curve.
-- Removes exaggerated navigation bounce and all stagger delays.
-- Retains X Dim dark mode, approved icon, contained welcome blur, ring thickness and notification logic.
-- Financial calculations and stored data are unchanged.
+Daily financial motivation
+- Added 365 offline-first daily financial quotes to the returning-user Welcome screen.
+- Mixed 345 original Money Map guidance quotes with 20 recognised quotations.
+- Displays one quote per local calendar day and keeps the same quote throughout that day.
+- Changes automatically at local midnight and works without mobile data or Wi-Fi.
+- Quote library is not exposed anywhere else in the app.
+
+Welcome visual refinement
+- Uses the approved first mockup style: clean centred text with a gold author line.
+- Reduced the Welcome background blur from 32px to 18px.
+- Confined the blurred object behind the quote so the rest of the screen remains clean.
+- Increased quote contrast so the words stay sharp in light and dark themes.
+
+Release consistency
+- Aligned the visible footer, active runtime version markers and service-worker cache to v2.0.3.29.
+- No changes to transactions, calculations, budgets, recurring items, assets, notifications, backups, profile photo, PIN, fingerprint or stored financial data.
