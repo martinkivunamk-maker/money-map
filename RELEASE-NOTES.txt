@@ -1,8 +1,12 @@
-Money Map v2.0.3.32 — Production
+Money Map v2.0.3.35 — Production
 
-Settings scroll-sheet correction
-- Restored one opaque Settings sheet moving beneath the gold header.
-- Removed the transparent-layer effect that exposed gold inside the Settings content while scrolling.
-- Restored the rounded top cover without adding another nested card.
-- Kept the approved compact card size, card gutters and group-heading spacing from v2.0.3.31.
-- Settings routing, Notification center, Recurring transactions, Smart Insights and daily quotes are unchanged.
+Settings refinement
+- Anchored the gold profile cover while the Settings sheet scrolls over it.
+- Removed the moving Settings title and duplicate edit pencil; the single profile edit stays fixed at the top-left.
+- Added slightly more breathing room above grouped Settings headings.
+- Moved Security to the first position in the App group.
+- Replaced Appearance with a vertical theme list.
+- Shows all currencies directly with the selected currency highlighted.
+- Split Starting balances into separate Life Savings and Emergency Fund cards with individual value-entry sheets.
+- Includes the v2.0.3.33 navigation and Settings clearance fixes and the v2.0.3.34 welcome quote animation.
+- Financial calculations, stored data, profile photo, PIN/fingerprint, backup/restore, recurring transactions, assets/history, budget isolation, notifications and all 365 quotes remain intact.

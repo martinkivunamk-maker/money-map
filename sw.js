@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20332-settings-scroll-sheet';
+const CACHE = 'moneymap-v20335-settings-refinement';
 
 self.addEventListener('install', () => self.skipWaiting());
 
