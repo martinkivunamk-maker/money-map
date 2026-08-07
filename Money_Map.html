@@ -2153,8 +2153,10 @@ function checkCarryForward(month,year){
 function postCarryForward(){
   const amt=parseFloat(document.getElementById('cfBanner').dataset.amount);
   const {month,year}=getSelectedPeriod();
-  DB.transactions.push({id:genId(),type:'income',date:`${year}-${String(month+1).padStart(2,'0')}-01`,amount:amt,note:'Carried forward from previous month',incomeType:'i5',image:null});
-  document.getElementById('cfBanner').style.display='none'; saveDB(); updateOverview(); showToast('Balance posted as income','var(--success)');
+  var _cfTx={id:genId(),type:'income',date:`${year}-${String(month+1).padStart(2,'0')}-01`,amount:amt,note:'Carried forward from previous month',incomeType:'i5',image:null};
+  DB.transactions.push(_cfTx);
+  document.getElementById('cfBanner').style.display='none'; saveDB(); updateOverview();
+  if(typeof showIncomeCelebration==='function'){ showIncomeCelebration(_cfTx,amt); } else { showToast('Balance posted as income','var(--success)'); }
 }
 function periodMonths(){
   const {month}=getSelectedPeriod();
@@ -2807,6 +2809,7 @@ function saveTx(type){
   saveDB(); syncOwnedGoals(); closeAllModals();
   var _celebrate=_isNew && (tx.type==='savings' || tx.type==='emergency' || (tx.type==='goal' && goalKind(tx.goalId)==='investment'));
   if(_celebrate){ var _dest=tx.type==='savings'?'Life Savings':tx.type==='emergency'?'Emergency Fund':((DB.goals.find(function(g){return g.id===tx.goalId;})||{}).name||'your goal'); showCelebration(amount,_dest,tx.type,tx.goalId); }
+  else if(_isNew && tx.type==='income' && typeof showIncomeCelebration==='function'){ showIncomeCelebration(tx,amount); }
   else { showToast(editingTxId?'Transaction updated':'Transaction saved','var(--success)'); }
   refreshYearOptions();
   if(currentPage==='transactions')renderTransactions(); else updateOverview();
@@ -5185,5 +5188,201 @@ html.mm-booting *,html:not(.mm-ready) *{animation:none!important;transition:none
 button,a,[onclick]{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){.page.active,#app.entering,#lockScreen.entering,#welcomeScreen.leaving,.mms-panel{animation:none!important}.modal-sheet,.nav-icon{transition:none!important}}
 </style>
+<style id="mm-celebrations-2026">
+/* ===== Income celebration (green trophy, Concept A) ===== */
+#mmIncCel{position:fixed;inset:0;z-index:10001;display:none;align-items:flex-end;justify-content:center;padding-bottom:7vh}
+#mmIncCel.show{display:flex}
+html[data-native-shell="true"] #mmIncCel{padding-bottom:calc(7vh + var(--native-inset-bottom))}
+#mmIncCel .mmic-scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);animation:mmicFade .25s}
+[data-theme="light"] #mmIncCel .mmic-scrim{background:rgba(20,18,14,.3)}
+@keyframes mmicFade{from{opacity:0}to{opacity:1}}
+#mmIncCel .mmic-confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+#mmIncCel .mmic-confetti i{position:absolute;top:-14px;border-radius:2px;opacity:0;animation:mmicFall 1.7s cubic-bezier(.2,.7,.3,1) infinite}
+@keyframes mmicFall{0%{opacity:0;transform:translateY(-10px) rotate(0)}10%{opacity:1}100%{opacity:0;transform:translateY(90vh) rotate(320deg)}}
+#mmIncCel .mmic-card{position:relative;width:300px;max-width:86vw;text-align:center;border-radius:28px;padding:32px 24px 26px;overflow:hidden;background:linear-gradient(180deg,#141a16,#101210);border:1px solid rgba(111,211,154,.22);box-shadow:0 30px 70px -24px rgba(0,0,0,.82);animation:mmicPop .52s cubic-bezier(.2,.82,.2,1)}
+[data-theme="light"] #mmIncCel .mmic-card{background:linear-gradient(180deg,#ffffff,#f2fbf5);border-color:rgba(46,160,90,.25);box-shadow:0 30px 70px -26px rgba(20,90,50,.35)}
+@keyframes mmicPop{0%{opacity:0;transform:scale(.84) translateY(16px)}62%{transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
+#mmIncCel .mmic-badge{width:86px;height:86px;margin:0 auto 4px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;color:#fff;background:radial-gradient(circle at 50% 30%,#6fd39a,#2ea05a);box-shadow:0 14px 32px -8px rgba(46,160,90,.7);animation:mmicBPop .55s .05s cubic-bezier(.2,.82,.2,1) both,mmicBounce 2s .7s cubic-bezier(.34,0,.32,1) infinite}
+@keyframes mmicBPop{0%{opacity:0;transform:scale(.42) translateY(6px)}60%{transform:scale(1.13) translateY(-4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes mmicBounce{0%{transform:translateY(0) scale(1)}26%{transform:translateY(-10px) scale(1.05)}50%{transform:translateY(0) scale(1)}66%{transform:translateY(-4px) scale(1.02)}82%,100%{transform:translateY(0) scale(1)}}
+#mmIncCel .mmic-badge::after{content:"";position:absolute;inset:-9px;border-radius:50%;box-shadow:0 0 0 3px rgba(111,211,154,.55);opacity:0;animation:mmicRing 2s .8s ease-out infinite}
+@keyframes mmicRing{0%{opacity:.45;transform:scale(.75)}70%,100%{opacity:0;transform:scale(1.45)}}
+#mmIncCel .mmic-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;padding:5px 12px;border-radius:20px;background:rgba(46,160,90,.2);color:#6fd39a;margin-top:14px}
+[data-theme="light"] #mmIncCel .mmic-pill{background:rgba(46,160,90,.14);color:#1f8a52}
+#mmIncCel .mmic-pill svg,#mmIncCel .mmic-chip svg{width:14px;height:14px;flex:none}
+#mmIncCel .mmic-title{font-size:23px;font-weight:800;letter-spacing:-.3px;line-height:1.15;color:#eef4ef;margin-top:12px}
+[data-theme="light"] #mmIncCel .mmic-title{color:#15251b}
+#mmIncCel .mmic-amt{font-size:16px;font-weight:800;margin-top:9px;color:#7bdca6}
+[data-theme="light"] #mmIncCel .mmic-amt{color:#1f8a52}
+#mmIncCel .mmic-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:20px;background:rgba(111,211,154,.14);color:#7bdca6;margin-top:11px}
+[data-theme="light"] #mmIncCel .mmic-chip{background:rgba(46,160,90,.12);color:#1f8a52}
+#mmIncCel .mmic-sub{font-size:13px;line-height:1.5;margin-top:12px;color:#9db3a6}
+[data-theme="light"] #mmIncCel .mmic-sub{color:#5c7365}
+#mmIncCel .mmic-note{margin-top:18px;font-size:14px;font-weight:800;border-radius:13px;padding:12px;background:linear-gradient(135deg,#3fbd74,#2ea05a);color:#062a15;animation:mmicFloat 3.4s ease-in-out 1s infinite}
+@keyframes mmicFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){#mmIncCel *{animation:none!important}}
+/* ===== Savings / emergency / goal celebration: keep the check, smoother playful motion ===== */
+#celebrate .cel-badge{position:relative}
+#celebrate.show .cel-badge{animation:mmCelPop .52s cubic-bezier(.2,.82,.2,1) both,mmCelBounce 2s .62s cubic-bezier(.34,0,.32,1) infinite!important}
+@keyframes mmCelPop{0%{opacity:0;transform:scale(.42) translateY(6px)}60%{transform:scale(1.13) translateY(-4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes mmCelBounce{0%{transform:translateY(0) scale(1)}26%{transform:translateY(-10px) scale(1.05)}50%{transform:translateY(0) scale(1)}66%{transform:translateY(-4px) scale(1.02)}82%,100%{transform:translateY(0) scale(1)}}
+#celebrate .cel-badge svg path{stroke-dasharray:30;stroke-dashoffset:30}
+#celebrate.show .cel-badge svg path{animation:mmCelDraw .55s .2s cubic-bezier(.2,.82,.2,1) forwards}
+@keyframes mmCelDraw{to{stroke-dashoffset:0}}
+#celebrate .cel-badge::after{content:"";position:absolute;inset:-9px;border-radius:50%;box-shadow:0 0 0 3px rgba(46,160,90,.5);opacity:0}
+#celebrate.show .cel-badge::after{animation:mmCelRing 2s .8s ease-out infinite}
+@keyframes mmCelRing{0%{opacity:.45;transform:scale(.75)}70%,100%{opacity:0;transform:scale(1.45)}}
+@media (prefers-reduced-motion:reduce){#celebrate.show .cel-badge,#celebrate.show .cel-badge svg path,#celebrate.show .cel-badge::after{animation:none!important}}
+/* ===== Notification master switch — Option A hero card ===== */
+.mm-master{display:flex;align-items:center;gap:13px;padding:15px;border-radius:16px;margin-bottom:16px;cursor:pointer;border:1px solid;transition:.22s;-webkit-tap-highlight-color:transparent}
+.mm-master.on{background:linear-gradient(180deg,rgba(46,160,90,.15),rgba(46,160,90,.05));border-color:rgba(46,160,90,.38)}
+.mm-master.off{background:var(--glass-hover);border-color:var(--card-border)}
+.mm-master-ic{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex:none}
+.mm-master-ic svg{width:22px;height:22px}
+.mm-master.on .mm-master-ic{background:rgba(46,160,90,.2);color:#6fd39a}
+.mm-master.off .mm-master-ic{background:rgba(255,255,255,.06);color:var(--text-dim)}
+.mm-master-tx{flex:1;min-width:0}
+.mm-master-t{font-size:16px;font-weight:800;color:var(--text)}
+.mm-master-s{font-size:12px;margin-top:2px}
+.mm-master.on .mm-master-s{color:#6fd39a}
+.mm-master.off .mm-master-s{color:var(--text-dim)}
+.mm-master-sw{width:56px;height:32px;border-radius:99px;background:var(--track,#3a3f44);position:relative;flex:none;transition:.2s}
+.mm-master-sw::after{content:"";position:absolute;width:26px;height:26px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 7px rgba(0,0,0,.3)}
+.mm-master-sw.on{background:#2ea05a}
+.mm-master-sw.on::after{transform:translateX(24px);background:#08301b}
+.mm-paused-note{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--gold);background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.22);border-radius:11px;padding:9px 11px;margin:0 0 12px}
+.mm-paused-note svg{width:14px;height:14px;flex:none}
+.settings-list.mm-ncl.paused{opacity:.45;filter:saturate(.5);transition:opacity .25s,filter .25s}
+/* ===== Slimmer settings cover + no edge line (Settings, Notifications, Recurring) ===== */
+.settings-sticky{height:calc(44px + var(--native-inset-top))!important;border-bottom:0!important;box-shadow:none!important;display:flex!important;align-items:center!important}
+.settings-detail-head{border-bottom:0!important;box-shadow:none!important}
+</style>
+<script id="mm-celebrations-2026-js">
+(function(){
+  var IC_COPY={
+    i1:{lbl:'Salary',note:'Future-you says thank you',
+      best:{t:'New personal best!',s:'Your biggest Salary ever recorded. Take a bow.'},
+      beat:{t:'Bigger Salary this time!',s:'Up on your last Salary — the grind is working.'},
+      first:{t:'First Salary logged!',s:'The very first of many. Let’s build.'},
+      normal:{t:'Nice — that’s in!',s:'Another Salary safely logged. You showed up.'}},
+    i2:{lbl:'gig',note:'Extra effort, extra reward',
+      best:{t:'New personal best!',s:'Biggest gig payout you’ve ever recorded. Legend.'},
+      beat:{t:'Your best gig yet!',s:'Beats your last gig — the side-hustle is paying off.'},
+      first:{t:'First gig logged!',s:'The hustle officially begins.'},
+      normal:{t:'Hustle logged!',s:'Every gig counts. Nice one.'}},
+    i3:{lbl:'gift',note:'Received with gratitude',
+      best:{t:'Biggest gift yet!',s:'The most generous one you’ve recorded.'},
+      beat:{t:'Generous one!',s:'Bigger than the last gift you logged.'},
+      first:{t:'First gift logged!',s:'Gratitude looks good on you.'},
+      normal:{t:'Lovely — received!',s:'A little extra just landed. Put it to work.'}},
+    i4:{lbl:'return',note:'Money working for you',
+      best:{t:'Best payout yet!',s:'Your largest investment return so far.'},
+      beat:{t:'Bigger payout!',s:'More than your last withdrawal — compounding shows.'},
+      first:{t:'First return logged!',s:'Your money is starting to earn its keep.'},
+      normal:{t:'Returns realised!',s:'Your money did some of the work this time.'}},
+    i5:{lbl:'carry-over',note:'Discipline today, freedom tomorrow',
+      best:{t:'Best carry-over ever!',s:'The most you’ve ever carried into a new month. Elite discipline.'},
+      beat:{t:'Biggest carry-over yet!',s:'You kept even more aside than last month — that’s how wealth builds.'},
+      first:{t:'First carry-over!',s:'You ended the month in surplus and carried it forward. That’s the goal.'},
+      normal:{t:'Carried over with care',s:'You kept this aside last month — now it’s fuelling this one.'}}
+  };
+  function _incCopy(id,name){
+    if(IC_COPY[id])return IC_COPY[id];
+    var nm=name||'income';
+    return {lbl:nm,note:'Every stream adds up',
+      best:{t:'New personal best!',s:'Your biggest '+nm+' so far.'},
+      beat:{t:'Bigger than last time!',s:'Beats your last '+nm+'.'},
+      first:{t:'First '+nm+' logged!',s:'A new income stream begins.'},
+      normal:{t:'Nice — that’s in!',s:nm+' logged and counted.'}};
+  }
+  function _incState(tx){
+    var prior=(DB.transactions||[]).filter(function(t){return t.type==='income'&&t.incomeType===tx.incomeType&&t.id!==tx.id;});
+    if(!prior.length)return {state:'first',delta:0};
+    var maxP=prior.reduce(function(m,t){return t.amount>m?t.amount:m;},0);
+    var sorted=prior.slice().sort(function(a,b){return (a.date||'')<(b.date||'')?-1:((a.date||'')>(b.date||'')?1:0);});
+    var lastAmt=sorted[sorted.length-1].amount;
+    if(tx.amount>maxP)return {state:'best',delta:lastAmt>0?Math.round((tx.amount-lastAmt)/lastAmt*100):0};
+    if(tx.amount>lastAmt)return {state:'beat',delta:lastAmt>0?Math.round((tx.amount-lastAmt)/lastAmt*100):0};
+    return {state:'normal',delta:0};
+  }
+  var _mmIncTimer=null;
+  function _mmIncEl(){
+    var el=document.getElementById('mmIncCel');
+    if(el)return el;
+    el=document.createElement('div');el.id='mmIncCel';
+    el.addEventListener('click',hideIncomeCelebration);
+    el.innerHTML='<div class="mmic-scrim"></div><div class="mmic-confetti" id="mmicConfetti"></div>'+
+      '<div class="mmic-card">'+
+      '<div class="mmic-badge"><svg viewBox="0 0 24 24" style="width:42px;height:42px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-trophy"/></svg></div>'+
+      '<div class="mmic-pill" id="mmicPill" style="display:none"></div>'+
+      '<div class="mmic-title" id="mmicTitle"></div>'+
+      '<div class="mmic-amt" id="mmicAmt"></div>'+
+      '<div class="mmic-chip" id="mmicChip"></div>'+
+      '<div class="mmic-sub" id="mmicSub"></div>'+
+      '<div class="mmic-note" id="mmicNote"></div>'+
+      '</div>';
+    document.body.appendChild(el);
+    return el;
+  }
+  function _mmicConfetti(){
+    var box=document.getElementById('mmicConfetti');if(!box)return;
+    var cols=['#2ea05a','#e7c24e','#6fd39a','#f4d876'],h='';
+    for(var i=0;i<32;i++){var sz=5+Math.round(Math.random()*6);h+='<i style="left:'+(3+Math.random()*93).toFixed(1)+'%;width:'+sz+'px;height:'+sz+'px;background:'+cols[i%cols.length]+';animation-delay:'+(Math.random()*1.6).toFixed(2)+'s;animation-duration:'+(1.4+Math.random()*0.9).toFixed(2)+'s"></i>';}
+    box.innerHTML=h;
+  }
+  function _mmicCountUp(el,to){
+    var t0=null,d=950;
+    function s(ts){if(t0===null)t0=ts;var p=Math.min(1,(ts-t0)/d);var e=1-Math.pow(1-p,3);el.textContent='+'+fmtUGX(to*e);if(p<1)requestAnimationFrame(s);}
+    requestAnimationFrame(s);
+  }
+  function showIncomeCelebration(tx,amount){
+    try{
+      var el=_mmIncEl();
+      var it=(DB.incomeTypes||[]).find(function(i){return i.id===tx.incomeType;})||{};
+      var copy=_incCopy(tx.incomeType,it.name);
+      var st=_incState(tx);
+      var c=copy[st.state]||copy.normal;
+      var pill=document.getElementById('mmicPill');
+      var arrow='<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 19V6M6 12l6-6 6 6"/></svg>';
+      if(st.state==='best'){pill.style.display='';pill.innerHTML=ic('i-trophy')+' Personal best';}
+      else if(st.state==='beat'){pill.style.display='';pill.innerHTML=arrow+' New best · +'+st.delta+'%';}
+      else if(st.state==='first'){pill.style.display='';pill.innerHTML=ic('i-star')+' First '+copy.lbl;}
+      else{pill.style.display='none';pill.innerHTML='';}
+      document.getElementById('mmicTitle').textContent=c.t;
+      var amtEl=document.getElementById('mmicAmt');amtEl.textContent='+'+fmtUGX(amount);
+      document.getElementById('mmicChip').innerHTML=(it.icon?ic(it.icon):'')+'<span>'+(it.name||'Income')+'</span>';
+      document.getElementById('mmicSub').textContent=c.s;
+      document.getElementById('mmicNote').textContent=copy.note;
+      _mmicConfetti();
+      el.classList.add('show');
+      setTimeout(function(){_mmicCountUp(amtEl,amount);},180);
+      try{haptic('success');}catch(e){}
+      clearTimeout(_mmIncTimer);_mmIncTimer=setTimeout(hideIncomeCelebration,4800);
+    }catch(e){try{showToast&&showToast('Income saved','var(--success)');}catch(_){}}
+  }
+  function hideIncomeCelebration(){var el=document.getElementById('mmIncCel');if(el)el.classList.remove('show');clearTimeout(_mmIncTimer);}
+  window.showIncomeCelebration=showIncomeCelebration;window.hideIncomeCelebration=hideIncomeCelebration;
+
+  window.mmToggleMaster=function(){try{var v=!DB.notificationSettings.enabled;saveNotifySetting('enabled',v);if(typeof renderSettingsSection==='function')renderSettingsSection();try{haptic('light');}catch(e){}}catch(e){}};
+  if(typeof renderNotificationSettings==='function'){
+    var _rnsMaster=renderNotificationSettings;
+    renderNotificationSettings=function(){
+      var html=_rnsMaster();
+      try{
+        var n=DB.notificationSettings,on=!!n.enabled;
+        var masterRow=_notifyRow('All notifications','Pause or restore every Money Map reminder','enabled');
+        var hero='<div class="mm-master '+(on?'on':'off')+'" onclick="mmToggleMaster()" role="switch" aria-checked="'+on+'" tabindex="0">'+
+          '<div class="mm-master-ic">'+ic('i-bulb')+'</div>'+
+          '<div class="mm-master-tx"><div class="mm-master-t">All notifications</div><div class="mm-master-s">'+(on?'Everything is on':'All reminders paused')+'</div></div>'+
+          '<span class="mm-master-sw '+(on?'on':'')+'"></span></div>';
+        var note=on?'':'<div class="mm-paused-note">'+ic('i-warn')+'<span>Paused — your choices below are remembered</span></div>';
+        if(html.indexOf(masterRow)>-1)html=html.replace(masterRow,'');
+        html=html.replace('<div class="settings-list">',hero+note+'<div class="settings-list mm-ncl'+(on?'':' paused')+'">');
+      }catch(e){}
+      return html;
+    };
+  }
+})();
+</script>
 </body>
 </html>
