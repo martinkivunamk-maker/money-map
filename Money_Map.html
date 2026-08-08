@@ -5712,5 +5712,128 @@ if(currentPage==='transactions')renderTransactions();else if(currentPage==='over
 })();
 </script>
 
+
+
+<style id="mm-v20340-smart-refresh">
+/* Settings category language: income is green; expenses are red. */
+#settingsHub [data-settings-key="income"] .sd-icon,#incomeTypesList .bgt-chip{color:#3FAE5A!important;background:rgba(63,174,90,.13)!important}
+#settingsHub [data-settings-key="categories"] .sd-icon,#categoriesList .bgt-chip{color:#E05555!important;background:rgba(224,85,85,.13)!important}
+
+/* Recurring cards stay compact until their header is deliberately opened. */
+#settingsDetail .mm-recurring-card .rec-head{cursor:pointer;user-select:none;-webkit-user-select:none}
+#settingsDetail .mm-recurring-card .mm-recurring-chevron{width:22px;height:22px;display:grid;place-items:center;flex:none;color:var(--text-muted);transition:transform 210ms cubic-bezier(.22,1,.36,1),color 170ms ease}
+#settingsDetail .mm-recurring-card .mm-recurring-chevron svg{width:18px;height:18px;display:block}
+#settingsDetail .mm-recurring-card.is-expanded .mm-recurring-chevron{transform:rotate(90deg);color:var(--gold)}
+#settingsDetail .mm-recurring-card .mm-recurring-expand{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows 230ms cubic-bezier(.22,1,.36,1),opacity 150ms ease}
+#settingsDetail .mm-recurring-card .mm-recurring-expand-inner{min-height:0;overflow:hidden}
+#settingsDetail .mm-recurring-card.is-expanded .mm-recurring-expand{grid-template-rows:1fr;opacity:1}
+#settingsDetail .mm-recurring-card:not(.is-expanded) .rec-actions,#settingsDetail .mm-recurring-card:not(.is-expanded) .pending-chip{pointer-events:none}
+@media(prefers-reduced-motion:reduce){#settingsDetail .mm-recurring-card .mm-recurring-chevron,#settingsDetail .mm-recurring-card .mm-recurring-expand{transition:none!important}}
+</style>
+<script id="mm-v20340-smart-refresh-script">
+(function(){
+'use strict';
+window.MM_TEST_VERSION='2.0.3.40';DB.appDataVersion='2.0.3.40';
+var versionFoot=document.querySelector('.set-foot');if(versionFoot)versionFoot.textContent='Money Map v2.0.3.40';
+
+/* 1. Compact, expandable recurring transaction cards. */
+window._mmRecurringOpen20340=window._mmRecurringOpen20340||null;
+function recurringRing20340(){return '<svg class="mm-recurring-ring" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 8a8 8 0 0 0-13.6-2.7L4 8"/><path d="M4 4v4h4"/><path d="M4 16a8 8 0 0 0 13.6 2.7L20 16"/><path d="M20 20v-4h-4"/></svg>';}
+function recurringKind20340(type){return type==='income'?'rec-income':type==='expense'?'rec-expense':type==='loan_repay'?'rec-loan':'rec-transfer';}
+function recurringType20340(type){if(type==='income')return 'Income';if(type==='expense')return 'Expense';if(type==='loan_repay')return 'Loan payment';if(type==='savings')return 'Life Savings';if(type==='emergency')return 'Emergency Fund';if(type==='goal')return 'Investment goal';return 'Transfer';}
+function recurringFrequency20340(freq){return freq==='biweekly'?'Every two weeks':freq?freq.charAt(0).toUpperCase()+freq.slice(1):'Monthly';}
+window.toggleRecurringCard20340=function(ev,id){
+  if(ev){ev.preventDefault();ev.stopPropagation();}
+  var next=window._mmRecurringOpen20340===id?null:id;window._mmRecurringOpen20340=next;
+  document.querySelectorAll('#settingsDetail .mm-recurring-card').forEach(function(card){var open=card.getAttribute('data-recurring-id')===next;card.classList.toggle('is-expanded',open);var head=card.querySelector('.rec-head');if(head)head.setAttribute('aria-expanded',open?'true':'false');});
+  try{if(typeof haptic==='function')haptic('light');}catch(e){}
+};
+window.recurringCardKey20340=function(ev,id){if(ev&&(ev.key==='Enter'||ev.key===' '))toggleRecurringCard20340(ev,id);};
+window.renderRecurringSettings=function(){
+  var rs=DB.recurringExpenses||[];
+  var rows=rs.map(function(r){
+    var pending=r.pending||[],type=r.type||'expense',kind=recurringKind20340(type),paused=r.active===false,open=window._mmRecurringOpen20340===r.id;
+    var meta=recurringType20340(type)+' · '+fmtUGX(r.amount)+' · '+recurringFrequency20340(r.frequency)+' · '+(paused?'Paused':'Next '+fmtDateShort(r.nextDate));
+    var review=pending.length?'<button class="btn-outline" onclick="event.stopPropagation();openRecurringReview(\''+r.id+'\',\''+pending[0]+'\')">Review next</button>':'';
+    return '<div class="rec-rule mm-recurring-card '+kind+(paused?' is-paused':'')+(open?' is-expanded':'')+'" data-recurring-id="'+esc(r.id)+'"><div class="rec-head" role="button" tabindex="0" aria-expanded="'+(open?'true':'false')+'" aria-controls="mm-recurring-detail-'+esc(r.id)+'" onclick="toggleRecurringCard20340(event,\''+r.id+'\')" onkeydown="recurringCardKey20340(event,\''+r.id+'\')"><div class="rec-icon">'+recurringRing20340()+'</div><div class="rec-copy"><b>'+esc(r.name)+'</b><span>'+esc(meta)+'</span></div><div class="mm-recurring-chevron">'+ic('i-chevron')+'</div></div><div class="mm-recurring-expand" id="mm-recurring-detail-'+esc(r.id)+'"><div class="mm-recurring-expand-inner">'+(pending.length?'<div class="pending-chip">'+pending.length+' occurrence'+(pending.length===1?'':'s')+' waiting for review</div>':'')+'<div class="rec-actions">'+review+'<button class="btn-outline" onclick="event.stopPropagation();toggleRecurring(\''+r.id+'\')">'+(paused?'Resume':'Pause')+'</button><button class="btn-outline bgt-del" onclick="event.stopPropagation();deleteRecurring(\''+r.id+'\')">Delete</button></div></div></div></div>';
+  }).join('');
+  return _settingsHead('Recurring transactions')+'<div class="settings-detail-copy">Tap a transaction to manage its Auto Update.</div>'+(rows?'<div class="mm-recurring-list">'+rows+'</div>':'<div class="empty-state"><div class="e-text">No recurring transactions yet. Enable Auto Update from a transaction.</div></div>');
+};
+
+/* 2. Retapping the active primary tab refreshes that view and returns it to the top. */
+var navToBefore20340=navTo;
+window.navTo=function(page,opts){
+  var primary=page==='overview'||page==='transactions'||page==='budget'||page==='analytics';
+  if(primary&&page===currentPage){
+    try{if(typeof closeQuickMenu20323==='function')closeQuickMenu20323();}catch(e){}
+    if(page==='overview')updateOverview();else if(page==='transactions')renderTransactions();else if(page==='budget')renderBudget();else if(page==='analytics')renderAnalytics();
+    var pg=document.getElementById('page-'+page),item=document.getElementById('nav-'+page);
+    if(item){item.classList.remove('nav-bounce-in','nav-bounce-out');void item.offsetWidth;item.classList.add('nav-bounce-in');setTimeout(function(){item.classList.remove('nav-bounce-in');},460);}
+    if(pg){requestAnimationFrame(function(){try{pg.scrollTo({top:0,left:0,behavior:(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth'});}catch(e){pg.scrollTop=0;}});}
+    return;
+  }
+  return navToBefore20340.apply(this,arguments);
+};
+
+/* 3. Emergency Runway replaces the qualitative Financial Health welcome pillar. */
+function welcomeRunway20340(){
+  var monthly={};(DB.transactions||[]).forEach(function(t){if(t.type!=='expense'||!t.date)return;var k=String(t.date).slice(0,7);monthly[k]=(monthly[k]||0)+(Number(t.amount)||0);});
+  var keys=Object.keys(monthly).filter(function(k){return monthly[k]>0;}).sort().slice(-3),avg=keys.length?keys.reduce(function(s,k){return s+monthly[k];},0)/keys.length:0;
+  var emergency=Math.max(0,Number(getPotBalance('emergency'))||0);if(avg<=0)return {value:null,text:'—'};
+  var months=emergency/avg;return {value:months,text:months>=99?'99+ mo':(Math.round(months*10)/10).toFixed(1)+' mo'};
+}
+window.renderWelcomeStats=function(){
+  var el=document.getElementById('welStats');if(!el)return;var st=_welcomeStats(),run=welcomeRunway20340();
+  el.innerHTML='<div class="w2-tile"><div class="ic">'+ic('i-invest')+'</div><div class="vl">'+st.rate+'%</div><div class="lb">Savings Rate</div></div>'+
+    '<div class="w2-tile" data-mm-welcome-runway><div class="ic">'+ic('i-shield')+'</div><div class="vl">'+run.text+'</div><div class="lb">Emergency Runway</div></div>'+
+    '<div class="w2-tile"><div class="ic">'+ic('i-target')+'</div><div class="vl">'+st.streak+'</div><div class="lb">Savings Streak</div></div>';
+};
+
+/* 4. One concise, data-led pulse shared by Welcome and Analytics Insights. */
+function budgetScope20340(month,year){
+  var all=month==='all',key=all?null:(year+'-'+String(Number(month)+1).padStart(2,'0'));
+  return (DB.budgets||[]).filter(function(b){return b.type==='expense';}).map(function(b){var amount=0,p=b.periodAmounts||{};if(all){for(var m=0;m<12;m++){var k=year+'-'+String(m+1).padStart(2,'0');amount+=Number(p[k]||0);}if(!Object.keys(p).length)amount=(Number(b.amount)||0)*12;}else amount=Object.prototype.hasOwnProperty.call(p,key)?Number(p[key]||0):Number(b.amount||0);return {categoryId:b.categoryId,name:b.name,amount:amount};}).filter(function(b){return b.amount>0;});
+}
+function pulseData20340(d){
+  if(d&&Array.isArray(d.txs))return {txs:d.txs,month:d.month,year:d.year,income:Number(d.income)||0,expenses:Number(d.totalExp)||0,setAside:Number(d.setAside)||0};
+  var now=new Date(),m=now.getMonth(),y=now.getFullYear(),txs=(DB.transactions||[]).filter(function(t){var x=new Date(t.date);return x.getMonth()===m&&x.getFullYear()===y;});
+  return {txs:txs,month:m,year:y,income:txs.filter(function(t){return t.type==='income';}).reduce(function(s,t){return s+(Number(t.amount)||0);},0),expenses:txs.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+(Number(t.amount)||0);},0),setAside:txs.filter(function(t){return t.type==='savings'||t.type==='emergency'||(t.type==='goal'&&goalKind(t.goalId)==='investment');}).reduce(function(s,t){return s+(Number(t.amount)||0);},0)};
+}
+function smartPulse20340(d){
+  var x=pulseData20340(d),txs=x.txs||[],period=x.month==='all'?'this period':'this month';
+  if(!txs.length)return {tone:'neutral',text:'No transactions recorded '+period+' yet.'};
+  var budgets=budgetScope20340(x.month,x.year),over=[],near=[];
+  budgets.forEach(function(b){var spent=txs.filter(function(t){return t.type==='expense'&&t.categoryId===b.categoryId;}).reduce(function(s,t){return s+(Number(t.amount)||0);},0),ratio=b.amount>0?spent/b.amount:0;if(ratio>1)over.push(b);else if(ratio>=.95)near.push(b);});
+  if(over.length)return {tone:'warn',text:over.length===1?(over[0].name+' is over its budget.'):(over.length+' budgets are over their limits.')};
+  if(near.length)return {tone:'warn',text:near.length===1?(near[0].name+' is nearing its budget limit.'):(near.length+' budgets are nearing their limits.')};
+  if(x.income<=0&&x.expenses>0)return {tone:'warn',text:'Spending is active; no income is recorded yet.'};
+  if(x.income>0&&x.expenses>x.income)return {tone:'warn',text:'Expenses are above recorded income '+period+'.'};
+  var now=new Date(),current=x.month!=='all'&&Number(x.month)===now.getMonth()&&Number(x.year)===now.getFullYear(),totalBudget=budgets.reduce(function(s,b){return s+b.amount;},0);
+  if(current&&totalBudget>0&&now.getDate()>=4){var used=x.expenses/totalBudget,elapsed=now.getDate()/new Date(now.getFullYear(),now.getMonth()+1,0).getDate();if(used>elapsed+.12)return {tone:'warn',text:"Spending is ahead of this month's budget pace."};if(used<elapsed-.12)return {tone:'good',text:"Spending is below this month's budget pace."};return {tone:'neutral',text:"Spending is close to this month's budget pace."};}
+  if(x.income>0&&x.setAside>0){var save=Math.round(x.setAside/x.income*100);return {tone:save>=20?'good':'neutral',text:"You've set aside "+save+'% of recorded income.'};}
+  if(x.income>0){var usedIncome=Math.round(x.expenses/x.income*100);return {tone:usedIncome<=70?'good':'neutral',text:"You've used "+usedIncome+'% of recorded income '+period+'.'};}
+  return {tone:'neutral',text:'Keep recording transactions to reveal your spending pace.'};
+}
+window.MM_SMART_PULSE_20340=smartPulse20340;
+var initWelcomeBefore20340=initWelcome;
+window.initWelcome=function(){
+  initWelcomeBefore20340();renderWelcomeStats();var sub=document.getElementById('welSub');if(sub&&DB.pin){var h=new Date().getHours(),g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';sub.textContent=g+' — '+smartPulse20340().text;}
+};
+var buildSmartInsightsBefore20340=buildSmartInsights;
+window.buildSmartInsights=function(d){var pulse=smartPulse20340(d),base=buildSmartInsightsBefore20340(d);window.MM_ANALYTICS_PULSE_20340=pulse.text;return [{score:999,tone:pulse.tone,text:'<b>Monthly pulse:</b> '+esc(pulse.text)}].concat(base).slice(0,5);};
+var renderAnalyticsBefore20340=renderAnalytics;
+window.renderAnalytics=function(){
+  var result=renderAnalyticsBefore20340.apply(this,arguments),c=document.getElementById('analyticsContent');
+  if(c&&!c.querySelector('.smart-insight-section')){var d=anData(),pulse=smartPulse20340(d);window.MM_ANALYTICS_PULSE_20340=pulse.text;c.insertAdjacentHTML('beforeend','<div class="section-header an-sh"><div class="section-title">Smart Insights</div></div><div class="an-pad"><div class="glass-card chart-card smart-insight-section"><div class="smart-insight-head"><div class="smart-insight-mark">'+ic('i-bulb')+'</div><div><b>What your money is telling you</b><span>'+periodLabel()+'</span></div></div><ul class="smart-insight-list"><li class="'+pulse.tone+'"><i></i><span><b>Monthly pulse:</b> '+esc(pulse.text)+'</span></li></ul></div></div>');}
+  return result;
+};
+
+saveDB();
+if(document.getElementById('welcomeScreen'))initWelcome();
+if(currentPage==='settings'&&_settingsSection==='recurring')renderSettingsSection();
+if(currentPage==='analytics')renderAnalytics();
+})();
+</script>
+
 </body>
 </html>

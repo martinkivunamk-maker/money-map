@@ -1,9 +1,10 @@
-Money Map — Production v2.0.3.39
+Money Map — Production v2.0.3.40
 
-Colour consistency refinement
-- Recurring transfers now use the exact Money Map gold already used for transfers in Transactions.
-- Loan payments now appear red in Transactions, recent transaction lists and recurring transaction cards.
-- Income remains green and expenses remain red.
-- Preserves the v2.0.3.38 recurring-card design and Auto Update deletion synchronisation.
+Smart interaction refinement
+- Recurring transaction cards are compact by default and expand when tapped to show Review, Pause or Resume, and Delete actions.
+- Retapping the active Overview, Transactions, Budget or Analytics tab refreshes that view and returns it to the top without resetting filters or the selected period.
+- Income-source icons are green and expense-category icons are red in Settings.
+- The welcome Financial Health pillar is now Emergency Runway, retaining the shield and showing estimated months from recent spending history.
+- The welcome message is now a concise, data-led monthly pulse. The same pulse appears first in Analytics Smart Insights.
 
-Includes all v2.0.3.37–v2.0.3.38 fixes and preserves financial calculations, data, navigation motion, notifications, daily quotes, security, backup/restore, and unrelated app behaviour.
+Preserves v2.0.3.39 transfer/loan colours, Auto Update linkage and deletion behaviour, financial calculations, data, notifications, daily quotes, security, backup/restore and unrelated app behaviour.
