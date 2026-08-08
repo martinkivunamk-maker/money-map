@@ -1,13 +1,9 @@
-Money Map Production v2.0.3.37
+Money Map — Production v2.0.3.39
 
-Careful Settings and interaction refinement based on v2.0.3.36:
-- Matched Appearance, Currency and Starting balances card height to Income sources and Expense categories.
-- Separated Security and Data actions into individual compact cards.
-- Removed explanations from the three Data action cards.
-- Fixed auto-update persistence for new and edited transactions and linked each transaction to its recurring rule.
-- Restored a smooth bottom rise and fade for Add/Edit transaction without changing navigation bounce.
-- Moved the version closer to the final Settings card and slightly reduced main Settings ground clearance.
-- Removed modal and celebration background blur while retaining the dim layer.
-- Added extra headroom to both celebration cards for their bouncing badges.
+Colour consistency refinement
+- Recurring transfers now use the exact Money Map gold already used for transfers in Transactions.
+- Loan payments now appear red in Transactions, recent transaction lists and recurring transaction cards.
+- Income remains green and expenses remain red.
+- Preserves the v2.0.3.38 recurring-card design and Auto Update deletion synchronisation.
 
-Existing financial calculations, user data, fonts, navigation bounce, profile/security logic, backup/restore, recurring reconciliation, assets, budgets, notifications and daily quotes remain intact.
+Includes all v2.0.3.37–v2.0.3.38 fixes and preserves financial calculations, data, navigation motion, notifications, daily quotes, security, backup/restore, and unrelated app behaviour.

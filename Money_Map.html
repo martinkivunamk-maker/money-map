@@ -5537,7 +5537,7 @@ html[data-native-shell="true"] .modal-overlay,html[data-native-shell="true"] #ce
 </style>
 <script id="mm-v20337-careful-refinement-script">
 (function(){'use strict';
-window.MM_TEST_VERSION='2.0.3.37';DB.appDataVersion='2.0.3.37';var vf=document.querySelector('.set-foot');if(vf)vf.textContent='Money Map v2.0.3.37';
+window.MM_TEST_VERSION='2.0.3.39';DB.appDataVersion='2.0.3.39';var vf=document.querySelector('.set-foot');if(vf)vf.textContent='Money Map v2.0.3.39';
 
 /* Security and Data use separate compact cards rather than one divided container. */
 function actionCard20337(label,icon,action,end){return '<button type="button" class="mm-settings-choice mm-settings-action" onclick="'+action+'"><span class="mm-choice-icon">'+ic(icon)+'</span><span class="mm-choice-copy"><span class="mm-choice-title">'+label+'</span></span>'+(end||'<span class="mm-row-chev">›</span>')+'</button>';}
@@ -5592,5 +5592,125 @@ saveTx=function(type){
 if(currentPage==='settings'&&!_settingsSection)renderSettings();
 })();
 </script>
+
+
+<style id="mm-v20338-recurring-settings">
+/* Recurring transactions now share the compact Settings-detail card language. */
+#settingsDetail .mm-recurring-list{display:flex;flex-direction:column;gap:10px;margin:0 0 14px}
+#settingsDetail .rec-rule.mm-recurring-card{box-sizing:border-box;margin:0;padding:0;background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius-sm);overflow:hidden;box-shadow:0 1px 1px var(--card-hi) inset,0 6px 16px -12px var(--shadow);transition:transform 130ms ease-out,background-color 170ms ease,border-color 170ms ease}
+#settingsDetail .rec-rule.mm-recurring-card:active{transform:scale(.988) translateZ(0)}
+#settingsDetail .rec-rule.mm-recurring-card.rec-income{border-color:rgba(63,174,90,.34)}
+#settingsDetail .rec-rule.mm-recurring-card.rec-expense{border-color:rgba(224,85,85,.34)}
+#settingsDetail .rec-rule.mm-recurring-card.rec-transfer{border-color:rgba(240,160,32,.36)}
+#settingsDetail .mm-recurring-card .rec-head{box-sizing:border-box;min-height:54px;padding:11px 14px;display:flex;align-items:center;gap:11px}
+#settingsDetail .mm-recurring-card .rec-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:none}
+#settingsDetail .mm-recurring-card.rec-income .rec-icon{color:#3FAE5A;background:rgba(63,174,90,.13)}
+#settingsDetail .mm-recurring-card.rec-expense .rec-icon{color:#E05555;background:rgba(224,85,85,.13)}
+#settingsDetail .mm-recurring-card.rec-transfer .rec-icon{color:#F0A020;background:rgba(240,160,32,.13)}
+#settingsDetail .mm-recurring-card .mm-recurring-ring{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#settingsDetail .mm-recurring-card .rec-copy{flex:1;min-width:0}
+#settingsDetail .mm-recurring-card .rec-copy b{display:block;margin:0;font-size:14px;font-weight:700;line-height:1.15;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#settingsDetail .mm-recurring-card .rec-copy span{display:block;margin-top:3px;font-size:11.5px;line-height:1.2;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#settingsDetail .mm-recurring-card.is-paused .rec-copy span{color:var(--text-muted)}
+#settingsDetail .mm-recurring-card .pending-chip{margin:0 14px 10px;padding:7px 9px;border:1px solid rgba(240,160,32,.20);border-radius:9px;background:rgba(240,160,32,.08);color:var(--warning);font-size:11px;line-height:1.25}
+#settingsDetail .mm-recurring-card .rec-actions{display:flex;gap:8px;margin:0;padding:10px 14px 12px;border-top:1px solid var(--input-border)}
+#settingsDetail .mm-recurring-card .rec-actions button{min-width:0;min-height:36px;flex:1;margin:0!important;padding:8px 9px!important;border-radius:9px!important;background:transparent!important;font-size:11.5px!important;font-weight:750!important;box-shadow:none!important}
+#settingsDetail .mm-recurring-card .rec-actions .bgt-del{color:var(--danger)!important;border-color:rgba(224,85,85,.42)!important}
+@media(prefers-reduced-motion:reduce){#settingsDetail .rec-rule.mm-recurring-card{transition:none!important}}
+</style>
+<script id="mm-v20338-recurring-settings-script">
+(function(){
+'use strict';
+window.MM_TEST_VERSION='2.0.3.39';DB.appDataVersion='2.0.3.39';
+var versionFoot=document.querySelector('.set-foot');if(versionFoot)versionFoot.textContent='Money Map v2.0.3.39';
+
+function recurringRing20338(){
+  return '<svg class="mm-recurring-ring" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 8a8 8 0 0 0-13.6-2.7L4 8"/><path d="M4 4v4h4"/><path d="M4 16a8 8 0 0 0 13.6 2.7L20 16"/><path d="M20 20v-4h-4"/></svg>';
+}
+function recurringKind20338(type){return type==='income'?'rec-income':type==='expense'?'rec-expense':'rec-transfer';}
+function recurringType20338(type){
+  if(type==='income')return 'Income';if(type==='expense')return 'Expense';if(type==='loan_repay')return 'Loan payment';
+  if(type==='savings')return 'Life Savings';if(type==='emergency')return 'Emergency Fund';if(type==='goal')return 'Investment goal';return 'Transfer';
+}
+function recurringFrequency20338(freq){return freq==='biweekly'?'Every two weeks':freq?freq.charAt(0).toUpperCase()+freq.slice(1):'Monthly';}
+function unlinkRecurring20338(id){
+  var changed=false;(DB.transactions||[]).forEach(function(tx){if(tx.recurringRuleId===id){delete tx.recurringRuleId;delete tx.occurrenceKey;changed=true;}});return changed;
+}
+function repairStaleRecurring20338(){
+  var ids=new Set((DB.recurringExpenses||[]).map(function(r){return r.id;})),changed=false;
+  (DB.transactions||[]).forEach(function(tx){if(tx.recurringRuleId&&!ids.has(tx.recurringRuleId)){delete tx.recurringRuleId;delete tx.occurrenceKey;changed=true;}});
+  if(changed)saveDB();
+}
+window.deleteRecurring=function(id){
+  askConfirm('Delete this recurring transaction?','Auto Update will be turned off on every linked transaction. Transactions already created will remain.',function(){
+    unlinkRecurring20338(id);DB.recurringExpenses=(DB.recurringExpenses||[]).filter(function(r){return r.id!==id;});
+    saveDB();renderSettingsSection();syncNativeNotificationPlan();showSnackbar('Recurring transaction removed and Auto Update turned off','success');
+  },'Delete',true);
+};
+window.renderRecurringSettings=function(){
+  var rs=DB.recurringExpenses||[];
+  var rows=rs.map(function(r){
+    var pending=r.pending||[],type=r.type||'expense',kind=recurringKind20338(type),paused=r.active===false;
+    var meta=recurringType20338(type)+' · '+fmtUGX(r.amount)+' · '+recurringFrequency20338(r.frequency)+' · '+(paused?'Paused':'Next '+fmtDateShort(r.nextDate));
+    var review=pending.length?'<button class="btn-outline" onclick="openRecurringReview(\''+r.id+'\',\''+pending[0]+'\')">Review next</button>':'';
+    return '<div class="rec-rule mm-recurring-card '+kind+(paused?' is-paused':'')+'" data-recurring-id="'+esc(r.id)+'"><div class="rec-head"><div class="rec-icon">'+recurringRing20338()+'</div><div class="rec-copy"><b>'+esc(r.name)+'</b><span>'+esc(meta)+'</span></div></div>'+(pending.length?'<div class="pending-chip">'+pending.length+' occurrence'+(pending.length===1?'':'s')+' waiting for review</div>':'')+'<div class="rec-actions">'+review+'<button class="btn-outline" onclick="toggleRecurring(\''+r.id+'\')">'+(paused?'Resume':'Pause')+'</button><button class="btn-outline bgt-del" onclick="deleteRecurring(\''+r.id+'\')">Delete</button></div></div>';
+  }).join('');
+  return _settingsHead('Recurring transactions')+'<div class="settings-detail-copy">Manage automatic and review-based transactions.</div>'+(rows?'<div class="mm-recurring-list">'+rows+'</div>':'<div class="empty-state"><div class="e-text">No recurring transactions yet. Enable Auto Update from a transaction.</div></div>');
+};
+repairStaleRecurring20338();saveDB();
+if(currentPage==='settings'&&_settingsSection==='recurring')renderSettingsSection();
+})();
+</script>
+
+
+
+<style id="mm-v20339-colour-consistency">
+/* Match recurring transfers to the exact transfer gold already used in Transactions. */
+#settingsDetail .rec-rule.mm-recurring-card.rec-transfer{border-color:rgba(212,175,55,.36)}
+#settingsDetail .mm-recurring-card.rec-transfer .rec-icon{color:#D4AF37;background:rgba(212,175,55,.13)}
+/* Loan payments are red in both recurring cards and transaction rows. */
+#settingsDetail .rec-rule.mm-recurring-card.rec-loan{border-color:rgba(224,85,85,.34)}
+#settingsDetail .mm-recurring-card.rec-loan .rec-icon{color:#E05555;background:rgba(224,85,85,.13)}
+</style>
+<script id="mm-v20339-colour-consistency-script">
+(function(){
+'use strict';
+window.MM_TEST_VERSION='2.0.3.39';DB.appDataVersion='2.0.3.39';
+var versionFoot=document.querySelector('.set-foot');if(versionFoot)versionFoot.textContent='Money Map v2.0.3.39';
+
+/* Main Transactions and every reused transaction digest now colour loan payments red. */
+window.txDigestRowHTML=function(t){
+  var label=getTxLabel(t),primary=t.note?t.note:label,isIncome=t.type==='income',isRed=t.type==='expense'||t.type==='loan_repay';
+  var tag=t.note?label:(isIncome?'Income':t.type==='expense'?'Expense':t.type==='loan_repay'?'Loan payment':'Transfer');
+  var tint=isIncome?'i':(isRed?'e':'g'),amtcls=isIncome?'pos':(isRed?'neg':'gold');
+  var amt=(isIncome?'+':'−')+fmtShort(t.amount).replace(cur()+' ','');
+  return '<div class="txd-row" onclick="viewTransaction(\''+t.id+'\')"><div class="txd-ic '+tint+'">'+ic(getTxIcon(t))+'</div><div class="txd-info"><div class="txd-nm">'+primary+'</div><div class="txd-tag">'+tag+'</div></div><div class="txd-amt '+amtcls+'">'+amt+'</div></div>';
+};
+window.txItemHTML=function(t){
+  var isIncome=t.type==='income',isRed=t.type==='expense'||t.type==='loan_repay',sign=isIncome?'+':'-',cls=isIncome?'income':(isRed?'expense':'transfer'),col=isIncome?'var(--success)':(isRed?'var(--danger)':'var(--gold)');
+  var d=new Date(t.date),briefDate=d.getDate()+' '+MONTHS[d.getMonth()].slice(0,3);
+  return '<div class="tx-item" onclick="viewTransaction(\''+t.id+'\')"><div class="tx-icon" style="color:'+col+'">'+ic(getTxIcon(t))+'</div><div class="tx-info"><div class="tx-name-row"><span class="tx-name">'+getTxLabel(t)+'</span><span class="tx-date-brief">'+briefDate+'</span></div>'+(t.note?'<div class="tx-note">'+t.note+'</div>':'')+'</div><div class="tx-amount '+cls+'">'+sign+fmtShort(t.amount)+'</div></div>';
+};
+
+function recurringRing20339(){return '<svg class="mm-recurring-ring" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 8a8 8 0 0 0-13.6-2.7L4 8"/><path d="M4 4v4h4"/><path d="M4 16a8 8 0 0 0 13.6 2.7L20 16"/><path d="M20 20v-4h-4"/></svg>';}
+function recurringKind20339(type){return type==='income'?'rec-income':type==='expense'?'rec-expense':type==='loan_repay'?'rec-loan':'rec-transfer';}
+function recurringType20339(type){if(type==='income')return 'Income';if(type==='expense')return 'Expense';if(type==='loan_repay')return 'Loan payment';if(type==='savings')return 'Life Savings';if(type==='emergency')return 'Emergency Fund';if(type==='goal')return 'Investment goal';return 'Transfer';}
+function recurringFrequency20339(freq){return freq==='biweekly'?'Every two weeks':freq?freq.charAt(0).toUpperCase()+freq.slice(1):'Monthly';}
+window.renderRecurringSettings=function(){
+  var rs=DB.recurringExpenses||[];
+  var rows=rs.map(function(r){
+    var pending=r.pending||[],type=r.type||'expense',kind=recurringKind20339(type),paused=r.active===false;
+    var meta=recurringType20339(type)+' · '+fmtUGX(r.amount)+' · '+recurringFrequency20339(r.frequency)+' · '+(paused?'Paused':'Next '+fmtDateShort(r.nextDate));
+    var review=pending.length?'<button class="btn-outline" onclick="openRecurringReview(\''+r.id+'\',\''+pending[0]+'\')">Review next</button>':'';
+    return '<div class="rec-rule mm-recurring-card '+kind+(paused?' is-paused':'')+'" data-recurring-id="'+esc(r.id)+'"><div class="rec-head"><div class="rec-icon">'+recurringRing20339()+'</div><div class="rec-copy"><b>'+esc(r.name)+'</b><span>'+esc(meta)+'</span></div></div>'+(pending.length?'<div class="pending-chip">'+pending.length+' occurrence'+(pending.length===1?'':'s')+' waiting for review</div>':'')+'<div class="rec-actions">'+review+'<button class="btn-outline" onclick="toggleRecurring(\''+r.id+'\')">'+(paused?'Resume':'Pause')+'</button><button class="btn-outline bgt-del" onclick="deleteRecurring(\''+r.id+'\')">Delete</button></div></div>';
+  }).join('');
+  return _settingsHead('Recurring transactions')+'<div class="settings-detail-copy">Manage automatic and review-based transactions.</div>'+(rows?'<div class="mm-recurring-list">'+rows+'</div>':'<div class="empty-state"><div class="e-text">No recurring transactions yet. Enable Auto Update from a transaction.</div></div>');
+};
+saveDB();
+if(currentPage==='settings'&&_settingsSection==='recurring')renderSettingsSection();
+if(currentPage==='transactions')renderTransactions();else if(currentPage==='overview')updateOverview();
+})();
+</script>
+
 </body>
 </html>

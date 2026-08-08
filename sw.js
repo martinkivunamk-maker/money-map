@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20337-careful-refinement';
+const CACHE = 'moneymap-v20339-colour-consistency';
 
 self.addEventListener('install', () => self.skipWaiting());
 
