@@ -5508,5 +5508,89 @@ window.mmOpenStartBalance20336=function(k){var s=k==='savings',l=s?'Life Savings
 window.mmSaveStartBalance20336=function(k){var i=document.getElementById('mmStartBalanceInput20336');if(!i)return;var v=getRawAmount(i)||0,s=k==='savings';if(s)DB.openingSavings=v;else DB.openingEmergency=v;saveDB();closeModal('startBalModal');if(_settingsSection==='balances')renderSettingsSection();if(currentPage==='budget')renderBudget();if(currentPage==='analytics')renderAnalytics();updateOverview();showToast((s?'Life Savings':'Emergency Fund')+' saved','var(--success)');};
 if(currentPage==='settings'&&!_settingsSection)renderSettings();})();
 </script>
+
+<style id="mm-v20337-careful-refinement">
+/* Match every Settings-detail card to the compact income/category card language. */
+#settingsDetail .mm-settings-choice-list{gap:10px!important;margin-bottom:14px!important}
+#settingsDetail .mm-settings-choice{min-height:56px!important;height:56px!important;padding:11px 14px!important;gap:11px!important;border-radius:var(--radius-sm)!important;box-shadow:0 1px 1px var(--card-hi) inset,0 6px 16px -12px var(--shadow)!important}
+#settingsDetail .mm-choice-icon,#settingsDetail .mm-currency-code{width:32px!important;height:32px!important;border-radius:9px!important}
+#settingsDetail .mm-choice-icon svg{width:17px!important;height:17px!important}
+#settingsDetail .mm-currency-code{font-size:12px!important}
+#settingsDetail .mm-choice-title{font-size:14px!important;line-height:1.15!important}
+#settingsDetail .mm-choice-mark{width:22px!important;height:22px!important}
+#settingsDetail .mm-row-chev{font-size:23px!important}
+#settingsDetail .mm-settings-action{font-family:inherit!important}
+#settingsDetail .mm-settings-action .fp-sw{margin-left:auto!important}
+/* Bring the version closer and slightly reduce only the main Settings ground clearance. */
+body:not(.settings-section-open) #page-settings{padding-bottom:calc(72px + var(--native-inset-bottom))!important}
+body:not(.settings-section-open) #page-settings .set-foot{margin-top:18px!important;padding:8px 0 4px!important}
+/* Selected cards and sheets dim the page without blurring it. */
+html[data-native-shell="true"] .modal-overlay,html[data-native-shell="true"] #celebrate .cel-scrim,html[data-native-shell="true"] #mmIncCel .mmic-scrim{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+/* Restore an isolated bottom-sheet rise and fade for Add/Edit transaction only. */
+#transactionModal{transition:opacity 170ms ease!important}
+#transactionModal .modal-sheet{opacity:0!important;transform:translate3d(0,32px,0)!important;transition:transform 220ms cubic-bezier(.22,1,.36,1),opacity 170ms ease!important;will-change:transform,opacity!important}
+#transactionModal.open .modal-sheet{opacity:1!important;transform:translate3d(0,0,0)!important}
+/* Give both celebration cards more headroom for the bouncing badge. */
+#celebrate .cel-card{padding-top:50px!important;padding-bottom:30px!important}
+#mmIncCel .mmic-card{padding-top:46px!important;padding-bottom:30px!important}
+@media(prefers-reduced-motion:reduce){#transactionModal,#transactionModal .modal-sheet{transition:none!important}}
+</style>
+<script id="mm-v20337-careful-refinement-script">
+(function(){'use strict';
+window.MM_TEST_VERSION='2.0.3.37';DB.appDataVersion='2.0.3.37';var vf=document.querySelector('.set-foot');if(vf)vf.textContent='Money Map v2.0.3.37';
+
+/* Security and Data use separate compact cards rather than one divided container. */
+function actionCard20337(label,icon,action,end){return '<button type="button" class="mm-settings-choice mm-settings-action" onclick="'+action+'"><span class="mm-choice-icon">'+ic(icon)+'</span><span class="mm-choice-copy"><span class="mm-choice-title">'+label+'</span></span>'+(end||'<span class="mm-row-chev">›</span>')+'</button>';}
+var renderSettingsSection20336=renderSettingsSection;
+renderSettingsSection=function(){
+  var el=document.getElementById('settingsDetail');if(!el||!_settingsSection)return;
+  if(_settingsSection==='security'){
+    el.innerHTML=_settingsHead('Security')+'<div class="mm-settings-choice-list">'+actionCard20337('Change PIN','i-lock','openPinSetup()')+actionCard20337('Fingerprint','i-finger','toggleFingerprint()','<span class="fp-sw" id="fpSwitch"></span>')+'</div>';
+    applyTheme();var fsw=document.getElementById('fpSwitch');if(fsw)fsw.classList.toggle('on',!!DB.fingerprintCredId);return;
+  }
+  if(_settingsSection==='data'){
+    el.innerHTML=_settingsHead('Data')+'<div class="settings-detail-copy">Export your records or keep a safe copy of everything in Money Map.</div><div class="mm-settings-choice-list">'+actionCard20337('Export report','i-export','openExport()')+actionCard20337('Back up data','i-download','backupData()')+actionCard20337('Restore data','i-upload','suppressNextLock();document.getElementById(&quot;restoreInput&quot;).click()')+'</div>';
+    applyTheme();return;
+  }
+  renderSettingsSection20336();
+};
+
+/* Save auto-update as a real linked recurring rule for both new and edited transactions. */
+var coreSaveTx20337=(typeof _saveTx20315==='function')?_saveTx20315:saveTx;
+function recurringName20337(tx){return tx.note||((tx.type==='income')?'Recurring income':(tx.type==='expense')?'Recurring expense':(tx.type==='loan_repay')?'Recurring loan payment':'Recurring transfer');}
+function recurringTemplate20337(tx){return {incomeType:tx.incomeType||null,categoryId:tx.categoryId||null,source:tx.source||null,goalId:tx.goalId||null,holding:tx.holding||null};}
+function orphanRule20337(tx,freq,oldDate){
+  var expected=_nextRecurringDate(oldDate||tx.date,freq),name=recurringName20337(tx);
+  return (DB.recurringExpenses||[]).find(function(r){
+    if((DB.transactions||[]).some(function(t){return t.id!==tx.id&&t.recurringRuleId===r.id;}))return false;
+    return (r.type||'expense')===tx.type&&Number(r.amount)===Number(tx.amount)&&r.frequency===freq&&r.nextDate===expected&&(r.name||'')===name;
+  });
+}
+saveTx=function(type){
+  var repeat=document.getElementById('txRepeat'),freq=repeat?(repeat.value||'never'):'never',mode=(document.getElementById('txRepeatMode')||{}).value||'auto';
+  var editId=editingTxId,oldTx=editId?(DB.transactions||[]).find(function(t){return t.id===editId;}):null,oldRuleId=oldTx&&oldTx.recurringRuleId,pending=_pendingRecurringContext;
+  var beforeTx=new Set((DB.transactions||[]).map(function(t){return t.id;}));
+  coreSaveTx20337(type);
+  var tx=editId?(DB.transactions||[]).find(function(t){return t.id===editId;}):(DB.transactions||[]).find(function(t){return !beforeTx.has(t.id);});
+  if(!tx)return;
+  DB.recurringExpenses=Array.isArray(DB.recurringExpenses)?DB.recurringExpenses:[];
+  if(pending){
+    tx.recurringRuleId=pending.ruleId;tx.occurrenceKey=pending.ruleId+'@'+pending.date;
+    var pendingRule=DB.recurringExpenses.find(function(r){return r.id===pending.ruleId;});if(pendingRule)pendingRule.pending=(pendingRule.pending||[]).filter(function(d){return d!==pending.date;});
+    _pendingRecurringContext=null;saveDB();syncNativeNotificationPlan();return;
+  }
+  if(freq==='never'){
+    if(oldRuleId)DB.recurringExpenses=DB.recurringExpenses.filter(function(r){return r.id!==oldRuleId;});
+    delete tx.recurringRuleId;saveDB();syncNativeNotificationPlan();return;
+  }
+  var rule=(oldRuleId&&DB.recurringExpenses.find(function(r){return r.id===oldRuleId;}))||orphanRule20337(tx,freq,oldTx&&oldTx.date);
+  if(!rule){rule={id:genId(),pending:[],createdAt:new Date().toISOString()};DB.recurringExpenses.push(rule);}
+  rule.name=recurringName20337(tx);rule.type=tx.type;rule.amount=tx.amount;rule.note=tx.note||'';rule.categoryId=tx.categoryId||null;rule.source=tx.source||null;rule.frequency=freq;rule.mode=mode;rule.nextDate=_nextRecurringDate(tx.date,freq);rule.active=true;rule.pending=rule.pending||[];rule.template=recurringTemplate20337(tx);
+  tx.recurringRuleId=rule.id;saveDB();syncNativeNotificationPlan();showSnackbar(editId?'Transaction updated and auto update enabled':'Transaction saved and auto update enabled','success');
+};
+
+if(currentPage==='settings'&&!_settingsSection)renderSettings();
+})();
+</script>
 </body>
 </html>

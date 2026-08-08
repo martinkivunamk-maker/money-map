@@ -1,11 +1,13 @@
-Money Map Production v2.0.3.36
+Money Map Production v2.0.3.37
 
-Focused Settings clean-up based on v2.0.3.35:
-- Fixed the standalone profile-edit pencil at the top-right with no circular card.
-- Simplified Appearance choices to Light, Dark and Automatic only.
-- Added the correct symbol and full currency name/code for all 12 currencies.
-- Removed explanations from the Life Savings and Emergency Fund cards.
-- Replaced the Starting balances header copy with one brief line.
-- Removed the duplicate balance-card haptic; opening a balance now produces one response.
+Careful Settings and interaction refinement based on v2.0.3.36:
+- Matched Appearance, Currency and Starting balances card height to Income sources and Expense categories.
+- Separated Security and Data actions into individual compact cards.
+- Removed explanations from the three Data action cards.
+- Fixed auto-update persistence for new and edited transactions and linked each transaction to its recurring rule.
+- Restored a smooth bottom rise and fade for Add/Edit transaction without changing navigation bounce.
+- Moved the version closer to the final Settings card and slightly reduced main Settings ground clearance.
+- Removed modal and celebration background blur while retaining the dim layer.
+- Added extra headroom to both celebration cards for their bouncing badges.
 
-Also includes all v2.0.3.33 navigation/clearance work, v2.0.3.34 welcome quote motion and v2.0.3.35 Settings refinements. Financial calculations, existing user data, security, backup/restore, recurring transactions, assets, budgets, notifications and daily quotes are unchanged.
+Existing financial calculations, user data, fonts, navigation bounce, profile/security logic, backup/restore, recurring reconciliation, assets, budgets, notifications and daily quotes remain intact.
