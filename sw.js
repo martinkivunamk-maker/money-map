@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20340-smart-refresh';
+const CACHE = 'moneymap-v20341-clean-notifications';
 
 self.addEventListener('install', () => self.skipWaiting());
 

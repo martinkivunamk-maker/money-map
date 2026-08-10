@@ -1,10 +1,9 @@
-Money Map — Production v2.0.3.40
+Money Map — Production v2.0.3.41
 
-Smart interaction refinement
-- Recurring transaction cards are compact by default and expand when tapped to show Review, Pause or Resume, and Delete actions.
-- Retapping the active Overview, Transactions, Budget or Analytics tab refreshes that view and returns it to the top without resetting filters or the selected period.
-- Income-source icons are green and expense-category icons are red in Settings.
-- The welcome Financial Health pillar is now Emergency Runway, retaining the shield and showing estimated months from recent spending history.
-- The welcome message is now a concise, data-led monthly pulse. The same pulse appears first in Analytics Smart Insights.
-
-Preserves v2.0.3.39 transfer/loan colours, Auto Update linkage and deletion behaviour, financial calculations, data, notifications, daily quotes, security, backup/restore and unrelated app behaviour.
+- 365 meaningfully varied daily money messages.
+- Master notification switch turns every child switch off and shows a green tick or grey X.
+- Weekly notification includes a privacy-aware hint and opens the weekly snapshot in Analytics.
+- Monthly asset reminders stop when all current-month updates are complete.
+- Cleaner signup name field, Camera/Gallery choice, and three fixed pillars.
+- Native notification vibration, routing and matte-charcoal launcher icon updates.
+- Preserves v2.0.3.40 financial logic, data, recurring behaviour, security and startup treatment.
