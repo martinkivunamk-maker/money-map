@@ -1,3 +1,12 @@
+Money Map Production v2.0.3.43
+
+- Reporting starts at the first transaction month; earlier empty months are omitted.
+- Added All Years with automatic annual reporting and inactive calendar years retained.
+- All Months excludes future months from budget calculations.
+- Added annual/monthly views for Budget Discipline, Income vs Expenses, Savings Rate and Financial Health.
+- Miscellaneous Income defaults to the latest transaction month/year and has independent period selectors.
+- Preserves v2.0.3.42 data, visual summaries, notifications, recurring transactions, asset history and unrelated logic.
+
 Money Map Production v2.0.3.42
 
 - Compact visual summaries for Assets and Goals.
