@@ -1,11 +1,14 @@
-Money Map Production v2.0.3.43
+Money Map Production v2.0.3.44
 
-- Reporting starts at the first transaction month; earlier empty months are omitted.
-- Added All Years with automatic annual reporting and inactive calendar years retained.
-- All Months excludes future months from budget calculations.
-- Added annual/monthly views for Budget Discipline, Income vs Expenses, Savings Rate and Financial Health.
-- Miscellaneous Income defaults to the latest transaction month/year and has independent period selectors.
-- Preserves v2.0.3.42 data, visual summaries, notifications, recurring transactions, asset history and unrelated logic.
+- Restored the approved expanded-card visual language.
+- Added smart month/year cutoffs and year-on-year expansion for All Years.
+- Added visible current-selection highlighting to every period picker.
+- All Years appears only when transactions span at least two calendar years.
+- Renamed Miscellaneous Income to Remaining Income with concise period summaries.
+- Moved Remaining Income and asset-history period controls to the top right.
+- Notification toggles now show a tick when on and an X when off.
+- Removed the unnecessary weekly-snapshot preview link from Notification Center.
+- Preserved v2.0.3.42 visuals, data and unrelated financial logic.
 
 Money Map Production v2.0.3.42
 

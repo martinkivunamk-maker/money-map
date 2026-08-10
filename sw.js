@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20343-period-integrity';
+const CACHE = 'moneymap-v20344-smart-periods';
 
 self.addEventListener('install', () => self.skipWaiting());
 
