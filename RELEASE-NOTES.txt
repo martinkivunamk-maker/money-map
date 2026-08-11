@@ -1,3 +1,14 @@
+Money Map Production v2.0.3.45
+
+- Selected periods now use text colour only, without ticks, shading or side borders.
+- Added haptic feedback to deliberate selection controls throughout the app.
+- Remaining Income preserves each month’s actual remainder after it is carried forward.
+- Historical rows now say where the remainder moved, such as “Moved to April”.
+- Carried-forward income is named contextually, such as “Leftover income from March”.
+- Restored the Notification Center main icon and placed tick/X status inside its switch.
+- Replaced the Remaining Income icon with a wallet.
+- Preserved v2.0.3.44 period logic, visuals, data and unrelated calculations.
+
 Money Map Production v2.0.3.44
 
 - Restored the approved expanded-card visual language.
