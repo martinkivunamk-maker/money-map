@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20345-selection-carry';
+const CACHE = 'moneymap-v20346-summary-settings';
 
 self.addEventListener('install', () => self.skipWaiting());
 

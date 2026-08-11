@@ -1,3 +1,15 @@
+Money Map Production v2.0.3.46
+
+- Improved spacing on the Remaining Income card.
+- Reworked the expanded current-period summary with amount, income share, monthly income, month-end outlook, projected carry-forward and highest monthly remainder.
+- Removed the repeated “remaining that month” row.
+- Kept Notification Center as the title after changing toggles.
+- Changed Notification Center active switches from green to Money Map gold.
+- Added tick/X status to the fingerprint switch.
+- Currency and appearance selections no longer highlight the entire card.
+- Added JPY, CNY, CAD, AUD, CHF, SEK, NOK, DKK, ETB, ZMW, BWP and XOF.
+- Preserved v2.0.3.45 data, period logic and unrelated calculations.
+
 Money Map Production v2.0.3.45
 
 - Selected periods now use text colour only, without ticks, shading or side borders.
