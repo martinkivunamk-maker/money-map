@@ -1,3 +1,13 @@
+Money Map Production v2.0.3.47
+
+- The active month is excluded from “Highest completed month”.
+- Highest unspent income now uses completed months only.
+- Month-end estimates appear only for the active calendar month.
+- Completed months show actual outcomes instead of projections.
+- Removed active-month spending suggestions from completed months.
+- Rechecked the active-month estimate using recorded allocations and expenses through the current day.
+- Preserved v2.0.3.46 settings, currencies, notifications, data and unrelated calculations.
+
 Money Map Production v2.0.3.46
 
 - Improved spacing on the Remaining Income card.

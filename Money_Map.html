@@ -5990,5 +5990,68 @@ var renderSection0=renderSettingsSection;renderSettingsSection=function(){var r=
 var saveNotify0=window.saveNotifySetting;window.saveNotifySetting=function(){var r=saveNotify0.apply(this,arguments);setTimeout(notificationTitle46,0);return r};
 try{if(_settingsSection==='notifications')notificationTitle46()}catch(e){}
 saveDB();window.__MM46={highest:highest46,summary:summary46,currencies:EX.map(function(x){return x.code})};})();</script>
+<script id="mm-v20347-script">
+(function(){
+if(window.__MM47)return;
+function completedHighest47(y){
+  var now=new Date(),cy=now.getFullYear(),cm=now.getMonth(),end=y<cy?11:(y===cy?cm-1:-1),best={m:null,v:0};
+  __MM44.months(y).forEach(function(m){
+    if(m>end)return;
+    var x=__MM45.left(y,m);
+    if(x.shown>best.v)best={m:m,v:x.shown};
+  });
+  return best;
+}
+function monthEnd47(x,now){
+  if(!x.inc)return {amount:0,pc:0,used:0};
+  var balance=Math.max(0,x.raw),used=Math.max(0,x.inc-balance),elapsed=Math.max(1,now.getDate()),forecastUsed=used/elapsed*new Date(x.y,x.m+1,0).getDate(),amount=Math.max(0,Math.round(x.inc-forecastUsed));
+  amount=Math.min(amount,balance);
+  return {amount:amount,pc:Math.round(amount/x.inc*100),used:used};
+}
+function remainHead47(s){return '<div class="mm44-modal-head"><div class="modal-title">Remaining Income</div><div class="mm45-picker"><button onclick="openRemainPicker45(\'year\')">'+(s.y==='all'?'All Years':s.y)+'</button><button '+(s.y==='all'?'disabled':'')+' onclick="openRemainPicker45(\'month\')">'+(s.y==='all'?'Years':s.m==='all'?'All Months':MONTHS[s.m])+'</button></div></div>';}
+function highText47(hi){return hi.m==null?'No unspent balance':fmtShort(hi.v)+' · '+MONTHS[hi.m]}
+function currentSummary47(s,x,pc,hi,now){
+  var est=monthEnd47(x,now),outlook='',insight='';
+  if(!x.inc){
+    outlook='No income has been recorded this month, so a month-end estimate is not available.';
+    insight='Once income and allocations are recorded, this view will estimate what may remain at month-end.';
+  }else if(est.amount>0){
+    outlook='Based on entries recorded through '+now.getDate()+' '+MONTHS[now.getMonth()]+', about '+fmtShort(est.amount)+' ('+est.pc+'%) may remain at month-end. This estimate will change as new allocations or expenses are added.';
+    insight='Keeping optional spending within plan could protect part of this balance for saving or carrying into '+MONTHS[x.next.m]+'.';
+  }else{
+    outlook='Based on the current allocation and spending pace, this month’s income may be fully used before month-end.';
+    insight='Reviewing optional spending now may help preserve part of the balance for saving or carrying into '+MONTHS[x.next.m]+'.';
+  }
+  return remainHead47(s)+'<div class="mm46-remain-hero"><div class="exp-total" style="color:var(--gold)">'+fmtUGX(x.shown)+'</div><div class="exp-sub">Available after allocations and expenses recorded so far</div></div>'+
+    '<div class="mm46-kpis"><div><span>Share currently unallocated</span><b>'+pc+'%</b></div><div><span>Income this month</span><b>'+fmtShort(x.inc)+'</b></div><div><span>Estimated month-end balance</span><b>'+(x.inc?est.pc+'% · '+fmtShort(est.amount):'—')+'</b></div><div><span>Highest completed month</span><b>'+highText47(hi)+'</b></div></div>'+
+    '<div class="mm46-outlook"><b>Month-end estimate</b><span>'+outlook+'</span></div><div class="mm46-insight">'+ic('i-bulb')+'<span>'+insight+'</span></div>';
+}
+function closedSummary47(s,x,pc,hi){
+  var status=x.moved>0?'Carried forward':x.shown>0?'Income remained':x.active?'Fully allocated':'No activity',sub='',outcome='';
+  if(x.moved>0){sub='Actual amount carried into '+MONTHS[x.next.m];outcome=pc+'% of '+MONTHS[x.m]+' income remained after the month closed and was carried into '+MONTHS[x.next.m]+'.';}
+  else if(x.shown>0){sub='Actual amount left when '+MONTHS[x.m]+' closed';outcome=pc+'% of '+MONTHS[x.m]+' income remained after all recorded allocations and expenses. No carry-forward entry was found in '+MONTHS[x.next.m]+'.';}
+  else if(x.active){sub='Final result for '+MONTHS[x.m];outcome='All recorded income for '+MONTHS[x.m]+' was allocated or spent by month-end.';}
+  else{sub='No recorded activity for '+MONTHS[x.m];outcome='There was no recorded income or allocation activity for this month.';}
+  return remainHead47(s)+'<div class="mm46-remain-hero"><div class="exp-total" style="color:var(--gold)">'+fmtUGX(x.shown)+'</div><div class="exp-sub">'+sub+'</div></div>'+
+    '<div class="mm46-kpis"><div><span>Share left unallocated</span><b>'+pc+'%</b></div><div><span>Income that month</span><b>'+fmtShort(x.inc)+'</b></div><div><span>Month result</span><b>'+status+'</b></div><div><span>Highest completed month</span><b>'+highText47(hi)+'</b></div></div>'+
+    '<div class="mm46-outlook"><b>Final outcome</b><span>'+outcome+'</span></div>';
+}
+function summary47(s){
+  var x=__MM45.left(s.y,s.m),now=new Date(),current=s.y===now.getFullYear()&&s.m===now.getMonth(),pc=x.inc>0?Math.round(x.shown/x.inc*100):0,hi=completedHighest47(s.y);
+  return current?currentSummary47(s,x,pc,hi,now):closedSummary47(s,x,pc,hi);
+}
+var renderRem46=window.renderRemaining45;
+window.renderRemaining45=function(open){
+  var s=window.MM45_REMAIN||__MM45.scope();
+  if(s.y!=='all'&&s.m!=='all'){
+    document.getElementById('expandContent').innerHTML=summary47(s)+'<button class="btn-outline mm42-close" onclick="closeModal(\'expandModal\')">Close</button>';
+    if(open)openModal('expandModal');
+    return;
+  }
+  return renderRem46.apply(this,arguments);
+};
+window.__MM47={highestCompleted:completedHighest47,monthEnd:monthEnd47,summary:summary47};
+})();
+</script>
 </body>
 </html>
