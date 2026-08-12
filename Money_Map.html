@@ -1087,7 +1087,8 @@ html[data-native-shell="true"] #bottomNav{background:#1b1b18!important;border-to
   <symbol id="i-expense" viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M10 7h7v7"/></symbol>
   <symbol id="i-transfer" viewBox="0 0 24 24"><path d="M7 10l-4 4 4 4"/><path d="M3 14h12a4 4 0 004-4V6"/></symbol>
   <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h13a1 1 0 011 1v2"/><path d="M3 7v10a2 2 0 002 2h14a1 1 0 001-1v-3"/><path d="M21 11h-5a2 2 0 000 4h5z"/></symbol>
-  <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8"/><path d="M3 21h18"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8"/><path d="M3 21h18"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></symbol>
   <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
   <symbol id="i-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></symbol>
@@ -1911,7 +1912,7 @@ function _smRoute(target){
 function openSettingsMenu(){
   var el=document.getElementById('settingsMenuContent');if(!el){goSettings();return;}
   function row(target,label){return '<div class="sm-row sm-simple-row" data-sm-action="'+target+'" onclick="_smRoute(\''+target+'\')"><div class="sm-lab">'+label+'</div></div>';}
-  el.innerHTML=row('profile','Profile')+row('appearance','Appearance')+row('currency','Currency')+row('balances','Starting balances')+row('income','Income sources')+row('categories','Expense categories')+row('holdings','Income holdings')+row('security','Security')+row('data','Data');
+  el.innerHTML=row('profile','Profile')+row('appearance','Appearance')+row('currency','Currency')+row('balances','Starting balances')+row('income','Income sources')+row('categories','Expense categories')+row('holdings','Savings holdings')+row('security','Security')+row('data','Data');
   openModal('settingsMenuModal');
 }
 
@@ -3828,7 +3829,7 @@ function _settingsIcon(name){return '<div class="sd-icon">'+ic(name)+'</div>';}
 function _settingsHubRow(key,label,sub,icon){return '<div class="settings-destination" data-settings-key="'+key+'" onclick="openSettingsSection(\''+key+'\',true)">'+_settingsIcon(icon)+'<div class="sd-copy"><div class="sd-name">'+label+'</div><div class="sd-sub">'+sub+'</div></div></div>'; }
 function renderSettingsHub(){
   var el=document.getElementById('settingsHub');if(!el)return;
-  el.innerHTML=_settingsHubRow('appearance','Appearance','Explore light, dark and automatic themes','i-moon')+_settingsHubRow('currency','Currency','Choose the currency used across Money Map','i-cash')+_settingsHubRow('balances','Starting balances','Set the amounts you started tracking with','i-bank')+_settingsHubRow('income','Income sources','Manage where your income comes from','i-income')+_settingsHubRow('categories','Expense categories','Organise the different ways you spend','i-tag')+_settingsHubRow('holdings','Income holdings','Manage the places where you keep money','i-wallet')+_settingsHubRow('security','Security','PIN and fingerprint protection','i-lock')+_settingsHubRow('data','Data','Export, back up or restore your information','i-export');
+  el.innerHTML=_settingsHubRow('appearance','Appearance','Explore light, dark and automatic themes','i-moon')+_settingsHubRow('currency','Currency','Choose the currency used across Money Map','i-cash')+_settingsHubRow('balances','Starting balances','Set the amounts you started tracking with','i-bank')+_settingsHubRow('income','Income sources','Manage where your income comes from','i-income')+_settingsHubRow('categories','Expense categories','Organise the different ways you spend','i-tag')+_settingsHubRow('holdings','Savings holdings','Manage the places where you keep money','i-layers')+_settingsHubRow('security','Security','PIN and fingerprint protection','i-lock')+_settingsHubRow('data','Data','Export, back up or restore your information','i-export');
 }
 function _settingsHead(title){return '<div class="settings-detail-head"><button class="settings-detail-back" onclick="closeSettingsSection()" aria-label="Settings directory"><svg viewBox="0 0 24 24"><path d="M18 12H7m5-5-5 5 5 5"/></svg></button><div class="settings-detail-title">'+title+'</div></div>';}
 function _editableRows(kind,list){
@@ -3848,7 +3849,7 @@ function renderSettingsSection(){
   else if(_settingsSection==='balances')h=_settingsHead('Starting balances')+'<div class="settings-detail-copy">Savings held before Money Map count toward net worth without changing a tracked month.</div><div class="settings-list"><div class="settings-item" onclick="openStartBalModal()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-bank')+'</div><div><div class="s-label">Life savings & emergency fund</div><div class="s-sub">Set your opening amounts</div></div></div><b id="startBalSummary">'+_startBalSummaryText()+'</b></div></div>';
   else if(_settingsSection==='income')h=_settingsHead('Income sources')+'<div class="settings-detail-copy">Tap an entry to see its explanation and edit or delete controls.</div><div class="bgt-list" id="incomeTypesList">'+_editableRows('income',DB.incomeTypes||[])+'</div><button class="btn-outline settings-add" onclick="openAddIncomeTypeModal()">+ Add income source</button>';
   else if(_settingsSection==='categories')h=_settingsHead('Expense categories')+'<div class="settings-detail-copy">Tap an entry to see its explanation and edit or delete controls.</div><div class="bgt-list" id="categoriesList">'+_editableRows('categories',DB.categories||[])+'</div><button class="btn-outline settings-add" onclick="openAddCategoryModal()">+ Add category</button>';
-  else if(_settingsSection==='holdings')h=_settingsHead('Income holdings')+'<div class="settings-detail-copy">Places where you keep savings, such as a bank, mobile money or unit trust.</div><div class="bgt-list" id="holdingsList">'+_editableRows('holdings',DB.holdings||[])+'</div><button class="btn-outline settings-add" onclick="openAddHoldingModal(false)">+ Add a place</button>';
+  else if(_settingsSection==='holdings')h=_settingsHead('Savings holdings')+'<div class="settings-detail-copy">Places where you keep savings, such as a bank, mobile money or unit trust.</div><div class="bgt-list" id="holdingsList">'+_editableRows('holdings',DB.holdings||[])+'</div><button class="btn-outline settings-add" onclick="openAddHoldingModal(false)">+ Add a place</button>';
   else if(_settingsSection==='security')h=_settingsHead('Security')+'<div class="settings-list"><div class="settings-item" onclick="openPinSetup()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-lock')+'</div><div class="s-label">Change PIN</div></div><div class="chevron">'+ic('i-chevron')+'</div></div><div class="settings-item" onclick="toggleFingerprint()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-finger')+'</div><div><div class="s-label">Fingerprint</div><div class="s-sub">Unlock Money Map securely</div></div></div><span class="fp-sw" id="fpSwitch"></span></div></div>';
   else if(_settingsSection==='data')h=_settingsHead('Data')+'<div class="settings-detail-copy">Export your records or keep a safe copy of everything in Money Map.</div><div class="settings-list"><div class="settings-item" onclick="openExport()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-export')+'</div><div><div class="s-label">Export report</div><div class="s-sub">PDF, spreadsheet or HTML report</div></div></div><div class="chevron">'+ic('i-chevron')+'</div></div><div class="settings-item" onclick="backupData()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-download')+'</div><div><div class="s-label">Back up data</div><div class="s-sub">Save a complete Money Map copy</div></div></div><div class="chevron">'+ic('i-chevron')+'</div></div><div class="settings-item" onclick="suppressNextLock();document.getElementById(\'restoreInput\').click()"><div class="settings-item-left"><div class="settings-item-icon">'+ic('i-upload')+'</div><div><div class="s-label">Restore data</div><div class="s-sub">Choose an existing backup file</div></div></div><div class="chevron">'+ic('i-chevron')+'</div></div></div>';
   el.innerHTML=h;applyTheme();var fsw=document.getElementById('fpSwitch');if(fsw)fsw.classList.toggle('on',!!DB.fingerprintCredId);
@@ -6051,6 +6052,82 @@ window.renderRemaining45=function(open){
   return renderRem46.apply(this,arguments);
 };
 window.__MM47={highestCompleted:completedHighest47,monthEnd:monthEnd47,summary:summary47};
+})();
+</script>
+<style id="mm-v20348">
+.mm48-all-kpis{display:grid;grid-template-columns:1.25fr .9fr;gap:9px;margin:2px 0 8px}.mm48-all-kpi{padding:13px;border:1px solid var(--input-border);border-radius:14px;background:var(--surface-2);min-width:0}.mm48-all-kpi span{display:block;color:var(--text-dim);font-size:10.5px;line-height:1.25;margin-bottom:6px}.mm48-all-kpi strong{display:block;color:var(--text);font-size:17px;line-height:1.2;overflow-wrap:anywhere}.mm48-all-kpi small{display:block;color:var(--text-muted);font-size:10.5px;margin-top:5px;line-height:1.3}.mm48-carry-track{height:6px;border-radius:8px;background:var(--track);overflow:hidden;margin:2px 1px 13px}.mm48-carry-track i{display:block;height:100%;border-radius:inherit;background:var(--gold)}.mm48-month-list{display:grid;gap:7px}.mm48-month-row{display:flex;align-items:center;gap:10px;padding:10px 11px;border:1px solid var(--input-border);border-radius:12px;background:var(--surface-2)}.mm48-month-row.biggest{border-color:rgba(212,175,55,.6);background:rgba(212,175,55,.10);box-shadow:0 0 0 1px rgba(212,175,55,.08) inset}.mm48-month-copy{min-width:0;flex:1}.mm48-month-name{display:flex;align-items:center;gap:7px;color:var(--text);font-size:13px;font-weight:800}.mm48-high{padding:2px 6px;border-radius:7px;background:var(--gold);color:#1b1608;font-size:8.5px;line-height:1.4;font-weight:900;text-transform:uppercase;letter-spacing:.35px}.mm48-month-state{color:var(--text-dim);font-size:10.5px;line-height:1.3;margin-top:3px}.mm48-month-value{flex:none;color:var(--text);font-size:12.5px;font-weight:800;text-align:right}.mm48-month-value.gold{color:var(--gold)}
+.w2-trend.mm48-up{color:var(--success)!important}.w2-trend.mm48-down{color:var(--danger)!important}.w2-trend.mm48-flat{color:var(--text-dim)!important}
+#settingsDetail .mm48-balance-row{height:66px!important;min-height:66px!important}.mm48-balance-place{display:block;color:var(--text-dim);font-size:10.5px;line-height:1.2;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}.mm48-holding-note{font-size:11px;color:var(--text-muted);line-height:1.4;margin:-6px 0 14px}.mm48-holding-select{appearance:auto!important;-webkit-appearance:menulist!important}
+</style>
+<script id="mm-v20348-script">
+(function(){'use strict';
+if(window.__MM48)return;
+window.MM_TEST_VERSION='2.0.3.48';DB.appDataVersion='2.0.3.48';var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.48';
+function remainHead48(s){return '<div class="mm44-modal-head"><div class="modal-title">Remaining Income</div><div class="mm45-picker"><button onclick="openRemainPicker45(\'year\')">'+s.y+'</button><button onclick="openRemainPicker45(\'month\')">All Months</button></div></div>';}
+function allMonths48(s){
+  var now=new Date(),cy=now.getFullYear(),cm=now.getMonth(),months=__MM44.months(s.y),rows=months.map(function(m){return __MM45.left(s.y,m)}),completed=rows.filter(function(x){return x.y<cy||(x.y===cy&&x.m<cm)}),carried=completed.filter(function(x){return x.moved>0}),sum=carried.reduce(function(a,x){return a+x.moved},0),avg=carried.length?Math.round(sum/carried.length):0,big=null;
+  completed.forEach(function(x){if(x.shown>0&&(!big||x.shown>big.shown))big=x;});
+  var rate=completed.length?Math.round(carried.length/completed.length*100):0;
+  var body=remainHead48(s)+'<div class="mm48-all-kpis"><div class="mm48-all-kpi"><span>Average carried forward</span><strong>'+fmtShort(avg)+'</strong><small>Across months that carried money forward</small></div><div class="mm48-all-kpi"><span>Months carried forward</span><strong>'+carried.length+'</strong><small>of '+completed.length+' completed month'+(completed.length===1?'':'s')+'</small></div></div><div class="mm48-carry-track"><i style="width:'+rate+'%"></i></div><div class="mm48-month-list">';
+  body+=rows.map(function(x){
+    var current=x.y===cy&&x.m===cm,amount='',state='',cls='',highest=big&&x.m===big.m;
+    if(current){amount=x.shown?fmtShort(x.shown):'—';state=x.shown?'Available now · month in progress':'Fully utilised so far · month in progress';}
+    else if(x.moved>0){amount=fmtShort(x.moved);state='Carried into '+MONTHS[x.next.m];cls=' gold';}
+    else if(x.shown>0){amount=fmtShort(x.shown);state='Left unallocated';cls=' gold';}
+    else if(x.active){amount='Fully utilised';state='No money left to carry forward';}
+    else{amount='—';state='No activity';}
+    return '<div class="mm48-month-row '+(highest?'biggest':'')+'"><div class="mm48-month-copy"><div class="mm48-month-name">'+MONTHS[x.m]+(highest?'<span class="mm48-high">Highest</span>':'')+'</div><div class="mm48-month-state">'+state+'</div></div><div class="mm48-month-value'+cls+'">'+amount+'</div></div>';
+  }).join('')+'</div>';
+  return body;
+}
+var renderRemaining47=window.renderRemaining45;
+window.renderRemaining45=function(open){
+  var s=window.MM45_REMAIN||__MM45.scope();
+  if(s.y!=='all'&&s.m==='all'){
+    document.getElementById('expandContent').innerHTML=allMonths48(s)+'<button class="btn-outline mm42-close" onclick="closeModal(\'expandModal\')">Close</button>';
+    if(open)openModal('expandModal');return;
+  }
+  var r=renderRemaining47.apply(this,arguments);
+  if(s.y!=='all'&&s.m!=='all')document.querySelectorAll('#expandContent .mm46-kpis span').forEach(function(e){if(e.textContent==='Income that month')e.textContent='Income this month';});
+  return r;
+};
+function welcomeChange48(){
+  var n=new Date(),extra=(DB.assets||[]).reduce(function(a,x){return a+(Number(x.value)||0)},0)+(DB.investments||[]).reduce(function(a,x){return a+(Number(x.interest)||0)},0)+(DB.accounts||[]).reduce(function(a,x){return a+(Number(x.value)||0)},0)-_owedTotal(),cur=potsAsOf(n).total+extra,prev=potsAsOf(new Date(n.getFullYear(),n.getMonth(),0,23,59,59)).total+extra,d=cur-prev,pm=(n.getMonth()+11)%12;
+  return {amount:d,label:MONTHS[pm].slice(0,3)};
+}
+function paintWelcomeChange48(){
+  var tr=document.getElementById('welTrend');if(!tr)return;
+  if(!_welNwShown){tr.style.visibility='hidden';return;}
+  var x=welcomeChange48();tr.classList.remove('mm48-up','mm48-down','mm48-flat');
+  if(x.amount>0){tr.textContent='↗ +'+fmtShort(x.amount)+' vs '+x.label;tr.classList.add('mm48-up');}
+  else if(x.amount<0){tr.textContent='↘ −'+fmtShort(Math.abs(x.amount))+' vs '+x.label;tr.classList.add('mm48-down');}
+  else{tr.textContent='↔ No change vs '+x.label;tr.classList.add('mm48-flat');}
+  tr.style.visibility='visible';
+}
+var renderWelcome47=renderWelcomeNW;renderWelcomeNW=function(){var r=renderWelcome47.apply(this,arguments);paintWelcomeChange48();return r;};
+function holding48(id){if(!id||id==='__none__')return 'Location not set';var h=(DB.holdings||[]).find(function(x){return String(x.id)===String(id)});return h?h.name:'Location not set';}
+function balRow48(k,label,icon,value,hold){return '<button type="button" class="mm-settings-choice mm-balance-choice mm48-balance-row" data-mm-balance="'+k+'" onclick="mmOpenStartBalance20336(\''+k+'\')"><span class="mm-choice-icon">'+ic(icon)+'</span><span class="mm-choice-copy"><span class="mm-choice-title">'+label+'</span><span class="mm48-balance-place">'+esc(holding48(hold))+'</span></span><span class="mm-choice-end"><strong>'+(value?fmtShort(value):'Not set')+'</strong><span class="mm-row-chev">›</span></span></button>';}
+function balances48(){return '<div class="mm-settings-choice-list" id="mmBalanceChoices">'+balRow48('savings','Life Savings','i-wallet',Number(DB.openingSavings)||0,DB.openingSavingsHolding)+balRow48('emergency','Emergency Fund','i-shield',Number(DB.openingEmergency)||0,DB.openingEmergencyHolding)+'</div>';}
+var renderSettings47=renderSettingsSection;renderSettingsSection=function(){var r=renderSettings47.apply(this,arguments);if(_settingsSection==='balances'){var c=document.querySelector('#settingsDetail .settings-detail-copy'),list=document.getElementById('mmBalanceChoices');if(c)c.textContent='Set each opening amount and where it is kept.';if(list)list.outerHTML=balances48();}return r;};
+window.mmOpenStartBalance20336=function(k){
+  var savings=k==='savings',label=savings?'Life Savings':'Emergency Fund',value=savings?(Number(DB.openingSavings)||0):(Number(DB.openingEmergency)||0),selected=savings?(DB.openingSavingsHolding||'__none__'):(DB.openingEmergencyHolding||'__none__'),title=document.querySelector('#startBalModal .modal-title');if(title)title.textContent=label+' starting balance';
+  var options='<option value="__none__">Not specified</option>'+(DB.holdings||[]).map(function(h){return '<option value="'+esc(String(h.id))+'" '+(String(h.id)===String(selected)?'selected':'')+'>'+esc(h.name)+'</option>';}).join('');
+  document.getElementById('startBalContent').innerHTML='<div class="mm-balance-help">Enter the amount held before tracking began. It counts toward net worth without changing a tracked month.</div><div class="form-group"><label class="form-label">'+label+' ('+cur()+')</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="mmStartBalanceInput20336" value="'+(value?value.toLocaleString():'')+'" placeholder="0" oninput="formatAmountInput(this)" data-raw="'+(value||'')+'"></div><div class="form-group"><label class="form-label">Where is this money kept?</label><select class="form-input mm48-holding-select" id="mmStartBalanceHolding48">'+options+'</select></div><div class="mm48-holding-note">Add or edit available places under Savings Holdings in Settings.</div><button class="btn-gold" onclick="mmSaveStartBalance20336(\''+k+'\')">Save</button><button class="btn-outline" onclick="closeModal(\'startBalModal\')">Cancel</button>';openModal('startBalModal');
+};
+window.mmSaveStartBalance20336=function(k){
+  var input=document.getElementById('mmStartBalanceInput20336'),sel=document.getElementById('mmStartBalanceHolding48');if(!input)return;var value=getRawAmount(input)||0,hold=sel&&sel.value&&sel.value!=='__none__'?sel.value:null,savings=k==='savings';
+  if(savings){DB.openingSavings=value;DB.openingSavingsHolding=hold;}else{DB.openingEmergency=value;DB.openingEmergencyHolding=hold;}
+  saveDB();closeModal('startBalModal');if(_settingsSection==='balances')renderSettingsSection();if(currentPage==='budget')renderBudget();if(currentPage==='analytics')renderAnalytics();updateOverview();showToast((savings?'Life Savings':'Emergency Fund')+' saved','var(--success)');
+};
+potHoldings=function(pot){
+  var map={},opening=pot==='savings'?(Number(DB.openingSavings)||0):(Number(DB.openingEmergency)||0),openingHold=pot==='savings'?DB.openingSavingsHolding:DB.openingEmergencyHolding;
+  (DB.transactions||[]).filter(function(t){return t.type===pot}).forEach(function(t){var k=t.holding||'__none__';map[k]=(map[k]||0)+(Number(t.amount)||0);});
+  if(opening>0){var k=openingHold||'__none__';map[k]=(map[k]||0)+opening;}
+  var total=Object.keys(map).reduce(function(a,k){return a+map[k]},0);
+  return Object.keys(map).map(function(k){return{id:k,name:holdingName(k),amount:map[k],pct:total>0?Math.round(map[k]/total*100):0}}).sort(function(a,b){return b.amount-a.amount});
+};
+try{if(currentPage==='settings'){renderSettingsHub();if(_settingsSection)renderSettingsSection();}}catch(e){}
+saveDB();window.__MM48={allMonths:allMonths48,welcomeChange:welcomeChange48,balances:balances48};
 })();
 </script>
 </body>

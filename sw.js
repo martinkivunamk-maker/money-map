@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20347-remaining-clarity';
+const CACHE = 'moneymap-v20348-period-growth-holdings';
 
 self.addEventListener('install', () => self.skipWaiting());
 

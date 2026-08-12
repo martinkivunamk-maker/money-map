@@ -1,3 +1,15 @@
+Money Map Production v2.0.3.48
+
+- Previous selected periods now use “Income this month”.
+- All Months Remaining Income now shows average carry-forward and carried-month count.
+- Added a concise monthly outcome list with the highest completed remainder highlighted.
+- The active month is excluded from carry-forward averages, counts and highest-period comparison.
+- Welcome Net Worth now shows the current month’s increase, decrease or no change versus the previous month.
+- Renamed Income Holdings to Savings Holdings and added a layers-stack icon.
+- Starting balances now record and display where each opening amount is kept.
+- Opening balances are included in the Savings Holdings breakdown.
+- Preserved v2.0.3.47 data, calculations and unrelated behaviour.
+
 Money Map Production v2.0.3.47
 
 - The active month is excluded from “Highest completed month”.
