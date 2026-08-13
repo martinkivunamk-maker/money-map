@@ -6130,5 +6130,62 @@ try{if(currentPage==='settings'){renderSettingsHub();if(_settingsSection)renderS
 saveDB();window.__MM48={allMonths:allMonths48,welcomeChange:welcomeChange48,balances:balances48};
 })();
 </script>
+<style id="mm-v20349">
+/* Starting-balance holding selector follows Money Map's own picker language. */
+.mm49-holding-button{width:100%;min-height:52px;padding:0 14px;border:1px solid var(--input-border);border-radius:12px;background:var(--input-bg);color:var(--text);font:inherit;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;cursor:pointer}.mm49-holding-button:active{transform:translateY(1px);background:var(--surface-2)}.mm49-holding-value{font-size:14px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mm49-right{flex:none;color:var(--gold);font-size:25px;font-weight:500;line-height:1;transform:translateY(-1px)}
+/* All Months is a plain report, not a stack of cards. */
+.mm49-carry-summary{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:7px 1px 15px;border-bottom:1px solid var(--input-border)}.mm49-avg{min-width:0}.mm49-avgline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.mm49-avgline strong{font-size:25px;line-height:1.1;color:var(--text);letter-spacing:-.5px}.mm49-avgline em{font-style:normal;font-size:9px;font-weight:900;letter-spacing:.8px;color:#19140a;background:var(--gold);border-radius:6px;padding:3px 6px}.mm49-avg small,.mm49-count small{display:block;color:var(--text-dim);font-size:10.5px;line-height:1.3;margin-top:5px}.mm49-count{flex:none;text-align:right}.mm49-count strong{display:block;color:var(--gold);font-size:18px;line-height:1.1}.mm49-month-list{display:block}.mm49-month-row{display:flex;align-items:center;gap:12px;padding:14px 1px;border:0;border-bottom:1px solid var(--input-border);background:transparent}.mm49-month-copy{min-width:0;flex:1}.mm49-month-name{display:flex;align-items:center;gap:7px;color:var(--text);font-size:14px;font-weight:800}.mm49-high{font-size:8px;font-weight:900;letter-spacing:.55px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(212,175,55,.55);border-radius:6px;padding:2px 5px}.mm49-month-state{color:var(--text-dim);font-size:10.5px;line-height:1.3;margin-top:3px}.mm49-month-value{flex:none;color:var(--text);font-size:13px;font-weight:800;text-align:right}.mm49-month-row.biggest .mm49-month-name,.mm49-month-row.biggest .mm49-month-value,.mm49-month-value.gold{color:var(--gold)}
+</style>
+<script id="mm-v20349-script">
+(function(){'use strict';
+if(window.__MM49)return;
+window.MM_TEST_VERSION='2.0.3.49';DB.appDataVersion='2.0.3.49';var foot=document.querySelector('.set-foot');if(foot)foot.textContent='Money Map v2.0.3.49';
+function remainHead49(s){return '<div class="mm44-modal-head"><div class="modal-title">Remaining Income</div><div class="mm45-picker"><button onclick="openRemainPicker45(\'month\')">All Months</button><button onclick="openRemainPicker45(\'year\')">'+s.y+'</button></div></div>';}
+function allMonths49(s){
+  var now=new Date(),cy=now.getFullYear(),cm=now.getMonth(),rows=__MM44.months(s.y).map(function(m){return __MM45.left(s.y,m)}),completed=rows.filter(function(x){return x.y<cy||(x.y===cy&&x.m<cm)}),carried=completed.filter(function(x){return x.moved>0}),sum=carried.reduce(function(a,x){return a+x.moved},0),avg=carried.length?Math.round(sum/carried.length):0,big=null;
+  completed.forEach(function(x){if(x.shown>0&&(!big||x.shown>big.shown))big=x;});
+  var body=remainHead49(s)+'<div class="mm49-carry-summary"><div class="mm49-avg"><div class="mm49-avgline"><strong>'+fmtShort(avg)+'</strong><em>AVG</em></div><small>carried forward</small></div><div class="mm49-count"><strong>'+carried.length+'/'+completed.length+' months</strong><small>had money left and carried forward</small></div></div><div class="mm49-month-list">';
+  body+=rows.map(function(x){
+    var current=x.y===cy&&x.m===cm,amount='',state='',cls='',highest=big&&x.m===big.m;
+    if(current){amount=x.shown?fmtShort(x.shown):'Fully utilised';state='Month in progress';}
+    else if(x.moved>0){amount=fmtShort(x.moved);state='Carried into '+MONTHS[x.next.m];cls=' gold';}
+    else if(x.shown>0){amount=fmtShort(x.shown);state='Left unallocated';cls=' gold';}
+    else if(x.active){amount='Fully utilised';state='';}
+    else{amount='No activity';state='';}
+    return '<div class="mm49-month-row '+(highest?'biggest':'')+'"><div class="mm49-month-copy"><div class="mm49-month-name">'+MONTHS[x.m]+(highest?'<span class="mm49-high">Highest</span>':'')+'</div>'+(state?'<div class="mm49-month-state">'+state+'</div>':'')+'</div><div class="mm49-month-value'+cls+'">'+amount+'</div></div>';
+  }).join('')+'</div>';
+  return body;
+}
+function monthFirst49(root){
+  (root||document).querySelectorAll('.mm44-picker,.mm45-picker').forEach(function(p){
+    var b=Array.prototype.filter.call(p.children,function(x){return x.tagName==='BUTTON'}),year=b.find(function(x){return /year/.test(x.getAttribute('onclick')||'')}),month=b.find(function(x){return /month/.test(x.getAttribute('onclick')||'')});
+    if(year&&month&&Array.prototype.indexOf.call(p.children,year)<Array.prototype.indexOf.call(p.children,month))p.insertBefore(month,year);
+  });
+}
+var renderRemaining48=window.renderRemaining45;
+window.renderRemaining45=function(open){
+  var s=window.MM45_REMAIN||__MM45.scope(),r;
+  if(s.y!=='all'&&s.m==='all'){
+    document.getElementById('expandContent').innerHTML=allMonths49(s)+'<button class="btn-outline mm42-close" onclick="closeModal(\'expandModal\')">Close</button>';
+    if(open)openModal('expandModal');monthFirst49(document.getElementById('expandContent'));return;
+  }
+  r=renderRemaining48.apply(this,arguments);monthFirst49(document.getElementById('expandContent'));return r;
+};
+if(typeof window.renderAsset44==='function'){
+  var renderAsset48=window.renderAsset44;window.renderAsset44=function(){var r=renderAsset48.apply(this,arguments);monthFirst49(document.getElementById('assetModalContent'));return r;};
+}
+['expandContent','assetModalContent'].forEach(function(id){var e=document.getElementById(id);if(e)new MutationObserver(function(){monthFirst49(e)}).observe(e,{childList:true,subtree:true});});
+window.mmOpenStartBalance20336=function(k){
+  var savings=k==='savings',label=savings?'Life Savings':'Emergency Fund',value=savings?(Number(DB.openingSavings)||0):(Number(DB.openingEmergency)||0),selected=savings?(DB.openingSavingsHolding||'__none__'):(DB.openingEmergencyHolding||'__none__'),title=document.querySelector('#startBalModal .modal-title');if(title)title.textContent=label+' starting balance';
+  var place=selected==='__none__'?'Not specified':holdingName(selected);
+  document.getElementById('startBalContent').innerHTML='<div class="mm-balance-help">Enter the amount held before tracking began. It counts toward net worth without changing a tracked month.</div><div class="form-group"><label class="form-label">'+label+' ('+cur()+')</label><input type="tel" inputmode="numeric" pattern="[0-9]*" class="form-input" id="mmStartBalanceInput20336" value="'+(value?value.toLocaleString():'')+'" placeholder="0" oninput="formatAmountInput(this)" data-raw="'+(value||'')+'"></div><div class="form-group"><label class="form-label">Where is this money kept?</label><input type="hidden" id="mmStartBalanceHolding48" value="'+esc(String(selected))+'"><button type="button" class="mm49-holding-button" onclick="mmOpenStartHolding49()"><span class="mm49-holding-value" id="mmStartBalanceHoldingName49">'+esc(place)+'</span><span class="mm49-right">›</span></button></div><div class="mm48-holding-note">Add or edit available places under Savings Holdings in Settings.</div><button class="btn-gold" onclick="mmSaveStartBalance20336(\''+k+'\')">Save</button><button class="btn-outline" onclick="closeModal(\'startBalModal\')">Cancel</button>';openModal('startBalModal');
+};
+window.mmOpenStartHolding49=function(){
+  var input=document.getElementById('mmStartBalanceHolding48');if(!input)return;var opts=[{value:'__none__',label:'Not specified'}].concat((DB.holdings||[]).map(function(h){return{value:String(h.id),label:h.name}}));
+  openOptionPicker('Where is this money kept?',opts,input.value,function(v,label){input.value=v;var name=document.getElementById('mmStartBalanceHoldingName49');if(name)name.textContent=label;});
+};
+monthFirst49(document);saveDB();window.__MM49={allMonths:allMonths49,monthFirst:monthFirst49};
+})();
+</script>
 </body>
 </html>

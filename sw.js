@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20348-period-growth-holdings';
+const CACHE = 'moneymap-v20349-plain-period-pickers';
 
 self.addEventListener('install', () => self.skipWaiting());
 

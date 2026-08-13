@@ -1,3 +1,13 @@
+Money Map Production v2.0.3.49
+
+- Replaced the device-native starting-balance holding list with Money Map’s in-app picker.
+- Changed the starting-balance holding control from a down arrow to a right arrow.
+- Simplified All Months Remaining Income into plain monthly rows without separate cards.
+- Replaced the two carry-forward summary cards with a large average and a carried-month fraction.
+- Removed repeated fully-utilised explanations from monthly rows.
+- Changed independent card period controls to Month then Year, matching the main period picker.
+- Preserved v2.0.3.48 data, holdings, calculations and unrelated behaviour.
+
 Money Map Production v2.0.3.48
 
 - Previous selected periods now use “Income this month”.
