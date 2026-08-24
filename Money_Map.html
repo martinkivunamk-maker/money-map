@@ -4664,7 +4664,7 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
   ringDual=function(pct,col,size,cap){var p=Math.max(0,Math.min(100,pct))||0,sw=Math.max(4,size*.125),r=size/2-sw/2-1,C=2*Math.PI*r,off=C*(1-p/100);return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex:none"><svg width="'+size+'" height="'+size+'" style="transform:rotate(-90deg)"><circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="var(--track)" stroke-width="'+sw+'"/><circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/></svg><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center"><div class="ring-center-main" style="font-weight:850;color:var(--text)">'+Math.round(p)+'%</div><div class="ring-center-cap" style="color:var(--text-dim);margin-top:2px">'+cap+'</div></div></div>';};
 
   /* Friendly zero states instead of 0 loans / 0 goals. */
-  var renderGoalsCard16=renderGoalsCard;renderGoalsCard=function(){renderGoalsCard16();var el=document.getElementById('goalsCard');if(!el)return;var loans=(DB.loans||[]).filter(function(l){var rep=(DB.transactions||[]).filter(function(t){return t.type==='loan_repay'&&t.loanId===l.id;}).reduce(function(s,t){return s+t.amount;},0);return Math.max(0,(l.amount||0)-rep)>0;}),goals=(DB.goals||[]).filter(function(g){return (g.saved||0)<(g.target||0);});if(loans.length&&goals.length)return;var rows='';if(!loans.length)rows+='<div class="lg-summary-row"><div class="lg-summary-icon loan">'+ic('i-check')+'</div><div class="lg-summary-copy"><div class="lg-summary-name">No pending loans — good job!</div><div class="lg-summary-sub">You currently have nothing outstanding.</div></div></div>';if(!goals.length)rows+='<div class="lg-summary-row" onclick="event.stopPropagation();navTo(\'budget\');setTimeout(function(){switchBudgetTab(\'goals\')},120)"><div class="lg-summary-icon goal">'+ic('i-target')+'</div><div class="lg-summary-copy"><div class="lg-summary-name">No goal yet — want to set one?</div><div class="lg-summary-sub">Tap to create your next target.</div></div><div class="bgt-chev">'+ic('i-chevron')+'</div></div>';var card=el.querySelector('.lg-status-card');if(card)card.innerHTML=rows;};
+  var renderGoalsCard16=renderGoalsCard;renderGoalsCard=function(){renderGoalsCard16();var el=document.getElementById('goalsCard');if(!el)return;var loans=(DB.loans||[]).filter(function(l){var rep=(DB.transactions||[]).filter(function(t){return t.type==='loan_repay'&&t.loanId===l.id;}).reduce(function(s,t){return s+t.amount;},0);return Math.max(0,(l.amount||0)-rep)>0;}),goals=(DB.goals||[]).filter(function(g){return (g.saved||0)<(g.target||0);});if(loans.length&&goals.length)return;var rows='';var _mm54k=(function(){var c=el.querySelector('.lg-status-card');if(!c)return{loan:'',goal:''};var rs=Array.prototype.slice.call(c.querySelectorAll('.lg-summary-row'));var pick=function(cl){var r=rs.filter(function(x){return !!x.querySelector('.lg-summary-icon.'+cl)})[0];return r?r.outerHTML:''};return{loan:pick('loan'),goal:pick('goal')};})();if(loans.length)rows+=_mm54k.loan;if(!loans.length)rows+='<div class="lg-summary-row"><div class="lg-summary-icon loan">'+ic('i-check')+'</div><div class="lg-summary-copy"><div class="lg-summary-name">No pending loans — good job!</div><div class="lg-summary-sub">You currently have nothing outstanding.</div></div></div>';if(goals.length)rows+=_mm54k.goal;if(!goals.length)rows+='<div class="lg-summary-row" onclick="event.stopPropagation();navTo(\'budget\');setTimeout(function(){switchBudgetTab(\'goals\')},120)"><div class="lg-summary-icon goal">'+ic('i-target')+'</div><div class="lg-summary-copy"><div class="lg-summary-name">No goal yet — want to set one?</div><div class="lg-summary-sub">Tap to create your next target.</div></div><div class="bgt-chev">'+ic('i-chevron')+'</div></div>';var card=el.querySelector('.lg-status-card');if(card)card.innerHTML=rows;};
 
   /* More green-and-gold particles around one controlled success card. */
   var showCelebration16=showCelebration;showCelebration=function(){showCelebration16.apply(this,arguments);var cc=document.getElementById('celConfetti');if(cc){var cols=['#2ea05a','#d4af37','#6fc98e','#efd46f'],h='';for(var i=0;i<36;i++)h+='<i style="left:'+(3+Math.random()*94)+'%;background:'+cols[i%cols.length]+';animation-delay:'+(Math.random()*1.15).toFixed(2)+'s"></i>';cc.innerHTML=h;}};
@@ -6912,18 +6912,8 @@ function tallBars(){
 
 /* ---------- 2: pair Save with Close on one line ---------- */
 function pairBtns(root){
-  safe(function(){
-    var scope=root||document;
-    Array.prototype.forEach.call(scope.querySelectorAll('.btn-gold'),function(b){
-      var n=b.nextElementSibling;
-      if(!n||!n.classList||!n.classList.contains('btn-outline'))return;
-      if(b.parentNode&&b.parentNode.classList.contains('mm51-btnrow'))return;
-      var row=document.createElement('div');
-      row.className='mm51-btnrow';
-      b.parentNode.insertBefore(row,b);
-      row.appendChild(b);row.appendChild(n);
-    });
-  });
+  /* v2.0.3.54: reverted by request - Save and Close go back to separate lines */
+  return;
 }
 
 /* ---------- 1: goal step shading + today's date ---------- */
@@ -7207,11 +7197,11 @@ setInterval(function(){safe(tick);},320);
    is what lets the shadow exist at all. isolation/translateZ are kept. */
 #bottomNav{contain:none!important;overflow:visible!important}
 #fab,html[data-native-shell="true"] #fab{
-  box-shadow:0 9px 20px -4px rgba(0,0,0,.20),
-             0 4px 8px -2px rgba(0,0,0,.14),
-             0 16px 34px -10px rgba(184,144,31,.30)!important}
+  box-shadow:0 6px 16px rgba(90,68,8,.24),
+             0 12px 28px rgba(90,68,8,.16),
+             0 2px 6px rgba(90,68,8,.10)!important}
 #fab:active,html[data-native-shell="true"] #fab:active{
-  box-shadow:0 4px 10px -3px rgba(0,0,0,.20),0 2px 4px -1px rgba(0,0,0,.12)!important}
+  box-shadow:0 3px 9px rgba(90,68,8,.20),0 6px 14px rgba(90,68,8,.12)!important}
 
 /* ---- 4. slower, iOS-like motion --------------------------------------- */
 .modal-overlay{transition:opacity 420ms cubic-bezier(.32,.72,0,1)!important}
@@ -7379,43 +7369,89 @@ function assetPolish(){
   for(var k=0;k<labs.length;k++){
     if((labs[k].textContent||'').trim()==='Assets')labs[k].style.display='none';
   }
-  /* 9a: default the picker to the last CLOSED month */
-  var mo=$('mmAssetMonth'),yr=$('mmAssetYear');
-  if(!mo||!yr||mo.dataset.mm52)return;
-  mo.dataset.mm52='1';
-  var n=new Date(),cy=n.getFullYear(),cm=n.getMonth()+1;
-  if(Number(yr.value)===cy&&Number(mo.value)>=cm){
-    var ny=cy,nm=cm-1; if(nm<1){nm=12;ny=cy-1;}
-    mo.value=String(nm); yr.value=String(ny);
-    var ml=$('mmAssetMonthLabel'),yl=$('mmAssetYearLabel');
-    if(ml)ml.textContent=months()[nm-1];
-    if(yl)yl.textContent=String(ny);
-    var save=D.querySelector('#assetModalContent button.btn-gold');
-    var oc=save?(save.getAttribute('onclick')||''):'';
-    var mm=oc.match(/saveAssetMonth20323\('([^']*)','([^']*)'\)/);
-    if(mm&&typeof W.reloadAssetPeriod20323==='function')
-      T(function(){W.reloadAssetPeriod20323(mm[1],mm[2]);});
-  }
+  /* 9a: the month default now happens once, in the openAssetMonth20323
+     wrapper further down. It must NEVER run from tick(): reloadAssetPeriod20323
+     re-renders the modal, which recreates #mmAssetMonth and wiped the guard
+     flag, so this looped forever - the endless buzz and the frozen card. */
 }
-/* 9c: the current month is not offered in the month list */
+/* 9c: keep the open month out of the month list by filtering the OPTIONS
+   ARRAY, never by deleting rendered rows. The old version deleted DOM nodes,
+   and because history started in the open month the list held exactly one
+   option - so deleting it left the list completely blank. */
+var pickGate=0;
+function lastClosed(){
+  var n=new Date(),y=n.getFullYear(),m=n.getMonth();   /* getMonth() is already last month, 1-based */
+  if(m<1){m=12;y=y-1;}
+  return {y:y,m:m};
+}
+T(function(){
+  var op0=W.openOptionPicker;
+  if(typeof op0!=='function'||op0.__mm52)return;
+  var w=function(title,options,cur,cb){
+    if(pickGate&&Object.prototype.toString.call(options)==='[object Array]'){
+      var n=new Date(),cy=n.getFullYear(),cm=n.getMonth()+1,yEl=$('mmAssetYear');
+      if(yEl&&Number(yEl.value)===cy){
+        var keep=[];
+        for(var i=0;i<options.length;i++)if(Number(options[i].value)!==cm)keep.push(options[i]);
+        if(!keep.length){
+          var lc=lastClosed();
+          if(lc.y===cy)keep=[{value:lc.m,label:months()[lc.m-1]}];
+        }
+        if(keep.length){
+          options=keep;
+          if(Number(cur)===cm)cur=keep[keep.length-1].value;
+        }
+      }
+    }
+    return op0.call(this,title,options,cur,cb);
+  };
+  w.__mm52=1; W.openOptionPicker=w;
+});
 T(function(){
   var o0=W.openAssetPeriodPicker20323;
   if(typeof o0!=='function'||o0.__mm52)return;
   var w=function(mode,kind,id){
-    var r=o0.apply(this,arguments);
-    if(mode==='month')setTimeout(function(){
-      var n=new Date(),cy=n.getFullYear(),cm=n.getMonth()+1,yEl=$('mmAssetYear');
-      if(!yEl||Number(yEl.value)!==cy)return;
-      var nm=months()[cm-1];
-      var items=D.querySelectorAll('.picker-item,[role="option"]');
-      for(var i=0;i<items.length;i++){
-        var tx=(items[i].textContent||'').trim();
-        if(tx===nm||tx===nm.slice(0,3))items[i].remove();
-      }
-    },40);
-    return r;
+    pickGate=(mode==='month')?1:0;
+    try{ return o0.apply(this,arguments); }
+    finally{ pickGate=0; }
   };
   w.__mm52=1; W.openAssetPeriodPicker20323=w;
+});
+/* 9e: open the card on the last CLOSED month - once, at open time, with no
+   reload. Also rescue an entry already saved under the still-open month:
+   that record made history start in August, which both blanked the month
+   list and made an earlier month impossible to save. DB is declared with
+   `let`, so it is reachable by name but not on window. */
+function mmDB(){ try{ if(typeof DB!=='undefined'&&DB)return DB; }catch(e){} return W.DB||null; }
+T(function(){
+  var m0=W.openAssetMonth20323;
+  if(typeof m0!=='function'||m0.__mm52)return;
+  var w=function(kind,id,period){
+    var n=new Date(),cy=n.getFullYear(),cm=n.getMonth()+1;
+    var open=cy+'-'+String(cm).padStart(2,'0');
+    var lc=lastClosed(),prev=lc.y+'-'+String(lc.m).padStart(2,'0');
+    try{
+      var db=mmDB(),st=db&&db.assetHistory20323,h=null;
+      if(st&&st[kind]&&Object.prototype.toString.call(st[kind][id])==='[object Array]')h=st[kind][id];
+      if(h){
+        var iOpen=-1,iPrev=-1;
+        for(var i=0;i<h.length;i++){
+          if(h[i].period===open)iOpen=i;
+          if(h[i].period===prev)iPrev=i;
+        }
+        if(iOpen>=0&&iPrev<0){
+          h[iOpen].period=prev;
+          h.sort(function(a,b){return a.period.localeCompare(b.period);});
+          try{ if(typeof saveDB==='function')saveDB(); }catch(e){ if(W.saveDB)W.saveDB(); }
+          if(typeof W.showToast==='function')
+            W.showToast('Moved your '+months()[cm-1]+' entry to '+months()[lc.m-1]+' - the open month cannot be updated yet','var(--gold)');
+        }
+      }
+    }catch(e){}
+    if(!period||period>=open)period=prev;
+    return m0.call(this,kind,id,period);
+  };
+  w.__mm52=1; W.openAssetMonth20323=w;
 });
 /* 9d: and it cannot be saved either */
 T(function(){
@@ -7445,6 +7481,7 @@ T(function(){
    day so one spike cannot define the month. */
 var _dbc={t:0,v:null};
 function mmdb(){
+  try{ if(typeof DB!=='undefined'&&DB&&DB.transactions)return DB; }catch(e){}
   if(W.DB&&W.DB.transactions)return W.DB;
   var now=Date.now();
   if(_dbc.v&&now-_dbc.t<3000)return _dbc.v;
@@ -7518,7 +7555,7 @@ function wrap(name){
 }
 ['openModal','closeModal','closeModalQuiet','navTo','expandCard','renderSettings','renderBudget',
  'switchBudgetTab','openSettingsSection','openAssetUpdate20323','renderAssets','mm50GoalKind',
- 'openAddGoalModal','reloadAssetPeriod20323','renderOverview','updateOverview'].forEach(wrap);
+ 'openAddGoalModal','renderOverview','updateOverview'].forEach(wrap);
 if(typeof W.boot==='function'&&!W.boot.__mm52t){
   var b0=W.boot; var bw=function(){var r=b0.apply(this,arguments); setTimeout(tick,300); return r;};
   bw.__mm52t=1; W.boot=bw;
@@ -7527,6 +7564,457 @@ if(typeof W.boot==='function'&&!W.boot.__mm52t){
 setInterval(tick,400);
 if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',function(){T(tick);});
 else T(tick);
+})();
+</script>
+<style id="v20354-ui">
+/* 6 - settings row icon tile matches the text block height */
+.settings-destination .sd-icon{width:40px!important;height:40px!important;border-radius:12px!important}
+.settings-destination .sd-icon svg{width:21px!important;height:21px!important}
+
+/* 9 - profile photo grows on transform only (width/height tweening caused the shake) */
+.pp-av{transition:transform 460ms cubic-bezier(.22,1,.36,1),opacity 300ms ease!important;will-change:transform;opacity:.001;backface-visibility:hidden}
+#photoViewModal.pp-mode.mm-open .pp-av{transform:scale(1)!important;opacity:1!important}
+#photoViewModal.pp-mode .pp-name{transition:opacity 300ms ease 120ms!important}
+#photoViewModal.pp-mode .pp-foot{transition:opacity 300ms ease 150ms,transform 420ms cubic-bezier(.22,1,.36,1) 150ms!important}
+
+/* 12 - follow the phone font: sans-serif resolves to the device default family */
+html,body,button,input,select,textarea,optgroup,.form-input,.modal-title,.page-title,.exp-total,
+.mm-quick-menu,.mm-quick-row,#settingsMenuContent,#settingsMenuContent .sm-row,#settingsMenuContent .sm-lab,
+#settingsDetail .mm-settings-action{font-family:sans-serif!important}
+
+/* 3 - fully paid loan pill replaces the ring */
+.mm54-paid{flex:none;padding:6px 12px;border-radius:999px;background:rgba(63,174,90,.14);border:1px solid rgba(63,174,90,.34);color:var(--success);font-size:11.5px;font-weight:800;white-space:nowrap}
+.mm54-meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 10px;font-size:11.5px;line-height:1.35;color:var(--text-dim)}
+.mm54-meta b{color:var(--text);font-weight:700}
+
+/* 2 - narrative under the remaining income numbers */
+.mm54-note{padding:12px 13px;border-radius:13px;background:var(--surface-2);border:1px solid var(--input-border);margin:0 0 10px}
+.mm54-note b{display:block;font-size:12px;color:var(--text);margin-bottom:5px}
+.mm54-note span{display:block;font-size:12px;line-height:1.5;color:var(--text-dim)}
+.mm54-note em{color:var(--gold);font-style:normal;font-weight:700}
+
+/* 7 - app lock status card */
+.mm54-lock{display:flex;flex-direction:column;gap:13px;padding:18px;margin:0 0 14px;border-radius:18px;background:var(--card-bg);border:1px solid var(--card-border);box-shadow:0 1px 1px var(--card-hi) inset,0 10px 26px -20px var(--shadow)}
+.mm54-lock-top{display:flex;align-items:center;gap:13px}
+.mm54-lock-ic{width:56px;height:56px;flex:none;border-radius:16px;background:rgba(212,175,55,.13);color:var(--gold);display:flex;align-items:center;justify-content:center}
+.mm54-lock-ic svg{width:27px;height:27px;stroke:currentColor;fill:none;stroke-width:1.9}
+.mm54-lock.off .mm54-lock-ic{background:var(--track);color:var(--text-muted)}
+.mm54-lock-t{font-size:17px;font-weight:800;color:var(--text);line-height:1.2}
+.mm54-lock-s{font-size:12px;font-weight:700;margin-top:4px;color:var(--success)}
+.mm54-lock.off .mm54-lock-s{color:var(--text-dim)}
+.mm54-lock-b{font-size:12.5px;line-height:1.55;color:var(--text-dim)}
+
+/* 10 - profile edit happens in place, the header itself becomes the editor */
+#mm54Pedit{display:none}
+/* name editing takes over the screen, WhatsApp style */
+body.mm54-pedit #settingsAvatar,body.mm54-pedit #page-settings .set-doodles{display:none!important}
+.mm54-pe-title{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin:0 0 10px}
+.mm54-pe-help{font-size:12.5px;color:var(--text-dim);margin:10px 0 0;line-height:1.5}
+body.mm54-pedit #mm54Pedit{animation:mm54Shift 340ms cubic-bezier(.22,1,.36,1) both}
+@keyframes mm54Shift{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+body.mm54-pedit #page-settings .set-name,body.mm54-pedit #page-settings .set-meta,body.mm54-pedit #page-settings .settings-edit{display:none!important}
+body.mm54-pedit #mm54Pedit{display:block;animation:mm54Fade 320ms cubic-bezier(.22,1,.36,1) both}
+body.mm54-pedit #page-settings .set-av{transform:scale(1.04);transition:transform 380ms cubic-bezier(.22,1,.36,1)}
+#page-settings .set-av{transition:transform 380ms cubic-bezier(.22,1,.36,1)}
+body.mm54-pedit #settingsAvatar{overflow:visible!important}
+body.mm54-pedit .settings-edit,body.mm54-pedit .settings-edit-sticky{display:none!important;pointer-events:none}
+.mm54-pe-badge{position:absolute;right:-3px;bottom:-3px;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#1a1306;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;animation:mm54Pop 300ms cubic-bezier(.22,1,.36,1) both}
+.mm54-pe-badge svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9}
+.mm54-pe-hint{font-size:11.5px;color:var(--text-dim);text-align:center;margin:2px 0 12px}
+#mm54Pedit .mm54-pe-in{width:100%;box-sizing:border-box;min-height:52px;padding:0 14px;border:1px solid var(--input-border);border-radius:var(--radius-sm);background:var(--input-bg);color:var(--text);font-size:16px;font-weight:700;text-align:left}
+#mm54Pedit .mm54-pe-in:focus{outline:none;border-color:var(--gold)}
+.mm54-pe-row{display:flex!important;width:100%;gap:10px;margin-top:12px}
+.mm54-pe-row button{flex:1 1 0!important;width:auto!important;min-width:0!important;margin:0!important}
+.mm54-away{overflow:hidden!important;pointer-events:none!important;transition:opacity 220ms ease,max-height 400ms cubic-bezier(.22,1,.36,1),margin 400ms cubic-bezier(.22,1,.36,1),padding 400ms cubic-bezier(.22,1,.36,1),transform 400ms cubic-bezier(.22,1,.36,1)}
+.mm54-away.mm54-gone{opacity:0!important;max-height:0!important;margin-top:0!important;margin-bottom:0!important;padding-top:0!important;padding-bottom:0!important;border-top-width:0!important;border-bottom-width:0!important;transform:translateY(6px)!important}
+body.mm54-pedit #settingsHub::before,body.mm54-pedit #settingsHub::after{display:none!important}
+
+/* 10c - name screen: the gold cover folds away with everything else */
+body.mm54-pedit #page-settings .set-hdr{background:var(--bg)!important;background-image:none!important;
+  box-shadow:none!important;border:0!important;min-height:0!important;
+  height:var(--native-inset-top,0px)!important;padding:0!important;
+  position:static!important;overflow:hidden!important}
+body.mm54-pedit #page-settings .set-hdr::before,body.mm54-pedit #page-settings .set-hdr::after{display:none!important}
+body.mm54-pedit #page-settings .settings-hub{margin-top:0!important}
+html[data-native-shell="true"] body.mm54-pedit #page-settings,body.mm54-pedit #page-settings{background:var(--bg)!important;background-image:none!important}
+html[data-native-shell="true"] body.mm54-pedit #page-settings .set-panel,body.mm54-pedit #page-settings .set-panel{border-radius:0!important;background:var(--bg)!important}
+/* 10c - save rides just above the keyboard, no cancel (back closes) */
+#mm54PeSave{display:none!important}
+body.mm54-pedit #mm54PeSave{display:block!important;position:fixed!important;
+  left:var(--gutter,24px)!important;right:var(--gutter,24px)!important;
+  bottom:calc(16px + env(safe-area-inset-bottom))!important;width:auto!important;z-index:80!important;
+  margin:0!important;min-height:52px;padding:0 18px;border:0;border-radius:var(--radius-sm,14px);
+  background:linear-gradient(135deg,var(--gold-light,#F0D060),var(--gold,#D4AF37));
+  color:#2a2005;font-size:15px;font-weight:800;
+  box-shadow:0 6px 18px rgba(90,68,8,.22),0 2px 6px rgba(90,68,8,.12);
+  transition:bottom 220ms cubic-bezier(.22,1,.36,1);
+  animation:mm54Fade 300ms cubic-bezier(.22,1,.36,1) both}
+@keyframes mm54Fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes mm54Pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#mm54Pedit,.mm54-pe-badge,#page-settings .set-av,.mm54-away{animation:none!important;transition:none!important}}
+</style>
+<script id="v20354-logic">
+(function(){
+var W=window,D=document;
+function $(id){return D.getElementById(id)}
+function q(s,r){return (r||D).querySelector(s)}
+function qa(s,r){return Array.prototype.slice.call((r||D).querySelectorAll(s))}
+function safe(f){try{return f()}catch(e){return null}}
+function mmDB(){try{if(typeof DB!=='undefined'&&DB)return DB}catch(e){}return W.DB||null}
+var MO=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function mLab(d){if(!d)return '';var s=String(d),y,m;var p=s.split('-');if(p.length>=2){y=+p[0];m=+p[1]}else{var dt=new Date(s);if(isNaN(dt))return '';y=dt.getFullYear();m=dt.getMonth()+1}if(!y||!m)return '';return MO[m-1].slice(0,3)+' '+y}
+function shrt(v){return safe(function(){return W.fmtShort(v)})||String(Math.round(v||0))}
+function wrap(name,after){var f=W[name];if(typeof f!=='function'||f.__mm54)return;var g=function(){var r=f.apply(this,arguments);safe(function(){after(arguments)});return r};g.__mm54=1;W[name]=g}
+
+/* ---------- 1 - haptics only on real selections ---------- */
+var ALLOW='.picker-item,[role="option"],.mm-settings-choice,.mm-choice,input[type="radio"],input[type="checkbox"],select,.period-btn,.mm-period-button,.pin-btn,.nav-item,#fab,.quick-action-btn';
+var MUTE='#assetModal,#addGoalModal,#addLoanModal,#editProfileModal,#budgetModal,#mm54Pedit,.bgt-card,.bgt-head,.bgt-detail,.bgt-actions,.btn-gold,.btn-outline,.btn-danger,.set-tile,.settings-destination,.settings-item,.sd-item,.set-row,.mm-settings-action,#settingsDetail,.pp-act,.pp-edit,.pp-close,.mm50-step,.goal-card,.loan-card,.overview-card';
+function muteTap(e,ms){var t=e.target;if(!t||!t.closest)return;if(t.closest(ALLOW))return;if(t.closest(MUTE)&&W.__mm51Mute)W.__mm51Mute(ms)}
+D.addEventListener('pointerdown',function(e){muteTap(e,650)},true);
+D.addEventListener('click',function(e){muteTap(e,450)},true);
+safe(function(){if(navigator.__mm54v)return;var nv=navigator.vibrate&&navigator.vibrate.bind(navigator);if(!nv)return;navigator.vibrate=function(){if(W.__mm51Muted&&W.__mm51Muted())return true;return nv.apply(null,arguments)};navigator.__mm54v=1});
+
+/* ---------- 4 - drop the summary captions ---------- */
+var DROP=['loans overview','your goals at a glance','goals at a glance','assets'];
+function dropLabs(root){qa('.bsum-lab',root||D).forEach(function(el){var t=(el.textContent||'').trim().toLowerCase();if(DROP.indexOf(t)>=0)el.style.display='none'})}
+
+/* ---------- 3 - loan cards: lender + taken date, no ring when settled ---------- */
+function loanPolish(root){var db=mmDB();if(!db||!db.loans)return;
+ qa('[id^="bgtd-loan-"]',root||D).forEach(function(det){
+  var id=det.id.replace('bgtd-loan-','');var l=null;for(var i=0;i<db.loans.length;i++)if(String(db.loans[i].id)===id)l=db.loans[i];
+  if(!l)return;var card=det.closest?det.closest('.bgt-card'):null;if(!card||card.dataset.mm54==='1')return;card.dataset.mm54='1';
+  var reps=(db.transactions||[]).filter(function(t){return t.type==='loan_repay'&&String(t.loanId)===id});
+  var paid=reps.reduce(function(a,t){return a+(t.amount||0)},0);var rem=Math.max(0,(l.amount||0)-paid);
+  var who=l.source?String(l.source):'', when=mLab(l.date);
+  var sub=q('.bgt-sub',card);
+  if(sub){var bits=[];if(who)bits.push('From '+who);if(when)bits.push('Taken '+when);if(rem>0)bits.push(shrt(rem)+' left');sub.textContent=bits.join(' \u00b7 ')}
+  if(rem<=0){var head=q('.bgt-head',card);if(head){var ring=null;qa('div',head).forEach(function(d){if(!ring&&d.querySelector&&d.querySelector('svg circle'))ring=d});
+   if(ring&&ring.parentNode){var pill=D.createElement('span');pill.className='mm54-paid';pill.textContent='Fully paid';ring.parentNode.replaceChild(pill,ring)}}}
+  var meta=D.createElement('div');meta.className='mm54-meta';var mh='';
+  if(who)mh+='<span>From <b>'+who+'</b></span>';
+  if(when)mh+='<span>Taken <b>'+when+'</b></span>';
+  mh+='<span>Original <b>'+shrt(l.amount||0)+'</b></span>';
+  if(rem<=0){var last=reps.slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)}).pop();if(last)mh+='<span>Cleared <b>'+mLab(last.date)+'</b></span>'}
+  meta.innerHTML=mh;if(mh)det.insertBefore(meta,det.firstChild);
+ });}
+
+/* ---------- 5 - goals: started date, completion month ---------- */
+function goalPolish(root){var db=mmDB();if(!db||!db.goals)return;
+ qa('[id^="bgtd-goal-"]',root||D).forEach(function(det){
+  var id=det.id.replace('bgtd-goal-','');var g=null;for(var i=0;i<db.goals.length;i++)if(String(db.goals[i].id)===id)g=db.goals[i];
+  if(!g)return;var card=det.closest?det.closest('.bgt-card'):null;if(!card||card.dataset.mm54g==='1')return;card.dataset.mm54g='1';
+  var txs=(db.transactions||[]).filter(function(t){return String(t.goalId)===id&&(t.type==='goal'||t.type==='savings')}).sort(function(a,b){return new Date(a.date)-new Date(b.date)});
+  var started=g.createdAt||(txs.length?txs[0].date:'');var when=mLab(started);
+  var tgt=g.target||0,run=0,doneAt='';
+  for(var k=0;k<txs.length;k++){run+=txs[k].amount||0;if(tgt>0&&run>=tgt){doneAt=txs[k].date;break}}
+  var done=tgt>0&&(g.saved||0)>=tgt;var rem=Math.max(0,tgt-(g.saved||0));
+  var sub=q('.bgt-sub',card);
+  if(sub){var bits=[];if(when)bits.push('Started '+when);
+   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));else bits.push(shrt(rem)+' to go');
+   var badge=q('span',sub);sub.textContent=bits.join(' \u00b7 ');if(badge)sub.appendChild(badge)}
+  var st=q('.budget-card-status',det)||q('.budget-card-status',card);
+  if(st&&done){st.textContent='Completed'+(doneAt?' \u00b7 '+mLab(doneAt):'');st.style.color='var(--success)'}
+  var meta=D.createElement('div');meta.className='mm54-meta';var mh='';
+  if(when)mh+='<span>Started <b>'+when+'</b></span>';
+  mh+='<span>Target <b>'+shrt(tgt)+'</b></span>';
+  if(done&&doneAt)mh+='<span>Completed <b>'+mLab(doneAt)+'</b></span>';
+  meta.innerHTML=mh;if(mh)det.insertBefore(meta,det.firstChild);
+ });}
+
+/* stamp new goals so the started date is exact going forward */
+wrap('saveGoal',function(){});
+(function(){var f=W.saveGoal;if(typeof f!=='function'||f.__mm54s)return;var g=function(id){var db=mmDB();var before={};if(db&&db.goals)db.goals.forEach(function(x){before[x.id]=1});var r=f.apply(this,arguments);safe(function(){var d=mmDB();if(!d||!d.goals)return;var ch=0;d.goals.forEach(function(x){if(!before[x.id]&&!x.createdAt){x.createdAt=new Date().toISOString().slice(0,10);ch=1}});if(ch&&W.saveDB)W.saveDB()});return r};g.__mm54s=1;W.saveGoal=g})();
+
+/* ---------- 11 - a budget used exactly to the limit stays green ---------- */
+function budgetColour(root){
+ qa('.bgt-card',root||D).forEach(function(card){
+  if(card.dataset.mm54c==='1')return;
+  var det=q('.bgt-detail',card);if(det&&/^bgtd-(loan|goal)-/.test(det.id||''))return;
+  var st=q('.budget-card-status',card),ring=null;
+  qa('div',card).forEach(function(d){if(!ring&&d.querySelector&&d.querySelector('svg circle'))ring=d});
+  var lblEl=ring?qa('div',ring).filter(function(d){return !d.querySelector('svg')}).pop():null;
+  var lbl=lblEl?parseInt((lblEl.textContent||'').replace(/[^0-9]/g,''),10):NaN;
+  var txt=st?(st.textContent||''):'';
+  if(!isNaN(lbl)&&lbl>=100&&/approaching limit/i.test(txt)){
+   card.dataset.mm54c='1';
+   st.textContent='Fully used as budgeted';st.style.color='var(--success)';
+   if(ring)qa('svg circle',ring).forEach(function(c2,i){if(i>0)c2.setAttribute('stroke','var(--success)')});
+   var pill=q('.status-warn',card);if(pill){pill.classList.remove('status-warn');pill.classList.add('status-good');if(/approaching/i.test(pill.textContent||''))pill.textContent='Fully used'}
+  }
+ });
+ qa('.bsum-pct',root||D).forEach(function(el){var v=parseInt((el.textContent||'').replace(/[^0-9]/g,''),10);if(!isNaN(v)&&v===100)el.style.color='var(--success)'});
+}
+
+/* ---------- 2 - remaining income: real month-end number, no duplicate block ---------- */
+function fcast54(){
+ var db=mmDB();if(!db)return null;var n=new Date(),y=n.getFullYear(),m=n.getMonth();
+ var x=safe(function(){return W.__MM45.left(y,m)});if(!x||!x.inc)return null;
+ var bal=Math.max(0,x.raw||0);
+ var exp=0;(db.transactions||[]).forEach(function(t){if(t.type!=='expense')return;var d=new Date(t.date);if(d.getFullYear()===y&&d.getMonth()===m)exp+=t.amount||0});
+ var elapsed=Math.max(1,n.getDate()),dim=new Date(y,m+1,0).getDate(),left=Math.max(0,dim-elapsed);
+ var rate=exp/elapsed,proj=rate*left,est=Math.max(0,Math.round(bal-proj));
+ return {bal:bal,exp:exp,inc:x.inc,rate:rate,left:left,dim:dim,est:est,pc:Math.round(est/x.inc*100),next:x.next,day:elapsed};
+}
+function remainPolish(){
+ var root=$('expandContent');if(!root)return;
+ var kpis=qa('.mm46-kpis>div',root);if(!kpis.length)return;
+ var target=null;kpis.forEach(function(d){var s=q('span',d);if(s&&/month-end/i.test(s.textContent||''))target=d});
+ if(!target)return;
+ if(root.dataset.mm54r==='1')return;root.dataset.mm54r='1';
+ var f=fcast54();
+ if(f){var b=q('b',target);if(b)b.textContent=f.pc+'% \u00b7 '+shrt(f.est)}
+ qa('.mm46-outlook',root).forEach(function(o){var h=q('b',o);if(h&&/month-end estimate/i.test(h.textContent||''))o.parentNode.removeChild(o)});
+ var grid=q('.mm46-kpis',root);if(!grid)return;
+ var note=D.createElement('div');note.className='mm54-note';
+ if(f){
+  var pace=Math.round(f.rate);
+  var line1='You have <em>'+shrt(f.bal)+'</em> unallocated out of '+shrt(f.inc)+' income, and you have spent '+shrt(f.exp)+' over '+f.day+' days \u2014 about '+shrt(pace)+' a day.';
+  var line2=f.est>0
+   ? 'At that pace the remaining '+f.left+' day'+(f.left===1?'':'s')+' should cost about '+shrt(f.rate*f.left)+', leaving roughly <em>'+shrt(f.est)+'</em> on '+f.dim+' '+MO[new Date().getMonth()].slice(0,3)+'. Hold that line and it moves into '+(f.next&&f.next.m!=null?MO[f.next.m]:'next month')+' instead of disappearing.'
+   : 'At that pace the remaining '+f.left+' day'+(f.left===1?'':'s')+' would use the balance up. Trimming the optional spending now is what keeps something to carry forward.';
+  note.innerHTML='<b>What these numbers say</b><span>'+line1+' '+line2+'</span>';
+ }else{
+  note.innerHTML='<b>What these numbers say</b><span>Once income and a few expenses are recorded this month, this will show the daily spending pace and what should still be left at month-end.</span>';
+ }
+ if(grid.nextSibling)grid.parentNode.insertBefore(note,grid.nextSibling);else grid.parentNode.appendChild(note);
+}
+
+/* ---------- 7 - app lock status card in Security ---------- */
+function lockCard(){
+ var det=$('settingsDetail');if(!det)return;
+ var t=q('.settings-detail-title',det);if(!t||!/security/i.test(t.textContent||''))return;
+ if(q('.mm54-lock',det))return;
+ var db=mmDB(),on=!!(db&&db.pin);
+ var card=D.createElement('div');card.className='mm54-lock'+(on?'':' off');
+ card.innerHTML='<div class="mm54-lock-top"><div class="mm54-lock-ic"><svg viewBox="0 0 24 24"><rect x="4" y="10.5" width="16" height="10.5" rx="2.6"/><path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"/><circle cx="12" cy="15.7" r="1.5" fill="currentColor" stroke="none"/></svg></div>'+
+  '<div><div class="mm54-lock-t">App lock</div><div class="mm54-lock-s">'+(on?'On \u00b7 PIN required':'Off \u00b7 no PIN set')+'</div></div></div>'+
+  '<div class="mm54-lock-b">'+(on
+   ? 'Money Map asks for your 4-digit PIN, or your fingerprint where the phone supports it, every time the app opens or comes back from the background. Balances, transactions and goals stay hidden until it is entered, so handing someone your phone does not hand over your money history. The PIN is stored only on this device.'
+   : 'App lock is not set up yet. Turning it on means Money Map asks for a 4-digit PIN, or your fingerprint where the phone supports it, every time the app opens or comes back from the background \u2014 so your balances stay private if someone else picks up your phone. The PIN is stored only on this device.')+'</div>';
+ var head=q('.settings-detail-head',det),copy=q('.settings-detail-copy',det);
+ var anchor=copy||head;
+ if(anchor&&anchor.nextSibling)det.insertBefore(card,anchor.nextSibling);
+ else if(anchor)det.appendChild(card);
+ else det.insertBefore(card,det.firstChild);
+}
+
+/* ---------- 8 - the nav bar only hides for real full-screen settings ---------- */
+var pend=0,pendAt=0;
+function navWant(){
+ if(D.body.classList.contains('settings-section-open'))return 1;
+ var ap=q('.page.active');if(ap&&ap.id==='page-settings')return 1;
+ if(W.currentPage==='settings')return 1;
+ if(pend&&Date.now()-pendAt<1800)return 1;
+ return 0;
+}
+var navBusy=0;
+function navSync54(){
+ if(navBusy)return;navBusy=1;
+ var w=!!navWant();
+ if(D.body.classList.contains('mm-nav-off')!==w)D.body.classList.toggle('mm-nav-off',w);
+ navBusy=0;
+}
+safe(function(){
+ var mo=new MutationObserver(function(){navSync54()});
+ mo.observe(D.body,{attributes:true,attributeFilter:['class']});
+ var app=$('app')||D.body;
+ mo.observe(app,{attributes:true,attributeFilter:['class'],subtree:true});
+});
+D.addEventListener('click',function(e){
+ var t=e.target;if(!t||!t.closest)return;
+ var row=t.closest('.mm-quick-row,[data-sm-action],.sm-row');
+ if(row&&/^\s*settings\s*$/i.test((row.textContent||'').trim())){pend=1;pendAt=Date.now()}
+ setTimeout(navSync54,0);setTimeout(navSync54,120);setTimeout(navSync54,400);
+},true);
+wrap('navTo',function(){pend=0;navSync54()});
+
+/* ---------- 10 - profile editing happens in place ---------- */
+function peBuild(){
+ if($('mm54Pedit'))return $('mm54Pedit');
+ var av=$('settingsAvatar');if(!av)return null;
+ var host=av.parentNode;if(!host)return null;
+ var w=D.createElement('div');w.id='mm54Pedit';
+ w.innerHTML='<div class="mm54-pe-title">Your name</div>'+
+  '<input class="mm54-pe-in" id="mm54PeName" type="text" autocomplete="name" placeholder="Your name" maxlength="40">'+
+  '<div class="mm54-pe-help">This is the name Money Map greets you with on the overview screen.</div>';
+ var meta=q('.set-meta',host)||av;
+ if(meta.nextSibling)host.insertBefore(w,meta.nextSibling);else host.appendChild(w);
+ var sv=$('mm54PeSave');
+ if(!sv){
+  sv=D.createElement('button');sv.id='mm54PeSave';sv.className='mm54-pe-save';sv.textContent='Save';
+  sv.addEventListener('click',function(){peSave()});
+  D.body.appendChild(sv);
+ }
+
+ return w;
+}
+function peBadge(on){
+ var av=$('settingsAvatar');if(!av)return;
+ var b=q('.mm54-pe-badge',av);
+ if(on){if(av.style.position!=='relative')av.style.position='relative';
+  if(!b){b=D.createElement('div');b.className='mm54-pe-badge';b.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 8.5h3.2l1.4-2h6.8l1.4 2H20v10.5H4z"/><circle cx="12" cy="13.6" r="3.1"/></svg>';av.appendChild(b)}}
+ else if(b&&b.parentNode)b.parentNode.removeChild(b);
+}
+/* everything below the editor folds away, then unfolds back into place */
+function peRest(){
+ var av=$('settingsAvatar');if(!av||!av.parentNode)return [];
+ var out=[],k=av.parentNode.children;
+ for(var i=0;i<k.length;i++){var c=k[i];
+  if(c===av||c.id==='mm54Pedit')continue;
+  if(!c.tagName||c.tagName==='INPUT'||c.tagName==='SCRIPT')continue;
+  if(c.classList&&(c.classList.contains('set-name')||c.classList.contains('set-meta')))continue;
+  var cs=null;try{cs=W.getComputedStyle(c)}catch(e){}
+  if(cs&&cs.display==='none'&&!c.classList.contains('mm54-away'))continue;
+  out.push(c);}
+ return out;
+}
+/* the app pins padding on #settingsHub with an id-level !important rule, so the
+   collapse has to be written inline with important to win the cascade */
+var PEP=['overflow','pointer-events','padding-top','padding-bottom','margin-top',
+         'margin-bottom','border-top-width','border-bottom-width','opacity','transform','max-height'];
+function peSet(c,p,v){try{c.style.setProperty(p,v,'important')}catch(e){}}
+function peAway(on){
+ peRest().forEach(function(c){
+  if(on){
+   c.classList.add('mm54-away');
+   peSet(c,'max-height',(c.scrollHeight||0)+'px');
+   void c.offsetHeight;
+   c.classList.add('mm54-gone');
+   peSet(c,'overflow','hidden');peSet(c,'pointer-events','none');
+   peSet(c,'padding-top','0');peSet(c,'padding-bottom','0');
+   peSet(c,'margin-top','0');peSet(c,'margin-bottom','0');
+   peSet(c,'border-top-width','0');peSet(c,'border-bottom-width','0');
+   peSet(c,'opacity','0');peSet(c,'transform','translateY(6px)');
+   peSet(c,'max-height','0px');
+  }else{
+   var h=c.scrollHeight||0;
+   c.classList.remove('mm54-gone');
+   PEP.forEach(function(p){if(p!=='overflow'&&p!=='max-height')c.style.removeProperty(p)});
+   peSet(c,'max-height',h+'px');
+   setTimeout(function(){
+    c.classList.remove('mm54-away');
+    c.style.removeProperty('max-height');c.style.removeProperty('overflow');
+   },430);
+  }
+ });
+}
+function peOpen(push){
+ var w=peBuild();if(!w)return false;
+ var db=mmDB();$('mm54PeName').value=(db&&db.userName)||'';
+ D.body.classList.add('mm54-pedit');peAway(true);pePens(true);peKbBind(true);
+ var p=$('page-settings');if(p)safe(function(){p.scrollTop=0});
+ if(push!==false)safe(function(){W.history.pushState({mm54:'name'},'')});
+ setTimeout(function(){safe(function(){$('mm54PeName').focus()})},300);
+ return true;
+}
+function peOpenPhoto(){
+ /* the photo goes to the same popup the overview screen uses, then reveals
+    the Camera / Gallery cards - without a buzz, since this was not a choice */
+ var f=W.openProfilePhoto||W.viewProfilePhoto;
+ if(typeof f!=='function')return false;
+ safe(function(){f()});
+ setTimeout(function(){safe(function(){
+  var ft=$('mm50Foot');
+  if(ft&&ft.getAttribute('data-open')!=='1'&&W.mm50EditPhoto){
+   if(W.__mm51Mute)W.__mm51Mute(500);
+   W.mm50EditPhoto();
+  }
+ })},400);
+ return true;
+}
+/* the sticky pencil is pinned by an id-level rule as well, so hide it inline */
+function pePens(on){
+ qa('.settings-edit').forEach(function(p){
+  if(on)peSet(p,'display','none'); else p.style.removeProperty('display');
+ });
+}
+/* keep Save clear of the keyboard; fall back to sitting above the nav bar */
+var _peKbOn=0;
+function peKb(){
+ var b=$('mm54PeSave');if(!b)return;
+ var vv=W.visualViewport,gap=16,below=0;
+ if(vv)below=Math.max(0,W.innerHeight-vv.height-vv.offsetTop);
+ if(below<40){var nv=$('bottomNav');
+  if(nv&&getComputedStyle(nv).display!=='none')below=nv.getBoundingClientRect().height;}
+ b.style.setProperty('bottom',(below+gap)+'px','important');
+}
+function peKbBind(on){
+ var vv=W.visualViewport;
+ if(on){peKb();setTimeout(peKb,120);setTimeout(peKb,420);
+  if(vv&&!_peKbOn){vv.addEventListener('resize',peKb);vv.addEventListener('scroll',peKb);_peKbOn=1}}
+ else if(vv&&_peKbOn){vv.removeEventListener('resize',peKb);vv.removeEventListener('scroll',peKb);_peKbOn=0}
+}
+
+function peIsOpen(){return D.body.classList.contains('mm54-pedit')}
+function peClose(){
+ if(!peIsOpen())return false;
+ D.body.classList.remove('mm54-pedit');peBadge(false);peAway(false);pePens(false);peKbBind(false);
+ var el=$('mm54PeName');if(el)safe(function(){el.blur()});
+ return true;
+}
+function peSave(){
+ var v=($('mm54PeName')&&$('mm54PeName').value||'').trim();
+ if(v){var db=mmDB();if(db){db.userName=v;if(W.saveDB)W.saveDB()}
+  var a=$('settingsNameDisplay');if(a)a.textContent=v;
+  var h=$('headerName');if(h)h.textContent=v;
+  safe(function(){W.renderAvatar()});
+  safe(function(){W.showToast('Profile updated','var(--success)')});}
+ peClose();
+}
+(function(){
+ var f=W.openEditProfile;if(typeof f!=='function'||f.__mm54p)return;
+ var g=function(){
+  var ap=q('.page.active');
+  var inSettings=(ap&&ap.id==='page-settings')||W.currentPage==='settings';
+  if(inSettings&&!D.body.classList.contains('settings-section-open')){if(peOpen(true))return}
+  return f.apply(this,arguments);
+ };
+ g.__mm54p=1;W.openEditProfile=g;
+})();
+/* tapping the photo in Settings behaves exactly like tapping it on the overview */
+D.addEventListener('click',function(e){
+ var t=e.target;if(!t||!t.closest)return;
+ if(!t.closest('#settingsAvatar'))return;
+ var ap=q('.page.active');
+ if(!((ap&&ap.id==='page-settings')||W.currentPage==='settings'))return;
+ e.preventDefault();e.stopPropagation();
+ if(peIsOpen())peClose();
+ peOpenPhoto();
+},true);
+wrap('navTo',function(){peClose()});
+
+/* back gesture leaves the name screen instead of the app */
+safe(function(){
+ W.addEventListener('popstate',function(){if(peIsOpen())peClose()});
+ var b=W.__moneyMapHandleNativeBack;
+ W.__moneyMapHandleNativeBack=function(){
+  if(peIsOpen()){peClose();return true}
+  return typeof b==='function'?b.apply(this,arguments):false;
+ };
+});
+
+/* ---------- run the polish once per render, never on a timer ---------- */
+function polishAll(){
+ var host=q('.page.active')||D;
+ dropLabs(host);loanPolish(host);goalPolish(host);budgetColour(host);
+ var det=$('settingsDetail');if(det)lockCard();
+ navSync54();
+}
+['renderBudget','switchBudgetTab','renderLoans','renderGoals','toggleBudget','expandBudgetSummary','renderAssets','navTo','saveLoan','saveGoal','payLoan','deleteLoan'].forEach(function(n){
+ wrap(n,function(){setTimeout(polishAll,0);setTimeout(polishAll,90)});
+});
+['renderSettingsSection','openSettingsSection','renderSettings'].forEach(function(n){
+ wrap(n,function(){setTimeout(function(){lockCard();navSync54()},0);setTimeout(function(){lockCard();navSync54()},120)});
+});
+['renderRemaining45','openModal','expandCard'].forEach(function(n){
+ wrap(n,function(){setTimeout(remainPolish,0);setTimeout(remainPolish,140);setTimeout(remainPolish,420)});
+});
+safe(function(){var e=$('expandContent');if(!e)return;new MutationObserver(function(){if(e.dataset.mm54r!=='1')setTimeout(remainPolish,0)}).observe(e,{childList:true})});
+safe(function(){var e=$('expandContent');if(!e)return;var c=W.closeModal;if(typeof c==='function'&&!c.__mm54x){var g=function(){var r=c.apply(this,arguments);safe(function(){e.dataset.mm54r=''});return r};g.__mm54x=1;W.closeModal=g}});
+
+setTimeout(polishAll,300);setTimeout(polishAll,1000);setTimeout(polishAll,2400);
+D.addEventListener('click',function(){setTimeout(polishAll,60)},true);
+W.__MM54={fcast:fcast54,polish:polishAll,navWant:navWant,peOpen:peOpen,peClose:peClose,lockCard:lockCard,remainPolish:remainPolish};
 })();
 </script>
 </body>

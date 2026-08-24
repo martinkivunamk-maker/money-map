@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20352-logic';
+const CACHE = 'moneymap-v20354-ui';
 
 self.addEventListener('install', () => self.skipWaiting());
 

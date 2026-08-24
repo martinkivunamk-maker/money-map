@@ -1,4 +1,4 @@
-v2.0.3.52
+v2.0.3.53
 - Floating + button: released the nav's paint containment that was clipping its shadow.
 - Profile photo: camera/gallery open in the same tap; the edit view stays open behind them.
 - Search: back closes search with a single haptic (duplicate close swallowed).
@@ -138,3 +138,30 @@ Money Map — Production v2.0.3.41
 - Cleaner signup name field, Camera/Gallery choice, and three fixed pillars.
 - Native notification vibration, routing and matte-charcoal launcher icon updates.
 - Preserves v2.0.3.40 financial logic, data, recurring behaviour, security and startup treatment.
+
+v2.0.3.54 - UI round (24 Aug 2026)
+  1.  Haptics limited to real selections. Editing or updating an asset, goal,
+      loan, budget or profile is silent; pickers, options, tabs and the + keep
+      their tap feedback.
+  2.  Remaining income: the duplicate "Month-end estimate" block is removed.
+      The month-end small card now carries a real projection from the current
+      spending pace, followed by a short read-out of the numbers.
+  3.  Loans: a settled loan drops its ring for a "Fully paid" pill. Every loan
+      card now shows the lender and the month it was taken, expanded detail
+      included, and the loan in repayment keeps its progress ring.
+  4.  "Loans overview" and "Your goals at a glance" captions removed.
+  5.  Goals show the month they started and the month they were completed.
+  6.  Settings row icon tiles enlarged to match the text block.
+  7.  Security opens with an app lock status card and an explanation.
+  8.  The 3-dots menu no longer hides the bottom navigation, and the nav bar
+      no longer flashes on the way into Settings.
+  9.  Profile photo opens smoothly - the width/height tween that caused the
+      shake is gone; transform and opacity only.
+  10. Editing the profile from Settings happens in place: the header itself
+      becomes the editor, the photo stays put and gains a camera badge.
+  11. A budget used to exactly 100% reads green; only above 100% turns red.
+  12. The app now follows the phone font instead of pinning its own.
+  13. Fixed: a goal added while you have no loans no longer disappears from the
+      "Loans & goals status" card on Overview. The card had been rebuilt with
+      only the empty-side prompt, erasing the live row. Same fix covers a loan
+      added while you have no goals.
