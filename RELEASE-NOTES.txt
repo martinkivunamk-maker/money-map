@@ -1,3 +1,17 @@
+v2.0.3.51
+- Rings rebuilt with correct geometry (radius + dash recomputed) so thicker
+  strokes are no longer clipped; Analytics Financial Health ring included.
+- Savings Rate 'Year average' now uses the same income-weighted figure as the
+  headline instead of a mean of rounded monthly rates.
+- Save and Close sit on one line; net-worth chart taller; + button floats again.
+- Search bar: icon retained, gold clear button, descriptive placeholder.
+- Goal step: gold chips, no duplicate kind label, target date defaults to today.
+- Instagram-style avatar cropper (pan, pinch, circular mask).
+- Real camera and gallery glyphs applied app-wide via the sprite.
+- Camera/gallery open immediately; back gesture closes search and photo view.
+- Haptics silenced on transaction rows, the 3-dots menu and settings rows.
+- Bottom nav now hides in Settings (watches the real quick menu + settings page).
+
 Money Map Production v2.0.3.50
 
 UI round (single appended block: style#v20350-ui + script#v20350-logic)

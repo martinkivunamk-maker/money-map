@@ -6734,5 +6734,469 @@ setTimeout(boot,1200);
 setTimeout(boot,2600);
 })();
 </script>
+<style id="v20351-fix">
+/* ============ v2.0.3.51 fix round ============ */
+
+/* 1 - the goal-kind step: gold chips like the asset chooser, and no redundant label */
+.mm50-kindpill{display:none!important}
+#goalModalContent .quick-action-btn{margin-bottom:9px}
+#goalModalContent .qa-icon{background:rgba(212,175,55,0.16)!important;color:var(--gold)!important}
+
+/* 2 - Save and Close side by side, still two separate buttons */
+.mm51-btnrow{display:flex!important;gap:10px;margin-top:14px}
+.mm51-btnrow>button{flex:1 1 0;margin-top:0!important;min-width:0}
+.compact-editor-actions .mm51-btnrow{margin-top:7px}
+
+/* 5 - net-worth chart taller */
+.mm42-bars.mm50-tall{height:158px!important}
+
+/* 6 - the + button floats again, soft not heavy */
+#fab{box-shadow:0 6px 15px -6px rgba(184,144,31,.58),0 2px 5px -2px rgba(0,0,0,.20)!important}
+html[data-native-shell="true"] #fab{box-shadow:0 6px 15px -7px rgba(184,144,31,.55),0 2px 5px -3px rgba(0,0,0,.22)!important}
+
+/* 7 - search bar: keep the icon, gold clear button, helpful placeholder */
+.mm50-searchbar.on{display:flex!important;align-items:center;gap:9px;padding:0 13px}
+.mm51-sicon{flex:none;display:flex;align-items:center;color:var(--text-muted)}
+.mm51-sicon svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9}
+.mm50-searchbar input{flex:1;min-width:0;border:none!important;background:none!important;outline:none;color:var(--text);font-size:14px;font-weight:600;padding:12px 0}
+.mm50-searchbar input::placeholder{color:var(--text-muted);font-weight:500}
+.mm50-searchbar input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.mm51-sx{flex:none;width:27px;height:27px;border-radius:50%;border:none;cursor:pointer;background:rgba(212,175,55,0.15);color:var(--gold);font-size:13px;font-weight:800;line-height:1;display:flex;align-items:center;justify-content:center}
+.mm51-sx:active{transform:scale(.9)}
+
+/* 11 - slower, more deliberate motion */
+.modal-overlay{transition:opacity 300ms cubic-bezier(.25,.8,.3,1),visibility 0s linear 300ms!important}
+.modal-overlay.open{transition:opacity 300ms cubic-bezier(.25,.8,.3,1),visibility 0s linear 0s!important}
+.modal-sheet{transition:transform 430ms cubic-bezier(.17,.84,.24,1)!important}
+#expandContent>*{animation-duration:420ms!important}
+#photoViewModal.pp-mode{transition:opacity 380ms cubic-bezier(.25,.8,.3,1)!important}
+.pp-av{transition:transform 520ms cubic-bezier(.2,.82,.2,1),width 300ms cubic-bezier(.2,.82,.2,1),height 300ms cubic-bezier(.2,.82,.2,1)!important}
+.pp-foot{transition:opacity 320ms ease 220ms,transform 320ms cubic-bezier(.2,.82,.2,1) 220ms!important}
+
+/* 9 - Instagram-style avatar cropper */
+#mm51crop{position:fixed;inset:0;z-index:1200;display:none;flex-direction:column;background:#000;color:#fff;opacity:0;transition:opacity 260ms ease}
+#mm51crop.on{display:flex;opacity:1}
+.ig-top{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px}
+.ig-ttl{font-size:15px;font-weight:700;color:#fff}
+.ig-txt{background:none;border:none;color:#fff;font-size:15px;font-weight:700;padding:8px 6px;cursor:pointer}
+.ig-txt.gold{color:var(--gold-light,#F0D060)}
+.ig-txt:active{opacity:.6}
+.ig-stage{flex:1;position:relative;overflow:hidden;touch-action:none;min-height:0}
+#igImg{position:absolute;left:50%;top:50%;transform-origin:center;will-change:transform;user-select:none;-webkit-user-select:none;pointer-events:none;max-width:none}
+.ig-mask{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:80vw;height:80vw;max-width:330px;max-height:330px;border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.70);border:1.5px solid rgba(255,255,255,.55);pointer-events:none}
+.ig-bot{flex:none;padding:16px 22px calc(20px + env(safe-area-inset-bottom,0px))}
+.ig-bot input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:3px;border-radius:3px;background:rgba(255,255,255,.28);outline:none}
+.ig-bot input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--gold,#D4AF37);border:none}
+.ig-hint{text-align:center;font-size:12px;color:rgba(255,255,255,.62);margin-top:11px}
+@media(prefers-reduced-motion:reduce){#mm51crop,.pp-av,.modal-sheet,.modal-overlay{transition:none!important}}
+</style>
+<script id="v20351-fix-logic">
+(function(){
+'use strict';
+function $(id){return document.getElementById(id);}
+function safe(fn){try{return fn();}catch(e){return undefined;}}
+
+/* ---------- 3: rings, rebuilt with correct geometry ----------
+   The v20350 round only scaled stroke-width. Because the radius stayed put,
+   stroke+radius exceeded the SVG box and the browser clipped the ring - that is
+   the "rough edge". Here the radius shrinks by half the extra stroke and the
+   dash lengths are recomputed, so the ring stays inside its box and reads smooth. */
+function ringHTML(size,swF,pct,col,centre){
+  var p=Math.max(0,Math.min(100,Number(pct)||0)),
+      sw=Math.max(4,size*swF), r=size/2-sw/2-1,
+      C=2*Math.PI*r, off=C*(1-p/100), h=size/2;
+  return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex:none">'+
+    '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" shape-rendering="geometricPrecision" style="transform:rotate(-90deg);display:block;overflow:visible">'+
+    '<circle cx="'+h+'" cy="'+h+'" r="'+r.toFixed(2)+'" fill="none" stroke="var(--track)" stroke-width="'+sw.toFixed(2)+'"/>'+
+    '<circle cx="'+h+'" cy="'+h+'" r="'+r.toFixed(2)+'" fill="none" stroke="'+col+'" stroke-width="'+sw.toFixed(2)+'" stroke-linecap="round" stroke-dasharray="'+C.toFixed(2)+'" stroke-dashoffset="'+off.toFixed(2)+'"/>'+
+    '</svg>'+centre+'</div>';
+}
+safe(function(){
+  window.glRing=function(pct,col,size,labelVal){
+    var p=Math.max(0,Math.min(100,Number(pct)||0)),
+        lbl=(labelVal!=null?Math.round(labelVal):Math.round(p)),
+        fs=Math.round(size*(lbl>=100?0.24:0.30));
+    return ringHTML(size,0.155,p,col,
+      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:'+fs+'px;font-weight:800;color:var(--text)">'+lbl+'</div>');
+  };
+  window.ringDual=function(pct,col,size,cap){
+    var p=Math.max(0,Math.min(100,Number(pct)||0));
+    return ringHTML(size,0.16,p,col,
+      '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">'+
+      '<div class="ring-center-main" style="font-weight:850;color:var(--text)">'+Math.round(p)+'%</div>'+
+      '<div class="ring-center-cap" style="color:var(--text-dim);margin-top:2px">'+(cap==null?'':cap)+'</div></div>');
+  };
+});
+/* Where your money goes - rebuilt so the thicker arc still fits r+sw/2 < 60. */
+safe(function(){
+  if(typeof window.an_money!=='function'||typeof window.pct!=='function')return;
+  window.an_donut=function(list,total){
+    var C=2*Math.PI*46, off=0;
+    var segs=list.map(function(d){
+      var len=d.v/total*C;
+      var s='<circle cx="60" cy="60" r="46" fill="none" stroke="'+d.c+'" stroke-width="19" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 60 60)"></circle>';
+      off+=len;return s;
+    }).join('');
+    var leg=list.map(function(d){return '<div class="an-lr"><span class="an-dot" style="background:'+d.c+'"></span><span class="an-ln">'+d.name+'</span><span class="an-lv">'+pct(d.v,total)+'% \u00b7 '+fmtShort(d.v)+'</span></div>';}).join('');
+    var big=list[0];
+    return '<div class="an-fillcol"><div class="an-donut-row"><div class="an-donut"><svg viewBox="0 0 120 120" shape-rendering="geometricPrecision" style="width:120px;height:120px">'+segs+'</svg>'+
+      '<div class="an-dc"><div class="an-dc-v">'+an_money(total)+'</div><div class="an-dc-l">spent</div></div></div><div class="an-leg">'+leg+'</div></div>'+
+      (big?'<div class="an-foot"><span>Biggest category</span><span class="an-foot-v">'+big.name+' \u00b7 '+pct(big.v,total)+'%</span></div>':'')+'</div>';
+  };
+});
+/* Analytics Financial Health ring - never touched before. Geometry-aware rewrite
+   of the emitted SVG: r shrinks, dash pair rescales by the same factor. */
+function thicken(svg,mult){
+  return String(svg).replace(/<circle\b[^>]*>/g,function(tag){
+    var rM=/\br="([0-9.]+)"/.exec(tag), wM=/stroke-width="([0-9.]+)"/.exec(tag);
+    if(!rM||!wM)return tag;
+    var r=Number(rM[1]), w=Number(wM[1]), nw=w*mult, nr=r-(nw-w)/2;
+    if(!(nr>1))return tag;
+    var k=nr/r;
+    tag=tag.replace(/\br="[0-9.]+"/,'r="'+nr.toFixed(2)+'"')
+           .replace(/stroke-width="[0-9.]+"/,'stroke-width="'+nw.toFixed(2)+'"')
+           .replace(/stroke-dasharray="([0-9.]+) ([0-9.]+)"/,function(m,a,b){
+              return 'stroke-dasharray="'+(Number(a)*k).toFixed(2)+' '+(Number(b)*k).toFixed(2)+'"';})
+           .replace(/stroke-dasharray="([0-9.]+)"/,function(m,a){
+              return 'stroke-dasharray="'+(Number(a)*k).toFixed(2)+'"';})
+           .replace(/stroke-dashoffset="(-?[0-9.]+)"/,function(m,a){
+              return 'stroke-dashoffset="'+(Number(a)*k).toFixed(2)+'"';});
+    if(!/stroke-linecap=/.test(tag)&&/stroke-dasharray=/.test(tag))
+      tag=tag.replace('<circle','<circle stroke-linecap="round"');
+    return tag;
+  });
+}
+safe(function(){
+  var h0=window.an_health;if(typeof h0!=='function')return;
+  window.an_health=function(){
+    var out=h0.apply(this,arguments);
+    return typeof out==='string'?thicken(out,1.32):out;
+  };
+});
+
+/* ---------- 4: savings-rate Year average now matches the headline ----------
+   Headline = total set aside / total income for the year (income-weighted).
+   The old row averaged the twelve rounded monthly percentages, which is a
+   different sum - hence 27.8 vs 28.2. Both were "right"; only one is the
+   number on the card, so the row now uses that same definition. */
+function fixRateAvg(){
+  safe(function(){
+    var c=$('expandContent');if(!c)return;
+    var head=c.querySelector('.exp-total');if(!head)return;
+    var m=/(-?[0-9]+(?:\.[0-9]+)?)\s*%/.exec(head.textContent||'');if(!m)return;
+    var rows=c.querySelectorAll('.exp-row');
+    for(var i=0;i<rows.length;i++){
+      var lab=rows[i].querySelector('span');
+      if(lab&&/^\s*Year average\s*$/.test(lab.textContent||'')){
+        var val=rows[i].querySelectorAll('span')[1];
+        if(val)val.textContent=Number(m[1]).toFixed(1)+'%';
+        return;
+      }
+    }
+  });
+}
+
+/* ---------- 5: taller net-worth bars ---------- */
+function tallBars(){
+  safe(function(){
+    var box=document.querySelector('#expandContent .mm42-bars.mm50-tall');
+    if(!box||box.dataset.mm51==='1')return;
+    box.dataset.mm51='1';
+    Array.prototype.forEach.call(box.querySelectorAll('i'),function(b){
+      var h=parseFloat(b.style.height)||28;
+      var t=Math.max(0,Math.min(1,(h-28)/44));
+      b.style.height=Math.round(46+t*104)+'px';
+    });
+  });
+}
+
+/* ---------- 2: pair Save with Close on one line ---------- */
+function pairBtns(root){
+  safe(function(){
+    var scope=root||document;
+    Array.prototype.forEach.call(scope.querySelectorAll('.btn-gold'),function(b){
+      var n=b.nextElementSibling;
+      if(!n||!n.classList||!n.classList.contains('btn-outline'))return;
+      if(b.parentNode&&b.parentNode.classList.contains('mm51-btnrow'))return;
+      var row=document.createElement('div');
+      row.className='mm51-btnrow';
+      b.parentNode.insertBefore(row,b);
+      row.appendChild(b);row.appendChild(n);
+    });
+  });
+}
+
+/* ---------- 1: goal step shading + today's date ---------- */
+function goalPolish(){
+  safe(function(){
+    var c=$('goalModalContent');if(!c)return;
+    var d=$('gDate');
+    if(d&&!d.value&&typeof today==='function')d.value=today();
+    Array.prototype.forEach.call(c.querySelectorAll('.qa-icon'),function(q){
+      if(!q.style.background)q.style.background='rgba(212,175,55,0.16)';
+      if(!q.style.color)q.style.color='var(--gold)';
+    });
+  });
+}
+
+/* ---------- 10: real camera / gallery glyphs, everywhere at once ----------
+   Rewriting the sprite symbol updates every <use> in the app in one move. */
+function fixIcons(){
+  safe(function(){
+    var cam=document.querySelector('symbol#i-camera');
+    if(cam&&cam.dataset.mm51!=='1'){
+      cam.dataset.mm51='1';
+      cam.innerHTML='<path d="M3.6 8.9A2.4 2.4 0 016 6.5h1.3A1.6 1.6 0 008.7 5.6l.5-1A1.6 1.6 0 0110.6 3.7h2.8a1.6 1.6 0 011.4.9l.5 1a1.6 1.6 0 001.4.9H18a2.4 2.4 0 012.4 2.4v7.7A2.4 2.4 0 0118 18.9H6a2.4 2.4 0 01-2.4-2.3V8.9z"/><circle cx="12" cy="12.7" r="3.3"/>';
+    }
+    if(!document.querySelector('symbol#i-gallery')){
+      var host=cam&&cam.parentNode;
+      if(host){
+        var s=document.createElementNS('http://www.w3.org/2000/svg','symbol');
+        s.setAttribute('id','i-gallery');
+        s.setAttribute('viewBox','0 0 24 24');
+        s.innerHTML='<rect x="3" y="5" width="18" height="14" rx="2.6"/><circle cx="8.6" cy="10.1" r="1.7"/><path d="M21 15.8l-4.9-4.3a1.7 1.7 0 00-2.3 0L4.2 19"/>';
+        host.appendChild(s);
+      }
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('use[href="#i-film"]'),function(u){
+      var b=u.closest&&u.closest('.quick-action-btn,.pp-act,.mm-receipt-add');
+      if(b&&/gallery/i.test(b.textContent||''))u.setAttribute('href','#i-gallery');
+    });
+  });
+}
+
+/* ---------- 13: nav bar hidden in Settings ----------
+   v20350 watched #settingsMenuModal, but a later patch (line 5035) replaced the
+   3-dots menu with an anchored popup, #mmQuickMenu20323, and routes Settings
+   through navTo('settings'). That is why the bar never disappeared. */
+function nav51(){
+  safe(function(){
+    var off=false, q=$('mmQuickMenu20323'), sm=$('settingsMenuModal');
+    if(q&&q.classList.contains('open'))off=true;
+    if(sm&&sm.classList.contains('open'))off=true;
+    if(document.body.classList.contains('settings-section-open'))off=true;
+    var ap=document.querySelector('.page.active');
+    if(ap&&ap.id==='page-settings')off=true;
+    if(window.currentPage==='settings')off=true;
+    document.body.classList.toggle('mm-nav-off',off);
+  });
+}
+
+/* ---------- 12: stop the haptic on rows that should stay silent ---------- */
+safe(function(){
+  var H0=window.haptic;
+  if(typeof H0!=='function')return;
+  var mute=0;
+  window.haptic=function(){if(mute>0)return;return H0.apply(this,arguments);};
+  window.hapticStrong=function(){if(mute>0)return;return H0.call(this,'strong');};
+  window.__mm51Mute=function(ms){mute++;setTimeout(function(){mute=Math.max(0,mute-1);},ms||500);};
+  window.__mm51Muted=function(){return mute>0;};
+  var QUIET='.tx-item,.txd-row,.txc-row,.mm-quick-menu,.mm-quick-row,.kebab,'+
+            '.sm-row,[data-settings-key],.settings-item,.sd-item,.set-row';
+  document.addEventListener('pointerdown',function(e){
+    var t=e.target;
+    if(t&&t.closest&&t.closest(QUIET))window.__mm51Mute(600);
+  },true);
+  document.addEventListener('click',function(e){
+    var t=e.target;
+    if(t&&t.closest&&t.closest(QUIET))window.__mm51Mute(400);
+  },true);
+});
+
+/* ---------- 7: search bar with icon, placeholder and gold clear ---------- */
+function searchPolish(){
+  safe(function(){
+    var bar=document.querySelector('.mm50-searchbar');
+    if(!bar||bar.dataset.mm51==='1')return;
+    bar.dataset.mm51='1';
+    bar.innerHTML='<span class="mm51-sicon"><svg viewBox="0 0 24 24"><use href="#i-search"/></svg></span>'+
+      '<input type="search" enterkeyhint="search" placeholder="Search notes, categories, amounts\u2026" oninput="mm50Search(this.value)">'+
+      '<button class="mm51-sx" onclick="mm50ToggleSearch()" aria-label="Cancel search">\u2715</button>';
+  });
+}
+
+/* ---------- 8: camera / gallery open immediately ---------- */
+safe(function(){
+  window.mm50Pick=function(src){
+    safe(function(){if('_photoTarget' in window)window._photoTarget='profile';});
+    safe(function(){if(typeof pickPhotoSource==='function')pickPhotoSource(src);});
+    safe(function(){if(typeof window.mm50ClosePP==='function')window.mm50ClosePP();});
+  };
+});
+
+/* ---------- 9: Instagram-style avatar cropper ---------- */
+safe(function(){
+  var crop0=window.openCropper;
+  if(typeof crop0!=='function')return;
+  var S=null;
+  function el(){
+    var o=$('mm51crop');
+    if(o)return o;
+    o=document.createElement('div');o.id='mm51crop';
+    o.innerHTML='<div class="ig-top">'+
+      '<button class="ig-txt" id="igCancel">Cancel</button>'+
+      '<div class="ig-ttl">Move and scale</div>'+
+      '<button class="ig-txt gold" id="igDone">Done</button></div>'+
+      '<div class="ig-stage" id="igStage"><img id="igImg" alt=""><div class="ig-mask" id="igMask"></div></div>'+
+      '<div class="ig-bot"><input type="range" id="igZoom" min="100" max="320" value="100">'+
+      '<div class="ig-hint">Drag to reposition \u00b7 pinch or slide to zoom</div></div>';
+    document.body.appendChild(o);
+    $('igCancel').addEventListener('click',close);
+    $('igDone').addEventListener('click',done);
+    $('igZoom').addEventListener('input',function(){S.s=Number(this.value)/100;clamp();draw();});
+    var st=$('igStage');
+    st.addEventListener('pointerdown',down);
+    st.addEventListener('pointermove',move);
+    st.addEventListener('pointerup',up);
+    st.addEventListener('pointercancel',up);
+    return o;
+  }
+  function D(){var m=$('igMask');return m?m.getBoundingClientRect().width:280;}
+  function draw(){
+    var i=$('igImg');if(!i||!S)return;
+    i.style.transform='translate(-50%,-50%) translate('+S.tx+'px,'+S.ty+'px) scale('+(S.base*S.s)+')';
+  }
+  function clamp(){
+    var k=S.base*S.s, d=D();
+    var mx=Math.max(0,(S.nw*k-d)/2), my=Math.max(0,(S.nh*k-d)/2);
+    S.tx=Math.max(-mx,Math.min(mx,S.tx));
+    S.ty=Math.max(-my,Math.min(my,S.ty));
+  }
+  function down(e){
+    if(!S)return;
+    S.pts[e.pointerId]={x:e.clientX,y:e.clientY};
+    S.ids=Object.keys(S.pts);
+    if(S.ids.length===1){S.drag={x:e.clientX,y:e.clientY,tx:S.tx,ty:S.ty};}
+    else if(S.ids.length===2){
+      var a=S.pts[S.ids[0]],b=S.pts[S.ids[1]];
+      S.pinch={d:Math.hypot(a.x-b.x,a.y-b.y),s:S.s};
+    }
+  }
+  function move(e){
+    if(!S||!S.pts[e.pointerId])return;
+    S.pts[e.pointerId]={x:e.clientX,y:e.clientY};
+    var ids=Object.keys(S.pts);
+    if(ids.length>=2&&S.pinch){
+      var a=S.pts[ids[0]],b=S.pts[ids[1]];
+      var nd=Math.hypot(a.x-b.x,a.y-b.y);
+      S.s=Math.max(1,Math.min(3.2,S.pinch.s*(nd/(S.pinch.d||1))));
+      var z=$('igZoom');if(z)z.value=String(Math.round(S.s*100));
+    }else if(S.drag){
+      S.tx=S.drag.tx+(e.clientX-S.drag.x);
+      S.ty=S.drag.ty+(e.clientY-S.drag.y);
+    }
+    clamp();draw();
+  }
+  function up(e){
+    if(!S)return;
+    delete S.pts[e.pointerId];
+    if(Object.keys(S.pts).length<2)S.pinch=null;
+    if(!Object.keys(S.pts).length)S.drag=null;
+  }
+  function close(){
+    var o=$('mm51crop');if(o)o.classList.remove('on');
+    setTimeout(function(){var i=$('igImg');if(i)i.src='';},280);
+    S=null;
+  }
+  function done(){
+    if(!S){close();return;}
+    var d=D(), k=S.base*S.s, out=512;
+        var ix=S.nw/2-S.tx/k, iy=S.nh/2-S.ty/k, R=(d/2)/k;
+    var sx=Math.max(0,ix-R), sy=Math.max(0,iy-R), side=Math.min(2*R,S.nw-sx,S.nh-sy);
+    var cv=document.createElement('canvas');cv.width=out;cv.height=out;
+    var cx=cv.getContext('2d');
+    cx.fillStyle='#ffffff';cx.fillRect(0,0,out,out);
+    try{cx.drawImage(S.img,sx,sy,side,side,0,0,out,out);}catch(err){}
+    var data;
+    try{data=cv.toDataURL('image/jpeg',0.88);}catch(err){data=null;}
+    var cb=S.cb;close();
+    if(cb&&data)safe(function(){cb(data);});
+  }
+  window.openCropper=function(dataURL,mode,cb){
+    if(mode!=='avatar')return crop0.apply(this,arguments);
+    var o=el(), img=$('igImg');
+    S={cb:cb,pts:{},drag:null,pinch:null,s:1,tx:0,ty:0,base:1,nw:1,nh:1,img:img};
+    var z=$('igZoom');if(z)z.value='100';
+    img.onload=function(){ if(!S)return;
+      S.nw=img.naturalWidth||1;S.nh=img.naturalHeight||1;
+      img.style.width=S.nw+'px';img.style.height=S.nh+'px';
+      var d=D();
+      S.base=Math.max(d/S.nw,d/S.nh);
+      S.s=1;S.tx=0;S.ty=0;clamp();draw();
+    };
+    img.src=dataURL;
+    o.classList.add('on');
+    return true;
+  };
+});
+
+/* ---------- back gesture closes the search and the photo view ---------- */
+safe(function(){
+  function ppOpen(){var m=$('photoViewModal');return !!(m&&m.classList.contains('pp-mode'));}
+  function searchOpen(){var b=document.querySelector('.mm50-searchbar');return !!(b&&b.classList.contains('on'));}
+  function push(tag){safe(function(){history.pushState({mm51:tag},'');});}
+  ['openProfilePhoto','viewProfilePhoto'].forEach(function(n){
+    var f=window[n];
+    if(typeof f!=='function')return;
+    window[n]=function(){var r=f.apply(this,arguments);push('pp');return r;};
+  });
+  var tg=window.mm50ToggleSearch;
+  if(typeof tg==='function'){
+    window.mm50ToggleSearch=function(){
+      var was=searchOpen();
+      var r=tg.apply(this,arguments);
+      if(!was&&searchOpen())push('search');
+      return r;
+    };
+  }
+  window.addEventListener('popstate',function(){
+    if(ppOpen()){safe(function(){window.mm50ClosePP();});return;}
+    if(searchOpen()){safe(function(){window.mm50ToggleSearch();});}
+  });
+  window.__moneyMapHandleNativeBack=function(){
+    if(ppOpen()){safe(function(){window.mm50ClosePP();});return true;}
+    if(searchOpen()){safe(function(){window.mm50ToggleSearch();});return true;}
+    var q=$('mmQuickMenu20323');
+    if(q&&q.classList.contains('open')){safe(function(){closeQuickMenu20323();});return true;}
+    return false;
+  };
+});
+
+/* ---------- 10 (cont.) refresh glyphs when the edit row appears ---------- */
+safe(function(){
+  var e0=window.mm50EditPhoto;
+  if(typeof e0!=='function')return;
+  window.mm50EditPhoto=function(){var r=e0.apply(this,arguments);fixIcons();return r;};
+});
+
+/* ---------- wiring ---------- */
+function tick(){
+  nav51();
+  pairBtns(document);
+  goalPolish();
+  fixRateAvg();
+  tallBars();
+  searchPolish();
+}
+safe(function(){
+  ['openModal','closeModal','closeModalQuiet','navTo','expandCard','openSettingsMenu',
+   'closeQuickMenu20323','openAddGoalModal','mm50GoalKind','goSettings','renderTransactions'
+  ].forEach(function(n){
+    var f=window[n];
+    if(typeof f!=='function')return;
+    window[n]=function(){
+      var r=f.apply(this,arguments);
+      safe(tick);
+      return r;
+    };
+  });
+});
+function boot(){safe(fixIcons);safe(tick);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
+else boot();
+[250,900,2000,3200].forEach(function(t){setTimeout(boot,t);});
+setInterval(function(){safe(tick);},320);
+})();
+</script>
 </body>
 </html>
