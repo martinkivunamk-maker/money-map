@@ -165,3 +165,77 @@ v2.0.3.54 - UI round (24 Aug 2026)
       "Loans & goals status" card on Overview. The card had been rebuilt with
       only the empty-side prompt, erasing the live row. Same fix covers a loan
       added while you have no goals.
+
+=====================================================================
+v2.0.3.55  -  storage safety, private data, smarter notifications
+=====================================================================
+STORAGE / RECEIPTS
+ 1. Receipts are downscaled and recompressed on capture (was 1400px@85%,
+    now 1080px@72%) - typically 4-6x smaller per receipt.
+ 2. Receipt images now live in a dedicated IndexedDB vault instead of the
+    single settings blob. Existing receipts migrate automatically on launch.
+ 3. saveDB() no longer fails silently. If the browser refuses a write the
+    app now says so and compresses receipts to reclaim room. Previously a
+    full store meant every later change was lost with no warning.
+ 4. Orphaned receipt images are cleaned up after a delete.
+
+RECEIPT CROPPER
+ 5. New pinch-zoom / drag cropper for receipts under a fixed mask, matching
+    the smooth profile-photo cropper. The old four-handle frame is gone.
+ 6. Back gesture closes the cropper instead of the app.
+
+PRIVACY / SECURITY
+ 7. The PIN is no longer stored in readable form. It is kept as a salted
+    PBKDF2-SHA256 hash (150k iterations); existing PINs migrate silently on
+    first launch. The PIN is never written to a backup.
+ 8. Backups are encrypted with AES-256-GCM, keyed from your PIN. New file
+    extension .mmbak.
+ 9. Restoring is PIN-gated. A backup from another Money Map cannot be
+    decrypted without its PIN, and a foreign file is called out before it
+    can replace your data.
+10. Unencrypted backups still restore (your choice) but now warn first.
+11. Receipts are carried inside the encrypted backup.
+
+NOTIFICATIONS
+12. Weekly insight now compares this week against last week, names the
+    biggest category and flags a genuine spike.
+13. New mid-month outlook (15th, 18:00) projecting month end from your real
+    daily spend rate, saying whether money should carry over or run short.
+14. The empty-day reminder is persuasive instead of generic.
+15. Tapping a notification lands on the matching screen and the alert
+    explains itself in Analytics / Remaining income.
+
+DARK MODE
+16. Samsung-style dark theme: pure black canvas, neutral dark grey cards,
+    no gold glow on the four main cards.
+
+STILL ANDROID-SIDE (needs an APK build, not this web upload)
+  - notification-bar icon size
+  - launcher icon colour
+
+
+========================================
+v2.0.3.56 - UI polish before shipping
+========================================
+1.  App lock card in Security is centred: icon on top, "App lock" under it,
+    and the explanation trimmed to two short lines.
+2.  Financial Health expands with a year filter on the top-right instead of the
+    month and year in the title, and now shows how the 100 points are earned:
+    savings rate (30), emergency runway (25), budgets kept (25), loan load (20)
+    with the points actually scored on each.
+3.  Goals summary boxes are shaded green for investment and red for lifestyle,
+    with a "Total amount to go" line underneath. Asset boxes are shaded gold
+    for physical, purple for cash, green for interest, and the amount added to
+    net worth is now green.
+4.  Net-worth bars are labelled Jan, Feb, Mar instead of 1, 2, 3, and the bars
+    are wider and taller, shrinking automatically when there are many months.
+5.  Under All Years the charts label years instead of months, and the spending
+    breakdown adds a year-by-year total.
+6.  No haptic when tapping the big cards around the app. Haptics stay on real
+    selections such as pickers, the nav bar and the + button.
+7.  Cards now settle closed with a calm fade instead of disappearing, with no
+    shake.
+8.  Edit in Settings now asks whether to change the photo or the name. Photo
+    opens the picture on its own with camera, gallery and remove; name opens
+    the name screen. Back returns to Settings instead of the overview.
+9.  The + button no longer has a dark edge and keeps its soft float.

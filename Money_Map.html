@@ -1784,6 +1784,7 @@ function showPinPad(){
 function pinPress(n){ if(pinEntry.length>=4)return; pinEntry+=n; updateDots(); if(pinEntry.length===4) setTimeout(checkPin,150); }
 function pinDel(){ pinEntry=pinEntry.slice(0,-1); updateDots(); }
 function updateDots(){ for(let i=0;i<4;i++) document.getElementById('d'+i).classList.toggle('filled', i<pinEntry.length); }
+window.__mmPinEntry=function(){return pinEntry};
 function checkPin(){
   if(isSettingPin){
     if(!pinFirst){ pinFirst=pinEntry; pinEntry='';var _ni=document.getElementById('nativePinInput');if(_ni)_ni.value='';updateDots(); document.getElementById('lockSubtitle').textContent='Confirm your PIN'; document.getElementById('lockError').textContent=''; _keepNativePinFocused('confirm'); }
@@ -2779,6 +2780,8 @@ function txRcptHTML(){
 }
 function refreshTxRcpt(){ const row=document.getElementById('txRcptRow'); if(row) row.innerHTML=txRcptHTML(); }
 function removeTxImage(){ txImageData=null; refreshTxRcpt(); }
+window.__mmSetReceipt=function(v){ txImageData=(v||null); try{refreshTxRcpt()}catch(e){} };
+window.__mmGetReceipt=function(){ return txImageData; };
 function handleTxImage(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ openCropper(ev.target.result,'receipt',cropped=>{ txImageData=cropped; refreshTxRcpt(); }); }; r.readAsDataURL(f); e.target.value=''; }
 function viewImage(src){ if(!src)return; const im=document.getElementById('pvImg'); if(im)im.src=src; const m=document.getElementById('photoViewModal'); if(m)m.style.display='flex'; }
 function _availableFromSource(source,date,excludeId){
@@ -8015,6 +8018,1119 @@ safe(function(){var e=$('expandContent');if(!e)return;var c=W.closeModal;if(type
 setTimeout(polishAll,300);setTimeout(polishAll,1000);setTimeout(polishAll,2400);
 D.addEventListener('click',function(){setTimeout(polishAll,60)},true);
 W.__MM54={fcast:fcast54,polish:polishAll,navWant:navWant,peOpen:peOpen,peClose:peClose,lockCard:lockCard,remainPolish:remainPolish};
+})();
+</script>
+<style id="v20355-store">
+#mm55crop{position:fixed;inset:0;z-index:9600;background:#0b0b0b;display:none;flex-direction:column;opacity:0;transition:opacity 260ms cubic-bezier(.22,1,.36,1)}
+#mm55crop.on{display:flex;opacity:1}
+#mm55crop .mm55c-top{display:flex;align-items:center;gap:12px;padding:calc(12px + var(--native-inset-top,0px)) 16px 12px}
+#mm55crop .mm55c-x{width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
+#mm55crop .mm55c-t{color:#fff;font-size:16px;font-weight:700}
+#mm55crop .mm55c-stage{position:relative;flex:1 1 auto;overflow:hidden;touch-action:none;background:#0b0b0b}
+#mm55crop .mm55c-img{position:absolute;left:50%;top:50%;transform-origin:center center;will-change:transform;user-select:none;-webkit-user-drag:none;pointer-events:none}
+#mm55crop .mm55c-hole{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 9999px rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.9);border-radius:6px;pointer-events:none;transition:width 220ms cubic-bezier(.22,1,.36,1),height 220ms cubic-bezier(.22,1,.36,1)}
+#mm55crop .mm55c-foot{padding:14px 18px calc(18px + env(safe-area-inset-bottom))}
+#mm55crop .mm55c-hint{color:rgba(255,255,255,.62);font-size:12px;text-align:center;margin:0 0 12px}
+#mm55crop input[type=range]{width:100%;accent-color:var(--gold,#D4AF37);margin:0 0 14px}
+#mm55crop .mm55c-use{width:100%;min-height:52px;border:0;border-radius:var(--radius-sm,14px);background:linear-gradient(135deg,var(--gold-light,#F0D060),var(--gold,#D4AF37));color:#2a2005;font-size:15px;font-weight:800}
+#mm55crop .mm55c-use:active{transform:scale(.985)}
+</style>
+<script id="v20355-store-js">
+(function(){
+  var W=window,D=document;
+  function $(i){return D.getElementById(i)}
+  function safe(f){try{return f()}catch(e){return null}}
+  var M={};W.__MM55=M;
+  var KEY='moneymap_v2';
+  function dbo(){try{if(typeof DB!=='undefined'&&DB)return DB}catch(e){}return W.DB||null}
+  M.db=dbo;
+
+  /* ---------------- 1. receipt vault (IndexedDB) ---------------- */
+  var STORE='shots',_db=null,_cache={},_order=[];
+  function idb(cb){
+    if(_db)return cb(_db);
+    if(!W.indexedDB)return cb(null);
+    try{
+      var rq=W.indexedDB.open('moneymap_shots',1);
+      rq.onupgradeneeded=function(){safe(function(){rq.result.createObjectStore(STORE)})};
+      rq.onsuccess=function(){_db=rq.result;cb(_db)};
+      rq.onerror=function(){cb(null)};
+    }catch(e){cb(null)}
+  }
+  function cput(k,v){_cache[k]=v;_order.push(k);while(_order.length>24){var d=_order.shift();if(d!==k)delete _cache[d]}}
+  function shotPut(k,v,cb){
+    idb(function(db){
+      if(!db)return cb&&cb(false);
+      try{var tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(v,k);
+        tx.oncomplete=function(){cput(k,v);cb&&cb(true)};tx.onerror=function(){cb&&cb(false)};
+      }catch(e){cb&&cb(false)}
+    });
+  }
+  function shotGet(k,cb){
+    if(_cache[k])return cb(_cache[k]);
+    idb(function(db){
+      if(!db)return cb(null);
+      try{var r=db.transaction(STORE,'readonly').objectStore(STORE).get(k);
+        r.onsuccess=function(){var v=r.result||null;if(v)cput(k,v);cb(v)};r.onerror=function(){cb(null)};
+      }catch(e){cb(null)}
+    });
+  }
+  function shotDel(k){delete _cache[k];idb(function(db){if(db)safe(function(){db.transaction(STORE,'readwrite').objectStore(STORE).delete(k)})})}
+  function shotAll(cb){
+    idb(function(db){
+      if(!db)return cb({});
+      try{var out={},c=db.transaction(STORE,'readonly').objectStore(STORE).openCursor();
+        c.onsuccess=function(){var q=c.result;if(q){out[q.key]=q.value;q.continue()}else cb(out)};
+        c.onerror=function(){cb(out)};
+      }catch(e){cb({})}
+    });
+  }
+  M.shotGet=shotGet;M.shotPut=shotPut;M.shotAll=shotAll;M.shotDel=shotDel;
+
+  /* ---------------- 2. downscale + recompress ---------------- */
+  function shrink(url,kind,done){
+    if(typeof url!=='string'||url.indexOf('data:image')!==0)return done(url);
+    var cap=kind==='avatar'?512:(kind==='intake'?1600:1080), q=kind==='avatar'?0.82:0.72;
+    var im=new Image();
+    im.onload=function(){
+      try{
+        var w=im.naturalWidth||im.width,h=im.naturalHeight||im.height;
+        if(!w||!h)return done(url);
+        var sc=Math.min(1,cap/Math.max(w,h));
+        var nw=Math.max(1,Math.round(w*sc)),nh=Math.max(1,Math.round(h*sc));
+        var cv=D.createElement('canvas');cv.width=nw;cv.height=nh;
+        var cx=cv.getContext('2d');
+        cx.fillStyle='#ffffff';cx.fillRect(0,0,nw,nh);
+        safe(function(){cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality='high'});
+        cx.drawImage(im,0,0,nw,nh);
+        var out=cv.toDataURL('image/jpeg',q);
+        done(out&&out.length<url.length?out:url);
+      }catch(e){done(url)}
+    };
+    im.onerror=function(){done(url)};
+    im.src=url;
+  }
+  M.shrink=shrink;
+
+  /* ---------------- 3. move receipts out of the settings blob ---------------- */
+  var sweeping=false;
+  function sweep(after){
+    var db=dbo();
+    if(sweeping||!db||!db.transactions){after&&after();return}
+    var todo=db.transactions.filter(function(t){return t&&typeof t.image==='string'&&t.image.indexOf('data:')===0});
+    if(!todo.length){after&&after();return}
+    sweeping=true;
+    var i=0;
+    (function next(){
+      if(i>=todo.length){sweeping=false;safe(function(){W.saveDB()});after&&after();return}
+      var t=todo[i++];
+      shrink(t.image,'receipt',function(small){
+        var k='shot_'+(t.id||('x'+Date.now()+'_'+i));
+        shotPut(k,small,function(ok){ if(ok)t.image='idb:'+k; next(); });
+      });
+    })();
+  }
+  M.sweep=sweep;
+  var swT=null;
+  function sweepSoon(){ if(swT)return; swT=setTimeout(function(){swT=null;sweep()},400) }
+
+  function gc(){
+    shotAll(function(all){
+      var keep={},list=((dbo()||{}).transactions)||[];
+      list.forEach(function(t){ if(t&&typeof t.image==='string'&&t.image.indexOf('idb:')===0)keep[t.image.slice(4)]=1 });
+      Object.keys(all).forEach(function(k){ if(!keep[k])shotDel(k) });
+    });
+  }
+
+  /* ---------------- 4. quota guard: never fail silently ---------------- */
+  var warned=false;
+  function alarm(){
+    if(warned)return;warned=true;
+    sweep();
+    var msg='Storage is full. Your last change may not be saved \u2014 receipts are being compressed to free room.';
+    if(typeof W.showSnackbar==='function')W.showSnackbar(msg,'error');
+    else if(typeof W.showToast==='function')W.showToast(msg,'var(--danger)');
+    else safe(function(){alert(msg)});
+  }
+  M.alarm=alarm;
+  var _save0=W.saveDB;
+  if(typeof _save0==='function'){
+    W.saveDB=function(){
+      var r=safe(function(){return _save0.apply(this,arguments)});
+      var want=safe(function(){return JSON.stringify(dbo())});
+      var got=safe(function(){return localStorage.getItem(KEY)});
+      if(want&&(!got||got.length<want.length-64))alarm();
+      else if(want&&want.length>3600000&&!warned){
+        warned=true;
+        if(typeof W.showToast==='function')W.showToast('Storage is filling up \u2014 tidying receipts','var(--warning)');
+        sweep();
+      } else sweepSoon();
+      return r;
+    };
+  }
+  M.usage=function(){
+    var s=safe(function(){return (localStorage.getItem(KEY)||'').length})||0;
+    return {settingsBytes:s,limitBytes:5242880,pct:Math.round(s/5242880*100)};
+  };
+
+  /* ---------------- 5. show stored receipts on demand ---------------- */
+  function hydrate(){
+    var list=D.querySelectorAll('img');
+    for(var i=0;i<list.length;i++){
+      var im=list[i],a=im.getAttribute('src')||'';
+      if(a.indexOf('idb:')!==0||im.getAttribute('data-mm55h'))continue;
+      im.setAttribute('data-mm55h','1');
+      (function(el,k){ shotGet(k,function(v){ if(v)el.src=v }) })(im,a.slice(4));
+    }
+  }
+  var hT=null;
+  function hydrateSoon(){ if(hT)return; hT=setTimeout(function(){hT=null;hydrate()},60) }
+  M.hydrate=hydrate;
+  safe(function(){ new W.MutationObserver(hydrateSoon).observe(D.body,{childList:true,subtree:true}) });
+  var _vi=W.viewImage;
+  if(typeof _vi==='function'){
+    W.viewImage=function(src){
+      if(typeof src==='string'&&src.indexOf('idb:')===0){
+        var self=this;shotGet(src.slice(4),function(v){ if(v)_vi.call(self,v) });return;
+      }
+      return _vi.apply(this,arguments);
+    };
+  }
+
+  /* ---------------- 6. smooth receipt cropper ---------------- */
+  var S=null;
+  function ui(){
+    if($('mm55crop'))return;
+    var w=D.createElement('div');w.id='mm55crop';
+    w.innerHTML='<div class="mm55c-top"><button class="mm55c-x" id="mm55cX" aria-label="Close">\u2715</button>'+
+      '<div class="mm55c-t">Crop receipt</div></div>'+
+      '<div class="mm55c-stage" id="mm55cStage"><img class="mm55c-img" id="mm55cImg" alt="">'+
+      '<div class="mm55c-hole" id="mm55cHole"></div></div>'+
+      '<div class="mm55c-foot"><p class="mm55c-hint">Drag to move \u00b7 pinch or slide to zoom</p>'+
+      '<input type="range" id="mm55cZoom" min="100" max="320" value="100">'+
+      '<button class="mm55c-use" id="mm55cUse">Use photo</button></div>';
+    D.body.appendChild(w);
+    $('mm55cX').addEventListener('click',function(){close_(true)});
+    $('mm55cUse').addEventListener('click',commit);
+    $('mm55cZoom').addEventListener('input',function(){ if(!S)return; S.s=Math.max(S.min,Number(this.value)/100); clamp(); draw(); });
+    var st=$('mm55cStage');
+    st.addEventListener('pointerdown',down);
+    st.addEventListener('pointermove',move);
+    st.addEventListener('pointerup',up);
+    st.addEventListener('pointercancel',up);
+  }
+  function geom(){
+    var st=$('mm55cStage'),r=st.getBoundingClientRect();
+    var hw=Math.round(r.width*0.92),hh=Math.round(r.height*0.80);
+    var ho=$('mm55cHole');ho.style.width=hw+'px';ho.style.height=hh+'px';
+    return {W:r.width,H:r.height,hw:hw,hh:hh};
+  }
+  function draw(){
+    if(!S)return;
+    var im=$('mm55cImg');
+    im.style.transform='translate(-50%,-50%) translate('+S.tx+'px,'+S.ty+'px) scale('+S.s+')';
+  }
+  function clamp(){
+    if(!S)return;
+    var dw=S.bw*S.s,dh=S.bh*S.s;
+    var mx=Math.max(0,(dw-S.g.hw)/2),my=Math.max(0,(dh-S.g.hh)/2);
+    S.tx=Math.max(-mx,Math.min(mx,S.tx));
+    S.ty=Math.max(-my,Math.min(my,S.ty));
+    var z=$('mm55cZoom');if(z)z.value=String(Math.round(S.s*100));
+  }
+  function down(e){
+    if(!S)return;
+    S.pts[e.pointerId]={x:e.clientX,y:e.clientY};
+    var ids=Object.keys(S.pts);
+    if(ids.length===1)S.drag={x:e.clientX,y:e.clientY,tx:S.tx,ty:S.ty};
+    else if(ids.length===2){
+      var a=S.pts[ids[0]],b=S.pts[ids[1]];
+      S.pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,s:S.s};S.drag=null;
+    }
+  }
+  function move(e){
+    if(!S||!S.pts[e.pointerId])return;
+    S.pts[e.pointerId]={x:e.clientX,y:e.clientY};
+    var ids=Object.keys(S.pts);
+    if(ids.length>=2&&S.pinch){
+      var a=S.pts[ids[0]],b=S.pts[ids[1]];
+      var nd=Math.hypot(a.x-b.x,a.y-b.y);
+      S.s=Math.max(S.min,Math.min(S.min*4,S.pinch.s*(nd/S.pinch.d)));
+    }else if(S.drag){
+      S.tx=S.drag.tx+(e.clientX-S.drag.x);
+      S.ty=S.drag.ty+(e.clientY-S.drag.y);
+    }
+    clamp();draw();
+  }
+  function up(e){
+    if(!S)return;
+    delete S.pts[e.pointerId];
+    if(Object.keys(S.pts).length<2)S.pinch=null;
+    if(!Object.keys(S.pts).length)S.drag=null;
+  }
+  function open_(url){
+    ui();
+    var o=$('mm55crop'),im=$('mm55cImg');
+    o.style.display='flex';
+    var img=new Image();
+    img.onload=function(){
+      var g=geom();
+      var nw=img.naturalWidth||img.width,nh=img.naturalHeight||img.height;
+      var b=Math.min(g.W/nw,g.H/nh);
+      var bw=nw*b,bh=nh*b;
+      var min=Math.max(1,g.hw/bw,g.hh/bh);
+      S={url:url,nw:nw,nh:nh,b:b,bw:bw,bh:bh,s:min,min:min,tx:0,ty:0,pts:{},drag:null,pinch:null,g:g};
+      im.src=url;im.style.width=bw+'px';im.style.height=bh+'px';
+      var z=$('mm55cZoom');if(z){z.min=String(Math.round(min*100));z.max=String(Math.round(min*400));}
+      clamp();draw();
+      requestAnimationFrame(function(){o.classList.add('on')});
+    };
+    img.onerror=function(){ o.style.display='none'; if(typeof W.showToast==='function')W.showToast('That image could not be opened','var(--danger)') };
+    img.src=url;
+    safe(function(){ history.pushState({mm55:'crop'},'') });
+  }
+  function close_(pop){
+    var o=$('mm55crop');
+    if(o){o.classList.remove('on');setTimeout(function(){ o.style.display='none'; var im=$('mm55cImg'); if(im)im.removeAttribute('src'); },280);}
+    S=null;
+    if(pop)safe(function(){ if(history.state&&history.state.mm55)history.back() });
+  }
+  function isOpen(){ var o=$('mm55crop'); return !!(o&&o.classList.contains('on')) }
+  function commit(){
+    if(!S){close_(true);return}
+    var scale=S.b*S.s;
+    var sw=S.g.hw/scale, sh=S.g.hh/scale;
+    var sx=S.nw/2-S.tx/scale-sw/2, sy=S.nh/2-S.ty/scale-sh/2;
+    sx=Math.max(0,Math.min(S.nw-1,sx));sy=Math.max(0,Math.min(S.nh-1,sy));
+    sw=Math.max(1,Math.min(S.nw-sx,sw));sh=Math.max(1,Math.min(S.nh-sy,sh));
+    var cap=1080,f=Math.min(1,cap/Math.max(sw,sh));
+    var ow=Math.max(1,Math.round(sw*f)),oh=Math.max(1,Math.round(sh*f));
+    var im=new Image();
+    im.onload=function(){
+      var out=null;
+      try{
+        var cv=D.createElement('canvas');cv.width=ow;cv.height=oh;
+        var cx=cv.getContext('2d');
+        cx.fillStyle='#ffffff';cx.fillRect(0,0,ow,oh);
+        safe(function(){cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality='high'});
+        cx.drawImage(im,sx,sy,sw,sh,0,0,ow,oh);
+        out=cv.toDataURL('image/jpeg',0.72);
+      }catch(e){out=null}
+      if(out&&W.__mmSetReceipt)W.__mmSetReceipt(out);
+      close_(true);
+      if(out&&typeof W.showToast==='function')W.showToast('Receipt attached','var(--success)');
+    };
+    im.onerror=function(){ close_(true) };
+    im.src=S.url;
+  }
+  M.openCrop=open_;M.closeCrop=close_;M.cropOpen=isOpen;
+
+  var _hti=W.handleTxImage;
+  W.handleTxImage=function(e){
+    var f=e&&e.target&&e.target.files&&e.target.files[0];
+    if(!f||!W.__mmSetReceipt||!W.FileReader)return _hti&&_hti.apply(this,arguments);
+    var el=e.target;
+    var r=new W.FileReader();
+    r.onload=function(ev){ shrink(String(ev.target.result),'intake',function(small){ open_(small) }) };
+    r.onerror=function(){ if(typeof W.showToast==='function')W.showToast('That file could not be read','var(--danger)') };
+    r.readAsDataURL(f);
+    setTimeout(function(){ safe(function(){el.value=''}) },0);
+  };
+
+  /* back gesture closes the cropper, not the app */
+  var _nb=W.__moneyMapHandleNativeBack;
+  W.__moneyMapHandleNativeBack=function(){
+    if(isOpen()){ close_(false); return true }
+    return typeof _nb==='function'?_nb.apply(this,arguments):false;
+  };
+  W.addEventListener('popstate',function(){ if(isOpen())close_(false) });
+
+  /* ---------------- 7. first-run migration ---------------- */
+  function boot(){ sweep(function(){ setTimeout(gc,1500) }); hydrateSoon(); }
+  if(D.readyState==='complete'||D.readyState==='interactive')setTimeout(boot,1200);
+  else W.addEventListener('load',function(){setTimeout(boot,1200)});
+})();
+</script>
+<script id="v20355-sec">
+(function(){
+  var W=window,D=document;
+  function safe(f){try{return f()}catch(e){return null}}
+  function dbo(){try{if(typeof DB!=='undefined'&&DB)return DB}catch(e){}return W.DB||null}
+  function toast(m,c){ if(typeof W.showToast==='function')W.showToast(m,c||'var(--gold)'); }
+  var SUB=safe(function(){return (W.crypto&&W.crypto.subtle)||null});
+  var EN=W.TextEncoder?new W.TextEncoder():null;
+  var M={};W.__MM56=M;
+  M.available=!!(SUB&&EN&&W.crypto&&W.crypto.getRandomValues);
+  var ITER=150000;
+
+  function b64(buf){var b=new Uint8Array(buf),s='';for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return W.btoa(s)}
+  function unb64(s){var r=W.atob(String(s||'')),a=new Uint8Array(r.length);for(var i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a}
+  function rand(n){var a=new Uint8Array(n);W.crypto.getRandomValues(a);return a}
+  function hexs(b){var s='';for(var i=0;i<b.length;i++)s+=('0'+b[i].toString(16)).slice(-2);return s}
+
+  /* ---- this install's own id: a foreign file is recognisable ---- */
+  function devId(){
+    var v=safe(function(){return localStorage.getItem('mm_device_id')});
+    if(!v){ v=M.available?hexs(rand(8)):String(Date.now()); safe(function(){localStorage.setItem('mm_device_id',v)}); }
+    return v;
+  }
+  M.devId=devId;
+
+  /* ---- PBKDF2 / AES-GCM ---- */
+  function bits(pin,salt,iter,cb){
+    if(!M.available)return cb(null);
+    SUB.importKey('raw',EN.encode(String(pin)),{name:'PBKDF2'},false,['deriveBits'])
+      .then(function(base){return SUB.deriveBits({name:'PBKDF2',salt:salt,iterations:iter,hash:'SHA-256'},base,256)})
+      .then(function(b){cb(b)})['catch'](function(){cb(null)});
+  }
+  function keyOf(pin,salt,iter,cb){
+    if(!M.available)return cb(null);
+    SUB.importKey('raw',EN.encode(String(pin)),{name:'PBKDF2'},false,['deriveKey'])
+      .then(function(base){return SUB.deriveKey({name:'PBKDF2',salt:salt,iterations:iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])})
+      .then(function(k){cb(k)})['catch'](function(){cb(null)});
+  }
+  function hashPin(pin,cb){
+    var salt=rand(16);
+    bits(pin,salt,ITER,function(b){ cb(b?{v:1,iter:ITER,salt:b64(salt),hash:b64(b)}:null) });
+  }
+  function verifyPin(pin,sec,cb){
+    if(!M.available||!sec||!sec.salt)return cb(false);
+    bits(pin,unb64(sec.salt),sec.iter||ITER,function(b){ cb(!!b&&b64(b)===sec.hash) });
+  }
+  M.hashPin=hashPin;M.verifyPin=verifyPin;
+
+  /* ---- 1. the PIN never reaches storage in the clear ---- */
+  var hashedFor=null;
+  var _sv=W.saveDB;
+  if(typeof _sv==='function'){
+    W.saveDB=function(){
+      var db=dbo(),plain=null;
+      if(db&&M.available&&typeof db.pin==='string'&&db.pin){ plain=db.pin; safe(function(){delete db.pin}); }
+      var r=safe(function(){return _sv.call(W)});
+      if(plain!==null&&db){
+        db.pin=plain;
+        if(hashedFor!==plain){
+          hashedFor=plain;
+          hashPin(plain,function(sec){ if(sec){ db.pinSec=sec; safe(function(){W.saveDB()}); } });
+        }
+      }
+      return r;
+    };
+  }
+
+  /* ---- 2. unlocking against the stored hash ---- */
+  var _cp=W.checkPin;
+  if(typeof _cp==='function'){
+    W.checkPin=function(){
+      var db=dbo(),e=W.__mmPinEntry?String(W.__mmPinEntry()||''):'';
+      if(!db||!db.pinSec||db.pin||e.length<4||!M.available)return _cp.apply(this,arguments);
+      var self=this,args=arguments;
+      verifyPin(e,db.pinSec,function(ok){ if(ok)db.pin=e; _cp.apply(self,args); });
+    };
+  }
+
+  /* ---- 3. encrypted backup ---- */
+  function collect(cb){
+    var db=dbo()||{};
+    var clone=safe(function(){return JSON.parse(JSON.stringify(db))})||{};
+    delete clone.pin; delete clone.pinSec;
+    if(W.__MM55&&W.__MM55.shotAll)W.__MM55.shotAll(function(all){ clone.__shots=all||{}; cb(clone) });
+    else cb(clone);
+  }
+  var _bd=W.backupData;
+  W.backupData=function(){
+    var db=dbo();
+    if(!M.available){
+      toast('This browser cannot encrypt \u2014 saving a plain copy','var(--warning)');
+      return _bd&&_bd.apply(this,arguments);
+    }
+    if(!db||!db.pin){
+      if(typeof W.askConfirm==='function')W.askConfirm('Unlock first','Backups are locked with your app PIN. Enter your PIN once, then back up.',function(){},'Got it');
+      else toast('Enter your PIN once, then back up','var(--warning)');
+      return;
+    }
+    var salt=rand(16),iv=rand(12);
+    keyOf(db.pin,salt,ITER,function(key){
+      if(!key)return toast('Could not lock the backup','var(--danger)');
+      collect(function(clone){
+        var plain=safe(function(){return JSON.stringify(clone)});
+        if(!plain)return toast('Could not prepare the backup','var(--danger)');
+        SUB.encrypt({name:'AES-GCM',iv:iv},key,EN.encode(plain)).then(function(ct){
+          var file=JSON.stringify({mmBackup:2,app:'Money Map',alg:'AES-GCM',kdf:'PBKDF2-SHA256',iter:ITER,salt:b64(salt),iv:b64(iv),device:devId(),created:new Date().toISOString(),data:b64(ct)},null,2);
+          var name='MoneyMap_Backup_'+(typeof W.today==='function'?W.today():'export')+'.mmbak';
+          if(typeof W._nativeSaveFile==='function'&&W._nativeSaveFile(name,'application/json',file)){toast('Encrypted backup saved to Downloads','var(--success)');return}
+          var blob=new Blob([file],{type:'application/json'}),u=URL.createObjectURL(blob),a=D.createElement('a');
+          a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);
+          toast('Encrypted backup saved','var(--success)');
+        })['catch'](function(){ toast('Could not lock the backup','var(--danger)') });
+      });
+    });
+  };
+
+  /* ---- 4. restore: PIN-gated, foreign files challenged ---- */
+  function applyData(data,foreign){
+    function go(){
+      var shots=data.__shots||null;
+      delete data.__shots; delete data.pin; delete data.pinSec;
+      var db=dbo(); if(!db)return;
+      Object.assign(db,data);
+      if(shots&&W.__MM55&&W.__MM55.shotPut)Object.keys(shots).forEach(function(k){ W.__MM55.shotPut(k,shots[k]) });
+      safe(function(){W.saveDB()});
+      safe(function(){W.updateOverview()});
+      safe(function(){W.renderSettings()});
+      toast('Data restored successfully','var(--success)');
+    }
+    if(typeof W.askConfirm!=='function')return go();
+    if(foreign)W.askConfirm('This backup is from another device','Restoring replaces ALL of your current data with it. Continue only if this backup is yours.',go,'Replace data',true);
+    else W.askConfirm('Restore backup?','This will replace ALL your current data with the backup.',go,'Replace data',true);
+  }
+  M.applyData=applyData;
+  var _rd=W.restoreData;
+  W.restoreData=function(e){
+    var f=e&&e.target&&e.target.files&&e.target.files[0];
+    if(!f||!W.FileReader)return _rd&&_rd.apply(this,arguments);
+    var el=e.target,r=new W.FileReader();
+    r.onload=function(ev){
+      var obj=safe(function(){return JSON.parse(String(ev.target.result||''))});
+      if(!obj)return toast('Could not read backup file','var(--danger)');
+      if(Number(obj.mmBackup)>=2&&obj.data){
+        if(!M.available)return toast('This browser cannot open encrypted backups','var(--danger)');
+        var db=dbo();
+        if(!db||!db.pin)return toast('Enter your PIN once, then restore','var(--warning)');
+        keyOf(db.pin,unb64(obj.salt),Number(obj.iter)||ITER,function(key){
+          if(!key)return toast('Could not open that backup','var(--danger)');
+          SUB.decrypt({name:'AES-GCM',iv:unb64(obj.iv)},key,unb64(obj.data)).then(function(pt){
+            var txt=W.TextDecoder?new W.TextDecoder().decode(pt):'';
+            var data=safe(function(){return JSON.parse(txt)});
+            if(!data||!data.transactions||!data.budgets)return toast('That backup is not valid','var(--danger)');
+            applyData(data,obj.device!==devId());
+          })['catch'](function(){
+            toast('Wrong PIN, or this backup belongs to another Money Map','var(--danger)');
+          });
+        });
+        return;
+      }
+      if(!obj.transactions||!obj.budgets)return toast('Invalid backup file','var(--danger)');
+      var extra=obj.pin?' It even carries a PIN in readable form.':'';
+      if(typeof W.askConfirm==='function')
+        W.askConfirm('This backup is not encrypted','Anyone holding this file can read your records.'+extra+' Restore it anyway?',function(){ applyData(obj,true) },'Restore anyway',true);
+      else applyData(obj,true);
+    };
+    r.onerror=function(){ toast('Could not read backup file','var(--danger)') };
+    r.readAsText(f);
+    setTimeout(function(){ safe(function(){el.value=''}) },0);
+  };
+
+  /* ---- 5. migrate an existing plaintext PIN once ---- */
+  function boot(){
+    var db=dbo();
+    if(db&&M.available&&typeof db.pin==='string'&&db.pin&&!db.pinSec)safe(function(){W.saveDB()});
+    devId();
+  }
+  if(D.readyState==='complete'||D.readyState==='interactive')setTimeout(boot,1600);
+  else W.addEventListener('load',function(){setTimeout(boot,1600)});
+})();
+</script>
+<style id="v20355-dark">
+/* Samsung-style dark: pure black canvas, neutral grouped cards, no coloured glow */
+html[data-theme="dark"],[data-theme="dark"]{
+  --bg:#000000!important;
+  --bg-glow1:transparent!important;
+  --bg-glow2:transparent!important;
+  --surface:#0a0a0a!important;
+  --surface2:#151515!important;
+  --card-bg:#161616!important;
+  --card-border:rgba(255,255,255,0.07)!important;
+  --card-hi:transparent!important;
+  --glass:rgba(255,255,255,0.045)!important;
+  --glass-hover:rgba(255,255,255,0.08)!important;
+  --glass-border:rgba(255,255,255,0.07)!important;
+  --glass-line:rgba(255,255,255,0.10)!important;
+  --nav-bg:#000000!important;
+  --nav-glass:rgba(0,0,0,0.96)!important;
+  --modal-bg:linear-gradient(180deg,#1a1a1a 0%,#0d0d0d 100%)!important;
+  --input-bg:rgba(255,255,255,0.06)!important;
+  --input-border:rgba(255,255,255,0.10)!important;
+  --track:rgba(255,255,255,0.10)!important;
+  --shadow:rgba(0,0,0,0.75)!important;
+}
+html[data-theme="dark"] body{background:#000000!important}
+html[data-theme="dark"] .overview-card,html[data-theme="dark"] .glass-card,html[data-theme="dark"] .tx-item,
+html[data-theme="dark"] .bgt-card,html[data-theme="dark"] .set-card,html[data-theme="dark"] .settings-hub{
+  box-shadow:none!important;border-color:rgba(255,255,255,0.07)!important;background-image:none!important;background:#161616!important;
+}
+html[data-theme="dark"] .overview-card::before,html[data-theme="dark"] .glass-card::before{background:none!important;opacity:0!important}
+</style>
+<script id="v20355-notify">
+(function(){
+  var W=window,D=document;
+  function safe(f){try{return f()}catch(e){return null}}
+  function dbo(){try{if(typeof DB!=='undefined'&&DB)return DB}catch(e){}return W.DB||null}
+  var M={};W.__MM57=M;
+
+  function cur(n){
+    n=Math.round(Number(n)||0);
+    var f=W.fmtMoney||W.formatMoney||W.money||W.fmtAmount;
+    if(typeof f==='function'){var r=safe(function(){return f(n)});if(r)return r}
+    var db=dbo()||{};
+    return (db.currency||'')+' '+n.toLocaleString('en-US');
+  }
+  function amountsOn(){var db=dbo()||{};return !!((db.notificationSettings||{}).showAmounts)}
+  function dparse(s){var p=String(s||'').slice(0,10).split('-').map(Number);return p.length===3?new Date(p[0],p[1]-1,p[2],12):null}
+
+  /* ---------- weekly comparison + spike detection ---------- */
+  function week(){
+    var db=dbo()||{},now=new Date();now.setHours(12,0,0,0);
+    var a=new Date(now);a.setDate(a.getDate()-6);
+    var pa=new Date(a);pa.setDate(pa.getDate()-7);
+    var pb=new Date(a);pb.setDate(pb.getDate()-1);
+    var curT=0,preT=0,byC={},byP={};
+    (db.transactions||[]).forEach(function(t){
+      if(!t||t.type!=='expense')return;
+      var x=dparse(t.date);if(!x)return;
+      var amt=Number(t.amount)||0,c=t.categoryId||'other';
+      if(x>=a&&x<=now){curT+=amt;byC[c]=(byC[c]||0)+amt}
+      else if(x>=pa&&x<=pb){preT+=amt;byP[c]=(byP[c]||0)+amt}
+    });
+    function cname(id){var c=(db.categories||[]).find(function(k){return k.id===id});return c?c.name:'Uncategorised'}
+    var spike=null;
+    Object.keys(byC).forEach(function(c){
+      var p=byP[c]||0,n=byC[c];
+      if(p>0&&n>=p*1.5&&(!spike||(n-p)>spike.jump))spike={cat:cname(c),jump:n-p,now:n,before:p,pct:Math.round((n-p)/p*100)};
+      else if(!p&&n>0&&!spike)spike={cat:cname(c),jump:n,now:n,before:0,pct:null};
+    });
+    var top=Object.keys(byC).sort(function(x,y){return byC[y]-byC[x]})[0];
+    var tone='neutral',detail,body;
+    if(!curT&&!preT){
+      tone='neutral';
+      detail='Nothing was recorded in either of the last two weeks, so there is no trend to compare yet.';
+      body='No spending recorded in the last seven days.';
+    } else if(!preT){
+      tone='neutral';
+      detail='This is your first week with entries, so there is nothing to compare against yet. Next week you will get a real trend.';
+      body=amountsOn()?'You spent '+cur(curT)+' this week. Tap to see where it went.':'Your first week of spending is ready to review.';
+    } else {
+      var pct=Math.round(Math.abs(curT-preT)/preT*100);
+      var up=curT>preT;
+      tone=up?(pct>=25?'warn':'neutral'):'good';
+      detail=(up?'You spent '+pct+'% more than the previous seven days':'You spent '+pct+'% less than the previous seven days')+
+        (amountsOn()?' ('+cur(curT)+' against '+cur(preT)+')':'')+'.'+
+        (top?' '+cname(top)+' was your largest area this week.':'')+
+        (spike&&spike.pct!==null?' '+spike.cat+' stands out \u2014 it jumped '+spike.pct+'% on last week.':'');
+      body=(up?'Spending is up '+pct+'% on last week.':'Spending is down '+pct+'% on last week.')+
+        (spike&&spike.pct!==null?' '+spike.cat+' spiked '+spike.pct+'%.':' Tap to see the breakdown.');
+    }
+    return {tone:tone,detail:detail,body:body,total:curT,previous:preT,spike:spike};
+  }
+  M.week=week;
+
+  /* ---------- mid-month outlook from real spend rate ---------- */
+  function month(){
+    var db=dbo()||{},now=new Date();
+    var y=now.getFullYear(),m=now.getMonth();
+    var dim=new Date(y,m+1,0).getDate(),day=now.getDate();
+    var inc=0,exp=0;
+    (db.transactions||[]).forEach(function(t){
+      if(!t)return;
+      var x=dparse(t.date);if(!x||x.getFullYear()!==y||x.getMonth()!==m)return;
+      var a=Number(t.amount)||0;
+      if(t.type==='income')inc+=a;else if(t.type==='expense')exp+=a;
+    });
+    var rate=day>0?exp/day:0,proj=rate*dim,carry=inc-proj,left=dim-day;
+    var detail,body,tone;
+    if(!exp){
+      tone='neutral';
+      detail='No spending is recorded this month yet, so there is no pace to project from.';
+      body='Add this month\u2019s spending to see where you are heading.';
+    } else if(carry>=0){
+      tone='good';
+      detail='You are averaging '+cur(rate)+' a day. At that pace this month ends around '+cur(proj)+' spent, leaving roughly '+cur(carry)+' to carry into next month with '+left+' day'+(left===1?'':'s')+' to go.';
+      body=amountsOn()?'Hold this pace and about '+cur(carry)+' could roll into next month.':'Hold this pace and you should finish the month with money left over.';
+    } else {
+      tone='warn';
+      detail='You are averaging '+cur(rate)+' a day. At that pace this month ends around '+cur(proj)+' spent, which is about '+cur(Math.abs(carry))+' beyond what came in, with '+left+' day'+(left===1?'':'s')+' left.';
+      body=amountsOn()?'This pace overshoots by about '+cur(Math.abs(carry))+' by month end.':'Your current pace overshoots this month. Tap to see the numbers.';
+    }
+    return {tone:tone,detail:detail,body:body,income:inc,spent:exp,perDay:rate,projected:proj,carry:carry,daysLeft:left};
+  }
+  M.month=month;
+
+  var NUDGE=[
+    'Nothing logged today. One entry now keeps the month honest.',
+    'Today is still blank \u2014 add what you spent while you remember it.',
+    'Thirty seconds now saves guessing at month end. Add today\u2019s spending.',
+    'Your day is unrecorded. Add one entry and keep the streak alive.'
+  ];
+  function nudge(){ return NUDGE[new Date().getDate()%NUDGE.length] }
+
+  /* ---------- enrich the notification plan ---------- */
+  var _pl=W._notificationPlan;
+  if(typeof _pl==='function'){
+    W._notificationPlan=function(){
+      var p=safe(function(){return _pl.apply(W,arguments)})||{};
+      var db=dbo()||{},ns=db.notificationSettings||{};
+      var w=safe(week)||{},mo=safe(month)||{};
+      p.plans=(p.plans||[]).map(function(x){
+        if(!x)return x;
+        if(x.id==='weekly-insight')
+          return Object.assign({},x,{title:'Your week in numbers',body:w.body||x.body,route:'analytics',deepLink:'weekly-insight',explain:w.detail||''});
+        if(x.id==='daily-check-in'){
+          var has=!!(p.dailyState&&p.dailyState.hasTransactionToday);
+          return Object.assign({},x,{
+            title:has?'Money Map':'Today is still blank',
+            body:has?'Today is logged. Tap to review it.':nudge(),
+            route:'transactions',deepLink:'daily-check-in'});
+        }
+        return x;
+      });
+      p.plans.push({
+        id:'mid-month-outlook',
+        enabled:!!(ns.enabled&&ns.weekly!==false),
+        day:15,time:'18:00',
+        title:(mo.carry>=0?'On course to carry money over':'This pace overshoots the month'),
+        body:mo.body||'',route:'remaining',deepLink:'mid-month-outlook',explain:mo.detail||''
+      });
+      p.channelVersion=Math.max(2,Number(p.channelVersion)||2);
+      p.insightVersion=3;
+      return p;
+    };
+  }
+
+  /* ---------- opening a notification lands on the right explanation ---------- */
+  function byText(re){
+    var all=D.querySelectorAll('.overview-card,.glass-card,.card,section,div');
+    for(var i=0;i<all.length;i++){
+      var t=(all[i].textContent||'').trim();
+      if(t&&t.length<400&&re.test(t))return all[i];
+    }
+    return null;
+  }
+  function scrollTo_(el){ if(el&&el.scrollIntoView)safe(function(){el.scrollIntoView({behavior:'smooth',block:'center'})}) }
+  function open_(id){
+    var k=String(id||'').replace(/^moneymap:\/\/notification\//,'');
+    W.MM_NOTIF_FOCUS=k;
+    function nav(p){ if(typeof W.navTo==='function')safe(function(){W.navTo(p)}) }
+    if(k==='weekly-insight'){
+      nav('analytics');
+      setTimeout(function(){
+        safe(function(){ if(typeof W.renderAnalytics==='function')W.renderAnalytics() });
+        scrollTo_(D.querySelector('.smart-insight-section'));
+      },460);
+    } else if(k==='mid-month-outlook'){
+      nav('overview');
+      setTimeout(function(){
+        safe(function(){ if(typeof W.renderRemaining45==='function')W.renderRemaining45(true) });
+        scrollTo_(byText(/remaining income/i));
+      },460);
+    } else if(k==='daily-check-in'){
+      nav('transactions');
+      setTimeout(function(){ var f=D.getElementById('fab'); if(f)safe(function(){f.click()}) },520);
+    } else if(k==='monthly-asset-update'){ nav('budget'); }
+    else if(k&&k.indexOf('recurring')===0){ nav('transactions'); }
+    return true;
+  }
+  W.openMoneyMapNotification=open_;
+  if(typeof W.openMoneyMapNotification20341!=='function')W.openMoneyMapNotification20341=open_;
+  M.open=open_;
+
+  /* ---------- the tapped notification explains itself in Analytics ---------- */
+  var _bs=W.buildSmartInsights;
+  if(typeof _bs==='function'){
+    W.buildSmartInsights=function(){
+      var list=safe(function(){return _bs.apply(W,arguments)})||[];
+      var f=W.MM_NOTIF_FOCUS;
+      if(f==='weekly-insight'){
+        var w=safe(week);
+        if(w)list=[{tone:w.tone,text:'Your weekly alert: '+w.detail}].concat(list);
+      } else if(f==='mid-month-outlook'){
+        var mo=safe(month);
+        if(mo)list=[{tone:mo.tone,text:'Your mid-month alert: '+mo.detail}].concat(list);
+      }
+      return list;
+    };
+  }
+
+  function fromUrl(){
+    var s=String(W.location.search||'')+String(W.location.hash||'');
+    var m=s.match(/(?:mmn|notification)=([a-zA-Z0-9\-_]+)/);
+    if(m)setTimeout(function(){ open_(m[1]) },1500);
+  }
+  if(D.readyState==='complete'||D.readyState==='interactive')setTimeout(fromUrl,300);
+  else W.addEventListener('load',fromUrl);
+})();
+</script>
+
+<style id="v20356-ui">
+/* 1 - app lock card: icon on top, everything centred */
+.mm54-lock.mm56-lock{align-items:center;text-align:center;gap:11px;padding:20px 18px}
+.mm54-lock.mm56-lock .mm54-lock-top{flex-direction:column;align-items:center;gap:10px}
+.mm54-lock.mm56-lock .mm54-lock-ic{width:62px;height:62px;border-radius:19px}
+.mm54-lock.mm56-lock .mm54-lock-ic svg{width:30px;height:30px}
+.mm54-lock.mm56-lock .mm54-lock-b{max-width:33ch;margin:0 auto}
+
+/* 2 - health card head + score breakdown */
+.mm56-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:13px}
+.mm56-head .modal-title{margin:0!important;padding:0!important;min-width:0;position:static!important}
+.mm56-year{flex:0 0 auto;padding:6px 11px}
+.mm56-pts{margin:15px 0 2px;border-top:1px solid var(--input-border);padding-top:13px}
+.mm56-pts-h{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.mm56-pts-i{font-size:11.5px;line-height:1.5;color:var(--text-dim);margin-bottom:10px}
+.mm56-pt{padding:9px 0}
+.mm56-pt+.mm56-pt{border-top:1px solid var(--input-border)}
+.mm56-pt-r{display:flex;align-items:baseline;gap:10px}
+.mm56-pt-n{flex:1;min-width:0;font-size:13.5px;font-weight:750;color:var(--text)}
+.mm56-pt-v{flex:none;font-size:14px;font-weight:800}
+.mm56-pt-s{font-size:11.5px;line-height:1.5;color:var(--text-dim);margin-top:3px}
+.mm56-pt-bar{height:5px;border-radius:4px;background:var(--track);margin-top:7px;overflow:hidden}
+.mm56-pt-bar>i{display:block;height:100%;border-radius:4px}
+.mm56-tot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--input-border);font-size:13.5px;font-weight:800;color:var(--text)}
+
+/* 3 - summary card shades */
+.mm56-inv{background:rgba(63,174,90,.085)!important;border-color:rgba(63,174,90,.40)!important}
+.mm56-life{background:rgba(224,85,85,.075)!important;border-color:rgba(224,85,85,.36)!important}
+.mm56-gold{background:rgba(212,175,55,.10)!important;border-color:rgba(212,175,55,.44)!important}
+.mm56-purple{background:rgba(157,111,184,.10)!important;border-color:rgba(157,111,184,.44)!important}
+.mm56-green{background:rgba(63,174,90,.085)!important;border-color:rgba(63,174,90,.40)!important}
+.mm56-togo{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--input-border)}
+.mm56-togo span{font-size:12px;color:var(--text-dim)}
+.mm56-togo b{font-size:17px;font-weight:800;color:var(--text)}
+
+/* 4 - net-worth bars: wider, taller, shrink when there are many */
+.mm42-bars .mm42-baritem{flex:1 1 0;min-width:0}
+.mm42-bars .mm42-baritem i{width:clamp(10px,7.4vw,26px)!important;max-width:100%}
+.mm42-bars.mm50-tall{height:174px!important}
+
+/* 5 - year-by-year block */
+.mm56-yy{margin:14px 0 2px;border-top:1px solid var(--input-border);padding-top:12px}
+.mm56-yy-h{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+
+/* 7 - calm close: fade + small settle, no shake */
+.modal-overlay.mm56-out{display:flex!important;opacity:0!important;transition:opacity 250ms cubic-bezier(.32,.72,0,1)!important}
+.modal-overlay.mm56-out .modal-sheet{transform:translateY(15px)!important;opacity:0!important;transition:transform 300ms cubic-bezier(.32,.72,0,1),opacity 240ms ease!important}
+.modal-overlay.open .modal-sheet{transition:transform 320ms cubic-bezier(.32,.72,0,1)!important}
+
+/* 8 - edit chooser sheet */
+#mm56Ch{position:fixed;left:0;top:0;right:0;bottom:0;z-index:760;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.45);opacity:0;transition:opacity 220ms ease}
+#mm56Ch.on{display:flex;opacity:1}
+.mm56-ch-sheet{width:100%;max-width:520px;background:var(--modal-bg,var(--surface));border-radius:24px 24px 0 0;padding:16px 16px calc(20px + var(--native-inset-bottom,0px));transform:translateY(20px);transition:transform 300ms cubic-bezier(.32,.72,0,1)}
+#mm56Ch.on .mm56-ch-sheet{transform:none}
+.mm56-ch-t{font-size:17px;font-weight:800;color:var(--text);margin:4px 2px 13px}
+.mm56-ch-row{display:flex;align-items:center;gap:13px;padding:13px 12px;border-radius:16px;background:var(--glass);border:1px solid var(--card-border);margin-bottom:10px;cursor:pointer}
+.mm56-ch-row:active{transform:scale(.99)}
+.mm56-ch-ic{width:42px;height:42px;flex:none;border-radius:13px;display:flex;align-items:center;justify-content:center;background:rgba(212,175,55,.14);color:var(--gold)}
+.mm56-ch-ic svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9}
+.mm56-ch-c{flex:1;min-width:0}
+.mm56-ch-n{font-size:14.5px;font-weight:750;color:var(--text)}
+.mm56-ch-s{font-size:11.5px;color:var(--text-dim);margin-top:2px}
+
+/* 9 - the + button: no dark edge, still floating */
+#fab,html[data-native-shell="true"] #fab{border:0!important;outline:0!important;background-clip:padding-box!important;-webkit-tap-highlight-color:transparent!important;box-shadow:0 10px 22px -10px rgba(184,144,31,.52),0 4px 11px -6px rgba(212,175,55,.34)!important}
+</style>
+
+<script id="v20356-ui-js">
+(function(){
+var W=window,D=document;
+function safe(f){try{return f()}catch(e){return null}}
+function q(s,r){return (r||D).querySelector(s)}
+function qa(s,r){return Array.prototype.slice.call((r||D).querySelectorAll(s))}
+function $(id){return D.getElementById(id)}
+var M3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function dbo(){try{if(typeof DB!=='undefined'&&DB)return DB}catch(e){}return W.DB||null}
+function shrt(n){var f=W.fmtShort;return (typeof f==='function')?f(n||0):String(Math.round(n||0))}
+function ico(id){return '<svg viewBox="0 0 24 24"><use href="#'+id+'"/></svg>'}
+function ay(){var s=safe(function(){return W.getSelectedPeriod&&W.getSelectedPeriod()});return !!(s&&s.allYears)}
+function selYear(){var s=safe(function(){return W.getSelectedPeriod&&W.getSelectedPeriod()});return (s&&s.year!=='all')?s.year:new Date().getFullYear()}
+function yrs(){var y=safe(function(){return W.__MM44&&W.__MM44.years()});return (y&&y.length)?y.slice():[new Date().getFullYear()]}
+
+/* ---------- 1 - app lock card, centred, short copy ---------- */
+function lockPolish(){
+ qa('.mm54-lock').forEach(function(card){
+  if(card.dataset.mm56==='1')return;card.dataset.mm56='1';
+  card.classList.add('mm56-lock');
+  var on=!card.classList.contains('off');
+  var b=q('.mm54-lock-b',card);
+  if(b)b.textContent=on
+   ?'Money Map asks for your PIN every time it opens. The PIN stays on this phone.'
+   :'Turn on a 4-digit PIN so only you can open Money Map.';
+ });
+}
+
+/* ---------- 3 - summary card shades + total to go ---------- */
+function boxes(card){return qa('div[style*="flex:1"]',card)}
+function sumShade(){
+ qa('.bsum-card').forEach(function(card){
+  var txt=card.textContent||'';
+  if(/investment/i.test(txt)&&/lifestyle/i.test(txt)){
+   if(card.dataset.mm56g!=='1'){
+    card.dataset.mm56g='1';
+    boxes(card).forEach(function(b){
+     var t=b.textContent||'';
+     if(/invest/i.test(t))b.classList.add('mm56-inv');
+     else if(/life/i.test(t))b.classList.add('mm56-life');
+    });
+   }
+   if(!q('.mm56-togo',card)){
+    var db=dbo(),togo=0;
+    if(db&&db.goals)db.goals.forEach(function(g){togo+=Math.max(0,(Number(g.target)||0)-(Number(g.saved)||0))});
+    var w=D.createElement('div');w.className='mm56-togo';
+    w.innerHTML='<span>Total amount to go</span><b>'+shrt(togo)+'</b>';
+    card.appendChild(w);
+   }
+  }
+  if(/added to net worth/i.test(txt)&&card.dataset.mm56a!=='1'){
+   card.dataset.mm56a='1';
+   boxes(card).forEach(function(b){
+    var t=b.textContent||'';
+    if(/physical/i.test(t))b.classList.add('mm56-gold');
+    else if(/cash/i.test(t))b.classList.add('mm56-purple');
+    else if(/interest/i.test(t))b.classList.add('mm56-green');
+   });
+   qa('div',card).forEach(function(r){
+    if(!/added to net worth/i.test(r.textContent||''))return;
+    if(r.children.length!==2)return;
+    var v=r.lastElementChild;
+    if(v)v.style.setProperty('color','var(--success)','important');
+   });
+  }
+ });
+}
+
+/* ---------- 2 - financial health: year pill + score breakdown ---------- */
+function sheet(title,rows){
+ var el=$('mm56Ch');
+ if(!el){el=D.createElement('div');el.id='mm56Ch';D.body.appendChild(el);}
+ var h='<div class="mm56-ch-sheet"><div class="mm56-ch-t"></div></div>';
+ el.innerHTML=h;
+ var sh=q('.mm56-ch-sheet',el);q('.mm56-ch-t',sh).textContent=title;
+ rows.forEach(function(r){
+  var row=D.createElement('div');row.className='mm56-ch-row';
+  row.innerHTML='<div class="mm56-ch-ic">'+(r.icon?ico(r.icon):'')+'</div><div class="mm56-ch-c"><div class="mm56-ch-n"></div><div class="mm56-ch-s"></div></div>';
+  q('.mm56-ch-n',row).textContent=r.name||'';
+  var s=q('.mm56-ch-s',row);
+  if(r.sub)s.textContent=r.sub;else s.style.display='none';
+  row.addEventListener('click',function(ev){ev.stopPropagation();closeSheet();setTimeout(function(){safe(r.fn)},170)});
+  sh.appendChild(row);
+ });
+ el.onclick=function(ev){if(ev.target===el)closeSheet()};
+ el.classList.add('on');W.__mm56sheet=true;
+ return el;
+}
+function closeSheet(){var el=$('mm56Ch');if(!el)return;el.classList.remove('on');W.__mm56sheet=false;}
+function sheetOpen(){var el=$('mm56Ch');return !!(el&&el.classList.contains('on'))}
+
+function pickHealthYear(){
+ var rows=[];
+ if(yrs().length>1)rows.push({icon:'i-chart',name:'All Years',sub:'year by year',fn:function(){setYear('all')}});
+ yrs().slice().reverse().forEach(function(y){rows.push({icon:'i-calendar',name:String(y),fn:function(){setYear(y)}})});
+ sheet('Select year',rows);
+}
+function setYear(y){
+ safe(function(){
+  if(y==='all'){if(W.selectPeriod)W.selectPeriod('year','allYears');}
+  else{if(W.selectPeriod){W.selectPeriod('year',y);W.selectPeriod('month','all');}}
+ });
+ setTimeout(function(){safe(function(){if(W.expandCard)W.expandCard('health')})},60);
+}
+function ptsRow(name,got,max,sub){
+ var pctv=max>0?Math.max(0,Math.min(1,got/max)):0;
+ var col=pctv>=.8?'var(--success)':pctv>=.5?'var(--warning)':'var(--danger)';
+ var d=D.createElement('div');d.className='mm56-pt';
+ d.innerHTML='<div class="mm56-pt-r"><div class="mm56-pt-n"></div><div class="mm56-pt-v"></div></div>'+
+  '<div class="mm56-pt-s"></div><div class="mm56-pt-bar"><i></i></div>';
+ q('.mm56-pt-n',d).textContent=name;
+ var v=q('.mm56-pt-v',d);
+ v.textContent=(Math.round(got*10)/10)+' / '+max;
+ v.style.color=col;
+ q('.mm56-pt-s',d).textContent=sub;
+ var bar=q('.mm56-pt-bar>i',d);
+ bar.style.width=Math.round(pctv*100)+'%';bar.style.background=col;
+ return d;
+}
+function ptsBlock(){
+ var w=D.createElement('div');w.className='mm56-pts';
+ var d=safe(function(){return W.anData&&W.anData()});
+ var head='<div class="mm56-pts-h">How this score is built</div>'+
+  '<div class="mm56-pts-i">Four checks make up the 100 points. Below is what each one is worth and what you actually earned.</div>';
+ w.innerHTML=head;
+ if(!d)return w;
+ var rate=Number(d.savingsRate)||0,run=Number(d.runway)||0,ob=Number(d.onBudget)||0,tb=Number(d.totalBudgets)||0,lp=Number(d.loanPct)||0;
+ var p1=Math.max(0,Math.min(rate/35,1))*30;
+ var p2=Math.max(0,Math.min(run/6,1))*25;
+ var p3=(tb>0?ob/tb:0.6)*25;
+ var p4=Math.max(0,1-Math.min(lp/50,1))*20;
+ w.appendChild(ptsRow('Savings rate',p1,30,'You set aside '+rate+'% of income. Saving 35% or more earns the full 30 points.'));
+ w.appendChild(ptsRow('Emergency runway',p2,25,'Your emergency fund covers '+(Math.round(run*10)/10)+' month'+(Math.round(run*10)/10===1?'':'s')+' of spending. Six months earns the full 25 points.'));
+ w.appendChild(ptsRow('Budgets kept',p3,25,tb>0?('You stayed inside '+ob+' of '+tb+' budget'+(tb===1?'':'s')+'. Keeping every budget earns the full 25 points.'):'No budgets set for this period, so this scores a neutral 15 of 25. Add budgets to earn the full points.'));
+ w.appendChild(ptsRow('Loan load',p4,20,'Loan repayments took '+lp+'% of income. Under 50% earns points, and no loan repayments earns the full 20.'));
+ var t=D.createElement('div');t.className='mm56-tot';
+ t.innerHTML='<span>Total score</span><span></span>';
+ t.lastElementChild.textContent=(Number(d.score)||0)+' / 100';
+ w.appendChild(t);
+ return w;
+}
+function healthPolish(){
+ var c=$('expandContent');if(!c)return;
+ var t=q('.modal-title',c);if(!t)return;
+ if(!/financial health/i.test(t.textContent||''))return;
+ t.textContent='Financial Health';
+ if(!q('.mm56-head',c)&&t.parentNode===c){
+  var head=D.createElement('div');head.className='mm56-head';
+  c.insertBefore(head,t);head.appendChild(t);
+  var pill=D.createElement('div');pill.className='period-selector mm56-year';
+  pill.innerHTML='<button class="period-btn" type="button"></button>';
+  q('button',pill).textContent=ay()?'All Years':String(selYear());
+  pill.addEventListener('click',function(ev){ev.stopPropagation();pickHealthYear()});
+  head.appendChild(pill);
+ }
+ if(!ay()&&!q('.mm56-pts',c)){
+  var close=q('.mm42-close',c)||q('.btn-outline',c);
+  var blk=ptsBlock();
+  if(close&&close.parentNode===c)c.insertBefore(blk,close);else c.appendChild(blk);
+ }
+}
+
+/* ---------- 4 + 5 - real labels on the bars, year on year under All Years ---------- */
+function barPolish(){
+ var c=$('expandContent');if(!c)return;
+ var ems=qa('.mm42-bars .mm42-baritem em',c);
+ if(!ems.length)return;
+ if(ay()){
+  var ys=yrs();
+  if(ys.length===ems.length)ems.forEach(function(e,i){e.textContent=String(ys[i])});
+  var ttl=q('.mm42-chart-title',c);
+  if(ttl&&/monthly/i.test(ttl.textContent||''))ttl.textContent='Year-by-year net-worth direction';
+  return;
+ }
+ var d=safe(function(){return W.anData&&W.anData()});
+ if(d&&d.months&&d.months.length===ems.length){
+  ems.forEach(function(e,i){var m=d.months[i];if(M3[m])e.textContent=M3[m]});
+  return;
+ }
+ ems.forEach(function(e){var n=parseInt(e.textContent,10);if(!isNaN(n)&&n>=0&&n<=11&&M3[n])e.textContent=M3[n]});
+}
+function spendAY(){
+ if(!ay())return;
+ var c=$('expandContent');if(!c||q('.mm56-yy',c))return;
+ var db=dbo();if(!db||!db.transactions)return;
+ var tot={};
+ db.transactions.forEach(function(t){
+  if(t.type!=='expense'||!t.date)return;
+  var y=new Date(t.date).getFullYear();
+  tot[y]=(tot[y]||0)+(Number(t.amount)||0);
+ });
+ var ks=Object.keys(tot).sort();
+ if(!ks.length)return;
+ var w=D.createElement('div');w.className='mm56-yy';
+ w.innerHTML='<div class="mm56-yy-h">Year by year</div>';
+ ks.forEach(function(y){
+  var r=D.createElement('div');r.className='exp-row';
+  r.innerHTML='<span></span><span></span>';
+  r.firstElementChild.textContent=y;
+  r.lastElementChild.textContent=shrt(tot[y]);
+  w.appendChild(r);
+ });
+ var close=q('.mm42-close',c)||q('.btn-outline',c);
+ if(close&&close.parentNode===c)c.insertBefore(w,close);else c.appendChild(w);
+}
+
+var ec0=W.expandCard;
+if(typeof ec0==='function'&&!ec0.__mm56){
+ var ec=function(kind){
+  var r=ec0.apply(this,arguments);
+  setTimeout(function(){
+   safe(barPolish);
+   if(kind==='health')safe(healthPolish);
+   if(kind==='spending')safe(spendAY);
+  },0);
+  return r;
+ };
+ ec.__mm56=1;W.expandCard=ec;
+}
+
+/* ---------- 6 - no buzz on the big cards ---------- */
+var BIG='.glass-card,.chart-card,.an-chart,.swipe-card,.bsum-card,.lg-status-card,.exp-row,.mm54-lock,.summary-card,.set-card,.mm56-ch-row,.mm56-pt,.settings-hub,.iec-card,.mm42-chart';
+var SKIP='.picker-item,[role="option"],.period-btn,.mm-period-button,.pin-btn,.nav-item,#fab,.quick-action-btn,input,select,textarea,.mm-choice,.mm-settings-choice,.mm56-year';
+function muteBig(e,ms){
+ var t=e.target;if(!t||!t.closest)return;
+ if(t.closest(SKIP))return;
+ if(t.closest(BIG)&&W.__mm51Mute)W.__mm51Mute(ms);
+}
+D.addEventListener('pointerdown',function(e){muteBig(e,650)},true);
+D.addEventListener('click',function(e){muteBig(e,450)},true);
+
+/* ---------- 7 - cards settle out instead of vanishing ---------- */
+var u0=W._unmountModal;
+if(typeof u0==='function'&&!u0.__mm56){
+ var u=function(el){
+  if(el&&el.classList&&el.classList.contains('open')){
+   el.classList.add('mm56-out');
+   var t=el;
+   setTimeout(function(){safe(function(){t.classList.remove('mm56-out')})},330);
+  }
+  return u0.apply(this,arguments);
+ };
+ u.__mm56=1;W._unmountModal=u;
+}
+
+/* ---------- 8 - edit in settings asks photo or name ---------- */
+function photoEl(){return $('photoViewModal')}
+function photoOpen(){
+ var el=photoEl();if(!el)return false;
+ if(el.classList&&(el.classList.contains('open')||el.classList.contains('mounted')))return true;
+ return !!(el.style&&el.style.display==='flex');
+}
+function closePhoto(){
+ var el=photoEl();if(!el)return;
+ safe(function(){if(W.closeModal)W.closeModal('photoViewModal')});
+ if(el.style&&el.style.display==='flex')el.style.display='';
+ W.__mm56ph=false;
+}
+function openPhotoFromSettings(){
+ W.__mm56ph=true;
+ safe(function(){
+  var f=W.openProfilePhoto||W.viewProfilePhoto;
+  if(typeof f==='function')f();
+ });
+ setTimeout(function(){safe(function(){if(W.mm50EditPhoto)W.mm50EditPhoto()})},150);
+}
+function openNameScreen(){
+ safe(function(){
+  if(W.__MM54&&typeof W.__MM54.peOpen==='function'){W.__MM54.peOpen();return}
+  if(typeof W.__mm56oldEdit==='function')W.__mm56oldEdit();
+ });
+}
+var oe0=W.openEditProfile;
+if(typeof oe0==='function'&&!oe0.__mm56){
+ W.__mm56oldEdit=oe0;
+ var oe=function(){
+  var db=dbo();
+  var hasPic=!!(db&&db.userPhoto);
+  sheet('Edit profile',[
+   {icon:'i-camera',name:'Profile photo',sub:hasPic?'Change or remove your picture':'Add a picture',fn:openPhotoFromSettings},
+   {icon:'i-edit',name:'Your name',sub:(db&&db.userName)?db.userName:'Add your name',fn:openNameScreen}
+  ]);
+  return true;
+ };
+ oe.__mm56=1;W.openEditProfile=oe;
+}
+var nb0=W.__moneyMapHandleNativeBack;
+W.__moneyMapHandleNativeBack=function(){
+ if(sheetOpen()){closeSheet();return true}
+ if(W.__mm56ph&&photoOpen()){
+  closePhoto();
+  setTimeout(function(){safe(function(){var p=null;try{p=currentPage}catch(e){}if(p&&p!=='settings'&&W.navTo)W.navTo('settings')})},40);
+  return true;
+ }
+ return (typeof nb0==='function')?nb0.apply(this,arguments):false;
+};
+W.addEventListener('popstate',function(){if(sheetOpen())closeSheet()});
+D.addEventListener('keydown',function(e){if(e.key==='Escape'&&sheetOpen())closeSheet()});
+
+/* ---------- keep the polish applied ---------- */
+function polish56(){safe(lockPolish);safe(sumShade);}
+setTimeout(polish56,700);
+setInterval(polish56,900);
+W.__MM56UI={lock:lockPolish,shade:sumShade,pts:ptsBlock,bars:barPolish,sheet:sheet,closeSheet:closeSheet};
 })();
 </script>
 </body>
