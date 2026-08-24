@@ -1,3 +1,16 @@
+v2.0.3.52
+- Floating + button: released the nav's paint containment that was clipping its shadow.
+- Profile photo: camera/gallery open in the same tap; the edit view stays open behind them.
+- Search: back closes search with a single haptic (duplicate close swallowed).
+- Slower, iOS-like motion for the photo view, expanded cards and sheets; panels grow from the tap point.
+- Settings cards no longer buzz (the bespoke _settingsHaptic tap tracker is now silent).
+- First settings cluster renamed APP -> APP SETUP.
+- New goal: investment icon green, lifestyle icon red.
+- Budget discipline ring: 95%+ green, 90-94% amber, under 90% red.
+- Assets: the open month is no longer offered or savable; the picker defaults to the last closed month; button reads "Save update".
+- Assets: removed the redundant "Assets" caption above the summary boxes.
+- Remaining income forecast rebuilt: only real expenses are extrapolated, allocations are no longer counted as spending, and the daily rate ignores the single largest day.
+
 v2.0.3.51
 - Rings rebuilt with correct geometry (radius + dash recomputed) so thicker
   strokes are no longer clipped; Analytics Financial Health ring included.

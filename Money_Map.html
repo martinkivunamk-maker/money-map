@@ -7117,7 +7117,8 @@ safe(function(){
     var o=el(), img=$('igImg');
     S={cb:cb,pts:{},drag:null,pinch:null,s:1,tx:0,ty:0,base:1,nw:1,nh:1,img:img};
     var z=$('igZoom');if(z)z.value='100';
-    img.onload=function(){ if(!S)return;
+    img.onload=function(){
+      if(!S)return;
       S.nw=img.naturalWidth||1;S.nh=img.naturalHeight||1;
       img.style.width=S.nw+'px';img.style.height=S.nh+'px';
       var d=D();
@@ -7196,6 +7197,336 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 else boot();
 [250,900,2000,3200].forEach(function(t){setTimeout(boot,t);});
 setInterval(function(){safe(tick);},320);
+})();
+</script>
+
+<style id="v20352-fix">
+/* ---- 1. the + button actually floats -----------------------------------
+   Root cause: #bottomNav (line 4544) sets contain:layout paint, which clips
+   ANY paint outside the nav box - including a shadow. Releasing containment
+   is what lets the shadow exist at all. isolation/translateZ are kept. */
+#bottomNav{contain:none!important;overflow:visible!important}
+#fab,html[data-native-shell="true"] #fab{
+  box-shadow:0 9px 20px -4px rgba(0,0,0,.20),
+             0 4px 8px -2px rgba(0,0,0,.14),
+             0 16px 34px -10px rgba(184,144,31,.30)!important}
+#fab:active,html[data-native-shell="true"] #fab:active{
+  box-shadow:0 4px 10px -3px rgba(0,0,0,.20),0 2px 4px -1px rgba(0,0,0,.12)!important}
+
+/* ---- 4. slower, iOS-like motion --------------------------------------- */
+.modal-overlay{transition:opacity 420ms cubic-bezier(.32,.72,0,1)!important}
+.modal-sheet{transition:transform 560ms cubic-bezier(.32,.72,0,1)!important}
+html[data-native-shell="true"] .modal-sheet{transition:transform 560ms cubic-bezier(.32,.72,0,1)!important}
+#expandContent>*{animation-duration:600ms!important;animation-timing-function:cubic-bezier(.32,.72,0,1)!important}
+#photoViewModal.pp-mode{transition:opacity 520ms cubic-bezier(.32,.72,0,1)!important}
+#photoViewModal.pp-mode .pp-av{transition:transform 700ms cubic-bezier(.32,.72,0,1)!important}
+.pp-foot{transition:opacity 380ms ease 320ms,transform 380ms ease 320ms!important}
+
+/* ---- 6. first settings cluster: APP -> APP SETUP ----------------------
+   The label is ::before content from an earlier patch block, so it is
+   replaced by content, not by editing markup. */
+body:not(.settings-section-open) #page-settings #settingsHub::before{content:"APP SETUP"!important}
+body:not(.settings-section-open) #settingsHub::before{content:"APP SETUP"!important}
+body:not(.settings-section-open) #page-settings #settingsHub .settings-destination.mm52-appsetup::before{content:"APP SETUP"!important}
+
+/* ---- 7. goal kind: investment green, lifestyle red --------------------- */
+#goalModalContent .mm50-step .quick-action-btn[onclick*="investment"] .qa-icon{
+  background:rgba(63,174,90,0.16)!important;color:var(--success)!important}
+#goalModalContent .mm50-step .quick-action-btn[onclick*="lifestyle"] .qa-icon{
+  background:rgba(224,85,85,0.15)!important;color:var(--danger)!important}
+
+@media (prefers-reduced-motion:reduce){
+  .modal-overlay,.modal-sheet,#photoViewModal.pp-mode,#photoViewModal.pp-mode .pp-av,.pp-foot{transition-duration:1ms!important}
+  #expandContent>*{animation-duration:1ms!important}
+}
+</style>
+
+<script id="v20352-fix-logic">
+(function(){
+var D=document,W=window;
+function $(id){return D.getElementById(id);}
+function T(f){try{return f();}catch(e){}}
+var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function months(){return (W.MONTHS&&W.MONTHS.length===12)?W.MONTHS:MON;}
+function money(v){return (typeof W.fmtShort==='function')?W.fmtShort(Math.round(v)):String(Math.round(v));}
+
+/* remember the last tap so panels can grow from where the finger was (item 4) */
+var LT={x:0,y:0,at:0};
+D.addEventListener('pointerdown',function(e){LT.x=e.clientX;LT.y=e.clientY;LT.at=Date.now();},true);
+
+/* ---------- 5 + leftover of 12: the settings haptic -----------------------
+   Root cause: settings cards do NOT call haptic(). Lines 3858-3868 run a
+   bespoke pointerup tap tracker that calls _settingsHaptic(), which talks to
+   MoneyMapNative.haptic directly, so muting haptic() never touched it. */
+T(function(){ if(typeof W._settingsHaptic==='function') W._settingsHaptic=function(){}; });
+/* safety net: honour the v20351 quiet window even for direct native calls */
+T(function(){
+  var N=W.MoneyMapNative;
+  if(!N||typeof N.haptic!=='function'||N.__mm52)return;
+  var h0=N.haptic.bind(N);
+  N.haptic=function(){ if(W.__mm51Muted&&W.__mm51Muted())return; return h0.apply(null,arguments); };
+  N.__mm52=1;
+});
+
+/* ---------- 3. search + back = one buzz, not two -------------------------
+   Back #1 is eaten by the keyboard (OS level). Back #2 reached BOTH the
+   popstate close and the app's own back handler, so the toggle ran twice. */
+T(function(){
+  var s0=W.mm50ToggleSearch;
+  if(typeof s0!=='function'||s0.__mm52)return;
+  var lastClose=0;
+  var w=function(){
+    var isOpen=!!D.querySelector('.mm50-searchbar.on'),now=Date.now();
+    if(!isOpen&&now-lastClose<450)return;   /* this is the duplicate back press */
+    if(isOpen){ lastClose=now; if(W.__mm51Mute)T(function(){W.__mm51Mute(320);}); }
+    return s0.apply(this,arguments);
+  };
+  w.__mm52=1; W.mm50ToggleSearch=w;
+});
+
+/* ---------- 2. camera / gallery open immediately, edit stays open --------
+   The input is clicked inside the original gesture (no timer), and the photo
+   popup is left open underneath so cancelling returns you to it. */
+W.mm50Pick=function(src){
+  T(function(){ if(typeof W.suppressNextLock==='function')W.suppressNextLock(); });
+  var el=$(src==='camera'?'photoCameraInput':'photoInput');
+  if(el)el.click();
+  T(function(){
+    var m=$('photoChoiceModal');
+    if(m&&m.classList.contains('open')){
+      if(typeof W.closeModalQuiet==='function')W.closeModalQuiet('photoChoiceModal');
+      else if(typeof W.closeModal==='function')W.closeModal('photoChoiceModal');
+    }
+  });
+};
+
+/* ---------- 4. grow from the tap point ---------------------------------- */
+function origin(){
+  var kids=D.querySelectorAll('#expandContent>*');
+  if(kids.length&&Date.now()-LT.at<2200){
+    var host=$('expandContent'), r=host?host.getBoundingClientRect():null;
+    if(r&&r.width){
+      var x=Math.min(Math.max(LT.x-r.left,0),r.width),y=Math.min(Math.max(LT.y-r.top,0),r.height);
+      for(var i=0;i<kids.length;i++)kids[i].style.transformOrigin=x+'px '+y+'px';
+    }
+  }
+  var av=D.querySelector('#photoViewModal.pp-mode .pp-av');
+  if(av&&!av.dataset.mm52&&Date.now()-LT.at<2400){
+    var ar=av.getBoundingClientRect();
+    if(ar.width){
+      var ax=Math.min(Math.max(LT.x-ar.left,0),ar.width),ay=Math.min(Math.max(LT.y-ar.top,0),ar.height);
+      av.style.transformOrigin=ax+'px '+ay+'px'; av.dataset.mm52='1';
+    }
+  }
+}
+
+/* ---------- 6. APP -> APP SETUP ----------------------------------------
+   Which data-settings-key carries the label differs between patch blocks,
+   so the element is found by reading its computed ::before text. */
+function appLabel(){
+  var hub=$('settingsHub'); if(!hub)return;
+  var els=hub.querySelectorAll('.settings-destination');
+  for(var i=0;i<els.length;i++){
+    var el=els[i]; if(el.dataset.mm52lab)continue;
+    var c='';
+    T(function(){ c=getComputedStyle(el,'::before').content||''; });
+    c=c.replace(/["']/g,'').trim();
+    if(c==='APP'){ el.classList.add('mm52-appsetup'); el.dataset.mm52lab='1'; }
+    else if(c&&c!=='none'){ el.dataset.mm52lab='1'; }
+  }
+}
+
+/* ---------- 8. discipline ring: 95 green / 90-94 amber / <90 red -------- */
+function discCols(){
+  var flags=D.querySelectorAll('.disc-over');
+  for(var i=0;i<flags.length;i++){
+    var card=flags[i].closest('#expandContent')||flags[i].closest('.modal-sheet')||flags[i].parentElement;
+    if(!card)continue;
+    var pct=null,m=(card.textContent||'').match(/(\d+(?:\.\d+)?)%\s*of your spending/);
+    if(m)pct=parseFloat(m[1]);
+    if(pct===null){
+      var lab=card.querySelector('.ring-center-main');
+      if(lab){var m2=(lab.textContent||'').match(/(\d+(?:\.\d+)?)/); if(m2)pct=parseFloat(m2[1]);}
+    }
+    if(pct===null)continue;
+    var col=pct>=95?'var(--success)':(pct>=90?'var(--warning)':'var(--danger)');
+    var circles=card.querySelectorAll('svg circle');
+    for(var j=0;j<circles.length;j++){
+      var c=circles[j],st=c.getAttribute('style')||'';
+      if(/stroke\s*:/.test(st)&&!/rgba|var\(--track\)/.test(st)){
+        c.setAttribute('style',st.replace(/stroke\s*:\s*[^;]+/,'stroke:'+col));
+      }else{
+        var sa=c.getAttribute('stroke')||'';
+        if(sa&&!/rgba|none/.test(sa)&&c.getAttribute('stroke-dasharray'))c.setAttribute('stroke',col);
+      }
+    }
+    var cap=card.querySelector('.ring-center-cap');
+    if(cap&&/track|there|loose/i.test(cap.textContent||''))
+      cap.textContent=pct>=95?'On track':(pct>=90?'Almost there':'Loose');
+  }
+}
+
+/* ---------- 9 + 10. assets --------------------------------------------- */
+function assetPolish(){
+  /* 9b: button wording */
+  var btns=D.querySelectorAll('#assetModalContent button.btn-gold,button.btn-gold');
+  for(var i=0;i<btns.length;i++){
+    var t=(btns[i].textContent||'').trim();
+    if(t==='Save monthly update')btns[i].textContent='Save update';
+  }
+  /* 10: drop the redundant "Assets" caption above the boxes */
+  var labs=D.querySelectorAll('.bsum-lab');
+  for(var k=0;k<labs.length;k++){
+    if((labs[k].textContent||'').trim()==='Assets')labs[k].style.display='none';
+  }
+  /* 9a: default the picker to the last CLOSED month */
+  var mo=$('mmAssetMonth'),yr=$('mmAssetYear');
+  if(!mo||!yr||mo.dataset.mm52)return;
+  mo.dataset.mm52='1';
+  var n=new Date(),cy=n.getFullYear(),cm=n.getMonth()+1;
+  if(Number(yr.value)===cy&&Number(mo.value)>=cm){
+    var ny=cy,nm=cm-1; if(nm<1){nm=12;ny=cy-1;}
+    mo.value=String(nm); yr.value=String(ny);
+    var ml=$('mmAssetMonthLabel'),yl=$('mmAssetYearLabel');
+    if(ml)ml.textContent=months()[nm-1];
+    if(yl)yl.textContent=String(ny);
+    var save=D.querySelector('#assetModalContent button.btn-gold');
+    var oc=save?(save.getAttribute('onclick')||''):'';
+    var mm=oc.match(/saveAssetMonth20323\('([^']*)','([^']*)'\)/);
+    if(mm&&typeof W.reloadAssetPeriod20323==='function')
+      T(function(){W.reloadAssetPeriod20323(mm[1],mm[2]);});
+  }
+}
+/* 9c: the current month is not offered in the month list */
+T(function(){
+  var o0=W.openAssetPeriodPicker20323;
+  if(typeof o0!=='function'||o0.__mm52)return;
+  var w=function(mode,kind,id){
+    var r=o0.apply(this,arguments);
+    if(mode==='month')setTimeout(function(){
+      var n=new Date(),cy=n.getFullYear(),cm=n.getMonth()+1,yEl=$('mmAssetYear');
+      if(!yEl||Number(yEl.value)!==cy)return;
+      var nm=months()[cm-1];
+      var items=D.querySelectorAll('.picker-item,[role="option"]');
+      for(var i=0;i<items.length;i++){
+        var tx=(items[i].textContent||'').trim();
+        if(tx===nm||tx===nm.slice(0,3))items[i].remove();
+      }
+    },40);
+    return r;
+  };
+  w.__mm52=1; W.openAssetPeriodPicker20323=w;
+});
+/* 9d: and it cannot be saved either */
+T(function(){
+  var s0=W.saveAssetMonth20323;
+  if(typeof s0!=='function'||s0.__mm52)return;
+  var w=function(kind,id){
+    var yEl=$('mmAssetYear'),mEl=$('mmAssetMonth');
+    var y=yEl?Number(yEl.value):0,m=mEl?Number(mEl.value):0;
+    var n=new Date(),cy=n.getFullYear(),cm=n.getMonth()+1;
+    if(y>cy||(y===cy&&m>=cm)){
+      if(typeof W.showToast==='function')
+        W.showToast(months()[cm-1]+' has not closed yet - update '+months()[(cm-2+12)%12]+' instead','var(--danger)');
+      return;
+    }
+    return s0.apply(this,arguments);
+  };
+  w.__mm52=1; W.saveAssetMonth20323=w;
+});
+
+/* ---------- 11. a forecast that behaves like real spending --------------
+   The old maths was: used = income - balance (so savings, goal and loan
+   transfers counted as "spending"), then used/dayOfMonth * daysInMonth.
+   One big early outflow - rent, school fees, a savings sweep - therefore got
+   multiplied across the whole month, which is why it kept predicting zero.
+   New model: only real expenses are extrapolated, allocations are treated as
+   the one-off decisions they are, and the daily rate drops the single largest
+   day so one spike cannot define the month. */
+var _dbc={t:0,v:null};
+function mmdb(){
+  if(W.DB&&W.DB.transactions)return W.DB;
+  var now=Date.now();
+  if(_dbc.v&&now-_dbc.t<3000)return _dbc.v;
+  var o=null;
+  try{ var raw=localStorage.getItem('moneymap_v2'); if(raw){var j=JSON.parse(raw); if(j&&j.transactions)o=j;} }catch(e){}
+  _dbc={t:now,v:o};
+  return o;
+}
+function calc(){
+  var db=mmdb();
+  if(!db||!db.transactions||!db.transactions.length)return null;
+  var n=new Date(),y=n.getFullYear(),m=n.getMonth();
+  var dim=new Date(y,m+1,0).getDate(),el=Math.min(n.getDate(),dim);
+  var inc=0,exp=0,alloc=0,day=[],i;
+  for(i=0;i<=dim;i++)day[i]=0;
+  for(i=0;i<db.transactions.length;i++){
+    var t=db.transactions[i];
+    if(!t||!t.date)continue;
+    var d=new Date(String(t.date).slice(0,10)+'T00:00:00');
+    if(isNaN(d.getTime())||d.getFullYear()!==y||d.getMonth()!==m)continue;
+    var a=Math.abs(Number(t.amount)||0),dd=d.getDate();
+    if(t.type==='income')inc+=a;
+    else if(t.type==='expense'){exp+=a; if(dd>=1&&dd<=dim)day[dd]+=a;}
+    else alloc+=a;               /* savings, emergency, goal, loan */
+  }
+  if(inc<=0)return null;
+  var sum=0,mx=0;
+  for(i=1;i<=el;i++){sum+=day[i]; if(day[i]>mx)mx=day[i];}
+  var trim=el>=6, base=Math.max(0,sum-(trim?mx:0)), divisor=Math.max(1,el-(trim?1:0));
+  var rate=base/divisor, rest=Math.max(0,dim-el);
+  var proj=Math.round(inc-exp-alloc-rate*rest);
+  return {inc:inc,exp:exp,alloc:alloc,rate:rate,rest:rest,el:el,dim:dim,
+          proj:Math.max(0,proj),raw:proj,left:Math.max(0,inc-exp-alloc),early:el<5};
+}
+function fcast(){
+  if(!D.querySelector('.mm46-outlook span,.mm46-kpis>div'))return;
+  var f=calc(); if(!f)return;
+  var msg;
+  if(f.early)
+    msg='Only '+f.el+' day'+(f.el===1?'':'s')+' of spending recorded so far - too early for a dependable month-end estimate.';
+  else if(f.raw>0)
+    msg='At your recent expense pace of about '+money(f.rate)+' a day, you should still have around '+money(f.proj)+' left when the month closes. Money already moved to savings, goals or loans counts as allocated, not as spending.';
+  else
+    msg='Your expense pace of about '+money(f.rate)+' a day is running ahead of what is left, so the balance could run out before month-end.';
+  var outs=D.querySelectorAll('.mm46-outlook span');
+  for(var i=0;i<outs.length;i++){
+    if(outs[i].dataset.mm52msg===msg)continue;
+    outs[i].textContent=msg; outs[i].dataset.mm52msg=msg;
+  }
+  var cells=D.querySelectorAll('.mm46-kpis>div');
+  for(var k=0;k<cells.length;k++){
+    var lab=cells[k].querySelector('span'),b=cells[k].querySelector('b');
+    if(!lab||!b)continue;
+    if(/projected carry/i.test(lab.textContent||'')){
+      var pc=Math.round(f.proj/f.inc*100),txt=pc+'% \u00b7 '+money(f.proj);
+      if(b.textContent!==txt)b.textContent=txt;
+    }
+  }
+}
+W.__mm52Forecast=calc;   /* read-only probe for tests */
+
+/* ---------- run ---------------------------------------------------------- */
+function tick(){
+  T(appLabel); T(discCols); T(assetPolish); T(fcast); T(origin);
+}
+function wrap(name){
+  var f=W[name];
+  if(typeof f!=='function'||f.__mm52t)return;
+  var w=function(){ var r=f.apply(this,arguments); T(tick); setTimeout(tick,60); setTimeout(tick,260); return r; };
+  w.__mm52t=1; W[name]=w;
+}
+['openModal','closeModal','closeModalQuiet','navTo','expandCard','renderSettings','renderBudget',
+ 'switchBudgetTab','openSettingsSection','openAssetUpdate20323','renderAssets','mm50GoalKind',
+ 'openAddGoalModal','reloadAssetPeriod20323','renderOverview','updateOverview'].forEach(wrap);
+if(typeof W.boot==='function'&&!W.boot.__mm52t){
+  var b0=W.boot; var bw=function(){var r=b0.apply(this,arguments); setTimeout(tick,300); return r;};
+  bw.__mm52t=1; W.boot=bw;
+}
+[240,900,2000,3200].forEach(function(ms){setTimeout(tick,ms);});
+setInterval(tick,400);
+if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',function(){T(tick);});
+else T(tick);
 })();
 </script>
 </body>
