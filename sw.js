@@ -1,4 +1,4 @@
-const CACHE = 'moneymap-v20349-plain-period-pickers';
+const CACHE = 'moneymap-v20350-ui-round';
 
 self.addEventListener('install', () => self.skipWaiting());
 

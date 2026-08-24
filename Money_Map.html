@@ -6187,5 +6187,552 @@ window.mmOpenStartHolding49=function(){
 monthFirst49(document);saveDB();window.__MM49={allMonths:allMonths49,monthFirst:monthFirst49};
 })();
 </script>
+
+<style id="v20350-ui">
+/* ===== Money Map v2.0.3.50 - UI round (last block wins) ===== */
+
+/* 13 - follow the phone's own font, like WhatsApp */
+html,body,button,input,select,textarea,optgroup,.form-input,.modal-title,.page-title,.exp-total{font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif!important}
+.exp-total,.mm42-nw-total,.exp-row span,.mm42-row span,.tx-amt,.ov-val,.bs-over-amt{font-variant-numeric:tabular-nums}
+
+/* 10 - pure white cards: no ivory wash, no gold hairline */
+html[data-theme="light"]{--accent-soft:transparent;--bg-glow1:transparent;--bg-glow2:transparent}
+html[data-theme="light"] .overview-card::before,html[data-theme="light"] .overview-card::after,
+html[data-theme="light"] .glass-card::before,html[data-theme="light"] .glass-card::after,
+html[data-theme="light"] .misc-line::before{content:none!important;background:none!important;opacity:0!important}
+html[data-theme="light"] .overview-card,html[data-theme="light"] .glass-card,
+html[data-theme="light"] .tx-item,html[data-theme="light"] .modal-sheet{background:#fff!important}
+
+/* 5 - FAB takes the transaction-chip squircle, inline, no drop shadow */
+#fab{border-radius:17px!important;box-shadow:none!important}
+html[data-native-shell="true"] #fab{border-radius:17px!important;box-shadow:none!important;border:1px solid rgba(160,130,42,.34)!important}
+#fab:active{transform:scale(.92)!important}
+
+/* Nav cover: edge to edge in the browser/PWA too, matching the Android shell.
+   Scoped so the native shell keeps its own gesture-bar padding (line 4419) and
+   desktop keeps its 480px centring (min-width:520px block at line 4379). */
+@media(max-width:519px){
+  html:not([data-native-shell="true"]) #bottomNav{left:0!important;right:0!important;bottom:0!important;border-radius:0!important;border:0!important;border-top:1px solid var(--glass-border)!important;box-shadow:none!important;background:var(--nav-glass)!important;padding:6px calc(4px + env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) calc(4px + env(safe-area-inset-left,0px))!important}
+  html[data-theme="light"]:not([data-native-shell="true"]) #bottomNav{background:#fff!important;border-top-color:rgba(0,0,0,.10)!important}
+  /* nav uses contain:paint (line 4544), so a lifted FAB gets clipped. Sit it inline
+     like the native shell does, which is also the approved item-5 position. */
+  html:not([data-native-shell="true"]) #fab{align-self:center!important;margin:0 6px!important}
+}
+
+/* 11 - no bottom bar while Settings is open */
+body.mm-nav-off #bottomNav,body.mm-nav-off #fab{display:none!important}
+
+/* 1 - Search chip, then Filter, then kebab */
+.mm50-tools{display:flex;align-items:center;gap:6px;flex:none}
+.page-header.mm50-three .page-title{font-size:23px}
+.mm50-tools .filter-btn{padding:7px 11px;gap:5px;font-size:12px}
+.mm50-tools .filter-btn svg{width:15px;height:15px}
+.filter-btn.mm50-on{background:rgba(212,175,55,.18)!important;border-color:var(--gold)!important}
+.mm50-searchbar{padding:0 var(--gutter) 10px;display:none}
+.mm50-searchbar.on{display:block;animation:mm50Rise 260ms cubic-bezier(.2,.82,.2,1) both}
+.mm50-searchbar input{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:14px;padding:11px 13px;color:var(--text);font-size:15px;outline:none}
+
+/* 2,3,6,9 - year pill on the expanded card header line */
+.mm50-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:13px}
+.mm50-head .modal-title{margin:0!important;padding:0!important;min-width:0;position:static!important}
+.mm50-year{flex:0 0 auto;padding:6px 11px}
+
+/* 6 - net worth: centred total, growth chip above Close, taller bars with figures */
+.mm50-nw .mm42-nw-head{display:block;text-align:center}
+.mm50-nw .mm42-nw-head>div{width:100%}
+.mm50-nw .mm42-growth{display:none}
+.mm50-growth-foot{display:flex;justify-content:center;margin:15px 0 0}
+.mm42-bars.mm50-tall{height:122px!important}
+.mm50-tallchart .mm42-baritem{display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.mm50-tallchart .mm42-baritem b{display:block;font-size:8px;font-weight:800;color:var(--text-muted);margin-bottom:3px;white-space:nowrap;letter-spacing:-.2px}
+
+/* 4 - real empty states for Loans & Goals */
+.mm50-empty{display:flex;align-items:center;gap:11px;padding:13px 2px}
+.mm50-eic{width:38px;height:38px;border-radius:11px;background:rgba(212,175,55,.12);color:var(--gold);display:flex;align-items:center;justify-content:center;flex:none}
+.mm50-eic svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+.mm50-empty b{display:block;font-size:14px;font-weight:700;color:var(--text)}
+.mm50-empty span{display:block;font-size:12px;color:var(--text-dim);margin-top:2px}
+
+/* 14 - one scrolling icon rail instead of four stacked rows */
+.icon-grid.mm50-rail{display:flex!important;grid-template-columns:none!important;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 0 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.icon-grid.mm50-rail::-webkit-scrollbar{display:none}
+.icon-grid.mm50-rail .icon-pick{flex:0 0 46px;width:46px;height:46px;aspect-ratio:auto;scroll-snap-align:center}
+.mm50-rail-hint{font-size:11px;color:var(--text-muted);margin:2px 0 0}
+
+/* 15 - pick the kind of goal first */
+.mm50-step{animation:mm50Rise 260ms cubic-bezier(.2,.82,.2,1) both}
+.mm50-kindpill{display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,.14);color:var(--gold);border-radius:999px;padding:6px 11px;font-size:12px;font-weight:800;margin-bottom:13px}
+.mm50-kindpill svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.9}
+
+/* 12 - profile photo popup: photo alone, circular, centred, edit near the bottom */
+#photoViewModal.pp-mode{display:flex!important;opacity:0;background:rgba(0,0,0,.93);padding:0;align-items:stretch;justify-content:stretch;transition:opacity 240ms cubic-bezier(.25,.8,.3,1)}
+#photoViewModal.pp-mode.mm-open{opacity:1}
+.pp-wrap{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) 20px calc(28px + env(safe-area-inset-bottom,0px))}
+.pp-mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:0}
+.pp-av{width:252px;height:252px;max-width:76vw;max-height:76vw;border-radius:50%;border:2px solid var(--gold);background:var(--surface2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:80px;font-weight:700;color:var(--gold);flex:none;transform:scale(.86);transition:transform 320ms cubic-bezier(.2,.82,.2,1),width 260ms cubic-bezier(.2,.82,.2,1),height 260ms cubic-bezier(.2,.82,.2,1)}
+#photoViewModal.pp-mode.mm-open .pp-av{transform:scale(1)}
+.pp-av img{width:100%;height:100%;object-fit:cover}
+.pp-name{margin-top:18px;font-size:17px;font-weight:800;color:#fff;opacity:0;transition:opacity 260ms ease 70ms}
+#photoViewModal.pp-mode.mm-open .pp-name{opacity:1}
+.pp-foot{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;flex:none;opacity:0;transform:translateY(12px);transition:opacity 240ms ease 90ms,transform 300ms cubic-bezier(.2,.82,.2,1) 90ms}
+#photoViewModal.pp-mode.mm-open .pp-foot{opacity:1;transform:none}
+.pp-edit{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#1a1306;border:none;display:flex;align-items:center;justify-content:center;transition:transform 180ms var(--ease)}
+.pp-edit svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:2}
+.pp-edit:active{transform:scale(.92)}
+.pp-acts{display:flex;gap:10px;animation:mm50Rise 240ms cubic-bezier(.2,.82,.2,1) both}
+.pp-act{min-width:78px;padding:12px 8px;border-radius:16px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);color:#fff;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:11.5px;font-weight:700}
+.pp-act svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.pp-act:active{background:rgba(255,255,255,.18)}
+.pp-act.danger{color:#ff9090}
+.pp-close{position:absolute;right:14px;top:calc(14px + env(safe-area-inset-top,0px));width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:none;font-size:18px;display:flex;align-items:center;justify-content:center;z-index:3}
+
+/* Sheet motion: keep the overlay laid out so the slide can actually play */
+.modal-overlay{display:flex!important;visibility:hidden;opacity:0;transition:opacity 200ms cubic-bezier(.25,.8,.3,1),visibility 0s linear 200ms!important}
+.modal-overlay.open{visibility:visible!important;opacity:1!important;transition:opacity 200ms cubic-bezier(.25,.8,.3,1),visibility 0s linear 0s!important}
+.modal-sheet,html[data-native-shell="true"] .modal-sheet{transition:transform 330ms cubic-bezier(.17,.84,.24,1)!important;will-change:transform}
+.modal-overlay.open .modal-sheet,html[data-native-shell="true"] .modal-overlay.open .modal-sheet{transition:transform 330ms cubic-bezier(.17,.84,.24,1)!important}
+#expandContent>*{animation:mm50Rise 300ms cubic-bezier(.2,.82,.2,1) both}
+#expandContent>*:nth-child(2){animation-delay:35ms}
+#expandContent>*:nth-child(3){animation-delay:60ms}
+#expandContent>*:nth-child(n+4){animation-delay:80ms}
+@keyframes mm50Rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.modal-sheet,.modal-overlay,#expandContent>*,.pp-av,.pp-foot,.pp-name,.mm50-step,.mm50-searchbar.on,.pp-acts{transition:none!important;animation:none!important}}
+</style>
+<script id="v20350-logic">
+(function(){
+'use strict';
+function $(id){return document.getElementById(id);}
+function safe(fn){try{return fn();}catch(e){return undefined;}}
+function buzz(){safe(function(){if(typeof haptic==='function')haptic('light');});}
+
+/* ---------- 8: thicker rings and donut ---------- */
+function thicker(s,mult){return String(s).replace(/stroke-width="([0-9.]+)"/g,function(m,w){return 'stroke-width="'+(Math.round(Number(w)*mult*10)/10)+'"';});}
+[['glRing',1.34],['ringDual',1.30],['an_donut',1.27]].forEach(function(p){
+  var o=window[p[0]];if(typeof o!=='function')return;
+  window[p[0]]=function(){var r=o.apply(this,arguments);return typeof r==='string'?thicker(r,p[1]):r;};
+});
+
+/* ---------- 11: hide the nav bar under the Settings sheet ---------- */
+function navSync(){
+  var off=false,e=$('settingsMenuModal');
+  if(e&&e.classList.contains('open'))off=true;
+  if(document.body.classList.contains('settings-section-open'))off=true;
+  document.body.classList.toggle('mm-nav-off',off);
+}
+
+/* ---------- 14: icon grid becomes a swipeable rail ---------- */
+function railify(root){
+  var scope=root||document;
+  Array.prototype.forEach.call(scope.querySelectorAll('.icon-grid'),function(g){
+    if(g.classList.contains('mm50-rail'))return;
+    g.classList.add('mm50-rail');
+    var n=g.querySelectorAll('.icon-pick').length;
+    var nx=g.nextElementSibling;
+    if(!nx||!nx.classList.contains('mm50-rail-hint')){
+      var h=document.createElement('div');h.className='mm50-rail-hint';
+      h.textContent='Swipe to see all '+n+' icons';
+      if(g.parentNode)g.parentNode.insertBefore(h,g.nextSibling);
+    }
+    var sel=g.querySelector('.icon-pick.selected');
+    if(sel)setTimeout(function(){safe(function(){sel.scrollIntoView({inline:'center',block:'nearest'});});},70);
+  });
+}
+
+var _open=window.openModal,_close=window.closeModal,_quiet=window.closeModalQuiet;
+if(typeof _open==='function')window.openModal=function(id){var r=_open.apply(this,arguments);safe(function(){navSync();railify($(id));});return r;};
+if(typeof _close==='function')window.closeModal=function(id){var r=_close.apply(this,arguments);setTimeout(navSync,0);return r;};
+if(typeof _quiet==='function')window.closeModalQuiet=function(id){var r=_quiet.apply(this,arguments);setTimeout(navSync,0);return r;};
+
+/* ---------- 1: search on the Transactions screen ---------- */
+var txQ='';
+function nameOf(list,id){var a=(DB&&DB[list])||[],i;for(i=0;i<a.length;i++)if(a[i].id===id)return a[i].name||'';return '';}
+function txText(t){
+  return [t.note,t.title,t.name,t.desc,t.description,nameOf('categories',t.categoryId),nameOf('incomeTypes',t.incomeType),t.type,t.source,String(Math.round(Number(t.amount)||0))]
+    .filter(Boolean).join(' ').toLowerCase();
+}
+var _rtx=window.renderTransactions;
+if(typeof _rtx==='function')window.renderTransactions=function(){
+  if(!txQ)return _rtx.apply(this,arguments);
+  var q=txQ.toLowerCase(),old=DB.transactions;
+  DB.transactions=(old||[]).filter(function(t){return txText(t).indexOf(q)>=0;});
+  try{return _rtx.apply(this,arguments);}finally{DB.transactions=old;}
+};
+window.mm50ToggleSearch=function(){
+  var bar=document.querySelector('.mm50-searchbar');if(!bar)return;
+  var on=!bar.classList.contains('on');
+  bar.classList.toggle('on',on);
+  var chip=document.querySelector('.mm50-searchchip');if(chip)chip.classList.toggle('mm50-on',on);
+  var inp=bar.querySelector('input');
+  if(on){if(inp)setTimeout(function(){safe(function(){inp.focus();});},60);}
+  else{if(inp)inp.value='';if(txQ){txQ='';renderTransactions();}}
+  buzz();
+};
+window.mm50Search=function(v){txQ=String(v||'').trim();renderTransactions();};
+function buildSearch(){
+  var hdr=null;
+  Array.prototype.forEach.call(document.querySelectorAll('.page-header'),function(h){
+    var t=h.querySelector('.page-title');
+    if(t&&t.textContent.replace(/\s+/g,'')==='Transactions')hdr=h;
+  });
+  if(!hdr||hdr.querySelector('.mm50-searchchip'))return;
+  var title=hdr.querySelector('.page-title'),tools=title&&title.nextElementSibling;
+  if(!tools)return;
+  hdr.classList.add('mm50-three');
+  tools.classList.add('mm50-tools');
+  var chip=document.createElement('div');
+  chip.className='filter-btn mm50-searchchip';
+  chip.setAttribute('onclick','mm50ToggleSearch()');
+  chip.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-search"/></svg>Search';
+  tools.insertBefore(chip,tools.firstChild);
+  var list=$('txPageContent');
+  if(list&&list.parentNode&&!document.querySelector('.mm50-searchbar')){
+    var bar=document.createElement('div');
+    bar.className='mm50-searchbar';
+    bar.innerHTML='<input type="search" placeholder="Search transactions" oninput="mm50Search(this.value)">';
+    list.parentNode.insertBefore(bar,list);
+  }
+}
+
+/* ---------- 7: haptic when the stacked cards switch ---------- */
+function swipeHaptic(id){
+  var el=$(id);if(!el||el.__mm50)return;el.__mm50=1;
+  var last=Math.round(el.scrollLeft/Math.max(el.clientWidth,1));
+  el.addEventListener('scroll',function(){
+    var i=Math.round(el.scrollLeft/Math.max(el.clientWidth,1));
+    if(i!==last){last=i;buzz();}
+  },{passive:true});
+}
+function bindSwipes(){swipeHaptic('ovSwipe');swipeHaptic('anSw1');}
+
+/* ---------- 2,3,6,9: year filter inside the expanded cards ---------- */
+var YEARK=['budgetstatus','incomeexp','savingsrate','networth','spending'];
+var xYear=null,xKind=null,xInfo={};
+function activeYears(){
+  var y=safe(function(){return window.getActiveYears&&window.getActiveYears();});
+  if(y&&y.length)return y.slice();
+  var seen={};
+  ((DB&&DB.transactions)||[]).forEach(function(t){var d=new Date(t.date);if(!isNaN(d))seen[d.getFullYear()]=1;});
+  var a=Object.keys(seen).map(Number);
+  if(!a.length)a=[new Date().getFullYear()];
+  return a.sort(function(p,q){return p-q;});
+}
+function fmt1(v){return (Math.round((Number(v)||0)*10)/10).toFixed(1)+'%';}
+function rateSeries(y){
+  var now=new Date(),end=(y===now.getFullYear())?now.getMonth():11,out=[],m;
+  for(m=0;m<=end;m++){
+    var inc=0,set=0;
+    ((DB&&DB.transactions)||[]).forEach(function(t){
+      var d=new Date(t.date);if(isNaN(d)||d.getFullYear()!==y||d.getMonth()!==m)return;
+      var a=Number(t.amount)||0;
+      if(t.type==='income')inc+=a;
+      else if(t.type==='savings'||t.type==='emergency')set+=a;
+      else if(t.type==='goal'&&typeof goalKind==='function'&&goalKind(t.goalId)==='investment')set+=a;
+    });
+    out.push(inc>0?Math.round(set/inc*1000)/10:null);
+  }
+  return out;
+}
+function collect(kind){
+  var o={};
+  safe(function(){
+    if(kind==='budgetstatus'){
+      var txs=(getTxForPeriod('all',xYear)||[]).filter(function(t){return t.type==='expense';});
+      var D=window.budgetDiscipline(txs,'all')||{},seen={};
+      (D.over||[]).forEach(function(x){
+        var lab=String(x.label||''),i=lab.indexOf(' \u00b7 ');
+        var cat=i>=0?lab.slice(i+3):lab;
+        seen[cat]=(seen[cat]||0)+(Number(x.over)||0);
+      });
+      o.overCats=Object.keys(seen).length;
+      o.overList=Object.keys(seen).map(function(k){return {label:k,over:seen[k]};}).sort(function(a,b){return b.over-a.over;});
+      o.totalBudgets=(window.activeBudgetRecords?activeBudgetRecords():[]).length;
+    }
+    if(kind==='savingsrate'){
+      var s=rateSeries(xYear),v=s.filter(function(x){return x!=null;});
+      o.avg=v.length?v.reduce(function(a,b){return a+b;},0)/v.length:0;
+      o.best=v.length?Math.max.apply(null,v):0;
+      o.worst=v.length?Math.min.apply(null,v):0;
+    }
+    if(kind==='networth'){
+      var d=(typeof anData==='function')?anData():null;
+      if(d&&d.nwSeries)o.nw=d.nwSeries.slice();
+    }
+  });
+  return o;
+}
+function setRow(c,label,val){
+  Array.prototype.forEach.call(c.querySelectorAll('.exp-row'),function(r){
+    var a=r.firstElementChild,b=r.lastElementChild;
+    if(a&&b&&a.textContent.trim()===label)b.textContent=val;
+  });
+}
+function capShort(v){var s=(typeof fmtShort==='function')?fmtShort(v):String(v);return s.length>6?s.slice(0,6)+'\u2026':s;}
+function decBudget(c){
+  var rows=c.querySelectorAll('.exp-row');
+  if(rows.length&&xInfo.totalBudgets&&!c.querySelector('.mm50-overcount')){
+    var last=rows[rows.length-1],n=xInfo.overCats||0;
+    var d=document.createElement('div');
+    d.className='exp-row mm50-overcount';
+    d.innerHTML='<span>Budgets gone over</span><span style="font-weight:700;color:'+(n?'var(--danger)':'var(--success)')+'">'+n+' of '+xInfo.totalBudgets+'</span>';
+    if(last.parentNode)last.parentNode.insertBefore(d,last.nextSibling);
+  }
+  var ors=c.querySelectorAll('.bs-over-row');
+  if(ors.length&&xInfo.overList&&xInfo.overList.length){
+    var cap=c.querySelector('.bd-cap'),host=ors[0].parentNode;
+    Array.prototype.forEach.call(ors,function(e){e.parentNode.removeChild(e);});
+    var frag='';
+    xInfo.overList.slice(0,3).forEach(function(o){
+      frag+='<div class="bs-over-row">'+((typeof ic==='function')?ic('i-warn'):'')+'<span>'+o.label+'</span><span class="bs-over-amt">+'+((typeof fmtShort==='function')?fmtShort(o.over):o.over)+' over</span></div>';
+    });
+    if(cap)cap.insertAdjacentHTML('afterend',frag);
+    else if(host)host.insertAdjacentHTML('beforeend',frag);
+  }
+}
+function decRate(c){
+  setRow(c,'Year average',fmt1(xInfo.avg));
+  setRow(c,'Best month',fmt1(xInfo.best));
+  setRow(c,'Lowest month',fmt1(xInfo.worst));
+  var h=c.querySelector('.exp-total');
+  if(h){var m=String(h.textContent).match(/-?[0-9.]+/);if(m)h.textContent=fmt1(m[0]);}
+}
+function decNW(c){
+  var bars=c.querySelector('.mm42-bars');
+  if(bars){
+    bars.classList.add('mm50-tall');
+    var chart=bars.parentNode;
+    if(chart&&chart.classList)chart.classList.add('mm50-tallchart');
+    if(xInfo.nw&&xInfo.nw.length===bars.children.length&&!bars.querySelector('b')){
+      Array.prototype.forEach.call(bars.children,function(el,i){
+        var b=document.createElement('b');b.textContent=capShort(xInfo.nw[i]);
+        el.insertBefore(b,el.firstChild);
+      });
+    }
+  }
+  var g=c.querySelector('.mm42-growth');
+  if(g&&!c.querySelector('.mm50-growth-foot')){
+    var w=document.createElement('div');w.className='mm50-growth-foot';
+    var cl=g.cloneNode(true);cl.style.display='inline-flex';
+    w.appendChild(cl);
+    var close=c.querySelector('.mm42-close')||c.querySelector('.btn-outline');
+    if(close&&close.parentNode)close.parentNode.insertBefore(w,close);
+  }
+}
+function decorate(kind){
+  var c=$('expandContent');if(!c)return;
+  var t=c.querySelector('.modal-title');if(!t)return;
+  t.textContent=String(t.textContent).replace(/\s*\u00b7\s*(All Years|All Months|[A-Za-z]+\s+[0-9]{4}|[0-9]{4})\s*$/,'');
+  if(!c.querySelector('.mm50-head')){
+    var head=document.createElement('div');head.className='mm50-head';
+    if(t.parentNode)t.parentNode.insertBefore(head,t);
+    head.appendChild(t);
+    var pill=document.createElement('div');
+    pill.className='period-selector mm50-year';
+    pill.innerHTML='<div class="period-btn" onclick="mm50PickYear()">'+xYear+'</div>';
+    head.appendChild(pill);
+  }else{
+    var b=c.querySelector('.mm50-year .period-btn');if(b)b.textContent=xYear;
+  }
+  c.classList.toggle('mm50-nw',kind==='networth');
+  if(kind==='budgetstatus')decBudget(c);
+  if(kind==='savingsrate')decRate(c);
+  if(kind==='networth')decNW(c);
+}
+function decGoals(){
+  var c=$('expandContent');if(!c)return;
+  var loans=((DB&&DB.loans)||[]).filter(function(l){
+    var rep=((DB&&DB.transactions)||[]).filter(function(t){return t.type==='loan_repay'&&t.loanId===l.id;})
+      .reduce(function(a,t){return a+(Number(t.amount)||0);},0);
+    return (Number(l.amount)||0)-rep>0;
+  });
+  var goals=((DB&&DB.goals)||[]).filter(function(g){return (Number(g.saved)||0)<(Number(g.target)||0);});
+  function empt(icon,title,sub){
+    return '<div class="mm50-empty"><div class="mm50-eic">'+((typeof ic==='function')?ic(icon):'')+'</div><div><b>'+title+'</b><span>'+sub+'</span></div></div>';
+  }
+  Array.prototype.forEach.call(c.querySelectorAll('.lg-exp-label'),function(l){
+    var isLoan=l.classList.contains('loan')||/loan/i.test(l.textContent);
+    if(isLoan?loans.length:goals.length)return;
+    var stats=l.nextElementSibling;
+    if(stats&&stats.classList&&stats.classList.contains('lg-exp-stats')){
+      stats.insertAdjacentHTML('beforebegin',isLoan
+        ?empt('i-check','No loans right now','Nothing outstanding \u2014 good job.')
+        :empt('i-target','No goal set yet','Tap to create your next target.'));
+      stats.parentNode.removeChild(stats);
+    }
+  });
+  Array.prototype.forEach.call(c.querySelectorAll('.exp-empty'),function(e){
+    if(/No active loans|No goals in progress/i.test(e.textContent))e.parentNode.removeChild(e);
+  });
+}
+var _xc=window.expandCard;
+function renderYear(){
+  var oM=selMonth,oY=selYear,r;
+  selMonth='all';selYear=xYear;
+  try{xInfo=collect(xKind);r=_xc.call(window,xKind);}
+  finally{selMonth=oM;selYear=oY;}
+  safe(function(){decorate(xKind);});
+  return r;
+}
+if(typeof _xc==='function')window.expandCard=function(kind){
+  if(kind==='goals'){var r=_xc.apply(this,arguments);safe(decGoals);return r;}
+  if(YEARK.indexOf(kind)<0)return _xc.apply(this,arguments);
+  var p=safe(function(){return window.getSelectedPeriod&&getSelectedPeriod();})||{};
+  if(p.allYears)return _xc.apply(this,arguments);
+  xKind=kind;
+  var ys=activeYears();
+  if(xYear==null||ys.indexOf(xYear)<0)xYear=(ys.indexOf(selYear)>=0)?selYear:ys[ys.length-1];
+  return renderYear();
+};
+window.mm50PickYear=function(){
+  var h='';
+  activeYears().slice().reverse().forEach(function(y){
+    h+='<div class="picker-item'+(y===xYear?' picker-active':'')+'" onclick="mm50SetYear('+y+')">'+y+(y===xYear?'<span class="mm44-current">\u2713</span>':'')+'</div>';
+  });
+  var t=$('periodPickerTitle');if(t)t.textContent='Select Year';
+  var l=$('periodPickerList');if(l)l.innerHTML=h;
+  openModal('periodPickerModal');
+};
+window.mm50SetYear=function(y){
+  xYear=Number(y);closeModal('periodPickerModal');buzz();
+  setTimeout(function(){safe(renderYear);},120);
+};
+
+/* ---------- 15: choose the kind of goal first ---------- */
+var _oag=window.openAddGoalModal;
+function qaBtn(k,icon,title,sub,col){
+  return '<div class="quick-action-btn" style="margin-bottom:9px" onclick="mm50GoalKind(\''+k+'\')">'+
+    '<div class="qa-icon" style="color:'+col+'">'+((typeof ic==='function')?ic(icon):'')+'</div>'+
+    '<div><div class="qa-title">'+title+'</div><div class="qa-sub">'+sub+'</div></div></div>';
+}
+if(typeof _oag==='function')window.openAddGoalModal=function(ex){
+  if(ex)return _oag.apply(this,arguments);
+  var c=$('goalModalContent'),t=$('goalModalTitle');
+  if(!c)return _oag.apply(this,arguments);
+  if(t)t.textContent='Add Goal';
+  c.innerHTML='<div class="mm50-step">'+
+    '<div style="font-size:13.5px;color:var(--text-dim);margin:-2px 0 13px;line-height:1.5">What kind of goal is this?</div>'+
+    qaBtn('investment','i-invest','Investment','Land, shares, rental, unit trust','var(--gold)')+
+    qaBtn('lifestyle','i-cart','Lifestyle','TV, trip, gadget, furniture','var(--text-dim)')+
+    '<div style="font-size:11.5px;color:var(--text-muted);margin-top:10px;line-height:1.5">Investment goals add to your savings rate and net worth. Lifestyle goals count as planned spending.</div>'+
+    '<button class="btn-outline" style="margin-top:14px" onclick="closeModal(\'addGoalModal\')">Cancel</button></div>';
+  openModal('addGoalModal');
+};
+window.mm50GoalKind=function(k){
+  buzz();
+  _oag.call(window,null);
+  var c=$('goalModalContent'),t=$('goalModalTitle');
+  if(!c)return;
+  var kk=$('gKind');if(kk)kk.value=k;
+  var seg=c.querySelector('.gk-opt');
+  if(seg){
+    var flex=seg.parentElement,grp=flex&&flex.parentElement;
+    if(grp&&grp.classList&&grp.classList.contains('form-group')){
+      Array.prototype.slice.call(grp.children).forEach(function(ch){
+        if(ch.id!=='gKind'&&ch.parentNode)ch.parentNode.removeChild(ch);
+      });
+      grp.style.margin='0';
+    }
+  }
+  if(t)t.textContent=k==='investment'?'New investment goal':'New lifestyle goal';
+  c.classList.add('mm50-step');
+  c.insertAdjacentHTML('afterbegin','<div class="mm50-kindpill">'+
+    ((typeof icSized==='function')?icSized(k==='investment'?'i-invest':'i-cart',14):'')+
+    (k==='investment'?'Investment goal':'Lifestyle goal')+'</div>');
+  railify(c);
+  var n=$('gName');if(n)setTimeout(function(){safe(function(){n.focus();});},90);
+};
+
+/* ---------- 12: profile photo popup ---------- */
+var pvOrig='';
+function footDefault(){
+  return '<button class="pp-edit" onclick="mm50EditPhoto()" aria-label="Edit photo"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>';
+}
+function footActions(){
+  var rm=(DB&&DB.userPhoto)?'<button class="pp-act danger" onclick="mm50RemovePhoto()"><svg viewBox="0 0 24 24"><use href="#i-trash"/></svg>Remove</button>':'';
+  return '<div class="pp-acts">'+
+    '<button class="pp-act" onclick="mm50Pick(\'camera\')"><svg viewBox="0 0 24 24"><use href="#i-camera"/></svg>Camera</button>'+
+    '<button class="pp-act" onclick="mm50Pick(\'gallery\')"><svg viewBox="0 0 24 24"><use href="#i-film"/></svg>Gallery</button>'+rm+'</div>';
+}
+function ppHTML(){
+  var nm=(DB&&DB.userName)||'';
+  var init=nm?nm.charAt(0).toUpperCase():'';
+  var inner=(DB&&DB.userPhoto)?'<img src="'+DB.userPhoto+'" alt="">':init;
+  return '<div class="pp-wrap" onclick="if(event.target===this)mm50ClosePP()">'+
+    '<button class="pp-close" onclick="mm50ClosePP()" aria-label="Close">\u2715</button>'+
+    '<div class="pp-mid"><div class="pp-av" id="mm50Av">'+inner+'</div>'+
+    (nm?'<div class="pp-name">'+((typeof esc==='function')?esc(nm):nm)+'</div>':'')+'</div>'+
+    '<div class="pp-foot" id="mm50Foot" data-open="0">'+footDefault()+'</div></div>';
+}
+window.mm50EditPhoto=function(){
+  var f=$('mm50Foot');if(!f)return;
+  buzz();
+  var open=f.getAttribute('data-open')==='1';
+  f.setAttribute('data-open',open?'0':'1');
+  f.innerHTML=open?footDefault():footActions();
+  var av=$('mm50Av');
+  if(av){av.style.width=open?'':'206px';av.style.height=open?'':'206px';}
+};
+window.mm50Pick=function(src){
+  safe(function(){
+    if('_photoTarget' in window)window._photoTarget='profile';
+    else if(typeof openPhotoChoice==='function'){
+      openPhotoChoice('profile');
+      if(typeof closeModalQuiet==='function')closeModalQuiet('photoChoiceModal');
+      else if(typeof closeModal==='function')closeModal('photoChoiceModal');
+    }
+  });
+  mm50ClosePP();
+  setTimeout(function(){safe(function(){pickPhotoSource(src);});},80);
+};
+window.mm50RemovePhoto=function(){
+  safe(function(){
+    DB.userPhoto=null;
+    if(typeof saveDB==='function')saveDB();
+    if(typeof renderAvatar==='function')renderAvatar();
+    if(typeof showToast==='function')showToast('Photo removed','var(--success)');
+  });
+  mm50ClosePP();
+};
+function openPP(){
+  var m=$('photoViewModal');if(!m)return;
+  if(!pvOrig)pvOrig=m.innerHTML;
+  m.classList.add('pp-mode');
+  m.innerHTML=ppHTML();
+  m.style.display='flex';
+  void m.offsetWidth;
+  requestAnimationFrame(function(){m.classList.add('mm-open');});
+  buzz();
+}
+window.mm50ClosePP=function(){
+  var m=$('photoViewModal');if(!m)return;
+  m.classList.remove('mm-open');
+  setTimeout(function(){
+    m.style.display='none';
+    m.classList.remove('pp-mode');
+    if(pvOrig)m.innerHTML=pvOrig;
+  },260);
+};
+window.openProfilePhoto=function(){openPP();};
+window.viewProfilePhoto=function(){openPP();};
+var _cpv=window.closePhotoView;
+window.closePhotoView=function(){
+  var m=$('photoViewModal');
+  if(m&&m.classList.contains('pp-mode'))return mm50ClosePP();
+  return (typeof _cpv==='function')?_cpv.apply(this,arguments):undefined;
+};
+
+/* ---------- keep the injected bits alive across re-renders ---------- */
+function boot(){safe(buildSearch);safe(bindSwipes);safe(navSync);}
+['updateOverview','renderAnalytics','renderTransactions','navTo','renderBudget'].forEach(function(fn){
+  var o=window[fn];if(typeof o!=='function')return;
+  window[fn]=function(){var r=o.apply(this,arguments);setTimeout(boot,0);return r;};
+});
+var _ia=window.initApp;
+if(typeof _ia==='function')window.initApp=function(){var r=_ia.apply(this,arguments);setTimeout(boot,0);return r;};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,250);});
+else setTimeout(boot,250);
+setTimeout(boot,1200);
+setTimeout(boot,2600);
+})();
+</script>
 </body>
 </html>

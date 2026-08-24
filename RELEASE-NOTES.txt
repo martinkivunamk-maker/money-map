@@ -1,3 +1,31 @@
+Money Map Production v2.0.3.50
+
+UI round (single appended block: style#v20350-ui + script#v20350-logic)
+ 1. Transactions: Search chip added before Filter; live text search over note,
+    category, income type, type and amount.
+ 2. Budgeting Discipline expanded: period dropped from the title, year pill on the
+    header line, plus a "Budgets gone over - N of M" row. Whole-year counts are
+    de-duplicated by category.
+ 3. Income vs Expenses expanded: same year pill, opens on the current year.
+ 4. Loans & Goals expanded: proper empty states instead of zero-filled stat boxes.
+ 5. FAB is now a 17px squircle with no drop shadow (stays inline, per line 4427).
+ 6. Savings Rate and Net Worth expanded: year pill; net worth total centred,
+    growth chip moved above Close, bars raised to 122px with capped top figures.
+ 7. Haptic feedback when the stacked overview/analytics cards switch.
+ 8. Rings ~30% thicker, analytics donut stroke widened.
+ 9. Spending Breakdown expanded: year pill, period out of the title.
+10. Light theme cards are pure white (ivory wash and gold hairline removed).
+11. Bottom bar and FAB hidden while the Settings sheet is open.
+12. Profile photo popup rebuilt: photo alone in its circular gold cover, centred,
+    edit button near the bottom, Camera/Gallery/Remove on tap, close top-right,
+    scale-and-fade open animation.
+13. App follows the phone's system font.
+14. Icon pickers are one swipeable rail instead of four stacked rows.
+15. Adding a goal asks for the kind of goal first, then the remaining fields.
+
+Motion: modal overlays keep their layout box so the sheet slide actually plays
+(previously display:none cancelled the transition); expanded card contents stagger in.
+
 Money Map Production v2.0.3.49
 
 - Replaced the device-native starting-balance holding list with Money Map’s in-app picker.
