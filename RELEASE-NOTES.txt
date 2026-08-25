@@ -239,3 +239,24 @@ v2.0.3.56 - UI polish before shipping
     opens the picture on its own with camera, gallery and remove; name opens
     the name screen. Back returns to Settings instead of the overview.
 9.  The + button no longer has a dark edge and keeps its soft float.
+
+========================================
+v2.0.3.57 - six fixes on the v2.0.3.56 build
+========================================
+1.  The expanded Financial Health card is short again: the four point rows and
+    the total stay, the paragraph of explanation is gone.
+2.  Goals and asset summary boxes are shaded the instant a tab renders instead
+    of a second later.
+3.  Login uses the fingerprint by default. The hashed PIN introduced in v55 is
+    now recognised as an existing PIN, so the app no longer asks you to create
+    and confirm a PIN on every launch. The PIN pad only appears when no
+    fingerprint is enrolled, or when the fingerprint is not read.
+4.  Editing the photo from Settings opens with camera, gallery and remove
+    already showing - no edit-icon flash and no jump - and the back button or
+    gesture closes the picture and leaves you in Settings.
+5.  Smart Insights in Analytics is populated again. The v55 notification hook
+    passed no data to the insight builder, which silently produced an empty
+    list.
+6.  Swiping between the stacked cards (savings rate / net worth and budget
+    discipline / income vs expense) buzzes again, while tapping a card to
+    expand it stays silent.

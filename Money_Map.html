@@ -8667,7 +8667,8 @@ html[data-theme="dark"] .overview-card::before,html[data-theme="dark"] .glass-ca
   var _pl=W._notificationPlan;
   if(typeof _pl==='function'){
     W._notificationPlan=function(){
-      var p=safe(function(){return _pl.apply(W,arguments)})||{};
+      var _a=arguments,_s=this;
+      var p=safe(function(){return _pl.apply(_s,_a)})||{};
       var db=dbo()||{},ns=db.notificationSettings||{};
       var w=safe(week)||{},mo=safe(month)||{};
       p.plans=(p.plans||[]).map(function(x){
@@ -8737,7 +8738,8 @@ html[data-theme="dark"] .overview-card::before,html[data-theme="dark"] .glass-ca
   var _bs=W.buildSmartInsights;
   if(typeof _bs==='function'){
     W.buildSmartInsights=function(){
-      var list=safe(function(){return _bs.apply(W,arguments)})||[];
+      var _a=arguments,_s=this;
+      var list=safe(function(){return _bs.apply(_s,_a)})||[];
       var f=W.MM_NOTIF_FOCUS;
       if(f==='weekly-insight'){
         var w=safe(week);
@@ -8936,12 +8938,12 @@ function ptsRow(name,got,max,sub){
  var col=pctv>=.8?'var(--success)':pctv>=.5?'var(--warning)':'var(--danger)';
  var d=D.createElement('div');d.className='mm56-pt';
  d.innerHTML='<div class="mm56-pt-r"><div class="mm56-pt-n"></div><div class="mm56-pt-v"></div></div>'+
-  '<div class="mm56-pt-s"></div><div class="mm56-pt-bar"><i></i></div>';
+  '<div class="mm56-pt-bar"><i></i></div>';
  q('.mm56-pt-n',d).textContent=name;
  var v=q('.mm56-pt-v',d);
  v.textContent=(Math.round(got*10)/10)+' / '+max;
  v.style.color=col;
- q('.mm56-pt-s',d).textContent=sub;
+ /* v2.0.3.57 - the per-row sentences were dropped, the numbers speak for themselves */
  var bar=q('.mm56-pt-bar>i',d);
  bar.style.width=Math.round(pctv*100)+'%';bar.style.background=col;
  return d;
@@ -8949,8 +8951,7 @@ function ptsRow(name,got,max,sub){
 function ptsBlock(){
  var w=D.createElement('div');w.className='mm56-pts';
  var d=safe(function(){return W.anData&&W.anData()});
- var head='<div class="mm56-pts-h">How this score is built</div>'+
-  '<div class="mm56-pts-i">Four checks make up the 100 points. Below is what each one is worth and what you actually earned.</div>';
+ var head='';
  w.innerHTML=head;
  if(!d)return w;
  var rate=Number(d.savingsRate)||0,run=Number(d.runway)||0,ob=Number(d.onBudget)||0,tb=Number(d.totalBudgets)||0,lp=Number(d.loanPct)||0;
@@ -9055,7 +9056,11 @@ function muteBig(e,ms){
  if(t.closest(SKIP))return;
  if(t.closest(BIG)&&W.__mm51Mute)W.__mm51Mute(ms);
 }
-D.addEventListener('pointerdown',function(e){muteBig(e,650)},true);
+D.addEventListener('pointerdown',function(e){
+ var t=e.target;
+ if(t&&t.closest&&t.closest('.swipe-stack'))return; /* swiping between stacked cards must still buzz */
+ muteBig(e,650);
+},true);
 D.addEventListener('click',function(e){muteBig(e,450)},true);
 
 /* ---------- 7 - cards settle out instead of vanishing ---------- */
@@ -9087,11 +9092,18 @@ function closePhoto(){
 }
 function openPhotoFromSettings(){
  W.__mm56ph=true;
+ safe(function(){if(W.__mm51Mute)W.__mm51Mute(700)});
  safe(function(){
   var f=W.openProfilePhoto||W.viewProfilePhoto;
   if(typeof f==='function')f();
  });
- setTimeout(function(){safe(function(){if(W.mm50EditPhoto)W.mm50EditPhoto()})},150);
+ /* show camera/gallery straight away, before the popup animates in - no icon flash, no jump */
+ safe(function(){
+  if(!W.mm50EditPhoto)return;
+  var f=D.getElementById('mm50Foot');
+  if(f&&f.getAttribute('data-open')!=='1')W.mm50EditPhoto();
+ });
+ /* back is handled by the v20357 back hooks - no extra history entry to go stale */
 }
 function openNameScreen(){
  safe(function(){
@@ -9131,6 +9143,125 @@ function polish56(){safe(lockPolish);safe(sumShade);}
 setTimeout(polish56,700);
 setInterval(polish56,900);
 W.__MM56UI={lock:lockPolish,shade:sumShade,pts:ptsBlock,bars:barPolish,sheet:sheet,closeSheet:closeSheet};
+})();
+</script>
+
+<style id="v20357-fix">
+/* 4 - the picture must not jump or shake while the popup animates in */
+#photoViewModal.pp-mode:not(.mm-open) .pp-av,
+#photoViewModal.pp-mode:not(.mm-open) .pp-foot,
+#photoViewModal.pp-mode:not(.mm-open) #mm50Foot{transition:none!important;animation:none!important}
+#photoViewModal.pp-mode .pp-av{transition:width 260ms cubic-bezier(.32,.72,0,1),height 260ms cubic-bezier(.32,.72,0,1)!important}
+#photoViewModal.pp-mode #mm50Foot{transition:opacity 240ms cubic-bezier(.32,.72,0,1)!important}
+</style>
+
+<script id="v20357-fix-js">
+(function(){'use strict';
+var W=window,D=document;
+function safe(f){try{return f()}catch(e){return null}}
+function $(id){return D.getElementById(id)}
+function dbo(){return safe(function(){return DB})}
+
+/* ---------- 2 - the summary cards are shaded the moment a tab renders ---------- */
+function shadeNow(){safe(function(){if(W.__MM56UI&&W.__MM56UI.shade)W.__MM56UI.shade()})}
+['renderBudget','switchBudgetTab','renderGoals','renderLoans','renderAssets','expandBudgetSummary','navTo'].forEach(function(n){
+ var o=W[n];
+ if(typeof o!=='function'||o.__mm57)return;
+ var f=function(){var r=o.apply(this,arguments);shadeNow();return r};
+ f.__mm57=1;W[n]=f;
+});
+
+/* ---------- 3 - fingerprint first, and a hashed PIN still counts as a PIN ---------- */
+function hasSec(){var db=dbo();return !!(db&&db.pinSec&&db.pinSec.hash)}
+function hasPin(){var db=dbo();return !!(db&&(db.pin||hasSec()))}
+function fpOn(){return !!safe(function(){return W._hasFingerprint&&W._hasFingerprint()})}
+function isNative(){return !!safe(function(){return W._native&&W._native()})}
+
+/* show the lock screen in verify mode - never the create-a-PIN mode */
+function lockVerify(){
+ safe(function(){if(W._clearPinEntry)W._clearPinEntry(true)});
+ var app=$('app'),ls=$('lockScreen');
+ if(app)app.classList.add('hidden');
+ if(ls){
+  ls.classList.remove('hidden');
+  ls.classList.remove('entering');void ls.offsetWidth;ls.classList.add('entering');
+  setTimeout(function(){ls.classList.remove('entering')},500);
+ }
+ if(fpOn()){
+  safe(function(){if(W.showFpPrompt)W.showFpPrompt()});
+  setTimeout(function(){safe(function(){if(W.tryFingerprint)W.tryFingerprint()})},280);
+ }else{
+  safe(function(){if(W.showPinPad)W.showPinPad()});
+ }
+}
+
+/* the PIN now lives on the phone as a hash, so DB.pin is empty on a fresh load.
+   Without this the app treated the owner as a brand-new user and asked them to
+   create and confirm a PIN on every launch, skipping the fingerprint entirely. */
+var _sa=W.startAuth;
+if(typeof _sa==='function'&&!_sa.__mm57){
+ var sa=function(){
+  var db=dbo();
+  if(db&&!db.pin&&hasSec()){lockVerify();return}
+  return _sa.apply(this,arguments);
+ };
+ sa.__mm57=1;W.startAuth=sa;
+}
+
+var _il=W.initLock;
+if(typeof _il==='function'&&!_il.__mm57){
+ var il=function(){
+  var db=dbo();
+  if(db&&!db.pin&&hasSec()){lockVerify();return}
+  return _il.apply(this,arguments);
+ };
+ il.__mm57=1;W.initLock=il;
+}
+
+/* fingerprint is the default way in; the PIN pad is the fallback */
+var _ew=W.enterFromWelcome;
+if(typeof _ew==='function'&&!_ew.__mm57){
+ var ew=function(){
+  if(fpOn()){
+   safe(function(){if(W.hapticStrong)W.hapticStrong()});
+   if(isNative()&&safe(function(){return W._nativeBio&&W._nativeBio('welcome')}))return;
+   if(typeof W._fpFromWelcome==='function'){safe(function(){W._fpFromWelcome()});return}
+  }
+  if(hasPin()&&typeof W._leaveWelcomeThen==='function'&&typeof W.startAuth==='function'){
+   safe(function(){if(W.hapticStrong)W.hapticStrong()});
+   safe(function(){W._leaveWelcomeThen(W.startAuth)});
+   return;
+  }
+  return _ew.apply(this,arguments);
+ };
+ ew.__mm57=1;W.enterFromWelcome=ew;
+}
+
+/* ---------- 4 - back closes the picture and leaves you in Settings ---------- */
+function photoOpen(){
+ var m=$('photoViewModal');
+ return !!(m&&m.classList.contains('pp-mode')&&m.style.display!=='none');
+}
+function closePhoto(){safe(function(){if(W.mm50ClosePP)W.mm50ClosePP()})}
+
+var _nb=W.__moneyMapHandleNativeBack;
+if(typeof _nb==='function'&&!_nb.__mm57){
+ var nb=function(){
+  if(photoOpen()){W.__mm56ph=false;closePhoto();return true}
+  return _nb.apply(this,arguments);
+ };
+ nb.__mm57=1;W.__moneyMapHandleNativeBack=nb;
+}
+
+W.addEventListener('popstate',function(){
+ if(!photoOpen())return;
+ var fromSettings=!!W.__mm56ph;
+ W.__mm56ph=false;
+ closePhoto();
+ if(fromSettings)setTimeout(function(){safe(function(){if(typeof W.navTo==='function')W.navTo('settings')})},60);
+});
+
+W.__MM57FIX={shadeNow:shadeNow,lockVerify:lockVerify,hasPin:hasPin,fpOn:fpOn,photoOpen:photoOpen};
 })();
 </script>
 </body>
