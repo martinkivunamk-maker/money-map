@@ -7690,10 +7690,10 @@ function loanPolish(root){var db=mmDB();if(!db||!db.loans)return;
   var paid=reps.reduce(function(a,t){return a+(t.amount||0)},0);var rem=Math.max(0,(l.amount||0)-paid);
   var who=l.source?String(l.source):'', when=mLab(l.date);
   var sub=q('.bgt-sub',card);
-  /* v2.0.3.60 - the closed loan caption is written once, by the v20359 block */
+  /* v2.0.3.61 - the closed loan caption is written once, by the v20359 block */
   if(rem<=0){var head=q('.bgt-head',card);if(head){var ring=null;qa('div',head).forEach(function(d){if(!ring&&d.querySelector&&d.querySelector('svg circle'))ring=d});
    if(ring&&ring.parentNode){var pill=D.createElement('span');pill.className='mm54-paid';pill.textContent='Fully paid';ring.parentNode.replaceChild(pill,ring)}}}
-  /* v2.0.3.60 - removed: the duplicate From/Taken/Original row inside the open loan card */
+  /* v2.0.3.61 - removed: the duplicate From/Taken/Original row inside the open loan card */
  });}
 
 /* ---------- 5 - goals: started date, completion month ---------- */
@@ -7708,11 +7708,11 @@ function goalPolish(root){var db=mmDB();if(!db||!db.goals)return;
   var done=tgt>0&&(g.saved||0)>=tgt;var rem=Math.max(0,tgt-(g.saved||0));
   var sub=q('.bgt-sub',card);
   if(sub){var bits=[];if(when)bits.push('Started '+when);
-   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));/* v2.0.3.60 - what is left to go shows once the card is open, not before */
+   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));/* v2.0.3.61 - what is left to go shows once the card is open, not before */
    var badge=q('span',sub);sub.textContent=bits.join(' \u00b7 ');if(badge)sub.appendChild(badge)}
   var st=q('.budget-card-status',det)||q('.budget-card-status',card);
   if(st&&done){st.textContent='Completed'+(doneAt?' \u00b7 '+mLab(doneAt):'');st.style.color='var(--success)'}
-  /* v2.0.3.60 - removed: the duplicate Started/Target/Completed row inside the open goal card */
+  /* v2.0.3.61 - removed: the duplicate Started/Target/Completed row inside the open goal card */
  });}
 
 /* stamp new goals so the started date is exact going forward */
@@ -7963,9 +7963,9 @@ function peSave(){
   if(inSettings&&!D.body.classList.contains('settings-section-open')){if(peOpen(true))return}
   return f.apply(this,arguments);
  };
- g.__mm54p=1;W.__mm54NameScreenLegacy=g;/* v2.0.3.60 - no longer claims openEditProfile */
+ g.__mm54p=1;W.__mm54NameScreenLegacy=g;/* v2.0.3.61 - no longer claims openEditProfile */
 })();
-/* v2.0.3.60 - removed: a v54 capture listener used to swallow every tap on the
+/* v2.0.3.61 - removed: a v54 capture listener used to swallow every tap on the
    settings photo (preventDefault+stopPropagation) and run its own popup. The
    profile flow now has one owner, in the v20359 block at the end of this file. */
 wrap('navTo',function(){peClose()});
@@ -8904,7 +8904,7 @@ function sheet(title,rows){
 function closeSheet(){var el=$('mm56Ch');if(!el)return;el.classList.remove('on');W.__mm56sheet=false;}
 function sheetOpen(){var el=$('mm56Ch');return !!(el&&el.classList.contains('on'))}
 
-/* v2.0.3.60 - the year list now comes from real transactions, and the period
+/* v2.0.3.61 - the year list now comes from real transactions, and the period
    change is remembered so closing the card puts the top-of-screen filter back. */
 function healthYears(){
  var out=[],seen={};
@@ -8938,7 +8938,7 @@ function setYear(y){
  });
  setTimeout(function(){safe(function(){if(W.expandCard)W.expandCard('health')})},60);
 }
-/* v2.0.3.60 - the two score builders below were replaced by the single
+/* v2.0.3.61 - the two score builders below were replaced by the single
    health builder. The names stay so the block's own exports keep working. */
 function ptsRow(){return D.createElement('div')}
 function ptsBlock(){return D.createElement('div')}
@@ -8947,7 +8947,7 @@ function healthPolish(){
  var t=q('.modal-title',c);if(!t)return;
  if(!/financial health/i.test(t.textContent||''))return;
  t.textContent='Financial Health';
- /* v2.0.3.60 - the head, the year pill and the score rows have one owner
+ /* v2.0.3.61 - the head, the year pill and the score rows have one owner
     now: the v20359 block. This patch used to build its own, on a timer,
     and its year pill changed the real period at the top of the screen. */
 }
@@ -9052,7 +9052,7 @@ function closePhoto(){
  if(el.style&&el.style.display==='flex')el.style.display='';
  W.__mm56ph=false;
 }
-/* v2.0.3.60 - removed: the v56 chooser card ("Profile photo / Your name") and
+/* v2.0.3.61 - removed: the v56 chooser card ("Profile photo / Your name") and
    its two helpers. The pencil now opens the edit screen directly. */
 var nb0=W.__moneyMapHandleNativeBack;
 W.__moneyMapHandleNativeBack=function(){
@@ -9071,7 +9071,7 @@ D.addEventListener('keydown',function(e){if(e.key==='Escape'&&sheetOpen())closeS
 function polish56(){safe(lockPolish);safe(sumShade);}
 setTimeout(polish56,700);
 setInterval(polish56,900);
-/* v2.0.3.60 - the points block used to be injected on a timer, a few hundred
+/* v2.0.3.61 - the points block used to be injected on a timer, a few hundred
    ms after the modal had started animating, which is what made the card jump.
    Build it in the same tick as the expand instead. */
 safe(function(){
@@ -9431,7 +9431,7 @@ if(typeof _oar==='function'&&!_oar.__mm58){
 /* =========================================================
    5 - financial health: value and points on one line, no bars
    ========================================================= */
-function pts58(){/* v2.0.3.60 - superseded by the single health builder */}
+function pts58(){/* v2.0.3.61 - superseded by the single health builder */}
 
 /* =========================================================
    6 - loan summary shading, and the balance on the closed card
@@ -9466,7 +9466,7 @@ function loanSubs(){
    if(t.type==='loan_repay'&&String(t.loanId)===id)paid+=Number(t.amount)||0;
   });
   var rem=Math.max(0,(Number(l.amount)||0)-paid);
-  /* v2.0.3.60 - the closed card keeps only who it came from and when. The
+  /* v2.0.3.61 - the closed card keeps only who it came from and when. The
      balance still owed belongs in the expanded body, added by the v20359 block. */
   det.setAttribute('data-mm59-rem',String(rem));
   sub.setAttribute('data-mm58','1');
@@ -9515,7 +9515,7 @@ if(typeof _rss==='function'&&!_rss.__mm58){
  rss.__mm58=1;W.renderSettingsSection=rss;
 }
 
-/* v2.0.3.60 - removed: the v58 edit screen, its photo view and its back
+/* v2.0.3.61 - removed: the v58 edit screen, its photo view and its back
    handler. The name row called v54, which rendered the name screen inside the
    settings page - underneath this overlay - so the name never looked editable.
    Replaced wholesale by the v20359 block at the end of this file. */
@@ -9538,7 +9538,7 @@ setTimeout(polish58,600);
 setInterval(polish58,1100);
 
 W.__MM58={navShow:navShow,open:open58,pts:pts58,loanShade:loanShade,loanSubs:loanSubs,
- lockFix:lockFix,hasPin:hasPin};/* v2.0.3.60 - profile exports moved to __MM59 */
+ lockFix:lockFix,hasPin:hasPin};/* v2.0.3.61 - profile exports moved to __MM59 */
 })();
 </script>
 <style id="v20359-fix">
@@ -9578,6 +9578,13 @@ W.__MM58={navShow:navShow,open:open58,pts:pts58,loanShade:loanShade,loanSubs:loa
 /* the app builds its cropper inside the page, which trapped it underneath
    these screens - lift it out and keep it on top */
 #cropModal,#mm55crop{z-index:19800!important}
+#mm51crop{z-index:19900!important}
+#mm51crop .ig-mask{border-radius:16px!important;box-shadow:0 0 0 9999px rgba(0,0,0,.72)!important;border:1.6px solid rgba(255,255,255,.92)!important}
+#mm55crop .mm55c-hole{border-radius:14px!important}
+#mm59Sheet{z-index:6900!important}
+#mm59Sheet .qa-icon svg{width:21px;height:21px}
+#mm59Sheet .quick-action-btn{margin-bottom:9px}
+#mm59Sheet .btn-outline{width:100%}
 #mm59Sheet .mm59-scrim{position:absolute;inset:0;background:rgba(0,0,0,.42);opacity:0;transition:opacity 240ms ease}
 #mm59Sheet.on .mm59-scrim{opacity:1}
 #mm59Sheet .mm59-card{position:absolute;left:0;right:0;bottom:0;background:var(--modal-bg,#fff);
@@ -9654,11 +9661,11 @@ var SVG={
    Android source: onBackPressed only does webView.goBack), so every layer
    gets its own history entry and popstate unwinds exactly one.
    ===================================================================== */
-var LAYERS=['view','sheet','name','pe'];
+var LAYERS=['sheet','view','name','pe'];
 function isOpen(n){
  if(n==='pe')return !!(($('mm59Pe')||{}).classList&&$('mm59Pe').classList.contains('on'));
  if(n==='name')return !!(($('mm59Ns')||{}).classList&&$('mm59Ns').classList.contains('on'));
- if(n==='sheet')return !!(($('mm59Sheet')||{}).classList&&$('mm59Sheet').classList.contains('on'));
+ if(n==='sheet')return !!(($('mm59Sheet')||{}).classList&&$('mm59Sheet').classList.contains('open'));
  if(n==='view')return !!(($('mm59View')||{}).classList&&$('mm59View').classList.contains('on'));
  return false;
 }
@@ -9668,65 +9675,79 @@ var pageAtOpen=null;
 function curPage(){var p=q('.page.active');return p?String(p.id||'').replace(/^page-/,''):null}
 function pushLayer(name){
  if(!anyOpen())pageAtOpen=curPage();
- safe(function(){history.pushState({mm59:name},'')});
+ safe(function(){history.pushState({mm61:name},'');spare=1});
 }
 function closeTop(){
- if(isOpen('view')){closeView();return true}
+ /* the card that popped up is ON TOP of the big picture, so it must go first */
  if(isOpen('sheet')){closeSheet();return true}
+ if(isOpen('view')){closeView();return true}
  if(isOpen('name')){closeName();return true}
  if(isOpen('pe')){closePe();return true}
  return false;
 }
-var lastPage=null,navAt=0;
-function navBack(p){safe(function(){if(W.navTo)W.navTo(p,{fromBack:true})});lastPage=p}
+/* =====================================================================
+   v2.0.3.61 - ONE owner for the back press, and ONE spare history entry.
+   The old build pushed an entry per screen, so six presses were needed to get
+   out and the leftovers replayed screens in the wrong order. Now the screens
+   he actually came through are remembered in a plain list, back retraces that
+   list, and once the overview is reached the next press leaves the app.
+   ===================================================================== */
+var stack=[],spare=0,busyAt=0,chain=0,chainAt=0;
+function navBack(p){safe(function(){if(W.navTo)W.navTo(p,{fromBack:true})})}
+function ensure(){
+ /* keep exactly ONE spare entry in front of us, and only while there is
+    something of ours left to unwind. Trusting the flag alone is not enough:
+    the app pushes entries of its own, so check that the entry sitting on top
+    really is ours before deciding one is already there. */
+ if(spare&&history.state&&history.state.mm61)return;
+ if(!anyOpen()&&!stack.length)return;
+ safe(function(){history.pushState({mm61:1},'');spare=1});
+}
+setInterval(function(){
+ /* the app owns its own popups and its settings sub screens. While one of those
+    is up, the next back press belongs to the app, not to us. */
+ if(q('.modal-overlay.open:not(#mm59Sheet)')||q('.settings-section-open'))busyAt=Date.now();
+},250);
 W.addEventListener('popstate',function(){
- /* v2.0.3.60 - one owner for going back: the year list, then any open layer,
-    then the screens themselves. The app keeps its own listener, so anything it
-    already did during this same pop is left alone. */
- var ys=$('mm59Ys');
- if(ys){
-  ys.classList.remove('on');
-  setTimeout(function(){if(ys.parentNode)ys.parentNode.removeChild(ys)},280);
-  return;
- }
- var want=pageAtOpen;
- var closed=safe(closeTop);
- if(closed){
-  if(want){var now=curPage();if(now&&now!==want)navBack(want)}
-  if(!anyOpen())pageAtOpen=null;
-  return;
- }
+ /* whatever this press belonged to, the entry it consumed is gone, so the spare
+    is spent. Clear it FIRST, or a press the app handled leaves the flag stale
+    and no new spare is ever pushed. */
+ spare=0;
+ if(Date.now()-busyAt<700){ensure();return}
+ if(safe(closeTop)){chain=0;ensure();return}
  pageAtOpen=null;
- if(Date.now()-navAt<160)return;      /* the app moved us during this pop */
- var st=history.state||{};
- if(st.mmSettingsSection)return;      /* the app owns its own sub screens */
- var cur=curPage();
- if(st.mm60){if(cur!==st.mm60)navBack(st.mm60);return}
- if(st.mmSettingsHub)return;
- if(cur&&cur!=='overview')navBack('overview');
+ if(stack.length){chain=0;navBack(stack.pop());ensure();return}
+ /* nothing of ours is left. If entries pushed earlier are still sitting above
+    the first one, step past them rather than eat the press. */
+ if(history.state&&chain<4&&Date.now()-chainAt>320){
+  chain++;chainAt=Date.now();
+  safe(function(){history.back()});
+  return;
+ }
+ chain=0;
+ /* let it through - the phone closes the app */
 });
 safe(function(){
- /* every screen change leaves one entry behind, so back walks back through the
-    screens and only leaves the app from the overview. */
  var n0=W.navTo;
- if(typeof n0!=='function'||n0.__mm60)return;
+ if(typeof n0!=='function'||n0.__mm61)return;
  var f=function(page,opts){
   opts=opts||{};
-  var prev=curPage(),len=history.length;
+  var prev=curPage();
   var out=n0.apply(this,arguments);
-  lastPage=page;navAt=Date.now();
-  if(!opts.fromBack&&page!==prev&&history.length===len){
-   safe(function(){history.pushState({mm60:page,prev:prev||'overview'},'')});
+  if(!opts.fromBack&&page&&page!==prev){
+   if(page==='overview')stack.length=0;              /* home is the last stop */
+   else if(prev){stack.push(prev);if(stack.length>12)stack.shift()}
+   ensure();
   }
   return out;
  };
- f.__mm60=1;W.navTo=f;
+ f.__mm61=1;W.navTo=f;
  /* while one of these screens is up, the app's own settings-back must stay out
     of it, or it throws him out to the overview mid-gesture */
  var sb=W._settingsBack;
- if(typeof sb==='function'&&!sb.__mm60){
-  var g=function(){if(anyOpen()||$('mm59Ys'))return;return sb.apply(this,arguments)};
-  g.__mm60=1;W._settingsBack=g;
+ if(typeof sb==='function'&&!sb.__mm61){
+  var g=function(){if(anyOpen())return;return sb.apply(this,arguments)};
+  g.__mm61=1;W._settingsBack=g;
  }
 });
 
@@ -9843,44 +9864,59 @@ function saveName(){
 /* =====================================================================
    camera / gallery / remove, as a card from the bottom
    ===================================================================== */
+function shRow(a,svg,title,sub){
+ return '<button class="quick-action-btn" type="button" data-a="'+a+'">'+
+  '<span class="qa-icon">'+svg+'</span>'+
+  '<span class="qa-text"><span class="qa-title">'+title+'</span>'+
+  '<span class="qa-sub">'+sub+'</span></span></button>';
+}
 function sheetEl(){
  var el=$('mm59Sheet');
  if(el)return el;
- el=D.createElement('div');el.id='mm59Sheet';
- el.innerHTML='<div class="mm59-scrim"></div><div class="mm59-card"><div class="mm59-grab"></div>'+
-  '<div class="mm59-row" data-a="camera"><span class="mm59-ic">'+SVG.cam+'</span><span>Take a photo</span></div>'+
-  '<div class="mm59-row" data-a="gallery"><span class="mm59-ic">'+SVG.gal+'</span><span>Choose from gallery</span></div>'+
-  '<div class="mm59-row mm59-danger" data-a="remove"><span class="mm59-ic">'+SVG.bin+'</span><span>Remove image</span></div>'+
+ /* v2.0.3.61 - built out of the app's OWN popup parts, so it reads exactly
+    like every other card that rises from the bottom of this app. */
+ el=D.createElement('div');el.id='mm59Sheet';el.className='modal-overlay';
+ el.innerHTML='<div class="modal-sheet" style="max-height:60vh">'+
+  '<div class="modal-handle"></div>'+
+  '<div class="modal-title">Profile photo</div>'+
+  shRow('camera',SVG.cam,'Take a photo','Use the camera')+
+  shRow('gallery',SVG.gal,'Choose from gallery','Pick a picture you already have')+
+  shRow('remove',SVG.bin,'Remove image','Go back to the plain circle')+
+  '<button class="btn-outline" type="button" data-a="cancel">Cancel</button>'+
   '</div>';
  D.body.appendChild(el);
- q('.mm59-scrim',el).addEventListener('click',function(e){e.stopPropagation();goBack()});
- qa('.mm59-row',el).forEach(function(r){
+ /* the app closes ANY .modal-overlay.open that is clicked, so catch our own
+    backdrop first, in the capture phase, and unwind it our way instead */
+ el.addEventListener('click',function(e){
+  if(e.target===el){e.stopPropagation();goBack()}
+ },true);
+ qa('.quick-action-btn,.btn-outline',el).forEach(function(r){
   r.addEventListener('click',function(e){
    e.stopPropagation();buzz();
    var a=r.getAttribute('data-a');
-   /* pop only the sheet - closing it by hand as well would take the screen
+   /* pop only the card - closing it by hand as well would take the screen
       underneath with it on the next back press */
    safe(function(){history.back()});
-   setTimeout(function(){act(a)},180);
+   if(a&&a!=='cancel')setTimeout(function(){act(a)},180);
   });
  });
  return el;
 }
 function openSheet(){
  var el=sheetEl(),db=dbo();
- var rm=q('.mm59-row[data-a="remove"]',el);
+ var rm=q('[data-a="remove"]',el);
  if(rm)rm.style.display=(db&&db.userPhoto)?'':'none';
- el.style.display='block';
+ el.style.display='flex';
  void el.offsetWidth;
- requestAnimationFrame(function(){el.classList.add('on');markBody()});
+ requestAnimationFrame(function(){el.classList.add('open');markBody()});
  pushLayer('sheet');
  markBody();
 }
 function closeSheet(){
  var el=$('mm59Sheet');
  if(el){
-  el.classList.remove('on');
-  setTimeout(function(){if(!el.classList.contains('on'))el.style.display='none';markBody()},320);
+  el.classList.remove('open');
+  setTimeout(function(){if(!el.classList.contains('open'))el.style.display='none';markBody()},320);
  }
  markBody();
 }
@@ -9894,7 +9930,7 @@ function act(a){
  hold(180000);
  safe(function(){if(W.suppressNextLock)W.suppressNextLock()});
  safe(function(){if('_photoTarget' in W)W._photoTarget='profile'});
- /* v2.0.3.60 - open the system picker inside this same gesture. Going through
+ /* v2.0.3.61 - open the system picker inside this same gesture. Going through
     mm50Pick added a timer, and by the time it fired the tap had expired, so
     nothing ever happened. */
  var inp=$(a==='camera'?'photoCameraInput':'photoInput');
@@ -9967,7 +10003,7 @@ D.addEventListener('click',function(e){
  if(anyOpen())return;
  if(t.closest('.settings-edit'))return;
  if(t.closest('#settingsAvatar')){
-  /* v2.0.3.60 - the app already buzzes for this tap; buzzing here as well was
+  /* v2.0.3.61 - the app already buzzes for this tap; buzzing here as well was
      the double vibration */
   safe(function(){var f=W.openProfilePhoto||W.viewProfilePhoto;if(typeof f==='function')f()});
  }
@@ -10083,7 +10119,7 @@ function healthYearList(){
 }
 var hYear=null;
 function healthData(year){
- /* v2.0.3.60 - read the app's own figures for one year WITHOUT touching the
+ /* v2.0.3.61 - read the app's own figures for one year WITHOUT touching the
     pickers at the top of the screen. The old way changed the real period,
     which is what flipped the month picker to All Months. */
  if(typeof W.anData!=='function')return null;
@@ -10099,18 +10135,18 @@ function health(){
  if(c.getAttribute('data-mm60')==='1'&&q('.mm59-pts',c))return;
  var t=q('.modal-title',c);
  t.textContent='Financial Health';
- var head=q('.mm56-head',c);
+ var head=q('.mm50-head',c);
  if(!head&&t.parentNode===c){
-  head=D.createElement('div');head.className='mm56-head';
+  head=D.createElement('div');head.className='mm50-head';
   c.insertBefore(head,t);head.appendChild(t);
  }
- if(head&&!q('.mm56-year',head)){
-  var pill=D.createElement('div');pill.className='period-selector mm56-year';
+ if(head&&!q('.mm50-year',head)){
+  var pill=D.createElement('div');pill.className='period-selector mm50-year';
   pill.innerHTML='<button class="period-btn" type="button"></button>';
   pill.addEventListener('click',function(ev){ev.stopPropagation();ev.preventDefault();openYears()});
   head.appendChild(pill);
  }
- var yb=q('.mm56-year button',c);if(yb)yb.textContent=String(hYear);
+ var yb=q('.mm50-year button',c);if(yb)yb.textContent=String(hYear);
  var d=healthData(hYear);if(!d)return;
  var rate=Number(d.savingsRate)||0,run=Number(d.runway)||0,
      ob=Number(d.onBudget)||0,tb=Number(d.totalBudgets)||0,lp=Number(d.loanPct)||0;
@@ -10124,6 +10160,9 @@ function health(){
            ['Budgets kept',tb>0?(ob+' of '+tb):'none set',r3,25],
            ['Loan load',(Math.round(lp*10)/10)+'%',r4,20]];
  qa('.mm59-pts,.mm56-pts,.mm58-pts',c).forEach(function(x){x.parentNode&&x.parentNode.removeChild(x)});
+ /* the app's own tiles say the same four things again, without the points -
+    that is the repetition he sees. Only the scored rows stay. */
+ qa('.an-tag,.an-tiles,.an-foot',c).forEach(function(x){x.parentNode&&x.parentNode.removeChild(x)});
  var wrap=D.createElement('div');wrap.className='mm59-pts';
  rows.forEach(function(r){
   var pv=r[3]>0?r[2]/r[3]:0,col=pv>=.8?'var(--success)':pv>=.5?'var(--warning)':'var(--danger)';
@@ -10151,32 +10190,31 @@ function health(){
  c.setAttribute('data-mm60','1');
 }
 function openYears(){
- var old=$('mm59Ys');if(old&&old.parentNode)old.parentNode.removeChild(old);
+ /* v2.0.3.61 - the app already HAS a year picker, the one savings rate uses.
+    Fill that one instead of inventing another sheet. */
  var years=healthYearList();
- var el=D.createElement('div');el.id='mm59Ys';el.className='mm59-ysheet';
- el.innerHTML='<div class="mm59-scrim"></div><div class="mm59-card">'+
-  '<div class="mm59-grab"></div><div class="mm59-yh">Show which year</div></div>';
- var card=q('.mm59-card',el);
+ var t=$('periodPickerTitle');if(t)t.textContent='Select Year';
+ var list=$('periodPickerList');
+ if(!list)return;
+ list.innerHTML='';
  years.forEach(function(y){
-  var r=D.createElement('div');r.className='mm59-yrow'+(y===hYear?' on':'');
-  r.textContent=String(y);
-  r.addEventListener('click',function(){
-   hYear=y;
-   safe(function(){
-    if(history.state&&history.state.mm60ys)history.back();
-    else{el.classList.remove('on');setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},280)}
-   });
-   setTimeout(function(){
-    var c=healthHost();if(c)c.removeAttribute('data-mm60');
-    safe(health);
-   },90);
-  });
-  card.appendChild(r);
+  var r=D.createElement('div');
+  r.className='picker-item'+(y===hYear?' picker-active':'');
+  r.setAttribute('data-hy',String(y));
+  r.innerHTML='<span>'+y+'</span>'+(y===hYear?'<span class="mm44-current">\u2713</span>':'');
+  r.addEventListener('click',function(e){e.stopPropagation();pickYear(y)});
+  list.appendChild(r);
  });
- q('.mm59-scrim',el).addEventListener('click',function(){safe(goBack)});
- D.body.appendChild(el);
- safe(function(){history.pushState({mm60ys:1},'')});
- requestAnimationFrame(function(){el.classList.add('on')});
+ safe(function(){if(W.openModal)W.openModal('periodPickerModal')});
+}
+function pickYear(y){
+ hYear=Number(y);
+ buzz();
+ safe(function(){if(W.closeModal)W.closeModal('periodPickerModal')});
+ setTimeout(function(){
+  var c=healthHost();if(c)c.removeAttribute('data-mm60');
+  safe(health);
+ },140);
 }
 
 /* =====================================================================
@@ -10199,7 +10237,7 @@ function dedupe(det,head){
   if(/^(from|taken|started)\b/.test(t))kid.parentNode.removeChild(kid);
  });
 }
-/* v2.0.3.60 - removed: the balance line above the boxes. The boxes inside
+/* v2.0.3.61 - removed: the balance line above the boxes. The boxes inside
    the open card already carry the balance, which is what he was seeing twice. */
 var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function monthYear(d){
@@ -10233,7 +10271,7 @@ function loans(){
   }
   if(det.getAttribute('data-mm59')==='1')return;
   dedupe(det,sub?sub.textContent:'');
-  /* v2.0.3.60 - the boxes inside the open card already show the balance */
+  /* v2.0.3.61 - the boxes inside the open card already show the balance */
   det.setAttribute('data-mm59','1');
  });
 }
@@ -10319,15 +10357,26 @@ safe(function(){
  var f=function(){
   var out=oc.apply(this,arguments);
   safe(function(){
-   ['cropModal','mm55crop'].forEach(function(id){
+   ['cropModal','mm55crop','mm51crop'].forEach(function(id){
     var m=$(id);if(!m)return;
     if(m.parentNode!==D.body)D.body.appendChild(m);
-    m.style.zIndex='19800';
+    m.style.zIndex=(id==='mm51crop')?'19900':'19800';
    });
   });
   return out;
  };
  f.__mm60=1;W.openCropper=f;
+ /* build the health card in the same frame it opens, so the app's own tiles
+    never flash first */
+ var x0=W.expandCard;
+ if(typeof x0==='function'&&!x0.__mm61){
+  var xf=function(kind){
+   var out=x0.apply(this,arguments);
+   if(kind==='health')safe(health);
+   return out;
+  };
+  xf.__mm61=1;W.expandCard=xf;
+ }
 });
 safe(function(){
  /* a new picture lands through the app's own render - refresh ours with it */
@@ -10340,9 +10389,11 @@ safe(function(){
 W.__MM59={open:openPe,closePe:closePe,name:openName,sheet:openSheet,view:openView,
  back:goBack,closeTop:closeTop,isOpen:isOpen,anyOpen:anyOpen,health:health,loans:loans,
  goals:goals,navFix:navFix,regate:regate,hold:hold,hasPin:hasPin,surplus:surplus,
- years:openYears,healthYear:function(y){if(y!=null)hYear=Number(y);return hYear}};
+ years:openYears,healthYear:function(y){if(y!=null)hYear=Number(y);return hYear},
+ stack:function(){return stack.slice()},spare:function(){return spare},ensure:ensure};
 D.documentElement.setAttribute('data-mm59','1');
 D.documentElement.setAttribute('data-mm60','1');
+D.documentElement.setAttribute('data-mm61','1');
 })();
 </script>
 </body>

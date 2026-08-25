@@ -1,74 +1,14 @@
-MONEY MAP - v2.0.3.60
-Upload: Money_Map.html + sw.js (two files, nothing else)
+Money Map v2.0.3.61 - upload these two files only
 
-What this round fixes
-=====================
+Money_Map.html -> replace in money-map-main (repo root)
+sw.js          -> replace in money-map-main (repo root)
 
-1. THE PROFILE SCREENS (edit picture / edit name)
-   - The heading now sits below the notification bar. Both screens use the
-     phone's own status-bar height, the same way every other screen in the app
-     does, and the back arrow is now the same arrow, same size, same position.
-   - The screens can no longer be dragged left or right, and the name screen no
-     longer scrolls inside itself. Nothing on them can be wider than the screen.
-   - Save now rides on top of the keyboard. It follows the keyboard up and back
-     down instead of sitting underneath it.
-   - Choosing camera or gallery now works. Two separate faults:
-       a) the picker was being opened from a timer, so the tap had already
-          expired by the time it fired - it is now opened in the same tap;
-       b) the app builds its cropper inside the page, which meant it was being
-          painted underneath these screens - that is why nothing appeared and
-          there was nothing to crop. The cropper is now lifted to the top layer.
-     A new picture also refreshes the screen you are standing on.
-   - Tapping the picture buzzes once. The second buzz was mine, on top of the
-     app's own.
-   - The camera/gallery/remove card now opens above the enlarged picture instead
-     of behind it.
+WHAT CHANGED
+1. Photo card (overview + settings) rebuilt from the app own popup parts.
+2. Back closes the card first, then the big picture, then the screen.
+3. Camera and gallery now open above the edit screen, crop area visible.
+4. Cropping is a square box, WhatsApp style, not a circle.
+5. Financial health: point-less duplicate rows gone; year picker is the app picker.
+6. Back button rebuilt: one spare entry, retraces real screens, exits at overview.
 
-2. BACK BUTTON AND BACK GESTURE - ALIGNED ACROSS THE APP
-   - Only the settings screen used to leave a step behind, so back from
-     transactions, analytics or budget went straight out of the app. Every screen
-     change now leaves one step behind.
-   - Back now walks: open layer -> previous screen -> ... -> overview -> exit.
-   - The app's own settings-back is held off while one of the profile screens is
-     up, which is what used to throw you out to the overview mid-gesture.
-   - Exactly one owner for back now, so it behaves the same way every time.
-
-3. FINANCIAL HEALTH (expanded)
-   - Rebuilt the way you asked: one line per item, the figure and the score
-     together - e.g. "Savings rate   27.8%   (24/30 points)".
-   - Average month surplus comes last, marked as carrying no points.
-   - The progress lines are gone and the closing note is one short line.
-   - THREE different patches were writing into this card and the last timer won,
-     which is why none of the changes you approved ever showed. Two of them have
-     been stood down; the card now has a single owner.
-   - Picking a year no longer touches the pickers at the top of the screen (that
-     is what flipped the month picker to All Months). The card reads the figures
-     for the year you chose without changing the app's period.
-   - The year list is now a plain, readable list of the years you actually have
-     entries for.
-
-4. LOANS AND GOALS
-   - The open loan card no longer repeats the balance above the three boxes.
-   - A goal card no longer states what is left to go before you expand it.
-
-Housekeeping
-============
-- Two dead score-builders emptied out (they were the duplicates causing item 3).
-- Cache name moved to moneymap-v20360-core so phones pick the new file up.
-
-Checked before sending
-======================
-- Every edited block passes a syntax check.
-- New suite L: 34 device-shaped checks (header height against the status-bar
-  inset, sideways-drag, save button against a simulated keyboard, layer order,
-  picker click, single buzz, back from a screen landing on the overview, health
-  rows and note length, year pick leaving the top pickers alone, no repeated
-  balance, no "to go" on a closed goal).
-- Suite K re-run: the only red is the old check that demanded the duplicate
-  "Balance left" line, which this round deliberately removes.
-
-Still outstanding (needs a new APK, not this upload)
-====================================================
-- Notification icon size in the status bar, launcher icon colour, and a true
-  native back hook.
-- The font-follows-phone item is still not fixed.
+Service worker cache: moneymap-v20361-core (forces a refresh on the phone).
