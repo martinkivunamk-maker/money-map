@@ -1,102 +1,74 @@
-MONEY MAP - v2.0.3.59
-Upload: Money_Map.html + sw.js  (web files only, no APK needed)
-This build supersedes the v2.0.3.58 zip and carries every change from v50 to v59.
+MONEY MAP - v2.0.3.60
+Upload: Money_Map.html + sw.js (two files, nothing else)
 
-====================================================================
-WHAT THIS RELEASE IS
-====================================================================
-This is the clean-up you approved: the old profile-editing patches that
-no longer worked have been REMOVED from the file, not layered over.
-One owner now handles the profile flow, the back gesture, the idle
-re-lock, the notification routing, the loan and goal cards and the
-financial health card.
+What this round fixes
+=====================
 
-Removed for good (four dead generations of patch):
-  1. v54's capture listener on the Settings photo. It ran
-     preventDefault + stopPropagation before anything else, which is why
-     tapping the photo "first showed the edit icon and then switched to
-     camera / gallery", and why the name never became editable.
-  2. v54's claim on openEditProfile, plus its name screen that was built
-     INSIDE the settings page - underneath the overlay, so invisible.
-  3. v56's "what do you want to edit" chooser card.
-  4. v58's whole edit screen, its photo viewer and its back handler.
-  5. v54's loan and goal captions, which were rewritten on their own
-     timers and always won the race, plus the duplicate
-     "From / Taken / Original" row inside the open card.
+1. THE PROFILE SCREENS (edit picture / edit name)
+   - The heading now sits below the notification bar. Both screens use the
+     phone's own status-bar height, the same way every other screen in the app
+     does, and the back arrow is now the same arrow, same size, same position.
+   - The screens can no longer be dragged left or right, and the name screen no
+     longer scrolls inside itself. Nothing on them can be wider than the screen.
+   - Save now rides on top of the keyboard. It follows the keyboard up and back
+     down instead of sitting underneath it.
+   - Choosing camera or gallery now works. Two separate faults:
+       a) the picker was being opened from a timer, so the tap had already
+          expired by the time it fired - it is now opened in the same tap;
+       b) the app builds its cropper inside the page, which meant it was being
+          painted underneath these screens - that is why nothing appeared and
+          there was nothing to crop. The cropper is now lifted to the top layer.
+     A new picture also refreshes the screen you are standing on.
+   - Tapping the picture buzzes once. The second buzz was mine, on top of the
+     app's own.
+   - The camera/gallery/remove card now opens above the enlarged picture instead
+     of behind it.
 
-Nothing in the app's own logic was touched: money maths, budgets,
-assets, backup, encryption, notifications planning, theming and the
-app-lock all run on the same code as before.
+2. BACK BUTTON AND BACK GESTURE - ALIGNED ACROSS THE APP
+   - Only the settings screen used to leave a step behind, so back from
+     transactions, analytics or budget went straight out of the app. Every screen
+     change now leaves one step behind.
+   - Back now walks: open layer -> previous screen -> ... -> overview -> exit.
+   - The app's own settings-back is held off while one of the profile screens is
+     up, which is what used to throw you out to the overview mid-gesture.
+   - Exactly one owner for back now, so it behaves the same way every time.
 
-====================================================================
-FIXED IN THIS BUILD
-====================================================================
-PROFILE EDITING (Settings)
-- The pencil in Settings now opens ONE screen: the picture with a camera
-  badge, and the name row. Nothing else from Settings shows behind it.
-- Tapping the name opens the name screen on its own; saving writes the
-  name and returns to the edit screen; the new name shows immediately.
-- The name row no longer carries an arrow or a pencil icon.
-- Tapping the camera badge raises a card from the bottom: take a photo,
-  choose from gallery, remove image.
-- Tapping the picture itself opens it square, on its own, with a pencil
-  at the top right and "Remove image" underneath.
-- Back button and back gesture now unwind one step at a time:
-  picture -> edit screen -> Settings, with the nav bar back in place.
-  It no longer throws you out to the Overview, and it no longer closes
-  the whole app.
+3. FINANCIAL HEALTH (expanded)
+   - Rebuilt the way you asked: one line per item, the figure and the score
+     together - e.g. "Savings rate   27.8%   (24/30 points)".
+   - Average month surplus comes last, marked as carrying no points.
+   - The progress lines are gone and the closing note is one short line.
+   - THREE different patches were writing into this card and the last timer won,
+     which is why none of the changes you approved ever showed. Two of them have
+     been stood down; the card now has a single owner.
+   - Picking a year no longer touches the pickers at the top of the screen (that
+     is what flipped the month picker to All Months). The card reads the figures
+     for the year you chose without changing the app's period.
+   - The year list is now a plain, readable list of the years you actually have
+     entries for.
 
-NOTIFICATIONS
-- The shell calls the app with (route, id) - route first. The old code
-  read them the other way round, so EVERY notification landed on the
-  Overview and the real routing never ran. Now the test notification
-  opens the Overview with the nav bar intact, savings notifications open
-  Goals, loan reminders open Loans, and an unknown id falls back to the
-  route the shell asked for instead of guessing.
-- Any stale "nav bar hidden" state left by the 3-dots menu is cleared
-  when a notification opens the app.
+4. LOANS AND GOALS
+   - The open loan card no longer repeats the balance above the three boxes.
+   - A goal card no longer states what is left to go before you expand it.
 
-FINANCIAL HEALTH CARD
-- The year pill now builds its list from real transactions only, and it
-  no longer rewrites the app-wide month filter. Closing the card puts
-  the top-of-screen period back exactly as it was.
-- The card is built in the same tick as it opens, so it no longer shakes
-  after expanding.
-- Each item shows its own figure and its score on one line, ending with
-  average monthly surplus (which carries no points), then one short line
-  of explanation. The progress bars are gone.
+Housekeeping
+============
+- Two dead score-builders emptied out (they were the duplicates causing item 3).
+- Cache name moved to moneymap-v20360-core so phones pick the new file up.
 
-LOANS AND GOALS
-- The closed loan card shows who it came from and when it was taken. The
-  balance left is no longer on the closed card - it shows once the card
-  is open.
-- A settled loan keeps the "Fully paid" pill in place of the ring.
-- The open card no longer repeats what the closed card already said.
-- The same de-duplication is applied to goals, and the goal "Completed"
-  line with its month is untouched.
+Checked before sending
+======================
+- Every edited block passes a syntax check.
+- New suite L: 34 device-shaped checks (header height against the status-bar
+  inset, sideways-drag, save button against a simulated keyboard, layer order,
+  picker click, single buzz, back from a screen landing on the overview, health
+  rows and note length, year pick leaving the top pickers alone, no repeated
+  balance, no "to go" on a closed goal).
+- Suite K re-run: the only red is the old check that demanded the duplicate
+  "Balance left" line, which this round deliberately removes.
 
-IDLE RE-LOCK
-- The one-minute rule works again. The old fix replaced a function the
-  real listeners never called, and the PIN check it depended on had been
-  removed in v55. It now re-locks on the real visibility event and it
-  accepts a hashed PIN as a PIN.
-
-====================================================================
-TESTED
-====================================================================
-New suite of 51 checks driving REAL taps (pointerdown / pointerup /
-click), a real visibility change, a real history.back() and the real
-notification bridge: 51 / 51 pass.
-Regression: A 28/28, B 31/31, C 36/36, D 15/15, F 16/16, G 47/47.
-Suite E 71/77 - the six reds are old expectations for behaviour you
-asked to be reversed (balance on the closed loan card, the duplicate
-detail row, and the Settings photo jumping straight to camera/gallery).
-Suites H, I and J still assert the removed v54/v56/v58 screens, so their
-profile checks are superseded by the new suite.
-
-====================================================================
-STILL NEEDS AN APK (not in this upload)
-====================================================================
-- Notification-bar icon size and the launcher icon colour.
-- A true native back hook (the shell currently has none; everything in
-  this build works through the browser history instead).
+Still outstanding (needs a new APK, not this upload)
+====================================================
+- Notification icon size in the status bar, launcher icon colour, and a true
+  native back hook.
+- The font-follows-phone item is still not fixed.

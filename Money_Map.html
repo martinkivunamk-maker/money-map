@@ -3050,7 +3050,7 @@ function renderGoals(c){
     return `<div class="bgt-card">
       <div class="bgt-head" onclick="toggleBudget('goal-${g.id}')">
         <div class="bgt-chip">${ic(g.icon)}</div>
-        <div class="bgt-info"><div class="bgt-name">${g.name}${_goalKindBadge(g)}</div><div class="bgt-sub">${p>=100?'Completed':fmtShort(rem)+' to go'}${g.owned?' · in Assets':''}${ttg&&p<100?' · '+ttg.text:''}</div></div>
+        <div class="bgt-info"><div class="bgt-name">${g.name}${_goalKindBadge(g)}</div><div class="bgt-sub">${p>=100?'Completed':''}${g.owned?' · in Assets':''}${ttg&&p<100?' · '+ttg.text:''}</div></div>
         ${glRing(p,col,44)}
         <div class="bgt-chev">${ic('i-chevron')}</div>
       </div>
@@ -7690,10 +7690,10 @@ function loanPolish(root){var db=mmDB();if(!db||!db.loans)return;
   var paid=reps.reduce(function(a,t){return a+(t.amount||0)},0);var rem=Math.max(0,(l.amount||0)-paid);
   var who=l.source?String(l.source):'', when=mLab(l.date);
   var sub=q('.bgt-sub',card);
-  /* v2.0.3.59 - the closed loan caption is written once, by the v20359 block */
+  /* v2.0.3.60 - the closed loan caption is written once, by the v20359 block */
   if(rem<=0){var head=q('.bgt-head',card);if(head){var ring=null;qa('div',head).forEach(function(d){if(!ring&&d.querySelector&&d.querySelector('svg circle'))ring=d});
    if(ring&&ring.parentNode){var pill=D.createElement('span');pill.className='mm54-paid';pill.textContent='Fully paid';ring.parentNode.replaceChild(pill,ring)}}}
-  /* v2.0.3.59 - removed: the duplicate From/Taken/Original row inside the open loan card */
+  /* v2.0.3.60 - removed: the duplicate From/Taken/Original row inside the open loan card */
  });}
 
 /* ---------- 5 - goals: started date, completion month ---------- */
@@ -7708,11 +7708,11 @@ function goalPolish(root){var db=mmDB();if(!db||!db.goals)return;
   var done=tgt>0&&(g.saved||0)>=tgt;var rem=Math.max(0,tgt-(g.saved||0));
   var sub=q('.bgt-sub',card);
   if(sub){var bits=[];if(when)bits.push('Started '+when);
-   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));else bits.push(shrt(rem)+' to go');
+   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));/* v2.0.3.60 - what is left to go shows once the card is open, not before */
    var badge=q('span',sub);sub.textContent=bits.join(' \u00b7 ');if(badge)sub.appendChild(badge)}
   var st=q('.budget-card-status',det)||q('.budget-card-status',card);
   if(st&&done){st.textContent='Completed'+(doneAt?' \u00b7 '+mLab(doneAt):'');st.style.color='var(--success)'}
-  /* v2.0.3.59 - removed: the duplicate Started/Target/Completed row inside the open goal card */
+  /* v2.0.3.60 - removed: the duplicate Started/Target/Completed row inside the open goal card */
  });}
 
 /* stamp new goals so the started date is exact going forward */
@@ -7963,9 +7963,9 @@ function peSave(){
   if(inSettings&&!D.body.classList.contains('settings-section-open')){if(peOpen(true))return}
   return f.apply(this,arguments);
  };
- g.__mm54p=1;W.__mm54NameScreenLegacy=g;/* v2.0.3.59 - no longer claims openEditProfile */
+ g.__mm54p=1;W.__mm54NameScreenLegacy=g;/* v2.0.3.60 - no longer claims openEditProfile */
 })();
-/* v2.0.3.59 - removed: a v54 capture listener used to swallow every tap on the
+/* v2.0.3.60 - removed: a v54 capture listener used to swallow every tap on the
    settings photo (preventDefault+stopPropagation) and run its own popup. The
    profile flow now has one owner, in the v20359 block at the end of this file. */
 wrap('navTo',function(){peClose()});
@@ -8904,7 +8904,7 @@ function sheet(title,rows){
 function closeSheet(){var el=$('mm56Ch');if(!el)return;el.classList.remove('on');W.__mm56sheet=false;}
 function sheetOpen(){var el=$('mm56Ch');return !!(el&&el.classList.contains('on'))}
 
-/* v2.0.3.59 - the year list now comes from real transactions, and the period
+/* v2.0.3.60 - the year list now comes from real transactions, and the period
    change is remembered so closing the card puts the top-of-screen filter back. */
 function healthYears(){
  var out=[],seen={};
@@ -8938,61 +8938,18 @@ function setYear(y){
  });
  setTimeout(function(){safe(function(){if(W.expandCard)W.expandCard('health')})},60);
 }
-function ptsRow(name,got,max,sub){
- var pctv=max>0?Math.max(0,Math.min(1,got/max)):0;
- var col=pctv>=.8?'var(--success)':pctv>=.5?'var(--warning)':'var(--danger)';
- var d=D.createElement('div');d.className='mm56-pt';
- d.innerHTML='<div class="mm56-pt-r"><div class="mm56-pt-n"></div><div class="mm56-pt-v"></div></div>'+
-  '<div class="mm56-pt-bar"><i></i></div>';
- q('.mm56-pt-n',d).textContent=name;
- var v=q('.mm56-pt-v',d);
- v.textContent=(Math.round(got*10)/10)+' / '+max;
- v.style.color=col;
- /* v2.0.3.59 - the per-row sentences were dropped, the numbers speak for themselves */
- var bar=q('.mm56-pt-bar>i',d);
- bar.style.width=Math.round(pctv*100)+'%';bar.style.background=col;
- return d;
-}
-function ptsBlock(){
- var w=D.createElement('div');w.className='mm56-pts';
- var d=safe(function(){return W.anData&&W.anData()});
- var head='';
- w.innerHTML=head;
- if(!d)return w;
- var rate=Number(d.savingsRate)||0,run=Number(d.runway)||0,ob=Number(d.onBudget)||0,tb=Number(d.totalBudgets)||0,lp=Number(d.loanPct)||0;
- var p1=Math.max(0,Math.min(rate/35,1))*30;
- var p2=Math.max(0,Math.min(run/6,1))*25;
- var p3=(tb>0?ob/tb:0.6)*25;
- var p4=Math.max(0,1-Math.min(lp/50,1))*20;
- w.appendChild(ptsRow('Savings rate',p1,30,'You set aside '+rate+'% of income. Saving 35% or more earns the full 30 points.'));
- w.appendChild(ptsRow('Emergency runway',p2,25,'Your emergency fund covers '+(Math.round(run*10)/10)+' month'+(Math.round(run*10)/10===1?'':'s')+' of spending. Six months earns the full 25 points.'));
- w.appendChild(ptsRow('Budgets kept',p3,25,tb>0?('You stayed inside '+ob+' of '+tb+' budget'+(tb===1?'':'s')+'. Keeping every budget earns the full 25 points.'):'No budgets set for this period, so this scores a neutral 15 of 25. Add budgets to earn the full points.'));
- w.appendChild(ptsRow('Loan load',p4,20,'Loan repayments took '+lp+'% of income. Under 50% earns points, and no loan repayments earns the full 20.'));
- var t=D.createElement('div');t.className='mm56-tot';
- t.innerHTML='<span>Total score</span><span></span>';
- t.lastElementChild.textContent=(Number(d.score)||0)+' / 100';
- w.appendChild(t);
- return w;
-}
+/* v2.0.3.60 - the two score builders below were replaced by the single
+   health builder. The names stay so the block's own exports keep working. */
+function ptsRow(){return D.createElement('div')}
+function ptsBlock(){return D.createElement('div')}
 function healthPolish(){
  var c=$('expandContent');if(!c)return;
  var t=q('.modal-title',c);if(!t)return;
  if(!/financial health/i.test(t.textContent||''))return;
  t.textContent='Financial Health';
- if(!q('.mm56-head',c)&&t.parentNode===c){
-  var head=D.createElement('div');head.className='mm56-head';
-  c.insertBefore(head,t);head.appendChild(t);
-  var pill=D.createElement('div');pill.className='period-selector mm56-year';
-  pill.innerHTML='<button class="period-btn" type="button"></button>';
-  q('button',pill).textContent=ay()?'All Years':String(selYear());
-  pill.addEventListener('click',function(ev){ev.stopPropagation();pickHealthYear()});
-  head.appendChild(pill);
- }
- if(!ay()&&!q('.mm56-pts',c)){
-  var close=q('.mm42-close',c)||q('.btn-outline',c);
-  var blk=ptsBlock();
-  if(close&&close.parentNode===c)c.insertBefore(blk,close);else c.appendChild(blk);
- }
+ /* v2.0.3.60 - the head, the year pill and the score rows have one owner
+    now: the v20359 block. This patch used to build its own, on a timer,
+    and its year pill changed the real period at the top of the screen. */
 }
 
 /* ---------- 4 + 5 - real labels on the bars, year on year under All Years ---------- */
@@ -9095,7 +9052,7 @@ function closePhoto(){
  if(el.style&&el.style.display==='flex')el.style.display='';
  W.__mm56ph=false;
 }
-/* v2.0.3.59 - removed: the v56 chooser card ("Profile photo / Your name") and
+/* v2.0.3.60 - removed: the v56 chooser card ("Profile photo / Your name") and
    its two helpers. The pencil now opens the edit screen directly. */
 var nb0=W.__moneyMapHandleNativeBack;
 W.__moneyMapHandleNativeBack=function(){
@@ -9114,7 +9071,7 @@ D.addEventListener('keydown',function(e){if(e.key==='Escape'&&sheetOpen())closeS
 function polish56(){safe(lockPolish);safe(sumShade);}
 setTimeout(polish56,700);
 setInterval(polish56,900);
-/* v2.0.3.59 - the points block used to be injected on a timer, a few hundred
+/* v2.0.3.60 - the points block used to be injected on a timer, a few hundred
    ms after the modal had started animating, which is what made the card jump.
    Build it in the same tick as the expand instead. */
 safe(function(){
@@ -9474,45 +9431,7 @@ if(typeof _oar==='function'&&!_oar.__mm58){
 /* =========================================================
    5 - financial health: value and points on one line, no bars
    ========================================================= */
-function pts58(){
- var wrap=q('.mm56-pts');
- if(!wrap||wrap.getAttribute('data-mm58')==='1')return;
- var d=safe(function(){return W.anData&&W.anData()});
- if(!d)return;
- var rate=Number(d.savingsRate)||0,run=Number(d.runway)||0;
- var ob=Number(d.onBudget)||0,tb=Number(d.totalBudgets)||0,lp=Number(d.loanPct)||0;
- var r1=Math.round(Math.max(0,Math.min(rate/35,1))*30);
- var r2=Math.round(Math.max(0,Math.min(run/6,1))*25);
- var r3=Math.round((tb>0?ob/tb:0.6)*25);
- var r4=Math.round(Math.max(0,1-Math.min(lp/50,1))*20);
- var mo=Math.round(run*10)/10;
- var rows=[
-  ['Savings rate',(Math.round(rate*10)/10)+'%',r1,30],
-  ['Emergency runway',mo+' month'+(mo===1?'':'s'),r2,25],
-  ['Budgets kept',tb>0?(ob+' of '+tb):'none set',r3,25],
-  ['Loan load',(Math.round(lp*10)/10)+'%',r4,20]
- ];
- var keep=q('.mm56-tot',wrap);
- wrap.innerHTML='';
- wrap.className='mm56-pts mm58-pts';
- rows.forEach(function(r){
-  var pv=r[3]>0?r[2]/r[3]:0;
-  var col=pv>=.8?'var(--success)':pv>=.5?'var(--warning)':'var(--danger)';
-  var el=D.createElement('div');el.className='mm58-pt';
-  el.innerHTML='<span class="mm58-pt-n"></span><span class="mm58-pt-x"></span><span class="mm58-pt-p"></span>';
-  q('.mm58-pt-n',el).textContent=r[0];
-  q('.mm58-pt-x',el).textContent=r[1];
-  var p=q('.mm58-pt-p',el);
-  p.textContent='('+r[2]+'/'+r[3]+' points)';
-  p.style.color=col;
-  wrap.appendChild(el);
- });
- var note=D.createElement('div');note.className='mm58-note';
- note.textContent='Out of 100 points: savings rate 30, emergency runway 25, budgets kept 25, loan load 20.';
- wrap.appendChild(note);
- if(keep)wrap.appendChild(keep);
- wrap.setAttribute('data-mm58','1');
-}
+function pts58(){/* v2.0.3.60 - superseded by the single health builder */}
 
 /* =========================================================
    6 - loan summary shading, and the balance on the closed card
@@ -9547,7 +9466,7 @@ function loanSubs(){
    if(t.type==='loan_repay'&&String(t.loanId)===id)paid+=Number(t.amount)||0;
   });
   var rem=Math.max(0,(Number(l.amount)||0)-paid);
-  /* v2.0.3.59 - the closed card keeps only who it came from and when. The
+  /* v2.0.3.60 - the closed card keeps only who it came from and when. The
      balance still owed belongs in the expanded body, added by the v20359 block. */
   det.setAttribute('data-mm59-rem',String(rem));
   sub.setAttribute('data-mm58','1');
@@ -9596,7 +9515,7 @@ if(typeof _rss==='function'&&!_rss.__mm58){
  rss.__mm58=1;W.renderSettingsSection=rss;
 }
 
-/* v2.0.3.59 - removed: the v58 edit screen, its photo view and its back
+/* v2.0.3.60 - removed: the v58 edit screen, its photo view and its back
    handler. The name row called v54, which rendered the name screen inside the
    settings page - underneath this overlay - so the name never looked editable.
    Replaced wholesale by the v20359 block at the end of this file. */
@@ -9619,20 +9538,20 @@ setTimeout(polish58,600);
 setInterval(polish58,1100);
 
 W.__MM58={navShow:navShow,open:open58,pts:pts58,loanShade:loanShade,loanSubs:loanSubs,
- lockFix:lockFix,hasPin:hasPin};/* v2.0.3.59 - profile exports moved to __MM59 */
+ lockFix:lockFix,hasPin:hasPin};/* v2.0.3.60 - profile exports moved to __MM59 */
 })();
 </script>
 <style id="v20359-fix">
 /* ---- one edit-profile screen, owned here ---- */
-#mm59Pe,#mm59Ns{position:fixed;inset:0;z-index:6200;background:var(--bg,#fff);display:none;
+#mm59Pe,#mm59Ns{position:fixed;inset:0;z-index:6200;background:var(--bg,#fff);display:none;overflow:hidden;max-width:100vw;touch-action:pan-y;overscroll-behavior:none;
  flex-direction:column;opacity:0;transform:translateY(14px);
  transition:opacity 260ms var(--ease,cubic-bezier(.32,.72,0,1)),transform 300ms var(--ease,cubic-bezier(.32,.72,0,1))}
 #mm59Pe.on,#mm59Ns.on{opacity:1;transform:none}
-.mm59-bar{display:flex;align-items:center;gap:10px;padding:14px 16px 6px}
-.mm59-back{width:40px;height:40px;border:0;background:transparent;padding:8px;cursor:pointer;color:var(--text,#111)}
-.mm59-back svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-.mm59-title{font-size:17px;font-weight:600}
-.mm59-body{flex:1;overflow:auto;padding:8px 20px 28px;display:flex;flex-direction:column;align-items:center}
+.mm59-bar{display:flex;align-items:center;gap:8px;padding:calc(var(--native-inset-top,env(safe-area-inset-top,0px)) + 12px) 14px 8px;min-height:calc(56px + var(--native-inset-top,env(safe-area-inset-top,0px)));box-sizing:border-box}
+.mm59-back{width:30px;height:40px;border:0;background:transparent;padding:0;margin:0 2px 0 0;cursor:pointer;color:var(--text,#111);display:flex;align-items:center;justify-content:flex-start}
+.mm59-back svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.mm59-title{font-size:22px;font-weight:800;line-height:1.15;letter-spacing:-.4px}
+.mm59-body{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;width:100%;box-sizing:border-box;padding:8px 20px 28px;display:flex;flex-direction:column;align-items:center}
 .mm59-avw{position:relative;margin:18px 0 10px}
 .mm59-av{width:150px;height:150px;border-radius:50%;overflow:hidden;background:var(--surface2,#eee);
  display:flex;align-items:center;justify-content:center;font-size:52px;font-weight:600;color:var(--gold,#D4AF37);cursor:pointer}
@@ -9647,15 +9566,18 @@ W.__MM58={navShow:navShow,open:open58,pts:pts58,loanShade:loanShade,loanSubs:loa
 .mm59-nl{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.55}
 .mm59-nv{font-size:16.5px;font-weight:600;margin-top:3px}
 /* ---- name screen ---- */
-.mm59-ns-body{flex:1;display:flex;flex-direction:column;padding:18px 20px 0}
+.mm59-ns-body{flex:1;display:flex;flex-direction:column;padding:18px 20px 0;overflow:hidden}
 #mm59NsIn{width:100%;font-size:19px;font-weight:600;text-align:left;padding:14px 2px;
  background:transparent;border:0;border-bottom:2px solid var(--gold,#D4AF37);color:var(--text,#111);outline:none}
 .mm59-ns-h{font-size:12.5px;opacity:.6;margin-top:12px}
-.mm59-ns-foot{padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px))}
+.mm59-ns-foot{position:fixed;left:0;right:0;bottom:0;z-index:2;background:var(--bg,#fff);padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));transform:translateY(calc(-1 * max(var(--mm59-ime,0px),var(--native-ime-bottom,0px))));transition:transform 150ms ease}
 #mm59NsSave{width:100%;border:0;border-radius:var(--radius-sm,14px);padding:15px;font-size:15.5px;font-weight:600;
  background:var(--gold,#D4AF37);color:#fff;cursor:pointer}
 /* ---- bottom sheet ---- */
-#mm59Sheet{position:fixed;inset:0;z-index:6400;display:none}
+#mm59Sheet{position:fixed;inset:0;z-index:6800;display:none}
+/* the app builds its cropper inside the page, which trapped it underneath
+   these screens - lift it out and keep it on top */
+#cropModal,#mm55crop{z-index:19800!important}
 #mm59Sheet .mm59-scrim{position:absolute;inset:0;background:rgba(0,0,0,.42);opacity:0;transition:opacity 240ms ease}
 #mm59Sheet.on .mm59-scrim{opacity:1}
 #mm59Sheet .mm59-card{position:absolute;left:0;right:0;bottom:0;background:var(--modal-bg,#fff);
@@ -9690,8 +9612,21 @@ body.mm59-open #bottomNav,body.mm59-open #fab{display:none!important}
 .mm59-pt-p{font-size:12.5px;font-weight:600;white-space:nowrap}
 .mm59-note{font-size:12.5px;line-height:1.55;opacity:.72;margin:12px 0 4px}
 /* ---- the balance line inside an open loan or goal ---- */
-.mm59-bal{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:2px 0 10px;font-size:13.5px}
-.mm59-bal b{font-size:15px}
+/* nothing inside these screens may be wider than the screen itself */
+.mm59-body>*,.mm59-ns-body>*{max-width:100%;box-sizing:border-box}
+/* ---- health rows: one line each, figure and score together ---- */
+.mm59-pts{margin:6px 0 4px}
+.mm59-ysheet{position:fixed;inset:0;z-index:9200}
+.mm59-ysheet .mm59-scrim{position:absolute;inset:0;background:rgba(0,0,0,.42);opacity:0;transition:opacity 220ms ease}
+.mm59-ysheet.on .mm59-scrim{opacity:1}
+.mm59-ysheet .mm59-card{position:absolute;left:0;right:0;bottom:0;background:var(--modal-bg,#fff);
+ border-radius:22px 22px 0 0;padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));
+ max-height:70vh;overflow:auto;transform:translateY(102%);transition:transform 300ms var(--ease,cubic-bezier(.32,.72,0,1))}
+.mm59-ysheet.on .mm59-card{transform:none}
+.mm59-yh{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.55;padding:4px 22px 6px}
+.mm59-yrow{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;font-size:17px;font-weight:600;cursor:pointer}
+.mm59-yrow.on{color:var(--gold,#D4AF37)}
+.mm59-yrow.on:after{content:"\2713";font-size:15px}
 </style>
 <script id="v20359-fix-js">
 (function(){
@@ -9742,17 +9677,57 @@ function closeTop(){
  if(isOpen('pe')){closePe();return true}
  return false;
 }
+var lastPage=null,navAt=0;
+function navBack(p){safe(function(){if(W.navTo)W.navTo(p,{fromBack:true})});lastPage=p}
 W.addEventListener('popstate',function(){
- /* The app registered its own popstate listener long before this one, and it
-    navigates on every pop - including ours. That is what has been throwing him
-    out to the overview. Close one layer, then put the page back before paint. */
+ /* v2.0.3.60 - one owner for going back: the year list, then any open layer,
+    then the screens themselves. The app keeps its own listener, so anything it
+    already did during this same pop is left alone. */
+ var ys=$('mm59Ys');
+ if(ys){
+  ys.classList.remove('on');
+  setTimeout(function(){if(ys.parentNode)ys.parentNode.removeChild(ys)},280);
+  return;
+ }
  var want=pageAtOpen;
  var closed=safe(closeTop);
- if(closed&&want){
-  var now=curPage();
-  if(now&&now!==want)safe(function(){if(W.navTo)W.navTo(want)});
+ if(closed){
+  if(want){var now=curPage();if(now&&now!==want)navBack(want)}
+  if(!anyOpen())pageAtOpen=null;
+  return;
  }
- if(!anyOpen())pageAtOpen=null;
+ pageAtOpen=null;
+ if(Date.now()-navAt<160)return;      /* the app moved us during this pop */
+ var st=history.state||{};
+ if(st.mmSettingsSection)return;      /* the app owns its own sub screens */
+ var cur=curPage();
+ if(st.mm60){if(cur!==st.mm60)navBack(st.mm60);return}
+ if(st.mmSettingsHub)return;
+ if(cur&&cur!=='overview')navBack('overview');
+});
+safe(function(){
+ /* every screen change leaves one entry behind, so back walks back through the
+    screens and only leaves the app from the overview. */
+ var n0=W.navTo;
+ if(typeof n0!=='function'||n0.__mm60)return;
+ var f=function(page,opts){
+  opts=opts||{};
+  var prev=curPage(),len=history.length;
+  var out=n0.apply(this,arguments);
+  lastPage=page;navAt=Date.now();
+  if(!opts.fromBack&&page!==prev&&history.length===len){
+   safe(function(){history.pushState({mm60:page,prev:prev||'overview'},'')});
+  }
+  return out;
+ };
+ f.__mm60=1;W.navTo=f;
+ /* while one of these screens is up, the app's own settings-back must stay out
+    of it, or it throws him out to the overview mid-gesture */
+ var sb=W._settingsBack;
+ if(typeof sb==='function'&&!sb.__mm60){
+  var g=function(){if(anyOpen()||$('mm59Ys'))return;return sb.apply(this,arguments)};
+  g.__mm60=1;W._settingsBack=g;
+ }
 });
 
 /* =====================================================================
@@ -9918,12 +9893,13 @@ function act(a){
  /* the picker backgrounds the app - keep the idle gate quiet while it is up */
  hold(180000);
  safe(function(){if(W.suppressNextLock)W.suppressNextLock()});
- safe(function(){
-  if(W.mm50Pick){W.mm50Pick(a);return}
-  var inp=$(a==='camera'?'photoCameraInput':'photoInput');
-  if(inp)inp.click();
- });
- setTimeout(peFill,900);
+ safe(function(){if('_photoTarget' in W)W._photoTarget='profile'});
+ /* v2.0.3.60 - open the system picker inside this same gesture. Going through
+    mm50Pick added a timer, and by the time it fired the tap had expired, so
+    nothing ever happened. */
+ var inp=$(a==='camera'?'photoCameraInput':'photoInput');
+ if(inp)safe(function(){inp.click()});
+ setTimeout(function(){safe(peFill)},900);
 }
 
 /* =====================================================================
@@ -9991,7 +9967,8 @@ D.addEventListener('click',function(e){
  if(anyOpen())return;
  if(t.closest('.settings-edit'))return;
  if(t.closest('#settingsAvatar')){
-  buzz();
+  /* v2.0.3.60 - the app already buzzes for this tap; buzzing here as well was
+     the double vibration */
   safe(function(){var f=W.openProfilePhoto||W.viewProfilePhoto;if(typeof f==='function')f()});
  }
 },false);
@@ -10086,24 +10063,120 @@ function surplus(){
  var n=Object.keys(mset).length||1;
  return (inc-exp)/n;
 }
+function healthHost(){
+ var c=$('expandContent');if(!c)return null;
+ var t=q('.modal-title',c);if(!t)return null;
+ if(!/financial health/i.test(t.textContent||''))return null;
+ return c;
+}
+function healthYearList(){
+ var seen={},out=[];
+ safe(function(){
+  var db=dbo();(db&&db.transactions||[]).forEach(function(t){
+   if(t&&t.date)seen[String(t.date).slice(0,4)]=1;
+  });
+ });
+ Object.keys(seen).forEach(function(k){var n=Number(k);if(n>1990&&n<3000)out.push(n)});
+ out.sort(function(a,b){return b-a});
+ if(!out.length)out.push(new Date().getFullYear());
+ return out;
+}
+var hYear=null;
+function healthData(year){
+ /* v2.0.3.60 - read the app's own figures for one year WITHOUT touching the
+    pickers at the top of the screen. The old way changed the real period,
+    which is what flipped the month picker to All Months. */
+ if(typeof W.anData!=='function')return null;
+ var g0=W.getSelectedPeriod,out;
+ if(typeof g0==='function'&&year!=null)W.getSelectedPeriod=function(){return{month:'all',year:year}};
+ out=safe(function(){return W.anData()});
+ if(typeof g0==='function')W.getSelectedPeriod=g0;
+ return out;
+}
 function health(){
- var wrap=q('.mm58-pts')||q('.mm56-pts');
- if(!wrap)return;
- if(wrap.getAttribute('data-mm59')==='1')return;
- /* drop the progress lines for good */
- qa('.mm56-pt-bar,.mm56-pt-s',wrap).forEach(function(x){x.parentNode&&x.parentNode.removeChild(x)});
- var s=surplus();
- if(s!==null&&!q('.mm59-sur',wrap)){
-  var row=D.createElement('div');row.className='mm59-pt mm59-sur';
-  row.innerHTML='<span class="mm59-pt-n"></span><span class="mm59-pt-x"></span><span class="mm59-pt-p"></span>';
-  q('.mm59-pt-n',row).textContent='Avg month surplus';
-  q('.mm59-pt-x',row).textContent=shrt(s);
-  q('.mm59-pt-p',row).textContent='no points';
-  q('.mm59-pt-p',row).style.opacity='.6';
-  var note=q('.mm58-note',wrap)||q('.mm59-note',wrap);
-  if(note)wrap.insertBefore(row,note);else wrap.appendChild(row);
+ var c=healthHost();if(!c)return;
+ if(hYear===null)hYear=new Date().getFullYear();
+ if(c.getAttribute('data-mm60')==='1'&&q('.mm59-pts',c))return;
+ var t=q('.modal-title',c);
+ t.textContent='Financial Health';
+ var head=q('.mm56-head',c);
+ if(!head&&t.parentNode===c){
+  head=D.createElement('div');head.className='mm56-head';
+  c.insertBefore(head,t);head.appendChild(t);
  }
- wrap.setAttribute('data-mm59','1');
+ if(head&&!q('.mm56-year',head)){
+  var pill=D.createElement('div');pill.className='period-selector mm56-year';
+  pill.innerHTML='<button class="period-btn" type="button"></button>';
+  pill.addEventListener('click',function(ev){ev.stopPropagation();ev.preventDefault();openYears()});
+  head.appendChild(pill);
+ }
+ var yb=q('.mm56-year button',c);if(yb)yb.textContent=String(hYear);
+ var d=healthData(hYear);if(!d)return;
+ var rate=Number(d.savingsRate)||0,run=Number(d.runway)||0,
+     ob=Number(d.onBudget)||0,tb=Number(d.totalBudgets)||0,lp=Number(d.loanPct)||0;
+ var r1=Math.round(Math.max(0,Math.min(rate/35,1))*30),
+     r2=Math.round(Math.max(0,Math.min(run/6,1))*25),
+     r3=Math.round((tb>0?ob/tb:0.6)*25),
+     r4=Math.round(Math.max(0,1-Math.min(lp/50,1))*20);
+ var mo=Math.round(run*10)/10;
+ var rows=[['Savings rate',(Math.round(rate*10)/10)+'%',r1,30],
+           ['Emergency runway',mo+' month'+(mo===1?'':'s'),r2,25],
+           ['Budgets kept',tb>0?(ob+' of '+tb):'none set',r3,25],
+           ['Loan load',(Math.round(lp*10)/10)+'%',r4,20]];
+ qa('.mm59-pts,.mm56-pts,.mm58-pts',c).forEach(function(x){x.parentNode&&x.parentNode.removeChild(x)});
+ var wrap=D.createElement('div');wrap.className='mm59-pts';
+ rows.forEach(function(r){
+  var pv=r[3]>0?r[2]/r[3]:0,col=pv>=.8?'var(--success)':pv>=.5?'var(--warning)':'var(--danger)';
+  var el=D.createElement('div');el.className='mm59-pt';
+  el.innerHTML='<span class="mm59-pt-n"></span><span class="mm59-pt-x"></span><span class="mm59-pt-p"></span>';
+  q('.mm59-pt-n',el).textContent=r[0];
+  q('.mm59-pt-x',el).textContent=r[1];
+  var p=q('.mm59-pt-p',el);p.textContent='('+r[2]+'/'+r[3]+' points)';p.style.color=col;
+  wrap.appendChild(el);
+ });
+ var s=surplus();
+ if(s!==null){
+  var sr=D.createElement('div');sr.className='mm59-pt mm59-sur';
+  sr.innerHTML='<span class="mm59-pt-n"></span><span class="mm59-pt-x"></span><span class="mm59-pt-p"></span>';
+  q('.mm59-pt-n',sr).textContent='Avg month surplus';
+  q('.mm59-pt-x',sr).textContent=shrt(s);
+  var sp=q('.mm59-pt-p',sr);sp.textContent='no points';sp.style.opacity='.6';
+  wrap.appendChild(sr);
+ }
+ var note=D.createElement('div');note.className='mm59-note';
+ note.textContent='Out of 100: savings rate 30, runway 25, budgets 25, loans 20.';
+ wrap.appendChild(note);
+ var close=q('.mm42-close',c)||q('.btn-outline',c);
+ if(close&&close.parentNode===c)c.insertBefore(wrap,close);else c.appendChild(wrap);
+ c.setAttribute('data-mm60','1');
+}
+function openYears(){
+ var old=$('mm59Ys');if(old&&old.parentNode)old.parentNode.removeChild(old);
+ var years=healthYearList();
+ var el=D.createElement('div');el.id='mm59Ys';el.className='mm59-ysheet';
+ el.innerHTML='<div class="mm59-scrim"></div><div class="mm59-card">'+
+  '<div class="mm59-grab"></div><div class="mm59-yh">Show which year</div></div>';
+ var card=q('.mm59-card',el);
+ years.forEach(function(y){
+  var r=D.createElement('div');r.className='mm59-yrow'+(y===hYear?' on':'');
+  r.textContent=String(y);
+  r.addEventListener('click',function(){
+   hYear=y;
+   safe(function(){
+    if(history.state&&history.state.mm60ys)history.back();
+    else{el.classList.remove('on');setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},280)}
+   });
+   setTimeout(function(){
+    var c=healthHost();if(c)c.removeAttribute('data-mm60');
+    safe(health);
+   },90);
+  });
+  card.appendChild(r);
+ });
+ q('.mm59-scrim',el).addEventListener('click',function(){safe(goBack)});
+ D.body.appendChild(el);
+ safe(function(){history.pushState({mm60ys:1},'')});
+ requestAnimationFrame(function(){el.classList.add('on')});
 }
 
 /* =====================================================================
@@ -10119,21 +10192,15 @@ function dedupe(det,head){
  });
  if(!h)return;
  qa(':scope > div',det).forEach(function(kid){
-  if(kid.className&&/mm59-bal|budget-card-status/.test(kid.className))return;
+  if(kid.className&&/budget-card-status/.test(kid.className))return;
   if(q('div,.budget-card-status',kid))return;    /* keep the boxes and the app's own status line */
   var t=String(kid.textContent||'').toLowerCase().replace(/\s+/g,' ').trim();
   if(!t)return;
   if(/^(from|taken|started)\b/.test(t))kid.parentNode.removeChild(kid);
  });
 }
-function balLine(det,label,value){
- if(q('.mm59-bal',det))return;
- var d=D.createElement('div');d.className='mm59-bal';
- d.innerHTML='<span></span><b></b>';
- d.firstElementChild.textContent=label;
- d.lastElementChild.textContent=value;
- det.insertBefore(d,det.firstChild);
-}
+/* v2.0.3.60 - removed: the balance line above the boxes. The boxes inside
+   the open card already carry the balance, which is what he was seeing twice. */
 var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function monthYear(d){
  var s=String(d||'');
@@ -10166,7 +10233,7 @@ function loans(){
   }
   if(det.getAttribute('data-mm59')==='1')return;
   dedupe(det,sub?sub.textContent:'');
-  if(rem>0)balLine(det,'Balance left',shrt(rem));
+  /* v2.0.3.60 - the boxes inside the open card already show the balance */
   det.setAttribute('data-mm59','1');
  });
 }
@@ -10217,10 +10284,65 @@ safe(function(){
 setTimeout(polish,700);
 setInterval(polish,1400);
 
+/* ---------- the keyboard, the cropper, and keeping the picture fresh ---------- */
+safe(function(){
+ /* the save button rides on the keyboard. The shell publishes its own inset,
+    and the browser reports one too - take whichever is larger, and set it on
+    the button itself so nothing can override it. */
+ function nat(){
+  var v=getComputedStyle(D.documentElement).getPropertyValue('--native-ime-bottom');
+  return parseFloat(v)||0;
+ }
+ function sync(){
+  var vv=W.visualViewport,gap=0;
+  if(vv)gap=Math.max(0,(W.innerHeight||0)-(vv.height+vv.offsetTop));
+  if(gap<=90)gap=0;
+  gap=Math.max(gap,nat());
+  D.documentElement.style.setProperty('--mm59-ime',gap+'px');
+  var f=q('.mm59-ns-foot');
+  if(f)f.style.transform=gap>0?('translateY(-'+gap+'px)'):'none';
+ }
+ W.__mm60Ime=sync;
+ if(W.visualViewport){
+  W.visualViewport.addEventListener('resize',sync);
+  W.visualViewport.addEventListener('scroll',sync);
+ }
+ W.addEventListener('resize',sync);
+ sync();
+});
+safe(function(){
+ /* the app builds its cropper inside the page, so it was being painted
+    underneath these screens - that is why choosing a picture looked dead.
+    Lift it onto the body the moment it opens. */
+ var oc=W.openCropper;
+ if(typeof oc!=='function'||oc.__mm60)return;
+ var f=function(){
+  var out=oc.apply(this,arguments);
+  safe(function(){
+   ['cropModal','mm55crop'].forEach(function(id){
+    var m=$(id);if(!m)return;
+    if(m.parentNode!==D.body)D.body.appendChild(m);
+    m.style.zIndex='19800';
+   });
+  });
+  return out;
+ };
+ f.__mm60=1;W.openCropper=f;
+});
+safe(function(){
+ /* a new picture lands through the app's own render - refresh ours with it */
+ var ra=W.renderAvatar;
+ if(typeof ra!=='function'||ra.__mm60)return;
+ var f=function(){var out=ra.apply(this,arguments);safe(peFill);return out};
+ f.__mm60=1;W.renderAvatar=f;
+});
+
 W.__MM59={open:openPe,closePe:closePe,name:openName,sheet:openSheet,view:openView,
  back:goBack,closeTop:closeTop,isOpen:isOpen,anyOpen:anyOpen,health:health,loans:loans,
- goals:goals,navFix:navFix,regate:regate,hold:hold,hasPin:hasPin,surplus:surplus};
+ goals:goals,navFix:navFix,regate:regate,hold:hold,hasPin:hasPin,surplus:surplus,
+ years:openYears,healthYear:function(y){if(y!=null)hYear=Number(y);return hYear}};
 D.documentElement.setAttribute('data-mm59','1');
+D.documentElement.setAttribute('data-mm60','1');
 })();
 </script>
 </body>
