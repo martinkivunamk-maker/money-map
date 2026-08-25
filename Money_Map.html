@@ -8943,7 +8943,7 @@ function ptsRow(name,got,max,sub){
  var v=q('.mm56-pt-v',d);
  v.textContent=(Math.round(got*10)/10)+' / '+max;
  v.style.color=col;
- /* v2.0.3.57 - the per-row sentences were dropped, the numbers speak for themselves */
+ /* v2.0.3.58 - the per-row sentences were dropped, the numbers speak for themselves */
  var bar=q('.mm56-pt-bar>i',d);
  bar.style.width=Math.round(pctv*100)+'%';bar.style.background=col;
  return d;
@@ -9262,6 +9262,543 @@ W.addEventListener('popstate',function(){
 });
 
 W.__MM57FIX={shadeNow:shadeNow,lockVerify:lockVerify,hasPin:hasPin,fpOn:fpOn,photoOpen:photoOpen};
+})();
+</script>
+
+<style id="v20358-fix">
+/* ---------- 4 - the + button floats, with no dark edge ---------- */
+#fab,html[data-native-shell="true"] #fab{
+  border:0!important;outline:0!important;
+  background-clip:padding-box!important;
+  -webkit-tap-highlight-color:transparent!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 9px 13px rgba(0,0,0,.24)) drop-shadow(0 3px 5px rgba(0,0,0,.15))!important;
+}
+html[data-theme="dark"] #fab{filter:drop-shadow(0 9px 14px rgba(0,0,0,.62)) drop-shadow(0 3px 6px rgba(0,0,0,.42))!important}
+
+/* ---------- 5 - financial health reads as one line per check ---------- */
+.mm56-pts .mm56-pt-bar,.mm58-pts .mm56-pt-bar{display:none!important}
+.mm58-pt{display:flex;align-items:baseline;gap:7px;padding:10px 0;border-bottom:1px solid var(--input-border)}
+.mm58-pt:last-of-type{border-bottom:0}
+.mm58-pt-n{font-size:13.5px;font-weight:700;color:var(--text)}
+.mm58-pt-x{font-size:13.5px;font-weight:800;color:var(--text)}
+.mm58-pt-p{margin-left:auto;font-size:12px;font-weight:800;white-space:nowrap}
+.mm58-note{margin-top:12px;padding-top:12px;border-top:1px solid var(--input-border);font-size:12.5px;line-height:1.55;color:var(--text-dim)}
+
+/* ---------- 6 - loan summary boxes carry their own shade ---------- */
+.mm58-purple{background:rgba(157,111,184,.10)!important;border-color:rgba(157,111,184,.44)!important}
+.mm58-green{background:rgba(63,174,90,.085)!important;border-color:rgba(63,174,90,.40)!important}
+.mm58-gold{background:rgba(212,175,55,.10)!important;border-color:rgba(212,175,55,.44)!important}
+
+/* ---------- 7 - dark theme: no shine, no colour bleed on the cards ---------- */
+html[data-theme="dark"] .overview-card::after,[data-theme="dark"] .overview-card::after,
+html[data-theme="dark"] .overview-card::before,[data-theme="dark"] .overview-card::before,
+[data-theme="dark"] .glass-card::before,[data-theme="dark"] .glass-card::after,
+[data-theme="dark"] .bgt-card::before,[data-theme="dark"] .bgt-card::after,
+[data-theme="dark"] .set-card::before,[data-theme="dark"] .set-card::after,
+[data-theme="dark"] .bsum-card::before,[data-theme="dark"] .bsum-card::after,
+[data-theme="dark"] .chart-card::before,[data-theme="dark"] .chart-card::after,
+[data-theme="dark"] .swipe-card::before,[data-theme="dark"] .swipe-card::after,
+[data-theme="dark"] .bal-card::before,[data-theme="dark"] .bal-card::after,
+[data-theme="dark"] .misc-line::before,[data-theme="dark"] .lg-status-card::before{
+  display:none!important;background:none!important;background-image:none!important;opacity:0!important;content:none!important;
+}
+[data-theme="dark"] .overview-card{
+  --accent:transparent!important;--accent-soft:transparent!important;
+  background:#161616!important;background-image:none!important;
+  border:1px solid rgba(255,255,255,0.07)!important;
+  box-shadow:0 8px 20px -14px rgba(0,0,0,.95)!important;
+}
+[data-theme="dark"] .glass-card,[data-theme="dark"] .chart-card,[data-theme="dark"] .swipe-card,
+[data-theme="dark"] .bsum-card,[data-theme="dark"] .set-card,[data-theme="dark"] .bgt-card{
+  background-image:none!important;box-shadow:0 8px 20px -14px rgba(0,0,0,.95)!important;
+}
+
+/* ---------- 8 - the app lock icon keeps the app colour ---------- */
+.mm54-lock.mm58-on .mm54-lock-ic{background:rgba(212,175,55,.15)!important;color:var(--gold)!important}
+.mm54-lock.mm58-on .mm54-lock-s{color:var(--success)!important}
+
+/* ---------- 2 - the edit profile screen ---------- */
+#mm58Pe{position:fixed;inset:0;z-index:12000;display:none;flex-direction:column;background:var(--bg);
+  padding-top:env(safe-area-inset-top,0px);opacity:0;transition:opacity 240ms cubic-bezier(.32,.72,0,1)}
+#mm58Pe.on{display:flex;opacity:1}
+#mm58Pe .mm58-pe-bar{display:flex;align-items:center;gap:6px;padding:14px 12px 6px}
+#mm58Pe .mm58-pe-back{width:40px;height:40px;flex:none;border:0;background:transparent;color:var(--text);
+  display:flex;align-items:center;justify-content:center;border-radius:50%;-webkit-tap-highlight-color:transparent}
+#mm58Pe .mm58-pe-back svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:2}
+#mm58Pe .mm58-pe-title{font-size:17px;font-weight:800;color:var(--text)}
+#mm58Pe .mm58-pe-body{flex:1;overflow-y:auto;padding:14px 22px 30px;display:flex;flex-direction:column;align-items:center;
+  transform:translateY(10px);opacity:0;transition:transform 320ms cubic-bezier(.32,.72,0,1),opacity 300ms cubic-bezier(.32,.72,0,1)}
+#mm58Pe.on .mm58-pe-body{transform:none;opacity:1}
+#mm58Pe .mm58-av-wrap{position:relative;width:152px;height:152px;margin:12px 0 4px}
+#mm58Pe .mm58-av{width:152px;height:152px;border-radius:50%;overflow:hidden;background:var(--glass);
+  border:1px solid var(--card-border);display:flex;align-items:center;justify-content:center;
+  font-size:46px;font-weight:800;color:var(--gold);-webkit-tap-highlight-color:transparent}
+#mm58Pe .mm58-av img{width:100%;height:100%;object-fit:cover;display:block}
+#mm58Pe .mm58-cam{position:absolute;right:-2px;bottom:-2px;width:46px;height:46px;border-radius:50%;
+  border:3px solid var(--bg);background:var(--gold);color:#1b1608;display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent}
+#mm58Pe .mm58-cam svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9}
+#mm58Pe .mm58-hint{margin:14px 0 20px;font-size:12.5px;color:var(--text-dim);text-align:center}
+#mm58Pe .mm58-name-row{width:100%;max-width:430px;display:flex;align-items:center;gap:12px;padding:16px 17px;
+  border-radius:18px;background:var(--card-bg);border:1px solid var(--card-border);-webkit-tap-highlight-color:transparent}
+#mm58Pe .mm58-nr-ic{width:40px;height:40px;flex:none;border-radius:12px;background:rgba(212,175,55,.13);color:var(--gold);
+  display:flex;align-items:center;justify-content:center}
+#mm58Pe .mm58-nr-ic svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9}
+#mm58Pe .mm58-nr-l{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--text-dim)}
+#mm58Pe .mm58-nr-v{font-size:15.5px;font-weight:800;color:var(--text);margin-top:3px}
+#mm58Pe .mm58-nr-c{margin-left:auto;color:var(--text-dim);display:flex}
+#mm58Pe .mm58-nr-c svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2}
+#mm58Pe .mm58-pe-active{transform:scale(.978)}
+body.mm58-pe-open #bottomNav,body.mm58-pe-open #fab{display:none!important}
+
+/* the expanded picture gets a pencil and a remove line */
+#photoViewModal .mm58-pen{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:64px;width:40px;height:40px;
+  border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center;z-index:6}
+#photoViewModal .mm58-pen svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9}
+#photoViewModal .mm58-rm{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 30px);
+  border:0;background:transparent;color:#ff8c8c;font-size:14.5px;font-weight:800;padding:14px;z-index:6;
+  -webkit-tap-highlight-color:transparent}
+#photoViewModal.mm58-view #mm50Foot{display:none!important}
+</style>
+
+<script id="v20358-fix-js">
+(function(){'use strict';
+var W=window,D=document;
+function safe(f){try{return f()}catch(e){return null}}
+function $(id){return D.getElementById(id)}
+function q(s,r){return (r||D).querySelector(s)}
+function qa(s,r){return Array.prototype.slice.call((r||D).querySelectorAll(s))}
+function dbo(){return safe(function(){return DB})}
+function shrt(n){return safe(function(){return W.fmtShort(n)})||String(n)}
+function ico(n){return safe(function(){return W.ic(n)})||''}
+function buzz(){safe(function(){if(W.hapticStrong)W.hapticStrong()})}
+
+var SVG={
+ back:'<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+ cam:'<svg viewBox="0 0 24 24"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.2-1.8h6.2L15.8 6h2.7A2.5 2.5 0 0 1 21 8.5v9A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.6"/></svg>',
+ gal:'<svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.6"/><circle cx="8.6" cy="9.6" r="1.7"/><path d="M4 17l4.8-4.6 3.3 3.1 2.9-2.6L20 17.5"/></svg>',
+ bin:'<svg viewBox="0 0 24 24"><path d="M4 7.5h16M9.5 7.5V5.4h5V7.5M6.3 7.5l.9 12.1h9.6l.9-12.1"/></svg>',
+ pen:'<svg viewBox="0 0 24 24"><path d="M4 20h4L20 8l-4-4L4 16z"/></svg>',
+ chev:'<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>'
+};
+
+/* =========================================================
+   1 - notifications land somewhere sensible, with the nav bar intact
+   ========================================================= */
+function navShow(){
+ safe(function(){
+  var b=D.body;
+  var sm=$('settingsMenuModal');
+  if(sm&&sm.classList.contains('open'))return;
+  if(b.classList.contains('settings-section-open'))return;
+  if(b.classList.contains('mm58-pe-open'))return;
+  var ap=q('.page.active');
+  if(ap&&ap.id==='page-settings')return;
+  b.classList.remove('mm-nav-off');
+ });
+}
+function nav(p){safe(function(){if(typeof W.navTo==='function')W.navTo(p)})}
+function tabTo(name){
+ safe(function(){
+  var hit=null;
+  qa('.budget-tab').forEach(function(x){
+   if((x.getAttribute('onclick')||'').indexOf(name)>=0)hit=x;
+  });
+  if(hit)hit.click();
+ });
+}
+var KNOWN=/^(weekly-insight|mid-month-outlook|daily-check-in|monthly-asset-update|recurring)/;
+function extra(k){
+ if(/^test/.test(k)){
+  nav('overview');
+  safe(function(){if(W.showSnackbar)W.showSnackbar('Notifications are working','success')});
+  return true;
+ }
+ if(k==='savings-progress'){nav('budget');setTimeout(function(){tabTo('goals')},420);return true}
+ if(k==='loan-reminder'){nav('budget');setTimeout(function(){tabTo('loans')},420);return true}
+ if(!KNOWN.test(k)){nav('overview');return true}
+ return false;
+}
+var _open=W.openMoneyMapNotification;
+var open58=function(id){
+ var k=String(id||'').replace(/^moneymap:\/\/notification\//,'');
+ navShow();
+ var handled=extra(k);
+ if(!handled&&typeof _open==='function')safe(function(){_open.call(W,id)});
+ [220,700,1400].forEach(function(ms){setTimeout(navShow,ms)});
+ return true;
+};
+open58.__mm58=1;
+W.openMoneyMapNotification=open58;
+W.openMoneyMapNotification20341=open58;
+
+/* the shell can also arrive with the id in the url; the original handler only
+   knows five ids, so cover the rest and always restore the nav bar */
+safe(function(){
+ var s=String(W.location.search||'')+String(W.location.hash||'');
+ var m=s.match(/(?:mmn|notification)=([a-zA-Z0-9\-_]+)/);
+ if(!m)return;
+ var k=m[1];
+ setTimeout(function(){ if(extra(k))navShow(); },1900);
+});
+[1200,2200,3200].forEach(function(ms){setTimeout(navShow,ms)});
+
+/* =========================================================
+   3 - the one-minute rule works again with a hashed PIN
+   ========================================================= */
+function hasSec(){var db=dbo();return !!(db&&db.pinSec&&db.pinSec.hash)}
+function hasPin(){var db=dbo();return !!(db&&(db.pin||hasSec()))}
+function gateShowing(){
+ var w=$('welcomeScreen'),l=$('lockScreen');
+ if(w&&!w.classList.contains('hidden'))return true;
+ if(l&&!l.classList.contains('hidden'))return true;
+ return false;
+}
+function regate(){
+ safe(function(){if(W.initWelcome)W.initWelcome()});
+ safe(function(){if(W.showWelcome)W.showWelcome()});
+}
+var _oar=W._onAppReturn;
+if(typeof _oar==='function'&&!_oar.__mm58){
+ var oar=function(){
+  var db=dbo();
+  /* v55 hashes the PIN, so DB.pin is empty and the original bailed out here,
+     which quietly removed the one-minute re-gate */
+  if(db&&!db.pin&&hasSec()){
+   if(gateShowing())return;
+   var bg=parseInt(safe(function(){return localStorage.getItem('mm_bg')})||'0',10);
+   var away=bg?Date.now()-bg:Infinity;
+   if(away>=60000)regate();
+   return;
+  }
+  return _oar.apply(this,arguments);
+ };
+ oar.__mm58=1;W._onAppReturn=oar;
+}
+
+/* =========================================================
+   5 - financial health: value and points on one line, no bars
+   ========================================================= */
+function pts58(){
+ var wrap=q('.mm56-pts');
+ if(!wrap||wrap.getAttribute('data-mm58')==='1')return;
+ var d=safe(function(){return W.anData&&W.anData()});
+ if(!d)return;
+ var rate=Number(d.savingsRate)||0,run=Number(d.runway)||0;
+ var ob=Number(d.onBudget)||0,tb=Number(d.totalBudgets)||0,lp=Number(d.loanPct)||0;
+ var r1=Math.round(Math.max(0,Math.min(rate/35,1))*30);
+ var r2=Math.round(Math.max(0,Math.min(run/6,1))*25);
+ var r3=Math.round((tb>0?ob/tb:0.6)*25);
+ var r4=Math.round(Math.max(0,1-Math.min(lp/50,1))*20);
+ var mo=Math.round(run*10)/10;
+ var rows=[
+  ['Savings rate',(Math.round(rate*10)/10)+'%',r1,30],
+  ['Emergency runway',mo+' month'+(mo===1?'':'s'),r2,25],
+  ['Budgets kept',tb>0?(ob+' of '+tb):'none set',r3,25],
+  ['Loan load',(Math.round(lp*10)/10)+'%',r4,20]
+ ];
+ var keep=q('.mm56-tot',wrap);
+ wrap.innerHTML='';
+ wrap.className='mm56-pts mm58-pts';
+ rows.forEach(function(r){
+  var pv=r[3]>0?r[2]/r[3]:0;
+  var col=pv>=.8?'var(--success)':pv>=.5?'var(--warning)':'var(--danger)';
+  var el=D.createElement('div');el.className='mm58-pt';
+  el.innerHTML='<span class="mm58-pt-n"></span><span class="mm58-pt-x"></span><span class="mm58-pt-p"></span>';
+  q('.mm58-pt-n',el).textContent=r[0];
+  q('.mm58-pt-x',el).textContent=r[1];
+  var p=q('.mm58-pt-p',el);
+  p.textContent='('+r[2]+'/'+r[3]+' points)';
+  p.style.color=col;
+  wrap.appendChild(el);
+ });
+ var note=D.createElement('div');note.className='mm58-note';
+ note.textContent='Out of 100 points: savings rate 30, emergency runway 25, budgets kept 25, loan load 20.';
+ wrap.appendChild(note);
+ if(keep)wrap.appendChild(keep);
+ wrap.setAttribute('data-mm58','1');
+}
+
+/* =========================================================
+   6 - loan summary shading, and the balance on the closed card
+   ========================================================= */
+function loanShade(){
+ qa('.bsum-card').forEach(function(card){
+  var lab=q('.bsum-lab',card);
+  if(!lab||!/loan/i.test(lab.textContent||''))return;
+  qa('div',card).forEach(function(box){
+   var st=box.getAttribute('style')||'';
+   if(st.indexOf('flex:1')<0)return;
+   var t=(box.textContent||'').toLowerCase();
+   var cls=/paid off/.test(t)?'mm58-green':(/active|pending/.test(t)?'mm58-gold':(/loan/.test(t)?'mm58-purple':''));
+   if(!cls)return;
+   box.classList.remove('mm58-green','mm58-gold','mm58-purple');
+   box.classList.add(cls);
+  });
+ });
+}
+function loanSubs(){
+ var db=dbo();if(!db||!db.loans)return;
+ qa('[id^="bgtd-loan-"]').forEach(function(det){
+  var id=det.id.replace('bgtd-loan-','');
+  var l=null;
+  for(var i=0;i<db.loans.length;i++)if(String(db.loans[i].id)===id)l=db.loans[i];
+  if(!l)return;
+  var card=det.parentNode;if(!card)return;
+  var sub=q('.bgt-sub',card);if(!sub)return;
+  if(sub.getAttribute('data-mm58')==='1')return;
+  var paid=0;
+  (db.transactions||[]).forEach(function(t){
+   if(t.type==='loan_repay'&&String(t.loanId)===id)paid+=Number(t.amount)||0;
+  });
+  var rem=Math.max(0,(Number(l.amount)||0)-paid);
+  var cur=(sub.textContent||'').trim();
+  /* v54 replaced this line with who it came from and when - keep that, but put
+     the balance still owed in front of it so it shows before expanding */
+  if(rem>0&&cur.indexOf(' left')<0){
+   var lead=shrt(rem)+' left';
+   sub.textContent=cur?(lead+' \u00b7 '+cur):lead;
+  }
+  sub.setAttribute('data-mm58','1');
+ });
+}
+
+/* =========================================================
+   8 - the security screen builds in one pass, with the real state
+   ========================================================= */
+function lockFix(){
+ var det=$('settingsDetail');if(!det)return;
+ var t=q('.settings-detail-title',det);
+ if(!t||!/security/i.test(t.textContent||''))return;
+ safe(function(){if(W.__MM54&&W.__MM54.lockCard)W.__MM54.lockCard()});
+ safe(function(){if(W.__MM56UI&&W.__MM56UI.lock)W.__MM56UI.lock()});
+ var card=q('.mm54-lock',det);if(!card)return;
+ var db=dbo();
+ var on=!!(db&&(db.pin||hasSec()));
+ var fp=!!(db&&db.fingerprintCredId);
+ card.classList.toggle('off',!on);
+ card.classList.toggle('mm58-on',on);
+ var s=q('.mm54-lock-s',card);
+ if(s)s.textContent=on?(fp?'On \u00b7 fingerprint or PIN':'On \u00b7 PIN required'):'Off \u00b7 no PIN set';
+ var b=q('.mm54-lock-b',card);
+ if(b)b.textContent=on
+  ? (fp?'Money Map asks for your fingerprint, or your PIN, every time it opens.'
+       :'Money Map asks for your 4-digit PIN every time it opens.')
+  : 'Set a PIN so your balances stay private if someone else picks up your phone.';
+}
+var _oss=W.openSettingsSection;
+if(typeof _oss==='function'&&!_oss.__mm58){
+ var oss=function(){
+  var r=_oss.apply(this,arguments);
+  safe(lockFix);
+  return r;
+ };
+ oss.__mm58=1;W.openSettingsSection=oss;
+}
+var _rss=W.renderSettingsSection;
+if(typeof _rss==='function'&&!_rss.__mm58){
+ var rss=function(){
+  var r=_rss.apply(this,arguments);
+  safe(lockFix);
+  return r;
+ };
+ rss.__mm58=1;W.renderSettingsSection=rss;
+}
+
+/* =========================================================
+   2 + 9 - one edit profile screen, and back always returns to Settings
+   ========================================================= */
+function peEl(){
+ var el=$('mm58Pe');
+ if(el)return el;
+ el=D.createElement('div');el.id='mm58Pe';
+ el.innerHTML='<div class="mm58-pe-bar"><button class="mm58-pe-back" aria-label="Back">'+SVG.back+'</button>'+
+  '<div class="mm58-pe-title">Edit profile</div></div>'+
+  '<div class="mm58-pe-body">'+
+   '<div class="mm58-av-wrap"><div class="mm58-av"></div>'+
+    '<button class="mm58-cam" aria-label="Change picture">'+SVG.cam+'</button></div>'+
+   '<div class="mm58-hint"></div>'+
+   '<div class="mm58-name-row"><div class="mm58-nr-ic">'+SVG.pen+'</div>'+
+    '<div><div class="mm58-nr-l">Name</div><div class="mm58-nr-v"></div></div>'+
+    '<div class="mm58-nr-c">'+SVG.chev+'</div></div>'+
+  '</div>';
+ D.body.appendChild(el);
+ q('.mm58-pe-back',el).addEventListener('click',function(ev){ev.stopPropagation();peClose(true)});
+ q('.mm58-cam',el).addEventListener('click',function(ev){ev.stopPropagation();buzz();photoSheet()});
+ q('.mm58-av',el).addEventListener('click',function(ev){
+  ev.stopPropagation();
+  var db=dbo();
+  if(db&&db.userPhoto)viewPhoto();else{buzz();photoSheet()}
+ });
+ q('.mm58-name-row',el).addEventListener('click',function(ev){
+  ev.stopPropagation();buzz();
+  safe(function(){if(W.__MM54&&W.__MM54.peOpen)W.__MM54.peOpen()});
+ });
+ return el;
+}
+function peFill(){
+ var el=peEl(),db=dbo();
+ var av=q('.mm58-av',el);
+ var pic=db&&db.userPhoto;
+ if(pic){av.innerHTML='';var im=D.createElement('img');im.src=pic;av.appendChild(im)}
+ else{
+  var n=String((db&&db.userName)||'').trim();
+  av.textContent=n?n.charAt(0).toUpperCase():'?';
+ }
+ q('.mm58-nr-v',el).textContent=(db&&db.userName)?db.userName:'Add your name';
+ q('.mm58-hint',el).textContent=pic?'Tap the picture to view it, or the camera to change it'
+  :'Tap the camera to add a picture';
+}
+function peOpen(){
+ var el=peEl();
+ peFill();
+ D.body.classList.add('mm58-pe-open');
+ el.style.display='flex';
+ void el.offsetWidth;
+ requestAnimationFrame(function(){el.classList.add('on')});
+ /* deliberately no history entry - the native back hook below owns the gesture */
+}
+function peIsOpen(){var el=$('mm58Pe');return !!(el&&el.classList.contains('on'))}
+function peClose(pop){
+ var el=$('mm58Pe');
+ if(el){
+  el.classList.remove('on');
+  setTimeout(function(){
+   if(!el.classList.contains('on'))el.style.display='none';
+  },260);
+ }
+ D.body.classList.remove('mm58-pe-open');
+}
+
+/* the bottom card of picture choices */
+function photoSheet(){
+ var db=dbo();
+ var rows=[
+  {icon:'i-camera',name:'Take photo',fn:function(){pick('camera')}},
+  {icon:'i-film',name:'Choose from gallery',fn:function(){pick('gallery')}}
+ ];
+ if(db&&db.userPhoto)rows.push({icon:'i-trash',name:'Remove photo',fn:removePhoto});
+ safe(function(){
+  if(W.__MM56UI&&W.__MM56UI.sheet)W.__MM56UI.sheet('Profile picture',rows);
+ });
+}
+function pick(src){
+ safe(function(){
+  if(W.pickPhotoSource)W.pickPhotoSource(src);
+  else if(W.mm50Pick)W.mm50Pick(src);
+ });
+}
+function removePhoto(){
+ safe(function(){
+  if(W.mm50RemovePhoto)W.mm50RemovePhoto();
+  else{
+   var db=dbo();
+   if(db){db.userPhoto=null;if(W.saveDB)W.saveDB();}
+   if(W.updateOverview)W.updateOverview();
+   if(W.renderSettings)W.renderSettings();
+  }
+ });
+ setTimeout(function(){safe(peFill)},260);
+}
+
+/* tapping the picture alone shows it big, with a pencil and a remove line */
+function viewPhoto(){
+ W.__mm58view=true;
+ safe(function(){if(W.__mm51Mute)W.__mm51Mute(600)});
+ safe(function(){
+  var f=W.openProfilePhoto||W.viewProfilePhoto;
+  if(typeof f==='function')f();
+ });
+ safe(function(){
+  var m=$('photoViewModal');if(!m)return;
+  m.classList.add('mm58-view');
+  if(!q('.mm58-pen',m)){
+   var pen=D.createElement('button');pen.className='mm58-pen';pen.innerHTML=SVG.pen;
+   pen.addEventListener('click',function(ev){ev.stopPropagation();buzz();photoSheet()});
+   m.appendChild(pen);
+  }
+  if(!q('.mm58-rm',m)){
+   var rm=D.createElement('button');rm.className='mm58-rm';rm.textContent='Remove image';
+   rm.addEventListener('click',function(ev){
+    ev.stopPropagation();buzz();
+    safe(function(){if(W.mm50ClosePP)W.mm50ClosePP()});
+    setTimeout(removePhoto,220);
+   });
+   m.appendChild(rm);
+  }
+ });
+}
+function viewOpen(){
+ var m=$('photoViewModal');
+ return !!(m&&m.classList.contains('pp-mode')&&m.style.display!=='none');
+}
+function viewClose(){
+ W.__mm58view=false;
+ var m=$('photoViewModal');
+ if(m)m.classList.remove('mm58-view');
+ safe(function(){if(W.mm50ClosePP)W.mm50ClosePP()});
+}
+
+/* the settings pencil now opens the edit screen, not a chooser card */
+var _oep=W.openEditProfile;
+if(typeof _oep==='function'&&!_oep.__mm58){
+ var oep=function(){
+  safe(function(){if(W.__MM56UI&&W.__MM56UI.closeSheet)W.__MM56UI.closeSheet()});
+  peOpen();
+  return true;
+ };
+ oep.__mm58=1;W.openEditProfile=oep;
+}
+
+/* back order: sheet, picture, name screen, edit screen, then Settings */
+function back58(){
+ if(safe(function(){return W.__mm56sheet})){
+  safe(function(){if(W.__MM56UI&&W.__MM56UI.closeSheet)W.__MM56UI.closeSheet()});
+  return true;
+ }
+ if(viewOpen()){viewClose();return true}
+ var nameOpen=D.body.classList.contains('mm54-pedit')||!!safe(function(){return W.__MM54&&W.__MM54.peIsOpen&&W.__MM54.peIsOpen()});
+ if(nameOpen){
+  safe(function(){if(W.__MM54&&W.__MM54.peClose)W.__MM54.peClose()});
+  return true;
+ }
+ if(peIsOpen()){peClose(false);return true}
+ return false;
+}
+var _nb=W.__moneyMapHandleNativeBack;
+if(typeof _nb==='function'&&!_nb.__mm58){
+ var nb=function(){
+  if(back58())return true;
+  return _nb.apply(this,arguments);
+ };
+ nb.__mm58=1;W.__moneyMapHandleNativeBack=nb;
+}
+W.addEventListener('popstate',function(){
+ /* safety net: close our own layers rather than let the app navigate away */
+ safe(back58);
+});
+
+/* =========================================================
+   render hooks - everything above lands in the same frame as the render
+   ========================================================= */
+function polish58(){
+ safe(loanShade);
+ safe(loanSubs);
+ safe(pts58);
+}
+['renderBudget','switchBudgetTab','renderLoans','renderGoals','renderAssets','expandCard','expandBudgetSummary','toggleBudget','navTo'].forEach(function(n){
+ var o=W[n];
+ if(typeof o!=='function'||o.__mm58)return;
+ var f=function(){var r=o.apply(this,arguments);safe(polish58);return r};
+ f.__mm58=1;W[n]=f;
+});
+setTimeout(polish58,600);
+setInterval(polish58,1100);
+
+W.__MM58={navShow:navShow,open:open58,pts:pts58,loanShade:loanShade,loanSubs:loanSubs,
+ lockFix:lockFix,peOpen:peOpen,peClose:peClose,peIsOpen:peIsOpen,viewPhoto:viewPhoto,
+ photoSheet:photoSheet,back:back58,hasPin:hasPin};
 })();
 </script>
 </body>

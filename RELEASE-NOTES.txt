@@ -260,3 +260,29 @@ v2.0.3.57 - six fixes on the v2.0.3.56 build
 6.  Swiping between the stacked cards (savings rate / net worth and budget
     discipline / income vs expense) buzzes again, while tapping a card to
     expand it stays silent.
+
+========================================
+v2.0.3.58 - nine fixes on the v2.0.3.57 build
+========================================
+1.  Notifications: every plan now routes somewhere sensible, including the test
+    notification, the savings and loan reminders, and any unknown id. The nav
+    bar is restored when a notification opens the app.
+2.  The settings pencil opens one Edit profile screen - picture with a camera
+    badge, and a name row. Nothing else. The camera badge raises a card from the
+    bottom (take photo, gallery, remove). Tapping the picture opens it full size
+    with a pencil top right and Remove image.
+3.  The one-minute rule is back: leave the app for a minute and it re-opens on
+    the welcome screen. The hashed PIN from v55 had silently disabled it.
+4.  The + button floats on a soft all-round shadow with no dark edge.
+5.  Financial health reads one line per check - name, your figure, and the points
+    earned - with a single line explaining the 100 points. Bars removed.
+6.  Loan summary boxes are shaded on render: total purple, paid off green,
+    active in the app colour. Loan cards show the balance still owed before you
+    expand them.
+7.  Dark theme: the coloured hairline and glow on the four main cards is gone,
+    along with the same shine on other cards.
+8.  Security opens straight into the current design, and the app lock card now
+    reads the hashed PIN correctly - it says On, mentions fingerprint, and the
+    padlock carries the app colour.
+9.  Back or swipe back from any step of profile editing returns to Settings
+    instead of closing it.
