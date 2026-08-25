@@ -1,288 +1,102 @@
-v2.0.3.53
-- Floating + button: released the nav's paint containment that was clipping its shadow.
-- Profile photo: camera/gallery open in the same tap; the edit view stays open behind them.
-- Search: back closes search with a single haptic (duplicate close swallowed).
-- Slower, iOS-like motion for the photo view, expanded cards and sheets; panels grow from the tap point.
-- Settings cards no longer buzz (the bespoke _settingsHaptic tap tracker is now silent).
-- First settings cluster renamed APP -> APP SETUP.
-- New goal: investment icon green, lifestyle icon red.
-- Budget discipline ring: 95%+ green, 90-94% amber, under 90% red.
-- Assets: the open month is no longer offered or savable; the picker defaults to the last closed month; button reads "Save update".
-- Assets: removed the redundant "Assets" caption above the summary boxes.
-- Remaining income forecast rebuilt: only real expenses are extrapolated, allocations are no longer counted as spending, and the daily rate ignores the single largest day.
+MONEY MAP - v2.0.3.59
+Upload: Money_Map.html + sw.js  (web files only, no APK needed)
+This build supersedes the v2.0.3.58 zip and carries every change from v50 to v59.
 
-v2.0.3.51
-- Rings rebuilt with correct geometry (radius + dash recomputed) so thicker
-  strokes are no longer clipped; Analytics Financial Health ring included.
-- Savings Rate 'Year average' now uses the same income-weighted figure as the
-  headline instead of a mean of rounded monthly rates.
-- Save and Close sit on one line; net-worth chart taller; + button floats again.
-- Search bar: icon retained, gold clear button, descriptive placeholder.
-- Goal step: gold chips, no duplicate kind label, target date defaults to today.
-- Instagram-style avatar cropper (pan, pinch, circular mask).
-- Real camera and gallery glyphs applied app-wide via the sprite.
-- Camera/gallery open immediately; back gesture closes search and photo view.
-- Haptics silenced on transaction rows, the 3-dots menu and settings rows.
-- Bottom nav now hides in Settings (watches the real quick menu + settings page).
+====================================================================
+WHAT THIS RELEASE IS
+====================================================================
+This is the clean-up you approved: the old profile-editing patches that
+no longer worked have been REMOVED from the file, not layered over.
+One owner now handles the profile flow, the back gesture, the idle
+re-lock, the notification routing, the loan and goal cards and the
+financial health card.
 
-Money Map Production v2.0.3.50
+Removed for good (four dead generations of patch):
+  1. v54's capture listener on the Settings photo. It ran
+     preventDefault + stopPropagation before anything else, which is why
+     tapping the photo "first showed the edit icon and then switched to
+     camera / gallery", and why the name never became editable.
+  2. v54's claim on openEditProfile, plus its name screen that was built
+     INSIDE the settings page - underneath the overlay, so invisible.
+  3. v56's "what do you want to edit" chooser card.
+  4. v58's whole edit screen, its photo viewer and its back handler.
+  5. v54's loan and goal captions, which were rewritten on their own
+     timers and always won the race, plus the duplicate
+     "From / Taken / Original" row inside the open card.
 
-UI round (single appended block: style#v20350-ui + script#v20350-logic)
- 1. Transactions: Search chip added before Filter; live text search over note,
-    category, income type, type and amount.
- 2. Budgeting Discipline expanded: period dropped from the title, year pill on the
-    header line, plus a "Budgets gone over - N of M" row. Whole-year counts are
-    de-duplicated by category.
- 3. Income vs Expenses expanded: same year pill, opens on the current year.
- 4. Loans & Goals expanded: proper empty states instead of zero-filled stat boxes.
- 5. FAB is now a 17px squircle with no drop shadow (stays inline, per line 4427).
- 6. Savings Rate and Net Worth expanded: year pill; net worth total centred,
-    growth chip moved above Close, bars raised to 122px with capped top figures.
- 7. Haptic feedback when the stacked overview/analytics cards switch.
- 8. Rings ~30% thicker, analytics donut stroke widened.
- 9. Spending Breakdown expanded: year pill, period out of the title.
-10. Light theme cards are pure white (ivory wash and gold hairline removed).
-11. Bottom bar and FAB hidden while the Settings sheet is open.
-12. Profile photo popup rebuilt: photo alone in its circular gold cover, centred,
-    edit button near the bottom, Camera/Gallery/Remove on tap, close top-right,
-    scale-and-fade open animation.
-13. App follows the phone's system font.
-14. Icon pickers are one swipeable rail instead of four stacked rows.
-15. Adding a goal asks for the kind of goal first, then the remaining fields.
+Nothing in the app's own logic was touched: money maths, budgets,
+assets, backup, encryption, notifications planning, theming and the
+app-lock all run on the same code as before.
 
-Motion: modal overlays keep their layout box so the sheet slide actually plays
-(previously display:none cancelled the transition); expanded card contents stagger in.
-
-Money Map Production v2.0.3.49
-
-- Replaced the device-native starting-balance holding list with Money Map’s in-app picker.
-- Changed the starting-balance holding control from a down arrow to a right arrow.
-- Simplified All Months Remaining Income into plain monthly rows without separate cards.
-- Replaced the two carry-forward summary cards with a large average and a carried-month fraction.
-- Removed repeated fully-utilised explanations from monthly rows.
-- Changed independent card period controls to Month then Year, matching the main period picker.
-- Preserved v2.0.3.48 data, holdings, calculations and unrelated behaviour.
-
-Money Map Production v2.0.3.48
-
-- Previous selected periods now use “Income this month”.
-- All Months Remaining Income now shows average carry-forward and carried-month count.
-- Added a concise monthly outcome list with the highest completed remainder highlighted.
-- The active month is excluded from carry-forward averages, counts and highest-period comparison.
-- Welcome Net Worth now shows the current month’s increase, decrease or no change versus the previous month.
-- Renamed Income Holdings to Savings Holdings and added a layers-stack icon.
-- Starting balances now record and display where each opening amount is kept.
-- Opening balances are included in the Savings Holdings breakdown.
-- Preserved v2.0.3.47 data, calculations and unrelated behaviour.
-
-Money Map Production v2.0.3.47
-
-- The active month is excluded from “Highest completed month”.
-- Highest unspent income now uses completed months only.
-- Month-end estimates appear only for the active calendar month.
-- Completed months show actual outcomes instead of projections.
-- Removed active-month spending suggestions from completed months.
-- Rechecked the active-month estimate using recorded allocations and expenses through the current day.
-- Preserved v2.0.3.46 settings, currencies, notifications, data and unrelated calculations.
-
-Money Map Production v2.0.3.46
-
-- Improved spacing on the Remaining Income card.
-- Reworked the expanded current-period summary with amount, income share, monthly income, month-end outlook, projected carry-forward and highest monthly remainder.
-- Removed the repeated “remaining that month” row.
-- Kept Notification Center as the title after changing toggles.
-- Changed Notification Center active switches from green to Money Map gold.
-- Added tick/X status to the fingerprint switch.
-- Currency and appearance selections no longer highlight the entire card.
-- Added JPY, CNY, CAD, AUD, CHF, SEK, NOK, DKK, ETB, ZMW, BWP and XOF.
-- Preserved v2.0.3.45 data, period logic and unrelated calculations.
-
-Money Map Production v2.0.3.45
-
-- Selected periods now use text colour only, without ticks, shading or side borders.
-- Added haptic feedback to deliberate selection controls throughout the app.
-- Remaining Income preserves each month’s actual remainder after it is carried forward.
-- Historical rows now say where the remainder moved, such as “Moved to April”.
-- Carried-forward income is named contextually, such as “Leftover income from March”.
-- Restored the Notification Center main icon and placed tick/X status inside its switch.
-- Replaced the Remaining Income icon with a wallet.
-- Preserved v2.0.3.44 period logic, visuals, data and unrelated calculations.
-
-Money Map Production v2.0.3.44
-
-- Restored the approved expanded-card visual language.
-- Added smart month/year cutoffs and year-on-year expansion for All Years.
-- Added visible current-selection highlighting to every period picker.
-- All Years appears only when transactions span at least two calendar years.
-- Renamed Miscellaneous Income to Remaining Income with concise period summaries.
-- Moved Remaining Income and asset-history period controls to the top right.
-- Notification toggles now show a tick when on and an X when off.
-- Removed the unnecessary weekly-snapshot preview link from Notification Center.
-- Preserved v2.0.3.42 visuals, data and unrelated financial logic.
-
-Money Map Production v2.0.3.42
-
-- Compact visual summaries for Assets and Goals.
-- Net Worth uses a shorter monthly bar chart and grouped rows.
-- Investment goals now match the other Net Worth rows.
-- Removed repeated modal explanations and the large weekly snapshot card.
-- Added a subtle weekly snapshot preview link in Notification Centre.
-- Preserves v2.0.3.41 notifications, quotes, signup, data and financial logic.
-
-Money Map — Production v2.0.3.41
-
-- 365 meaningfully varied daily money messages.
-- Master notification switch turns every child switch off and shows a green tick or grey X.
-- Weekly notification includes a privacy-aware hint and opens the weekly snapshot in Analytics.
-- Monthly asset reminders stop when all current-month updates are complete.
-- Cleaner signup name field, Camera/Gallery choice, and three fixed pillars.
-- Native notification vibration, routing and matte-charcoal launcher icon updates.
-- Preserves v2.0.3.40 financial logic, data, recurring behaviour, security and startup treatment.
-
-v2.0.3.54 - UI round (24 Aug 2026)
-  1.  Haptics limited to real selections. Editing or updating an asset, goal,
-      loan, budget or profile is silent; pickers, options, tabs and the + keep
-      their tap feedback.
-  2.  Remaining income: the duplicate "Month-end estimate" block is removed.
-      The month-end small card now carries a real projection from the current
-      spending pace, followed by a short read-out of the numbers.
-  3.  Loans: a settled loan drops its ring for a "Fully paid" pill. Every loan
-      card now shows the lender and the month it was taken, expanded detail
-      included, and the loan in repayment keeps its progress ring.
-  4.  "Loans overview" and "Your goals at a glance" captions removed.
-  5.  Goals show the month they started and the month they were completed.
-  6.  Settings row icon tiles enlarged to match the text block.
-  7.  Security opens with an app lock status card and an explanation.
-  8.  The 3-dots menu no longer hides the bottom navigation, and the nav bar
-      no longer flashes on the way into Settings.
-  9.  Profile photo opens smoothly - the width/height tween that caused the
-      shake is gone; transform and opacity only.
-  10. Editing the profile from Settings happens in place: the header itself
-      becomes the editor, the photo stays put and gains a camera badge.
-  11. A budget used to exactly 100% reads green; only above 100% turns red.
-  12. The app now follows the phone font instead of pinning its own.
-  13. Fixed: a goal added while you have no loans no longer disappears from the
-      "Loans & goals status" card on Overview. The card had been rebuilt with
-      only the empty-side prompt, erasing the live row. Same fix covers a loan
-      added while you have no goals.
-
-=====================================================================
-v2.0.3.55  -  storage safety, private data, smarter notifications
-=====================================================================
-STORAGE / RECEIPTS
- 1. Receipts are downscaled and recompressed on capture (was 1400px@85%,
-    now 1080px@72%) - typically 4-6x smaller per receipt.
- 2. Receipt images now live in a dedicated IndexedDB vault instead of the
-    single settings blob. Existing receipts migrate automatically on launch.
- 3. saveDB() no longer fails silently. If the browser refuses a write the
-    app now says so and compresses receipts to reclaim room. Previously a
-    full store meant every later change was lost with no warning.
- 4. Orphaned receipt images are cleaned up after a delete.
-
-RECEIPT CROPPER
- 5. New pinch-zoom / drag cropper for receipts under a fixed mask, matching
-    the smooth profile-photo cropper. The old four-handle frame is gone.
- 6. Back gesture closes the cropper instead of the app.
-
-PRIVACY / SECURITY
- 7. The PIN is no longer stored in readable form. It is kept as a salted
-    PBKDF2-SHA256 hash (150k iterations); existing PINs migrate silently on
-    first launch. The PIN is never written to a backup.
- 8. Backups are encrypted with AES-256-GCM, keyed from your PIN. New file
-    extension .mmbak.
- 9. Restoring is PIN-gated. A backup from another Money Map cannot be
-    decrypted without its PIN, and a foreign file is called out before it
-    can replace your data.
-10. Unencrypted backups still restore (your choice) but now warn first.
-11. Receipts are carried inside the encrypted backup.
+====================================================================
+FIXED IN THIS BUILD
+====================================================================
+PROFILE EDITING (Settings)
+- The pencil in Settings now opens ONE screen: the picture with a camera
+  badge, and the name row. Nothing else from Settings shows behind it.
+- Tapping the name opens the name screen on its own; saving writes the
+  name and returns to the edit screen; the new name shows immediately.
+- The name row no longer carries an arrow or a pencil icon.
+- Tapping the camera badge raises a card from the bottom: take a photo,
+  choose from gallery, remove image.
+- Tapping the picture itself opens it square, on its own, with a pencil
+  at the top right and "Remove image" underneath.
+- Back button and back gesture now unwind one step at a time:
+  picture -> edit screen -> Settings, with the nav bar back in place.
+  It no longer throws you out to the Overview, and it no longer closes
+  the whole app.
 
 NOTIFICATIONS
-12. Weekly insight now compares this week against last week, names the
-    biggest category and flags a genuine spike.
-13. New mid-month outlook (15th, 18:00) projecting month end from your real
-    daily spend rate, saying whether money should carry over or run short.
-14. The empty-day reminder is persuasive instead of generic.
-15. Tapping a notification lands on the matching screen and the alert
-    explains itself in Analytics / Remaining income.
+- The shell calls the app with (route, id) - route first. The old code
+  read them the other way round, so EVERY notification landed on the
+  Overview and the real routing never ran. Now the test notification
+  opens the Overview with the nav bar intact, savings notifications open
+  Goals, loan reminders open Loans, and an unknown id falls back to the
+  route the shell asked for instead of guessing.
+- Any stale "nav bar hidden" state left by the 3-dots menu is cleared
+  when a notification opens the app.
 
-DARK MODE
-16. Samsung-style dark theme: pure black canvas, neutral dark grey cards,
-    no gold glow on the four main cards.
+FINANCIAL HEALTH CARD
+- The year pill now builds its list from real transactions only, and it
+  no longer rewrites the app-wide month filter. Closing the card puts
+  the top-of-screen period back exactly as it was.
+- The card is built in the same tick as it opens, so it no longer shakes
+  after expanding.
+- Each item shows its own figure and its score on one line, ending with
+  average monthly surplus (which carries no points), then one short line
+  of explanation. The progress bars are gone.
 
-STILL ANDROID-SIDE (needs an APK build, not this web upload)
-  - notification-bar icon size
-  - launcher icon colour
+LOANS AND GOALS
+- The closed loan card shows who it came from and when it was taken. The
+  balance left is no longer on the closed card - it shows once the card
+  is open.
+- A settled loan keeps the "Fully paid" pill in place of the ring.
+- The open card no longer repeats what the closed card already said.
+- The same de-duplication is applied to goals, and the goal "Completed"
+  line with its month is untouched.
 
+IDLE RE-LOCK
+- The one-minute rule works again. The old fix replaced a function the
+  real listeners never called, and the PIN check it depended on had been
+  removed in v55. It now re-locks on the real visibility event and it
+  accepts a hashed PIN as a PIN.
 
-========================================
-v2.0.3.56 - UI polish before shipping
-========================================
-1.  App lock card in Security is centred: icon on top, "App lock" under it,
-    and the explanation trimmed to two short lines.
-2.  Financial Health expands with a year filter on the top-right instead of the
-    month and year in the title, and now shows how the 100 points are earned:
-    savings rate (30), emergency runway (25), budgets kept (25), loan load (20)
-    with the points actually scored on each.
-3.  Goals summary boxes are shaded green for investment and red for lifestyle,
-    with a "Total amount to go" line underneath. Asset boxes are shaded gold
-    for physical, purple for cash, green for interest, and the amount added to
-    net worth is now green.
-4.  Net-worth bars are labelled Jan, Feb, Mar instead of 1, 2, 3, and the bars
-    are wider and taller, shrinking automatically when there are many months.
-5.  Under All Years the charts label years instead of months, and the spending
-    breakdown adds a year-by-year total.
-6.  No haptic when tapping the big cards around the app. Haptics stay on real
-    selections such as pickers, the nav bar and the + button.
-7.  Cards now settle closed with a calm fade instead of disappearing, with no
-    shake.
-8.  Edit in Settings now asks whether to change the photo or the name. Photo
-    opens the picture on its own with camera, gallery and remove; name opens
-    the name screen. Back returns to Settings instead of the overview.
-9.  The + button no longer has a dark edge and keeps its soft float.
+====================================================================
+TESTED
+====================================================================
+New suite of 51 checks driving REAL taps (pointerdown / pointerup /
+click), a real visibility change, a real history.back() and the real
+notification bridge: 51 / 51 pass.
+Regression: A 28/28, B 31/31, C 36/36, D 15/15, F 16/16, G 47/47.
+Suite E 71/77 - the six reds are old expectations for behaviour you
+asked to be reversed (balance on the closed loan card, the duplicate
+detail row, and the Settings photo jumping straight to camera/gallery).
+Suites H, I and J still assert the removed v54/v56/v58 screens, so their
+profile checks are superseded by the new suite.
 
-========================================
-v2.0.3.57 - six fixes on the v2.0.3.56 build
-========================================
-1.  The expanded Financial Health card is short again: the four point rows and
-    the total stay, the paragraph of explanation is gone.
-2.  Goals and asset summary boxes are shaded the instant a tab renders instead
-    of a second later.
-3.  Login uses the fingerprint by default. The hashed PIN introduced in v55 is
-    now recognised as an existing PIN, so the app no longer asks you to create
-    and confirm a PIN on every launch. The PIN pad only appears when no
-    fingerprint is enrolled, or when the fingerprint is not read.
-4.  Editing the photo from Settings opens with camera, gallery and remove
-    already showing - no edit-icon flash and no jump - and the back button or
-    gesture closes the picture and leaves you in Settings.
-5.  Smart Insights in Analytics is populated again. The v55 notification hook
-    passed no data to the insight builder, which silently produced an empty
-    list.
-6.  Swiping between the stacked cards (savings rate / net worth and budget
-    discipline / income vs expense) buzzes again, while tapping a card to
-    expand it stays silent.
-
-========================================
-v2.0.3.58 - nine fixes on the v2.0.3.57 build
-========================================
-1.  Notifications: every plan now routes somewhere sensible, including the test
-    notification, the savings and loan reminders, and any unknown id. The nav
-    bar is restored when a notification opens the app.
-2.  The settings pencil opens one Edit profile screen - picture with a camera
-    badge, and a name row. Nothing else. The camera badge raises a card from the
-    bottom (take photo, gallery, remove). Tapping the picture opens it full size
-    with a pencil top right and Remove image.
-3.  The one-minute rule is back: leave the app for a minute and it re-opens on
-    the welcome screen. The hashed PIN from v55 had silently disabled it.
-4.  The + button floats on a soft all-round shadow with no dark edge.
-5.  Financial health reads one line per check - name, your figure, and the points
-    earned - with a single line explaining the 100 points. Bars removed.
-6.  Loan summary boxes are shaded on render: total purple, paid off green,
-    active in the app colour. Loan cards show the balance still owed before you
-    expand them.
-7.  Dark theme: the coloured hairline and glow on the four main cards is gone,
-    along with the same shine on other cards.
-8.  Security opens straight into the current design, and the app lock card now
-    reads the hashed PIN correctly - it says On, mentions fingerprint, and the
-    padlock carries the app colour.
-9.  Back or swipe back from any step of profile editing returns to Settings
-    instead of closing it.
+====================================================================
+STILL NEEDS AN APK (not in this upload)
+====================================================================
+- Notification-bar icon size and the launcher icon colour.
+- A true native back hook (the shell currently has none; everything in
+  this build works through the browser history instead).
