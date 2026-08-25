@@ -1,14 +1,15 @@
-Money Map v2.0.3.61 - upload these two files only
+Money Map v2.0.3.62 - upload these two files only
 
 Money_Map.html -> replace in money-map-main (repo root)
 sw.js          -> replace in money-map-main (repo root)
 
 WHAT CHANGED
-1. Photo card (overview + settings) rebuilt from the app own popup parts.
-2. Back closes the card first, then the big picture, then the screen.
-3. Camera and gallery now open above the edit screen, crop area visible.
-4. Cropping is a square box, WhatsApp style, not a circle.
-5. Financial health: point-less duplicate rows gone; year picker is the app picker.
-6. Back button rebuilt: one spare entry, retraces real screens, exits at overview.
+1. Financial health: the app own repeated rows and its explainer removed.
+2. Photo card rebuilt on the app own row shape, icons shaded.
+3. Back: our own layer closes first, no more presses eaten, no more app exit.
+4. Security: heading now reads App lock on, second status line dropped.
+5. Name row: no haptic, two-frame transition, no flash or shake.
+6. Cropping: square WhatsApp style window with thirds grid and corner marks.
+7. Explainer field in Add category / Add income source matched to other fields.
 
-Service worker cache: moneymap-v20361-core (forces a refresh on the phone).
+Service worker cache: moneymap-v20362-core

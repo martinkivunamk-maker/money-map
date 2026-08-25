@@ -7690,10 +7690,10 @@ function loanPolish(root){var db=mmDB();if(!db||!db.loans)return;
   var paid=reps.reduce(function(a,t){return a+(t.amount||0)},0);var rem=Math.max(0,(l.amount||0)-paid);
   var who=l.source?String(l.source):'', when=mLab(l.date);
   var sub=q('.bgt-sub',card);
-  /* v2.0.3.61 - the closed loan caption is written once, by the v20359 block */
+  /* v2.0.3.62 - the closed loan caption is written once, by the v20359 block */
   if(rem<=0){var head=q('.bgt-head',card);if(head){var ring=null;qa('div',head).forEach(function(d){if(!ring&&d.querySelector&&d.querySelector('svg circle'))ring=d});
    if(ring&&ring.parentNode){var pill=D.createElement('span');pill.className='mm54-paid';pill.textContent='Fully paid';ring.parentNode.replaceChild(pill,ring)}}}
-  /* v2.0.3.61 - removed: the duplicate From/Taken/Original row inside the open loan card */
+  /* v2.0.3.62 - removed: the duplicate From/Taken/Original row inside the open loan card */
  });}
 
 /* ---------- 5 - goals: started date, completion month ---------- */
@@ -7708,11 +7708,11 @@ function goalPolish(root){var db=mmDB();if(!db||!db.goals)return;
   var done=tgt>0&&(g.saved||0)>=tgt;var rem=Math.max(0,tgt-(g.saved||0));
   var sub=q('.bgt-sub',card);
   if(sub){var bits=[];if(when)bits.push('Started '+when);
-   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));/* v2.0.3.61 - what is left to go shows once the card is open, not before */
+   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));/* v2.0.3.62 - what is left to go shows once the card is open, not before */
    var badge=q('span',sub);sub.textContent=bits.join(' \u00b7 ');if(badge)sub.appendChild(badge)}
   var st=q('.budget-card-status',det)||q('.budget-card-status',card);
   if(st&&done){st.textContent='Completed'+(doneAt?' \u00b7 '+mLab(doneAt):'');st.style.color='var(--success)'}
-  /* v2.0.3.61 - removed: the duplicate Started/Target/Completed row inside the open goal card */
+  /* v2.0.3.62 - removed: the duplicate Started/Target/Completed row inside the open goal card */
  });}
 
 /* stamp new goals so the started date is exact going forward */
@@ -7781,7 +7781,7 @@ function lockCard(){
  var db=mmDB(),on=!!(db&&db.pin);
  var card=D.createElement('div');card.className='mm54-lock'+(on?'':' off');
  card.innerHTML='<div class="mm54-lock-top"><div class="mm54-lock-ic"><svg viewBox="0 0 24 24"><rect x="4" y="10.5" width="16" height="10.5" rx="2.6"/><path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"/><circle cx="12" cy="15.7" r="1.5" fill="currentColor" stroke="none"/></svg></div>'+
-  '<div><div class="mm54-lock-t">App lock</div><div class="mm54-lock-s">'+(on?'On \u00b7 PIN required':'Off \u00b7 no PIN set')+'</div></div></div>'+
+  '<div><div class="mm54-lock-t">'+(on?'App lock on':'App lock off')+'</div></div></div>'+
   '<div class="mm54-lock-b">'+(on
    ? 'Money Map asks for your 4-digit PIN, or your fingerprint where the phone supports it, every time the app opens or comes back from the background. Balances, transactions and goals stay hidden until it is entered, so handing someone your phone does not hand over your money history. The PIN is stored only on this device.'
    : 'App lock is not set up yet. Turning it on means Money Map asks for a 4-digit PIN, or your fingerprint where the phone supports it, every time the app opens or comes back from the background \u2014 so your balances stay private if someone else picks up your phone. The PIN is stored only on this device.')+'</div>';
@@ -7963,9 +7963,9 @@ function peSave(){
   if(inSettings&&!D.body.classList.contains('settings-section-open')){if(peOpen(true))return}
   return f.apply(this,arguments);
  };
- g.__mm54p=1;W.__mm54NameScreenLegacy=g;/* v2.0.3.61 - no longer claims openEditProfile */
+ g.__mm54p=1;W.__mm54NameScreenLegacy=g;/* v2.0.3.62 - no longer claims openEditProfile */
 })();
-/* v2.0.3.61 - removed: a v54 capture listener used to swallow every tap on the
+/* v2.0.3.62 - removed: a v54 capture listener used to swallow every tap on the
    settings photo (preventDefault+stopPropagation) and run its own popup. The
    profile flow now has one owner, in the v20359 block at the end of this file. */
 wrap('navTo',function(){peClose()});
@@ -8904,7 +8904,7 @@ function sheet(title,rows){
 function closeSheet(){var el=$('mm56Ch');if(!el)return;el.classList.remove('on');W.__mm56sheet=false;}
 function sheetOpen(){var el=$('mm56Ch');return !!(el&&el.classList.contains('on'))}
 
-/* v2.0.3.61 - the year list now comes from real transactions, and the period
+/* v2.0.3.62 - the year list now comes from real transactions, and the period
    change is remembered so closing the card puts the top-of-screen filter back. */
 function healthYears(){
  var out=[],seen={};
@@ -8938,7 +8938,7 @@ function setYear(y){
  });
  setTimeout(function(){safe(function(){if(W.expandCard)W.expandCard('health')})},60);
 }
-/* v2.0.3.61 - the two score builders below were replaced by the single
+/* v2.0.3.62 - the two score builders below were replaced by the single
    health builder. The names stay so the block's own exports keep working. */
 function ptsRow(){return D.createElement('div')}
 function ptsBlock(){return D.createElement('div')}
@@ -8947,7 +8947,7 @@ function healthPolish(){
  var t=q('.modal-title',c);if(!t)return;
  if(!/financial health/i.test(t.textContent||''))return;
  t.textContent='Financial Health';
- /* v2.0.3.61 - the head, the year pill and the score rows have one owner
+ /* v2.0.3.62 - the head, the year pill and the score rows have one owner
     now: the v20359 block. This patch used to build its own, on a timer,
     and its year pill changed the real period at the top of the screen. */
 }
@@ -9052,7 +9052,7 @@ function closePhoto(){
  if(el.style&&el.style.display==='flex')el.style.display='';
  W.__mm56ph=false;
 }
-/* v2.0.3.61 - removed: the v56 chooser card ("Profile photo / Your name") and
+/* v2.0.3.62 - removed: the v56 chooser card ("Profile photo / Your name") and
    its two helpers. The pencil now opens the edit screen directly. */
 var nb0=W.__moneyMapHandleNativeBack;
 W.__moneyMapHandleNativeBack=function(){
@@ -9071,7 +9071,7 @@ D.addEventListener('keydown',function(e){if(e.key==='Escape'&&sheetOpen())closeS
 function polish56(){safe(lockPolish);safe(sumShade);}
 setTimeout(polish56,700);
 setInterval(polish56,900);
-/* v2.0.3.61 - the points block used to be injected on a timer, a few hundred
+/* v2.0.3.62 - the points block used to be injected on a timer, a few hundred
    ms after the modal had started animating, which is what made the card jump.
    Build it in the same tick as the expand instead. */
 safe(function(){
@@ -9431,7 +9431,7 @@ if(typeof _oar==='function'&&!_oar.__mm58){
 /* =========================================================
    5 - financial health: value and points on one line, no bars
    ========================================================= */
-function pts58(){/* v2.0.3.61 - superseded by the single health builder */}
+function pts58(){/* v2.0.3.62 - superseded by the single health builder */}
 
 /* =========================================================
    6 - loan summary shading, and the balance on the closed card
@@ -9466,7 +9466,7 @@ function loanSubs(){
    if(t.type==='loan_repay'&&String(t.loanId)===id)paid+=Number(t.amount)||0;
   });
   var rem=Math.max(0,(Number(l.amount)||0)-paid);
-  /* v2.0.3.61 - the closed card keeps only who it came from and when. The
+  /* v2.0.3.62 - the closed card keeps only who it came from and when. The
      balance still owed belongs in the expanded body, added by the v20359 block. */
   det.setAttribute('data-mm59-rem',String(rem));
   sub.setAttribute('data-mm58','1');
@@ -9488,8 +9488,10 @@ function lockFix(){
  var fp=!!(db&&db.fingerprintCredId);
  card.classList.toggle('off',!on);
  card.classList.toggle('mm58-on',on);
+ var t=q('.mm54-lock-t',card);
+ if(t)t.textContent=on?'App lock on':'App lock off';
  var s=q('.mm54-lock-s',card);
- if(s)s.textContent=on?(fp?'On \u00b7 fingerprint or PIN':'On \u00b7 PIN required'):'Off \u00b7 no PIN set';
+ if(s&&s.parentNode)s.parentNode.removeChild(s);
  var b=q('.mm54-lock-b',card);
  if(b)b.textContent=on
   ? (fp?'Money Map asks for your fingerprint, or your PIN, every time it opens.'
@@ -9515,7 +9517,7 @@ if(typeof _rss==='function'&&!_rss.__mm58){
  rss.__mm58=1;W.renderSettingsSection=rss;
 }
 
-/* v2.0.3.61 - removed: the v58 edit screen, its photo view and its back
+/* v2.0.3.62 - removed: the v58 edit screen, its photo view and its back
    handler. The name row called v54, which rendered the name screen inside the
    settings page - underneath this overlay - so the name never looked editable.
    Replaced wholesale by the v20359 block at the end of this file. */
@@ -9538,7 +9540,7 @@ setTimeout(polish58,600);
 setInterval(polish58,1100);
 
 W.__MM58={navShow:navShow,open:open58,pts:pts58,loanShade:loanShade,loanSubs:loanSubs,
- lockFix:lockFix,hasPin:hasPin};/* v2.0.3.61 - profile exports moved to __MM59 */
+ lockFix:lockFix,hasPin:hasPin};/* v2.0.3.62 - profile exports moved to __MM59 */
 })();
 </script>
 <style id="v20359-fix">
@@ -9547,6 +9549,9 @@ W.__MM58={navShow:navShow,open:open58,pts:pts58,loanShade:loanShade,loanSubs:loa
  flex-direction:column;opacity:0;transform:translateY(14px);
  transition:opacity 260ms var(--ease,cubic-bezier(.32,.72,0,1)),transform 300ms var(--ease,cubic-bezier(.32,.72,0,1))}
 #mm59Pe.on,#mm59Ns.on{opacity:1;transform:none}
+/* gentler than the shared 14px slide, so it reads as a lift, not a jolt */
+#mm59Ns{transform:translateY(10px) scale(.996);
+ transition:opacity 240ms var(--ease,cubic-bezier(.32,.72,0,1)),transform 300ms var(--ease,cubic-bezier(.32,.72,0,1))}
 .mm59-bar{display:flex;align-items:center;gap:8px;padding:calc(var(--native-inset-top,env(safe-area-inset-top,0px)) + 12px) 14px 8px;min-height:calc(56px + var(--native-inset-top,env(safe-area-inset-top,0px)));box-sizing:border-box}
 .mm59-back{width:30px;height:40px;border:0;background:transparent;padding:0;margin:0 2px 0 0;cursor:pointer;color:var(--text,#111);display:flex;align-items:center;justify-content:flex-start}
 .mm59-back svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
@@ -9579,12 +9584,34 @@ W.__MM58={navShow:navShow,open:open58,pts:pts58,loanShade:loanShade,loanSubs:loa
    these screens - lift it out and keep it on top */
 #cropModal,#mm55crop{z-index:19800!important}
 #mm51crop{z-index:19900!important}
-#mm51crop .ig-mask{border-radius:16px!important;box-shadow:0 0 0 9999px rgba(0,0,0,.72)!important;border:1.6px solid rgba(255,255,255,.92)!important}
+#mm51crop{background:#000!important}
+#mm51crop .ig-mask{border-radius:2px!important;width:min(86vw,344px)!important;height:min(86vw,344px)!important;
+ max-width:none!important;max-height:none!important;overflow:visible!important;
+ box-shadow:0 0 0 9999px rgba(0,0,0,.80)!important;border:1.5px solid rgba(255,255,255,.96)!important}
+/* rule-of-thirds guides */
+#mm51crop .ig-mask::before{content:'';position:absolute;inset:0;pointer-events:none;
+ background-image:linear-gradient(rgba(255,255,255,.32) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.32) 1px,transparent 1px);
+ background-size:33.333% 33.333%;background-position:-1px -1px}
+/* corner brackets */
+#mm51crop .ig-mask::after{content:'';position:absolute;inset:-2px;pointer-events:none;
+ background:linear-gradient(#fff,#fff) left top/24px 3px no-repeat,linear-gradient(#fff,#fff) left top/3px 24px no-repeat,
+ linear-gradient(#fff,#fff) right top/24px 3px no-repeat,linear-gradient(#fff,#fff) right top/3px 24px no-repeat,
+ linear-gradient(#fff,#fff) left bottom/24px 3px no-repeat,linear-gradient(#fff,#fff) left bottom/3px 24px no-repeat,
+ linear-gradient(#fff,#fff) right bottom/24px 3px no-repeat,linear-gradient(#fff,#fff) right bottom/3px 24px no-repeat}
+#mm51crop .ig-hint{color:rgba(255,255,255,.66)}
 #mm55crop .mm55c-hole{border-radius:14px!important}
 #mm59Sheet{z-index:6900!important}
-#mm59Sheet .qa-icon svg{width:21px;height:21px}
-#mm59Sheet .quick-action-btn{margin-bottom:9px}
+#mm59Sheet .qa-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8}
+/* a <button> centres its text and shrinks to fit; the app's rows are divs.
+   Put those two things back so the row sits flush like every other one. */
+#mm59Sheet .quick-action-btn{margin-bottom:9px;width:100%;box-sizing:border-box;text-align:left;font:inherit}
+#mm59Sheet .qa-title{white-space:normal}
+#mm59Sheet .qa-sub{white-space:normal}
 #mm59Sheet .btn-outline{width:100%}
+:root{--mm62:1}
+/* the explainer field matched to the height of a normal one-line field */
+#newCatAbout,#newItAbout{height:50px!important;min-height:50px!important;max-height:50px!important;
+ resize:none!important;line-height:1.35!important;overflow:auto!important}
 #mm59Sheet .mm59-scrim{position:absolute;inset:0;background:rgba(0,0,0,.42);opacity:0;transition:opacity 240ms ease}
 #mm59Sheet.on .mm59-scrim{opacity:1}
 #mm59Sheet .mm59-card{position:absolute;left:0;right:0;bottom:0;background:var(--modal-bg,#fff);
@@ -9686,7 +9713,7 @@ function closeTop(){
  return false;
 }
 /* =====================================================================
-   v2.0.3.61 - ONE owner for the back press, and ONE spare history entry.
+   v2.0.3.62 - ONE owner for the back press, and ONE spare history entry.
    The old build pushed an entry per screen, so six presses were needed to get
    out and the leftovers replayed screens in the wrong order. Now the screens
    he actually came through are remembered in a plain list, back retraces that
@@ -9713,17 +9740,20 @@ W.addEventListener('popstate',function(){
     is spent. Clear it FIRST, or a press the app handled leaves the flag stale
     and no new spare is ever pushed. */
  spare=0;
- if(Date.now()-busyAt<700){ensure();return}
+ /* v2.0.3.62 - ours first, always. */
  if(safe(closeTop)){chain=0;ensure();return}
+ /* a layer is still up but nothing closed: keep the press rather than let it
+    fall through to the phone and shut the app mid-edit */
+ if(anyOpen()){ensure();return}
+ if(Date.now()-busyAt<700){ensure();return}
  pageAtOpen=null;
  if(stack.length){chain=0;navBack(stack.pop());ensure();return}
  /* nothing of ours is left. If entries pushed earlier are still sitting above
     the first one, step past them rather than eat the press. */
- if(history.state&&chain<4&&Date.now()-chainAt>320){
-  chain++;chainAt=Date.now();
-  safe(function(){history.back()});
-  return;
- }
+ /* v2.0.3.62 - the old build stepped past leftover entries here, up to four
+    times. That is exactly what made a press feel dead and needed six taps.
+    Nothing of ours is left, so this press belongs to the phone: from the
+    overview the app closes, which is what he asked for. */
  chain=0;
  /* let it through - the phone closes the app */
 });
@@ -9774,7 +9804,7 @@ function peEl(){
   var db=dbo();
   if(db&&db.userPhoto)openView();else{buzz();openSheet()}
  });
- q('.mm59-nrow',el).addEventListener('click',function(e){e.stopPropagation();buzz();openName()});
+ q('.mm59-nrow',el).addEventListener('click',function(e){e.stopPropagation();openName()});
  return el;
 }
 function peFill(){
@@ -9830,8 +9860,12 @@ function openName(){
  var inp=$('mm59NsIn');
  inp.value=(db&&db.userName)||'';
  el.style.display='flex';
+ el.classList.remove('on');
  void el.offsetWidth;
- requestAnimationFrame(function(){el.classList.add('on');markBody()});
+ /* two frames: the first paints the start state, the second starts the move.
+    One frame was landing in the same paint as the display change, which is
+    what read as a flash and then a shake. */
+ requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('on');markBody()})});
  pushLayer('name');
  setTimeout(function(){safe(function(){inp.focus();var v=inp.value.length;inp.setSelectionRange(v,v)})},320);
  markBody();
@@ -9864,24 +9898,26 @@ function saveName(){
 /* =====================================================================
    camera / gallery / remove, as a card from the bottom
    ===================================================================== */
-function shRow(a,svg,title,sub){
+function shRow(a,svg,title,sub,col,bg){
+ /* v2.0.3.62 - same shape as the app's own choice rows (#photoChoiceModal),
+    down to the shaded icon tile. Nothing invented here. */
  return '<button class="quick-action-btn" type="button" data-a="'+a+'">'+
-  '<span class="qa-icon">'+svg+'</span>'+
-  '<span class="qa-text"><span class="qa-title">'+title+'</span>'+
-  '<span class="qa-sub">'+sub+'</span></span></button>';
+  '<div class="qa-icon" style="color:'+col+';background:'+bg+'">'+svg+'</div>'+
+  '<div><div class="qa-title">'+title+'</div>'+
+  '<div class="qa-sub">'+sub+'</div></div></button>';
 }
 function sheetEl(){
  var el=$('mm59Sheet');
  if(el)return el;
- /* v2.0.3.61 - built out of the app's OWN popup parts, so it reads exactly
+ /* v2.0.3.62 - built out of the app's OWN popup parts, so it reads exactly
     like every other card that rises from the bottom of this app. */
  el=D.createElement('div');el.id='mm59Sheet';el.className='modal-overlay';
  el.innerHTML='<div class="modal-sheet" style="max-height:60vh">'+
   '<div class="modal-handle"></div>'+
   '<div class="modal-title">Profile photo</div>'+
-  shRow('camera',SVG.cam,'Take a photo','Use the camera')+
-  shRow('gallery',SVG.gal,'Choose from gallery','Pick a picture you already have')+
-  shRow('remove',SVG.bin,'Remove image','Go back to the plain circle')+
+  shRow('camera',SVG.cam,'Camera','Take a new photo now','var(--gold)','rgba(212,175,55,0.16)')+
+  shRow('gallery',SVG.gal,'Gallery','Choose from your pictures','var(--gold)','rgba(212,175,55,0.16)')+
+  shRow('remove',SVG.bin,'Remove photo','Go back to the plain circle','var(--danger,#e05555)','rgba(224,85,85,0.13)')+
   '<button class="btn-outline" type="button" data-a="cancel">Cancel</button>'+
   '</div>';
  D.body.appendChild(el);
@@ -9930,7 +9966,7 @@ function act(a){
  hold(180000);
  safe(function(){if(W.suppressNextLock)W.suppressNextLock()});
  safe(function(){if('_photoTarget' in W)W._photoTarget='profile'});
- /* v2.0.3.61 - open the system picker inside this same gesture. Going through
+ /* v2.0.3.62 - open the system picker inside this same gesture. Going through
     mm50Pick added a timer, and by the time it fired the tap had expired, so
     nothing ever happened. */
  var inp=$(a==='camera'?'photoCameraInput':'photoInput');
@@ -10003,7 +10039,7 @@ D.addEventListener('click',function(e){
  if(anyOpen())return;
  if(t.closest('.settings-edit'))return;
  if(t.closest('#settingsAvatar')){
-  /* v2.0.3.61 - the app already buzzes for this tap; buzzing here as well was
+  /* v2.0.3.62 - the app already buzzes for this tap; buzzing here as well was
      the double vibration */
   safe(function(){var f=W.openProfilePhoto||W.viewProfilePhoto;if(typeof f==='function')f()});
  }
@@ -10119,7 +10155,7 @@ function healthYearList(){
 }
 var hYear=null;
 function healthData(year){
- /* v2.0.3.61 - read the app's own figures for one year WITHOUT touching the
+ /* v2.0.3.62 - read the app's own figures for one year WITHOUT touching the
     pickers at the top of the screen. The old way changed the real period,
     which is what flipped the month picker to All Months. */
  if(typeof W.anData!=='function')return null;
@@ -10162,7 +10198,11 @@ function health(){
  qa('.mm59-pts,.mm56-pts,.mm58-pts',c).forEach(function(x){x.parentNode&&x.parentNode.removeChild(x)});
  /* the app's own tiles say the same four things again, without the points -
     that is the repetition he sees. Only the scored rows stay. */
- qa('.an-tag,.an-tiles,.an-foot',c).forEach(function(x){x.parentNode&&x.parentNode.removeChild(x)});
+ qa('.an-tag,.an-tiles,.an-foot,.exp-row,.exp-divider',c).forEach(function(x){x.parentNode&&x.parentNode.removeChild(x)});
+ /* v2.0.3.62 - the app's own explainer says the same thing as the note we put
+    at the foot of the scored rows, so it goes too. The score itself and the
+    'Good \u00b7 August 2026' line under it stay. */
+ qa('.exp-sub',c).forEach(function(x){if(/score blends/i.test(x.textContent||''))x.parentNode&&x.parentNode.removeChild(x)});
  var wrap=D.createElement('div');wrap.className='mm59-pts';
  rows.forEach(function(r){
   var pv=r[3]>0?r[2]/r[3]:0,col=pv>=.8?'var(--success)':pv>=.5?'var(--warning)':'var(--danger)';
@@ -10190,7 +10230,7 @@ function health(){
  c.setAttribute('data-mm60','1');
 }
 function openYears(){
- /* v2.0.3.61 - the app already HAS a year picker, the one savings rate uses.
+ /* v2.0.3.62 - the app already HAS a year picker, the one savings rate uses.
     Fill that one instead of inventing another sheet. */
  var years=healthYearList();
  var t=$('periodPickerTitle');if(t)t.textContent='Select Year';
@@ -10237,7 +10277,7 @@ function dedupe(det,head){
   if(/^(from|taken|started)\b/.test(t))kid.parentNode.removeChild(kid);
  });
 }
-/* v2.0.3.61 - removed: the balance line above the boxes. The boxes inside
+/* v2.0.3.62 - removed: the balance line above the boxes. The boxes inside
    the open card already carry the balance, which is what he was seeing twice. */
 var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function monthYear(d){
@@ -10271,7 +10311,7 @@ function loans(){
   }
   if(det.getAttribute('data-mm59')==='1')return;
   dedupe(det,sub?sub.textContent:'');
-  /* v2.0.3.61 - the boxes inside the open card already show the balance */
+  /* v2.0.3.62 - the boxes inside the open card already show the balance */
   det.setAttribute('data-mm59','1');
  });
 }
