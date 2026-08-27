@@ -20,7 +20,7 @@
     --radius: 22px;
     --radius-sm: 14px;
     --nav-height: 76px;
-    --gutter: 24px;
+    --gutter: 16px;
     --ease: cubic-bezier(0.32, 0.72, 0, 1);
     --motion-fast: 180ms; --motion-page:220ms; --motion-sheet:300ms;
     --native-inset-top:0px; --native-inset-bottom:0px; --native-inset-left:0px; --native-inset-right:0px; --native-ime-bottom:0px;
@@ -221,10 +221,10 @@
   #celebrate.show { display:flex; }
   #celebrate .cel-scrim { position:absolute; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px); animation:fadeIn 0.25s; }
   [data-theme="light"] #celebrate .cel-scrim { background:rgba(20,18,14,0.28); }
-  #celebrate .cel-card { position:relative; width:300px; text-align:center; border-radius:30px; padding:38px 26px 26px; background:linear-gradient(180deg,#1c1b18,#141311); border:1px solid rgba(224,196,120,0.20); box-shadow:0 34px 80px -22px rgba(0,0,0,0.75); animation:celPop 320ms cubic-bezier(0.2,0.82,0.2,1); }
-  [data-theme="light"] #celebrate .cel-card { background:linear-gradient(180deg,#ffffff,#fbf8f1); border-color:rgba(201,154,34,0.22); box-shadow:0 34px 80px -26px rgba(120,90,10,0.35); }
+  #celebrate .cel-card { position:relative; width:300px; text-align:center; border-radius:30px; padding:56px 26px 28px; background:linear-gradient(180deg,#1c1b18,#141311); border:1px solid rgba(224,196,120,0.20); box-shadow:0 34px 80px -22px rgba(0,0,0,0.75); animation:celPop 320ms cubic-bezier(0.2,0.82,0.2,1); }
+  [data-theme="light"] #celebrate .cel-card { background:#ffffff; border-color:rgba(201,154,34,0.22); box-shadow:0 34px 80px -26px rgba(120,90,10,0.35); }
   @keyframes celPop { 0% { opacity:0; transform:scale(0.8) translateY(12px);} 60% { transform:scale(1.03);} 100% { opacity:1; transform:scale(1);} }
-  .cel-badge { width:90px; height:90px; margin:0 auto 20px; border-radius:50%; background:radial-gradient(circle at 50% 32%,#f4d876,#c99a22); display:flex; align-items:center; justify-content:center; box-shadow:0 14px 34px -8px rgba(201,154,34,0.7); animation:celBadge 380ms 40ms cubic-bezier(0.2,0.82,0.2,1) both; }
+  .cel-badge { width:90px; height:90px; margin:14px auto 24px; border-radius:50%; background:radial-gradient(circle at 50% 32%,#f4d876,#c99a22); display:flex; align-items:center; justify-content:center; box-shadow:0 14px 34px -8px rgba(201,154,34,0.7); animation:celBadge 380ms 40ms cubic-bezier(0.2,0.82,0.2,1) both; }
   @keyframes celBadge { 0% { transform:scale(0.4); opacity:0;} 60% { transform:scale(1.12);} 100% { transform:scale(1); opacity:1;} }
   .cel-badge svg { width:46px; height:46px; stroke:#fff; stroke-width:2.8; fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .cel-title { font-size:26px; font-weight:800; color:#f5f2ea; letter-spacing:-0.4px; }
@@ -239,7 +239,7 @@
   .cel-bar-fill { height:100%; width:0; border-radius:6px; background:linear-gradient(90deg,#e7c24e,#c99a22); transition:width 0.9s var(--ease); }
   .cel-bar-cap { margin-top:7px; font-size:11.5px; color:#8c846e; font-weight:600; }
   [data-theme="dark"] .cel-bar-cap { color:#a99f88; }
-  .cel-note { margin-top:22px; font-size:15px; font-weight:800; color:#231c05; background:linear-gradient(135deg,#e7c24e,#c99a22); border-radius:14px; padding:13px; animation:celFloat 3.4s ease-in-out 0.6s infinite; }
+  .cel-note { margin-top:26px; font-size:16.5px; font-weight:850; color:#231c05; background:linear-gradient(135deg,#e7c24e,#c99a22); border-radius:16px; padding:17px 16px; min-height:58px; display:flex; align-items:center; justify-content:center; animation:celFloat 3.4s ease-in-out 0.6s infinite; }
   @keyframes celFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
   .cel-confetti { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
   .cel-confetti i { position:absolute; top:0; width:8px; height:8px; border-radius:2px; opacity:0; animation:celFall 1.4s var(--ease) forwards; }
@@ -1237,7 +1237,7 @@ html[data-native-shell="true"] #bottomNav{background:#1b1b18!important;border-to
         <div class="card-label">Emergency Fund</div><div class="card-amount" id="ov-emergency">UGX 0</div><div class="card-pct" id="ov-emergency-pct">—</div>
       </div>
     </div>
-    <div class="section-header"><div class="section-title" id="ovSwipeTitle">Budgeting Discipline</div><div class="see-more" id="ovSwipeDetails" onclick="expandCard('budgetstatus')">Details</div></div>
+    <div class="section-header"><div class="section-title" id="ovSwipeTitle">Budgeting Discipline</div><div class="see-more" id="ovSwipeDetails" onclick="expandCard('budgetstatus')"></div></div>
     <div class="swipe-stack" id="ovSwipe">
       <div class="swipe-card"><div class="glass-card" id="budgetStatusCard" onclick="expandCard('budgetstatus')"></div></div>
       <div class="swipe-card"><div class="glass-card" id="incomeExpCard" onclick="expandCard('incomeexp')"></div></div>
@@ -3449,8 +3449,8 @@ function anData(){
   const totalBudgets=expBudgets.length; const biggest=catFull[0]||null;
   let score=0; score+=Math.max(0,Math.min(savingsRate/35,1))*30; score+=Math.max(0,Math.min(runway/6,1))*25; score+=(totalBudgets>0?onBudget/totalBudgets:0.6)*25; score+=Math.max(0,1-Math.min(loanPct/50,1))*20; score=Math.round(score);
   const sLabel=score>=80?'Strong':score>=60?'Good':score>=40?'Fair':'Needs work';
-  const sColor=score>=80?'var(--success)':score>=60?'#7aa84a':score>=40?'var(--warning)':'var(--danger)';
-  const sBg=score>=80?'rgba(63,174,90,0.15)':score>=60?'rgba(122,168,74,0.15)':score>=40?'rgba(240,160,32,0.15)':'rgba(224,85,85,0.15)';
+  const sColor=score>=80?'var(--success)':score>=60?'var(--success)':score>=40?'var(--warning)':'var(--danger)';
+  const sBg=score>=80?'rgba(63,174,90,0.15)':score>=60?'rgba(63,174,90,0.15)':score>=40?'rgba(240,160,32,0.15)':'rgba(224,85,85,0.15)';
   var prevRate=null, nwSel=endNW, nwPrev=null, prevMonthName='', comp;
   if(month!=='all'){
     var pEnd=potsAsOf(new Date(year,month+1,0,23,59,59));
@@ -3734,8 +3734,8 @@ function renderAnalyticsV2(){
     '<div class="an-pad"><div class="glass-card chart-card smart-insight-section"><div class="smart-insight-head"><div class="smart-insight-mark">'+ic('i-bulb')+'</div><div><b>What your money is telling you</b><span>Only the strongest patterns for '+periodLabel()+'</span></div></div>'+
     '<ul class="smart-insight-list">'+smart.map(function(x){return '<li class="'+x.tone+'"><i></i><span>'+x.text+'</span></li>';}).join('')+'</ul></div></div>';
   c.innerHTML=healthCard+
-    '<div class="section-header an-sh"><div class="section-title" id="anSw1Title">Savings Rate</div><div class="see-more" id="anSw1More" onclick="expandCard(\'savingsrate\')">Details</div></div><div class="swipe-stack" id="anSw1"><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'savingsrate\')">'+savingsInner+'</div></div><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'networth\')">'+nwInner+'</div></div></div><div class="swipe-dots" id="anDots1"><span class="sdot active"></span><span class="sdot"></span></div>'+
-    '<div class="section-header an-sh"><div class="section-title">Spending Breakdown</div><div class="see-more" onclick="expandCard(\'spending\')">Details</div></div><div class="an-pad" style="margin-bottom:6px"><div class="glass-card chart-card an-chart" onclick="expandCard(\'spending\')">'+spendInner+'</div></div>'+
+    '<div class="section-header an-sh"><div class="section-title" id="anSw1Title">Savings Rate</div><div class="see-more" id="anSw1More" onclick="expandCard(\'savingsrate\')"></div></div><div class="swipe-stack" id="anSw1"><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'savingsrate\')">'+savingsInner+'</div></div><div class="swipe-card"><div class="glass-card chart-card an-chart" onclick="expandCard(\'networth\')">'+nwInner+'</div></div></div><div class="swipe-dots" id="anDots1"><span class="sdot active"></span><span class="sdot"></span></div>'+
+    '<div class="section-header an-sh"><div class="section-title">Spending Breakdown</div><div class="see-more" onclick="expandCard(\'spending\')"></div></div><div class="an-pad" style="margin-bottom:6px"><div class="glass-card chart-card an-chart" onclick="expandCard(\'spending\')">'+spendInner+'</div></div>'+
     compareBlock+coachBlock;
   setupAnSwipe('anSw1','anDots1','anSw1Title','anSw1More',['Savings Rate','Net Worth'],['savingsrate','networth']);
 }
@@ -4584,9 +4584,9 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 .section-title,.card-title{font-size:15.5px!important}.period-scope-copy b{font-size:14px!important}.period-scope-copy span{font-size:12px!important}
 .period-copy-btn{display:none!important}
 /* Option 1: compact floating pill */
-#toast{left:50%!important;right:auto!important;width:max-content!important;max-width:min(88vw,390px)!important;min-height:54px!important;bottom:calc(88px + var(--native-inset-bottom) + var(--native-ime-bottom))!important;transform:translate(-50%,24px) scale(.97)!important;padding:9px 14px 9px 10px!important;border:0!important;border-radius:999px!important;background:#fff!important;box-shadow:0 12px 30px rgba(0,0,0,.20)!important;gap:10px!important;font-size:14px!important;font-weight:780!important;white-space:nowrap!important}
+#toast.mm63-dead2{left:50%!important;right:auto!important;width:max-content!important;max-width:min(88vw,390px)!important;min-height:54px!important;bottom:calc(88px + var(--native-inset-bottom) + var(--native-ime-bottom))!important;transform:translate(-50%,24px) scale(.97)!important;padding:9px 14px 9px 10px!important;border:0!important;border-radius:999px!important;background:#fff!important;box-shadow:0 12px 30px rgba(0,0,0,.20)!important;gap:10px!important;font-size:14px!important;font-weight:780!important;white-space:nowrap!important}
 [data-theme="dark"] #toast{background:#171715!important;box-shadow:0 14px 34px rgba(0,0,0,.65)!important}
-#toast.show{transform:translate(-50%,0) scale(1)!important}
+#toast.mm63-dead2.show{transform:translate(-50%,0) scale(1)!important}
 #toast .sn-icon{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;background:rgba(212,175,55,.16);color:var(--gold)}
 #toast.success .sn-icon{background:rgba(46,160,90,.16);color:var(--success)}#toast.error .sn-icon{background:rgba(224,85,85,.15);color:var(--danger)}#toast.warning .sn-icon{background:rgba(240,160,32,.16);color:var(--warning)}
 #toast .sn-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}#toast .sn-text{line-height:1.25!important;overflow:hidden;text-overflow:ellipsis}
@@ -4681,8 +4681,8 @@ try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persi
 /* Keep period inheritance automatic, without permanent explanatory UI. */
 .period-scope{display:none!important}
 /* Truly compact one-line pill. */
-#toast{box-sizing:border-box!important;height:36px!important;min-height:36px!important;max-width:min(72vw,270px)!important;padding:3px 9px 3px 5px!important;border-radius:18px!important;gap:5px!important;font-size:12px!important;line-height:1.1!important;font-weight:780!important;bottom:calc(76px + var(--native-inset-bottom) + var(--native-ime-bottom))!important;box-shadow:0 6px 16px rgba(0,0,0,.16)!important}
-#toast .sn-icon{width:20px!important;height:20px!important}#toast .sn-icon svg{width:11px!important;height:11px!important}#toast .sn-text{max-width:218px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#toast.mm63-dead{box-sizing:border-box!important;height:36px!important;min-height:36px!important;max-width:min(72vw,270px)!important;padding:3px 9px 3px 5px!important;border-radius:18px!important;gap:5px!important;font-size:12px!important;line-height:1.1!important;font-weight:780!important;bottom:calc(76px + var(--native-inset-bottom) + var(--native-ime-bottom))!important;box-shadow:0 6px 16px rgba(0,0,0,.16)!important}
+#toast.mm63-dead .sn-icon{width:20px!important;height:20px!important}#toast .sn-icon svg{width:11px!important;height:11px!important}#toast .sn-text{max-width:218px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 /* Stronger profile hierarchy. */
 .set-name{font-size:30px!important;font-weight:880!important;line-height:1.08!important;margin-top:8px!important}.set-meta{font-size:13px!important;margin-top:9px!important;margin-bottom:20px!important}
 /* Keep the green success badge moving until the celebration closes. */
@@ -5932,7 +5932,7 @@ function remainingRows(s){if(s.y==='all')return years().map(y=>{var a=months(y).
 window.openRemaining44=function(){var l=latest();if(!ind.remaining)ind.remaining={y:l.getFullYear(),m:l.getMonth()};renderRemaining44(true)};window.renderRemaining44=function(open){var s=ind.remaining,x=s.y!=='all'&&s.m!=='all'?left(s.y,s.m):null,body=scopeHead('Remaining Income','remaining',s)+(x?currentSummary(x):remainingRows(s));document.getElementById('expandContent').innerHTML=body+'<button class="btn-outline mm42-close" onclick="closeModal(\'expandModal\')">Close</button>';if(open)openModal('expandModal')};
 window.openInnerPicker44=function(key,mode){var s=key==='remaining'?ind.remaining:ind.asset[key],h='',title=mode==='year'?'Select Year':'Select Month';if(mode==='year'){var showAll=key==='remaining'?txYears().length>1:years().length>1;if(showAll)h+='<div class="picker-item '+(s.y==='all'?'picker-active':'')+'" onclick="setInner44(\''+key+'\',\'year\',\'all\')">All Years'+(s.y==='all'?check():'')+'</div>';years().slice().reverse().forEach(y=>h+='<div class="picker-item '+(s.y===y?'picker-active':'')+'" onclick="setInner44(\''+key+'\',\'year\','+y+')">'+y+(s.y===y?check():'')+'</div>')}else{h+='<div class="picker-item '+(s.m==='all'?'picker-active':'')+'" onclick="setInner44(\''+key+'\',\'month\',\'all\')">All Months'+(s.m==='all'?check():'')+'</div>';months(s.y).forEach(m=>h+='<div class="picker-item '+(s.m===m?'picker-active':'')+'" onclick="setInner44(\''+key+'\',\'month\','+m+')">'+MONTHS[m]+(s.m===m?check():'')+'</div>')}document.getElementById('periodPickerTitle').textContent=title;document.getElementById('periodPickerList').innerHTML=h;openModal('periodPickerModal')};window.setInner44=function(key,mode,v){var s=key==='remaining'?ind.remaining:ind.asset[key];if(mode==='year'){s.y=v==='all'?'all':Number(v);if(s.y==='all')s.m='all';else if(s.m!=='all'&&!months(s.y).includes(s.m))s.m='all'}else s.m=v==='all'?'all':Number(v);closeModal('periodPickerModal');if(key==='remaining')renderRemaining44(false);else renderAsset44(key,false)};
 function assetItem(k,id){return(k==='asset'?(DB.assets||[]):k==='account'?(DB.accounts||[]):(DB.investments||[])).find(x=>String(x.id)===String(id))}function hist(k,id){try{return window.__MM_ASSET_HISTORY_QA.history(k,id).slice().sort((a,b)=>a.period.localeCompare(b.period))}catch(e){return[]}}
-window.openAssetHistory20323=function(k,id){var key=k+'|'+id,h=hist(k,id),p=h.length?h[h.length-1].period:CY+'-'+String(CM+1).padStart(2,'0');ind.asset[key]={y:Number(p.slice(0,4)),m:'all',k,id};renderAsset44(key,true)};window.renderAsset44=function(key,open){var s=ind.asset[key],x=assetItem(s.k,s.id),h=hist(s.k,s.id),rows;if(!x)return;if(s.y==='all'){rows=years().slice().reverse().map(y=>{var a=h.filter(r=>Number(r.period.slice(0,4))===y),r=a[a.length-1]||h.filter(q=>Number(q.period.slice(0,4))<y).slice(-1)[0];if(!r)return row(String(y),'No data');var v=s.k==='investment'?r.interest:r.value;return row(String(y),fmtShort(Number(v)||0)+(a.length?'':' · carried forward'))}).join('')}else rows=h.filter(r=>Number(r.period.slice(0,4))===s.y&&(s.m==='all'||Number(r.period.slice(5,7))-1===s.m)).slice().reverse().map(r=>{var v=s.k==='investment'?r.interest:r.value;return'<div class="asset-history-row"><div><b>'+MONTHS[Number(r.period.slice(5,7))-1]+' '+r.period.slice(0,4)+'</b><span>Saved monthly record</span><b style="margin-top:5px">'+fmtShort(Number(v)||0)+'</b></div><button class="asset-history-edit" onclick="openAssetMonth20323(\''+s.k+'\',\''+s.id+'\',\''+r.period+'\')">Edit</button></div>'}).join('')||'<div class="bgt-empty">No records in this period.</div>';document.getElementById('assetModalTitle').textContent='';document.getElementById('assetModalContent').innerHTML=scopeHead(x.name+' history',key,s)+'<div class="asset-history-scroll">'+rows+'</div><button class="btn-outline" onclick="closeModal(\'assetModal\')">Close</button>';if(open)openModal('assetModal')};
+window.openAssetHistory20323=function(k,id){var key=k+'|'+id,h=hist(k,id),p=h.length?h[h.length-1].period:CY+'-'+String(CM+1).padStart(2,'0');ind.asset[key]={y:Number(p.slice(0,4)),m:'all',k,id};renderAsset44(key,true)};window.renderAsset44=function(key,open){var s=ind.asset[key],x=assetItem(s.k,s.id),h=hist(s.k,s.id),rows;if(!x)return;if(s.y==='all'){rows=years().slice().reverse().map(y=>{var a=h.filter(r=>Number(r.period.slice(0,4))===y),r=a[a.length-1]||h.filter(q=>Number(q.period.slice(0,4))<y).slice(-1)[0];if(!r)return row(String(y),'No data');var v=s.k==='investment'?r.interest:r.value;return row(String(y),fmtShort(Number(v)||0)+(a.length?'':' · carried forward'))}).join('')}else rows=h.filter(r=>Number(r.period.slice(0,4))===s.y&&(s.m==='all'||Number(r.period.slice(5,7))-1===s.m)).slice().reverse().map(r=>{var v=s.k==='investment'?r.interest:r.value;return'<div class="asset-history-row"><div><b>'+MONTHS[Number(r.period.slice(5,7))-1]+' '+r.period.slice(0,4)+'</b><span class="mm63-mgain" data-p="\'+r.period+\'"></span><b style="margin-top:5px">'+fmtShort(Number(v)||0)+'</b></div><button class="asset-history-edit" onclick="openAssetMonth20323(\''+s.k+'\',\''+s.id+'\',\''+r.period+'\')">Edit</button></div>'}).join('')||'<div class="bgt-empty">No records in this period.</div>';document.getElementById('assetModalTitle').textContent='';document.getElementById('assetModalContent').innerHTML=scopeHead(x.name+' history',key,s)+'<div class="asset-history-scroll">'+rows+'</div><button class="btn-outline" onclick="closeModal(\'assetModal\')">Close</button>';if(open)openModal('assetModal')};
 var notify0=window.renderNotificationSettings;window.renderNotificationSettings=function(){var h=notify0();h=h.replace(/<button class="mm42-weekly-link"[\s\S]*?<\/button>/g,'').replace(/<div class="mm-notify-note">[\s\S]*?<\/div>/g,'').replace(/<button class="btn-outline" onclick="openWeeklyAnalysis20341\(\)">[\s\S]*?<\/button>/g,'');h=h.replace(/<input class="setting-switch"([^>]*)>/g,'<label class="mm44-toggle"><input class="setting-switch"$1><span></span></label>');return h};
 var ra0=window.renderAnalytics;window.renderAnalytics=function(){if(!AY)return withCutoff(ra0,arguments);var c=document.getElementById('analyticsContent'),st=years().map(yearStat),inc=st.reduce((s,x)=>s+x.i,0),sav=st.reduce((s,x)=>s+x.s,0),r=inc?Math.round(sav/inc*1000)/10:0;c.innerHTML='<div class="an-pad"><div class="glass-card chart-card an-chart" onclick="expandCard(\'savingsrate\')"><div class="an-tag">All Years · year by year</div><div class="an-numbig">'+r+'%</div><div class="an-numsub">weighted savings rate</div>'+svg(years().map(String),st.map(x=>x.rate||0),null,'var(--gold)')+'</div></div><div class="an-pad"><div class="glass-card chart-card an-chart" onclick="expandCard(\'incomeexp\')"><div class="an-tag">Income vs Expenses · yearly</div>'+svg(years().map(String),st.map(x=>x.i),st.map(x=>x.e),'var(--success)','var(--danger)')+'</div></div>'};
 updatePeriodBtns();renameRemaining();saveDB();window.__MM44={first,latest,txYears,years,months,pairs,left};})();</script>
@@ -6641,7 +6641,7 @@ window.mm50GoalKind=function(k){
     ((typeof icSized==='function')?icSized(k==='investment'?'i-invest':'i-cart',14):'')+
     (k==='investment'?'Investment goal':'Lifestyle goal')+'</div>');
   railify(c);
-  var n=$('gName');if(n)setTimeout(function(){safe(function(){n.focus();});},90);
+  /* v63 item 15: no autofocus, so the keyboard stays down until he taps the field */
 };
 
 /* ---------- 12: profile photo popup ---------- */
@@ -7690,10 +7690,10 @@ function loanPolish(root){var db=mmDB();if(!db||!db.loans)return;
   var paid=reps.reduce(function(a,t){return a+(t.amount||0)},0);var rem=Math.max(0,(l.amount||0)-paid);
   var who=l.source?String(l.source):'', when=mLab(l.date);
   var sub=q('.bgt-sub',card);
-  /* v2.0.3.62 - the closed loan caption is written once, by the v20359 block */
+  /* v2.0.3.63 - the closed loan caption is written once, by the v20359 block */
   if(rem<=0){var head=q('.bgt-head',card);if(head){var ring=null;qa('div',head).forEach(function(d){if(!ring&&d.querySelector&&d.querySelector('svg circle'))ring=d});
    if(ring&&ring.parentNode){var pill=D.createElement('span');pill.className='mm54-paid';pill.textContent='Fully paid';ring.parentNode.replaceChild(pill,ring)}}}
-  /* v2.0.3.62 - removed: the duplicate From/Taken/Original row inside the open loan card */
+  /* v2.0.3.63 - removed: the duplicate From/Taken/Original row inside the open loan card */
  });}
 
 /* ---------- 5 - goals: started date, completion month ---------- */
@@ -7708,11 +7708,11 @@ function goalPolish(root){var db=mmDB();if(!db||!db.goals)return;
   var done=tgt>0&&(g.saved||0)>=tgt;var rem=Math.max(0,tgt-(g.saved||0));
   var sub=q('.bgt-sub',card);
   if(sub){var bits=[];if(when)bits.push('Started '+when);
-   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));/* v2.0.3.62 - what is left to go shows once the card is open, not before */
+   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));/* v2.0.3.63 - what is left to go shows once the card is open, not before */
    var badge=q('span',sub);sub.textContent=bits.join(' \u00b7 ');if(badge)sub.appendChild(badge)}
   var st=q('.budget-card-status',det)||q('.budget-card-status',card);
   if(st&&done){st.textContent='Completed'+(doneAt?' \u00b7 '+mLab(doneAt):'');st.style.color='var(--success)'}
-  /* v2.0.3.62 - removed: the duplicate Started/Target/Completed row inside the open goal card */
+  /* v2.0.3.63 - removed: the duplicate Started/Target/Completed row inside the open goal card */
  });}
 
 /* stamp new goals so the started date is exact going forward */
@@ -7963,9 +7963,9 @@ function peSave(){
   if(inSettings&&!D.body.classList.contains('settings-section-open')){if(peOpen(true))return}
   return f.apply(this,arguments);
  };
- g.__mm54p=1;W.__mm54NameScreenLegacy=g;/* v2.0.3.62 - no longer claims openEditProfile */
+ g.__mm54p=1;W.__mm54NameScreenLegacy=g;/* v2.0.3.63 - no longer claims openEditProfile */
 })();
-/* v2.0.3.62 - removed: a v54 capture listener used to swallow every tap on the
+/* v2.0.3.63 - removed: a v54 capture listener used to swallow every tap on the
    settings photo (preventDefault+stopPropagation) and run its own popup. The
    profile flow now has one owner, in the v20359 block at the end of this file. */
 wrap('navTo',function(){peClose()});
@@ -8263,9 +8263,9 @@ W.__MM54={fcast:fcast54,polish:polishAll,navWant:navWant,peOpen:peOpen,peClose:p
       var b=Math.min(g.W/nw,g.H/nh);
       var bw=nw*b,bh=nh*b;
       var min=Math.max(1,g.hw/bw,g.hh/bh);
-      S={url:url,nw:nw,nh:nh,b:b,bw:bw,bh:bh,s:min,min:min,tx:0,ty:0,pts:{},drag:null,pinch:null,g:g};
+      S={url:url,nw:nw,nh:nh,b:b,bw:bw,bh:bh,s:min,min:Math.max(0.45,min*0.5),tx:0,ty:0,pts:{},drag:null,pinch:null,g:g};
       im.src=url;im.style.width=bw+'px';im.style.height=bh+'px';
-      var z=$('mm55cZoom');if(z){z.min=String(Math.round(min*100));z.max=String(Math.round(min*400));}
+      var z=$('mm55cZoom');if(z){z.min=String(Math.round(Math.max(0.45,min*0.5)*100));z.max=String(Math.round(min*400));}
       clamp();draw();
       requestAnimationFrame(function(){o.classList.add('on')});
     };
@@ -8783,7 +8783,7 @@ html[data-theme="dark"] .overview-card::before,html[data-theme="dark"] .glass-ca
 
 /* 4 - net-worth bars: wider, taller, shrink when there are many */
 .mm42-bars .mm42-baritem{flex:1 1 0;min-width:0}
-.mm42-bars .mm42-baritem i{width:clamp(10px,7.4vw,26px)!important;max-width:100%}
+.mm42-bars .mm42-baritem i{width:clamp(13px,9.2vw,32px)!important;max-width:100%}
 .mm42-bars.mm50-tall{height:174px!important}
 
 /* 5 - year-by-year block */
@@ -8904,7 +8904,7 @@ function sheet(title,rows){
 function closeSheet(){var el=$('mm56Ch');if(!el)return;el.classList.remove('on');W.__mm56sheet=false;}
 function sheetOpen(){var el=$('mm56Ch');return !!(el&&el.classList.contains('on'))}
 
-/* v2.0.3.62 - the year list now comes from real transactions, and the period
+/* v2.0.3.63 - the year list now comes from real transactions, and the period
    change is remembered so closing the card puts the top-of-screen filter back. */
 function healthYears(){
  var out=[],seen={};
@@ -8938,7 +8938,7 @@ function setYear(y){
  });
  setTimeout(function(){safe(function(){if(W.expandCard)W.expandCard('health')})},60);
 }
-/* v2.0.3.62 - the two score builders below were replaced by the single
+/* v2.0.3.63 - the two score builders below were replaced by the single
    health builder. The names stay so the block's own exports keep working. */
 function ptsRow(){return D.createElement('div')}
 function ptsBlock(){return D.createElement('div')}
@@ -8947,7 +8947,7 @@ function healthPolish(){
  var t=q('.modal-title',c);if(!t)return;
  if(!/financial health/i.test(t.textContent||''))return;
  t.textContent='Financial Health';
- /* v2.0.3.62 - the head, the year pill and the score rows have one owner
+ /* v2.0.3.63 - the head, the year pill and the score rows have one owner
     now: the v20359 block. This patch used to build its own, on a timer,
     and its year pill changed the real period at the top of the screen. */
 }
@@ -9052,7 +9052,7 @@ function closePhoto(){
  if(el.style&&el.style.display==='flex')el.style.display='';
  W.__mm56ph=false;
 }
-/* v2.0.3.62 - removed: the v56 chooser card ("Profile photo / Your name") and
+/* v2.0.3.63 - removed: the v56 chooser card ("Profile photo / Your name") and
    its two helpers. The pencil now opens the edit screen directly. */
 var nb0=W.__moneyMapHandleNativeBack;
 W.__moneyMapHandleNativeBack=function(){
@@ -9071,7 +9071,7 @@ D.addEventListener('keydown',function(e){if(e.key==='Escape'&&sheetOpen())closeS
 function polish56(){safe(lockPolish);safe(sumShade);}
 setTimeout(polish56,700);
 setInterval(polish56,900);
-/* v2.0.3.62 - the points block used to be injected on a timer, a few hundred
+/* v2.0.3.63 - the points block used to be injected on a timer, a few hundred
    ms after the modal had started animating, which is what made the card jump.
    Build it in the same tick as the expand instead. */
 safe(function(){
@@ -9431,7 +9431,7 @@ if(typeof _oar==='function'&&!_oar.__mm58){
 /* =========================================================
    5 - financial health: value and points on one line, no bars
    ========================================================= */
-function pts58(){/* v2.0.3.62 - superseded by the single health builder */}
+function pts58(){/* v2.0.3.63 - superseded by the single health builder */}
 
 /* =========================================================
    6 - loan summary shading, and the balance on the closed card
@@ -9466,7 +9466,7 @@ function loanSubs(){
    if(t.type==='loan_repay'&&String(t.loanId)===id)paid+=Number(t.amount)||0;
   });
   var rem=Math.max(0,(Number(l.amount)||0)-paid);
-  /* v2.0.3.62 - the closed card keeps only who it came from and when. The
+  /* v2.0.3.63 - the closed card keeps only who it came from and when. The
      balance still owed belongs in the expanded body, added by the v20359 block. */
   det.setAttribute('data-mm59-rem',String(rem));
   sub.setAttribute('data-mm58','1');
@@ -9517,7 +9517,7 @@ if(typeof _rss==='function'&&!_rss.__mm58){
  rss.__mm58=1;W.renderSettingsSection=rss;
 }
 
-/* v2.0.3.62 - removed: the v58 edit screen, its photo view and its back
+/* v2.0.3.63 - removed: the v58 edit screen, its photo view and its back
    handler. The name row called v54, which rendered the name screen inside the
    settings page - underneath this overlay - so the name never looked editable.
    Replaced wholesale by the v20359 block at the end of this file. */
@@ -9540,7 +9540,7 @@ setTimeout(polish58,600);
 setInterval(polish58,1100);
 
 W.__MM58={navShow:navShow,open:open58,pts:pts58,loanShade:loanShade,loanSubs:loanSubs,
- lockFix:lockFix,hasPin:hasPin};/* v2.0.3.62 - profile exports moved to __MM59 */
+ lockFix:lockFix,hasPin:hasPin};/* v2.0.3.63 - profile exports moved to __MM59 */
 })();
 </script>
 <style id="v20359-fix">
@@ -9713,7 +9713,7 @@ function closeTop(){
  return false;
 }
 /* =====================================================================
-   v2.0.3.62 - ONE owner for the back press, and ONE spare history entry.
+   v2.0.3.63 - ONE owner for the back press, and ONE spare history entry.
    The old build pushed an entry per screen, so six presses were needed to get
    out and the leftovers replayed screens in the wrong order. Now the screens
    he actually came through are remembered in a plain list, back retraces that
@@ -9740,7 +9740,7 @@ W.addEventListener('popstate',function(){
     is spent. Clear it FIRST, or a press the app handled leaves the flag stale
     and no new spare is ever pushed. */
  spare=0;
- /* v2.0.3.62 - ours first, always. */
+ /* v2.0.3.63 - ours first, always. */
  if(safe(closeTop)){chain=0;ensure();return}
  /* a layer is still up but nothing closed: keep the press rather than let it
     fall through to the phone and shut the app mid-edit */
@@ -9750,7 +9750,7 @@ W.addEventListener('popstate',function(){
  if(stack.length){chain=0;navBack(stack.pop());ensure();return}
  /* nothing of ours is left. If entries pushed earlier are still sitting above
     the first one, step past them rather than eat the press. */
- /* v2.0.3.62 - the old build stepped past leftover entries here, up to four
+ /* v2.0.3.63 - the old build stepped past leftover entries here, up to four
     times. That is exactly what made a press feel dead and needed six taps.
     Nothing of ours is left, so this press belongs to the phone: from the
     overview the app closes, which is what he asked for. */
@@ -9899,7 +9899,7 @@ function saveName(){
    camera / gallery / remove, as a card from the bottom
    ===================================================================== */
 function shRow(a,svg,title,sub,col,bg){
- /* v2.0.3.62 - same shape as the app's own choice rows (#photoChoiceModal),
+ /* v2.0.3.63 - same shape as the app's own choice rows (#photoChoiceModal),
     down to the shaded icon tile. Nothing invented here. */
  return '<button class="quick-action-btn" type="button" data-a="'+a+'">'+
   '<div class="qa-icon" style="color:'+col+';background:'+bg+'">'+svg+'</div>'+
@@ -9909,7 +9909,7 @@ function shRow(a,svg,title,sub,col,bg){
 function sheetEl(){
  var el=$('mm59Sheet');
  if(el)return el;
- /* v2.0.3.62 - built out of the app's OWN popup parts, so it reads exactly
+ /* v2.0.3.63 - built out of the app's OWN popup parts, so it reads exactly
     like every other card that rises from the bottom of this app. */
  el=D.createElement('div');el.id='mm59Sheet';el.className='modal-overlay';
  el.innerHTML='<div class="modal-sheet" style="max-height:60vh">'+
@@ -9966,7 +9966,7 @@ function act(a){
  hold(180000);
  safe(function(){if(W.suppressNextLock)W.suppressNextLock()});
  safe(function(){if('_photoTarget' in W)W._photoTarget='profile'});
- /* v2.0.3.62 - open the system picker inside this same gesture. Going through
+ /* v2.0.3.63 - open the system picker inside this same gesture. Going through
     mm50Pick added a timer, and by the time it fired the tap had expired, so
     nothing ever happened. */
  var inp=$(a==='camera'?'photoCameraInput':'photoInput');
@@ -10039,7 +10039,7 @@ D.addEventListener('click',function(e){
  if(anyOpen())return;
  if(t.closest('.settings-edit'))return;
  if(t.closest('#settingsAvatar')){
-  /* v2.0.3.62 - the app already buzzes for this tap; buzzing here as well was
+  /* v2.0.3.63 - the app already buzzes for this tap; buzzing here as well was
      the double vibration */
   safe(function(){var f=W.openProfilePhoto||W.viewProfilePhoto;if(typeof f==='function')f()});
  }
@@ -10155,7 +10155,7 @@ function healthYearList(){
 }
 var hYear=null;
 function healthData(year){
- /* v2.0.3.62 - read the app's own figures for one year WITHOUT touching the
+ /* v2.0.3.63 - read the app's own figures for one year WITHOUT touching the
     pickers at the top of the screen. The old way changed the real period,
     which is what flipped the month picker to All Months. */
  if(typeof W.anData!=='function')return null;
@@ -10199,7 +10199,7 @@ function health(){
  /* the app's own tiles say the same four things again, without the points -
     that is the repetition he sees. Only the scored rows stay. */
  qa('.an-tag,.an-tiles,.an-foot,.exp-row,.exp-divider',c).forEach(function(x){x.parentNode&&x.parentNode.removeChild(x)});
- /* v2.0.3.62 - the app's own explainer says the same thing as the note we put
+ /* v2.0.3.63 - the app's own explainer says the same thing as the note we put
     at the foot of the scored rows, so it goes too. The score itself and the
     'Good \u00b7 August 2026' line under it stay. */
  qa('.exp-sub',c).forEach(function(x){if(/score blends/i.test(x.textContent||''))x.parentNode&&x.parentNode.removeChild(x)});
@@ -10230,7 +10230,7 @@ function health(){
  c.setAttribute('data-mm60','1');
 }
 function openYears(){
- /* v2.0.3.62 - the app already HAS a year picker, the one savings rate uses.
+ /* v2.0.3.63 - the app already HAS a year picker, the one savings rate uses.
     Fill that one instead of inventing another sheet. */
  var years=healthYearList();
  var t=$('periodPickerTitle');if(t)t.textContent='Select Year';
@@ -10277,7 +10277,7 @@ function dedupe(det,head){
   if(/^(from|taken|started)\b/.test(t))kid.parentNode.removeChild(kid);
  });
 }
-/* v2.0.3.62 - removed: the balance line above the boxes. The boxes inside
+/* v2.0.3.63 - removed: the balance line above the boxes. The boxes inside
    the open card already carry the balance, which is what he was seeing twice. */
 var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function monthYear(d){
@@ -10311,7 +10311,7 @@ function loans(){
   }
   if(det.getAttribute('data-mm59')==='1')return;
   dedupe(det,sub?sub.textContent:'');
-  /* v2.0.3.62 - the boxes inside the open card already show the balance */
+  /* v2.0.3.63 - the boxes inside the open card already show the balance */
   det.setAttribute('data-mm59','1');
  });
 }
@@ -10436,5 +10436,554 @@ D.documentElement.setAttribute('data-mm60','1');
 D.documentElement.setAttribute('data-mm61','1');
 })();
 </script>
+<style id="v20363-ui">
+/* ============================ item 9: genuinely white ====================== */
+html[data-theme="light"]{--card-bg:#ffffff;--surface:#ffffff;--surface2:#ffffff;--card-hi:transparent}
+/* the inset highlight was what lit up the top edge of the four main cards */
+html[data-theme="light"] .overview-card,html[data-theme="light"] .glass-card,
+html[data-theme="light"] .bsum-card,html[data-theme="light"] .bgt-card,
+html[data-theme="light"] .set-card,html[data-theme="light"] .tx-item,
+html[data-theme="light"] .gl-card,html[data-theme="light"] .loan-card{
+  background:#ffffff!important;background-image:none!important}
+
+/* ===================== item 17: the bottom bar, app theme ================== */
+#toast{
+  position:fixed!important;left:14px!important;right:14px!important;
+  width:auto!important;max-width:none!important;transform:translateY(26px) scale(.98)!important;
+  bottom:calc(84px + var(--native-inset-bottom,0px) + var(--native-ime-bottom,0px))!important;
+  min-height:56px!important;height:auto!important;box-sizing:border-box!important;
+  display:flex!important;align-items:center!important;gap:11px!important;
+  padding:11px 13px 11px 11px!important;border-radius:16px!important;
+  background:var(--card-bg,#fff)!important;
+  border:1px solid var(--card-border,#ececea)!important;
+  border-left:3px solid var(--gold)!important;
+  box-shadow:0 10px 26px -8px rgba(0,0,0,.20),0 2px 6px -2px rgba(0,0,0,.10)!important;
+  font-size:13.5px!important;font-weight:750!important;line-height:1.3!important;
+  white-space:normal!important;text-align:left!important;
+  transition:transform 300ms var(--ease),opacity 220ms ease!important}
+#toast.show{transform:translateY(0) scale(1)!important}
+#toast.success{border-left-color:var(--success)!important}
+#toast.error{border-left-color:var(--danger)!important}
+#toast.warning{border-left-color:var(--warning)!important}
+#toast .sn-icon{width:30px!important;height:30px!important;border-radius:10px!important;
+  display:grid!important;place-items:center!important;flex:none!important;
+  background:rgba(212,175,55,.16)!important;color:var(--gold)!important}
+#toast.success .sn-icon{background:rgba(63,174,90,.15)!important;color:var(--success)!important}
+#toast.error .sn-icon{background:rgba(224,85,85,.14)!important;color:var(--danger)!important}
+#toast.warning .sn-icon{background:rgba(240,160,32,.15)!important;color:var(--warning)!important}
+#toast .sn-icon svg{width:16px!important;height:16px!important;fill:none;stroke:currentColor;
+  stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+#toast .sn-text{flex:1 1 auto!important;min-width:0!important;color:var(--text)!important;
+  white-space:normal!important;overflow:hidden!important;display:block!important;max-width:none!important}
+#toast .sn-sub{display:block;font-size:11.5px;font-weight:650;color:var(--text-dim);margin-top:1px}
+#toast .sn-action{flex:none!important;border:0!important;background:transparent!important;
+  color:var(--gold)!important;font-weight:850!important;font-size:12.5px!important;
+  letter-spacing:.05em!important;padding:9px 4px 9px 8px!important;margin-left:2px!important}
+html[data-theme="dark"] #toast{background:#161616!important;border-color:#232323!important;
+  box-shadow:0 14px 32px rgba(0,0,0,.62)!important}
+</style>
+<script id="v20363-js">
+(function(){
+ var W=window,D=document;
+ function S(f){try{return f()}catch(e){return undefined}}
+ function $(id){return D.getElementById(id)}
+ function qa(s,r){return Array.prototype.slice.call((r||D).querySelectorAll(s))}
+
+ /* =====================================================================
+    item 1 - receipts. pickPhotoSource clicked the receipt input inside a
+    320ms timer. Android only opens a file picker while the tap is still
+    live, so by the time the timer fired the gesture had expired and
+    nothing happened. The profile flow was fixed this way in v2.0.3.63;
+    the receipt flow was left behind. Click it in the same gesture, and
+    keep the idle gate quiet so the half-filled transaction survives the
+    trip to the gallery.
+    ===================================================================== */
+ S(function(){
+  var base=W.pickPhotoSource;
+  if(typeof base!=='function'||base.__mm63)return;
+  var f=function(source){
+   var profile=false;
+   /* _photoTarget is page-private, so read it the only way we can: the
+      profile flows all run through our own screens, which set this flag. */
+   profile=!!W.__mm63ProfilePick;
+   S(function(){if(W.suppressNextLock)W.suppressNextLock()});
+   S(function(){if(W.__MM59&&W.__MM59.hold)W.__MM59.hold(180000)});
+   if(typeof W.mm63Hold==='function')W.mm63Hold(180000);
+   var id;
+   if(profile) id=(source==='camera')?'photoCameraInput':'photoInput';
+   else        id=(source==='camera')?'txImgCameraInput':'txImgInput';
+   var inp=$(id);
+   if(inp)S(function(){inp.click()});          /* in-gesture, no timer */
+   S(function(){
+    var m=$('photoChoiceModal');
+    if(m&&m.classList.contains('open')){
+     if(W.closeModalQuiet)W.closeModalQuiet('photoChoiceModal');
+     else if(W.closeModal)W.closeModal('photoChoiceModal');
+    }
+   });
+   return true;
+  };
+  f.__mm63=1;W.pickPhotoSource=f;
+ });
+ /* our profile screens announce themselves so the router above knows which
+    pair of inputs to use */
+ S(function(){
+  var op=W.openPhotoChoice;
+  if(typeof op==='function'&&!op.__mm63){
+   var g=function(target){W.__mm63ProfilePick=(target==='profile');return op.apply(this,arguments)};
+   g.__mm63=1;W.openPhotoChoice=g;
+  }
+ });
+
+ /* =====================================================================
+    item 4 - after the app re-gates itself, unlocking lands on overview
+    ===================================================================== */
+ S(function(){
+  var u=W.unlockApp;
+  if(typeof u!=='function'||u.__mm63)return;
+  var f=function(){
+   var out=u.apply(this,arguments);
+   S(function(){
+    setTimeout(function(){
+     S(function(){if(W.navTo)W.navTo('overview',{fromBack:true})});
+     if(W.__MM63BACK)W.__MM63BACK.reset();
+    },40);
+   });
+   return out;
+  };
+  f.__mm63=1;W.unlockApp=f;
+ });
+
+ /* =====================================================================
+    item 3 - one owner for the back button.
+
+    Why it kept failing: this file has four separate popstate handlers from
+    earlier patches, each with its own idea of what back means, and my own
+    layer on top. They disagreed, so behaviour changed depending on where
+    you were, and settings fell through to the shell, which closes the app.
+
+    This handler runs last, so its decision is the one that survives, and
+    it keeps a breadcrumb of the pages actually visited. Order of business:
+    our own screens, then anything the app has open, then the previous page,
+    then overview, and only then does the app close.
+    ===================================================================== */
+ S(function(){
+  var trail=[],exiting=false,armed=false;
+
+  function cur(){return S(function(){return W.currentPage})||'overview'}
+
+  function ourOpen(){
+   return !!(W.__MM59&&S(function(){return W.__MM59.anyOpen&&W.__MM59.anyOpen()}));
+  }
+  function closeOurs(){
+   if(W.__MM59&&typeof W.__MM59.closeTop==='function')return !!S(function(){return W.__MM59.closeTop()});
+   return false;
+  }
+  function appOpen(){
+   if(qa('.modal-overlay.open').length)return true;
+   if(D.body.classList.contains('settings-section-open'))return true;
+   var c=$('celebrate');if(c&&c.classList.contains('show'))return true;
+   var q=$('mmQuickMenu20323');if(q&&q.classList.contains('open'))return true;
+   return false;
+  }
+  function arm(){
+   armed=true;
+   S(function(){
+    var st=history.state;
+    if(!st||!st.mm63)history.pushState({mm63:1},'');
+   });
+  }
+
+  /* breadcrumb: remember where we came from whenever the page changes */
+  S(function(){
+   var nav=W.navTo;
+   if(typeof nav!=='function'||nav.__mm63)return;
+   var f=function(page,opts){
+    var from=cur();
+    if(!opts||!opts.fromBack){
+     if(page!==from&&from){
+      if(page==='overview')trail.length=0;
+      else{trail.push(from);if(trail.length>14)trail.shift()}
+     }
+    }
+    var out=nav.apply(this,arguments);
+    arm();
+    return out;
+   };
+   f.__mm63=1;W.navTo=f;
+  });
+
+  /* how many layers are open right now: ours, the app's modals, the settings
+     section, the celebration, the quick menu. This is the number that must fall
+     by exactly one per back press. */
+  function lay(id,cls){var e=$(id);return !!(e&&e.classList&&e.classList.contains(cls))}
+  function sig(){
+   var n=0;
+   /* the coordinator decides "open" by class, not by computed style, so we must
+      read it exactly the same way or the count never moves */
+   if(lay('mm59Pe','on'))n+=1;
+   if(lay('mm59Ns','on'))n+=1;
+   if(lay('mm59Sheet','open'))n+=1;
+   if(lay('mm59View','on'))n+=1;
+   n+=qa('.modal-overlay.open').length;
+   if(D.body.classList.contains('settings-section-open'))n+=1;
+   var ce=$('celebrate');if(ce&&ce.classList.contains('show'))n+=1;
+   var qm=$('mmQuickMenu20323');if(qm&&qm.classList.contains('open'))n+=1;
+   return n;
+  }
+  var prevSig=sig(),inPop=false;
+  /* keep the reading fresh while he uses the app, but never mid-press */
+  setInterval(function(){if(!inPop)S(function(){prevSig=sig()})},150);
+
+  W.addEventListener('popstate',function(){
+   if(exiting)return;
+   /* 1. our own screens close one step at a time */
+   inPop=true;
+   setTimeout(function(){inPop=false;S(function(){prevSig=sig()})},260);
+   /* 0. an older handler may have already closed a layer for this very press.
+      If the count has dropped, the press is spent - re-arm and stop, or we
+      would close a second screen behind it. */
+   var nowSig=sig();
+   if(nowSig<prevSig){prevSig=nowSig;arm();return}
+   if(closeOurs()){prevSig=nowSig>0?nowSig-1:0;arm();return}
+   if(ourOpen()){arm();return}
+   /* 2. the app had something open; whatever it just closed, stay put */
+   if(appOpen()){arm();return}
+   /* 3. walk back through the pages actually visited */
+   var want=null;
+   while(trail.length&&!want){
+    var t=trail.pop();
+    if(t&&t!==cur())want=t;
+   }
+   if(!want&&cur()!=='overview')want='overview';
+   if(want){
+    S(function(){if(W.navTo)W.navTo(want,{fromBack:true})});
+    arm();
+    return;
+   }
+   /* 4. overview with nothing behind us - let the shell close the app */
+   exiting=true;
+   S(function(){history.back()});
+   setTimeout(function(){exiting=false;arm()},900);
+  });
+
+  arm();
+  W.addEventListener('load',function(){setTimeout(arm,400)});
+  W.__MM63BACK={trail:function(){return trail.slice()},arm:arm,
+                sig:sig,prevSig:function(){return prevSig},
+                reset:function(){trail.length=0;arm()},armed:function(){return armed}};
+ });
+
+ /* =====================================================================
+    item 17 - the bottom bar, with Undo where it makes sense
+    ===================================================================== */
+ S(function(){
+  var TICK='<path d="M20 6L9 17l-5-5"/>';
+  var BANG='<path d="M12 8v5"/><path d="M12 16.5v.5"/>';
+  function icon(kind){return (kind==='error'||kind==='warning')?BANG:TICK}
+  function bar(message,kind,actionLabel,action,ms,sub){
+   var t=$('toast');if(!t)return;
+   S(function(){clearTimeout(W._snTimer)});
+   W._snAction=(typeof action==='function')?action:null;
+   t.className=(kind||'info');
+   var esc=W.esc||function(s){return String(s)};
+   t.innerHTML='<span class="sn-icon"><svg viewBox="0 0 24 24">'+icon(kind)+'</svg></span>'+
+     '<span class="sn-text">'+esc(String(message))+
+     (sub?'<span class="sn-sub">'+esc(String(sub))+'</span>':'')+'</span>'+
+     (W._snAction&&actionLabel?'<button class="sn-action" onclick="_runSnackbarAction()">'+esc(actionLabel)+'</button>':'');
+   requestAnimationFrame(function(){t.classList.add('show')});
+   W._snTimer=setTimeout(function(){t.classList.remove('show')},ms||(W._snAction?4200:2600));
+  }
+  W.showSnackbar=bar;
+  W.mm63Bar=bar;
+  W.showToast=function(m,c){
+   var k=(W._snKindFromColor?W._snKindFromColor(c):'info');
+   bar(m,k,null,null,null,null);
+  };
+ });
+
+ /* saving a transaction offers Undo - one tap instead of find, open, delete */
+ S(function(){
+  var st=W.saveTransaction;
+  if(typeof st!=='function'||st.__mm63)return;
+  var f=function(){
+   var before=S(function(){return (W.DB&&W.DB.transactions?W.DB.transactions.length:0)});
+   var out=st.apply(this,arguments);
+   S(function(){
+    setTimeout(function(){
+     var list=W.DB&&W.DB.transactions;
+     if(!list||typeof before!=='number'||list.length!==before+1)return;
+     var t=list[list.length-1],id=t&&t.id;
+     if(!id)return;
+     if(W.mm63Bar)W.mm63Bar('Transaction saved','success','UNDO',function(){
+      S(function(){
+       W.DB.transactions=W.DB.transactions.filter(function(x){return x.id!==id});
+       if(W.saveDB)W.saveDB();
+       if(W.renderAll)W.renderAll();else if(W.renderOverview)W.renderOverview();
+       if(W.mm63Bar)W.mm63Bar('Entry removed','info');
+      });
+     },4200);
+    },90);
+   });
+   return out;
+  };
+  f.__mm63=1;W.saveTransaction=f;
+ });
+
+ W.__MM63={bar:function(){return W.mm63Bar},back:function(){return W.__MM63BACK}};
+})();
+</script>
+<style id="v20363b-ui">
+:root{--mm63b:1}
+
+/* item 16: the day total on the date line reads like the date, not a verdict */
+.txd-daynet,.txd-daynet.pos,.txd-daynet.neg{color:var(--text-dim)!important}
+
+/* item 7: summary card stays put while its list scrolls underneath */
+#budgetCards{position:relative}
+#budgetCards>.bsum-card:first-child{position:sticky!important;top:0!important;z-index:8!important}
+#budgetCards>.bsum-card:first-child::after{content:'';position:absolute;left:0;right:0;bottom:-14px;height:14px;background:linear-gradient(180deg,var(--bg),rgba(0,0,0,0));pointer-events:none}
+
+/* item 11: centred label, current month in app colour, older months faint */
+#expandContent .mm42-chart-title{text-align:center!important;margin:18px 0 12px!important}
+#expandContent .mm42-bars .mm42-baritem i{background:var(--gold-dim)!important;opacity:.42!important}
+#expandContent .mm42-bars .mm42-baritem:last-child i{background:var(--gold)!important;opacity:1!important}
+
+/* item 12: room for a one-line explainer under each settings card title */
+#settingsDetail .mm-choice-copy{display:flex!important;flex-direction:column!important;min-width:0}
+#settingsDetail .mm-choice-sub{display:block;margin-top:3px;font-size:12px;line-height:1.42;font-weight:600;color:var(--text-dim);white-space:normal}
+
+/* item 13: the add control sits at the end of the list with ground clearance */
+body.settings-section-open #settingsDetail #categoriesList{padding-bottom:16px!important}
+body.settings-section-open #settingsDetail #categoriesList .bgt-card:last-child{scroll-margin-bottom:18px!important}
+.mm63-add-grounded{position:static!important;left:auto!important;right:auto!important;bottom:auto!important;width:100%!important;box-sizing:border-box!important;margin:12px 0 calc(26px + var(--native-inset-bottom))!important;box-shadow:none!important}
+
+/* item 14: month, amount, gain, pencil */
+.asset-history-row .mm63-mgain{display:block;font-size:12px;font-weight:600;color:var(--text-dim);margin-top:2px}
+.asset-history-edit.mm63-pen{display:inline-flex!important;align-items:center;justify-content:center;width:38px;height:38px;padding:0!important;border-radius:12px}
+.asset-history-edit.mm63-pen svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+
+/* item 2: one short line under the small cards, no essay */
+.mm63-rem-note{margin:14px 2px 6px;font-size:13px;line-height:1.5;font-weight:650;color:var(--text-dim)}
+
+/* receipts: save the picture out of the app */
+.mm63-dl{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(26px + var(--native-inset-bottom));display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border:0;border-radius:999px;background:var(--gold);color:#231c05;font-size:14px;font-weight:850;box-shadow:0 10px 26px rgba(0,0,0,.35);z-index:6;cursor:pointer}
+.mm63-dl svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+
+<script id="v20363b-js">
+(function(){
+var W=window,D=document;
+function safe(f){try{return f()}catch(e){}}
+function qa(s,r){return Array.prototype.slice.call((r||D).querySelectorAll(s))}
+function q(s,r){return (r||D).querySelector(s)}
+function db(){return (typeof DB!=='undefined'&&DB)?DB:null}
+function money(n){var v=Math.round(Number(n)||0);var r=safe(function(){return (typeof cur==='function')?cur(v):null});return r||String(v)}
+var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function obs(id,fn){var e=D.getElementById(id);if(!e)return;var t=null;
+  new MutationObserver(function(){clearTimeout(t);t=setTimeout(function(){safe(fn)},40)}).observe(e,{childList:true,subtree:true});}
+
+/* ---------------- shared month maths ---------------- */
+function txs(){var d=db();return (d&&Array.isArray(d.transactions))?d.transactions:[]}
+function isOut(t){return t.type==='expense'||t.type==='loan_repay'}
+function ymd(t){var s=String(t.date||'');return {y:Number(s.slice(0,4)),m:Number(s.slice(5,7))-1,d:Number(s.slice(8,10))}}
+function sums(y,m,maxDay){
+  var o={out:0,inc:0,sav:0,cats:{}};
+  txs().forEach(function(t){var p=ymd(t);if(p.y!==y||p.m!==m)return;if(maxDay&&p.d>maxDay)return;
+    var a=Number(t.amount)||0;
+    if(t.type==='income')o.inc+=a;
+    else if(isOut(t)){o.out+=a;var k=t.category||t.categoryId||'other';o.cats[k]=(o.cats[k]||0)+a}
+    else if(t.type==='savings'||t.type==='emergency')o.sav+=a;});
+  return o;
+}
+function catName(id){var d=db();var c=((d&&d.categories)||[]).filter(function(x){return String(x.id)===String(id)})[0];return c?(c.name||''):''}
+
+/* ---------------- item 5: welcome greeting that reads his data ---------------- */
+function lines(){
+  var n=new Date(),y=n.getFullYear(),m=n.getMonth(),day=n.getDate();
+  var dim=new Date(y,m+1,0).getDate(),left=Math.max(0,dim-day);
+  var a=sums(y,m,day),pm=m===0?11:m-1,py=m===0?y-1:y,b=sums(py,pm,day),out=[];
+  if(a.out>0&&b.out>0){var pc=Math.round((a.out-b.out)/b.out*100);
+    if(pc<=-5)out.push('spending is '+Math.abs(pc)+'% lighter than this point last month');
+    else if(pc>=5)out.push('spending is '+pc+'% ahead of this point last month');
+    else out.push('spending is tracking level with last month');}
+  if(a.sav>0)out.push('you have set aside '+money(a.sav)+' so far this month');
+  var big=null;Object.keys(a.cats).forEach(function(k){if(!big||a.cats[k]>a.cats[big])big=k});
+  if(big){var nm=catName(big);if(nm)out.push(nm.toLowerCase()+' leads your spending this month at '+money(a.cats[big]))}
+  if(a.inc>0){var rem=a.inc-a.out;if(rem>0&&left>0)out.push(money(rem)+' still unspent with '+left+' day'+(left===1?'':'s')+' to go')}
+  if(!out.length)out.push('a fresh month to map');
+  return out;
+}
+function paintWelcome(){
+  var el=D.getElementById('welSub');if(!el)return;
+  var h=new Date().getHours(),g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  var L=lines(),i=(new Date()).getDate()%L.length;
+  el.textContent=g+' \u2014 '+L[i];
+}
+safe(function(){if(typeof W.showWelcome==='function'){var f=W.showWelcome;
+  W.showWelcome=function(){var r=f.apply(this,arguments);setTimeout(paintWelcome,0);setTimeout(paintWelcome,280);return r}}});
+[0,400,1200,2600].forEach(function(ms){setTimeout(function(){safe(paintWelcome)},ms)});
+
+/* ---------------- item 2: remaining income, short and with a real number ---------------- */
+function estMonthEnd(){
+  var n=new Date(),y=n.getFullYear(),m=n.getMonth(),day=n.getDate(),dim=new Date(y,m+1,0).getDate();
+  var a=sums(y,m,day),rate=day>0?a.out/day:0;
+  return a.inc-(a.out+rate*Math.max(0,dim-day));
+}
+function isRemaining(c){
+  var t=q('#expandModal .modal-title');
+  return (t&&/remaining/i.test(t.textContent||''))||/remaining income/i.test(c.textContent||'');
+}
+var remBusy=false;
+function remClean(){
+  if(remBusy)return;
+  var c=D.getElementById('expandContent');if(!c||!isRemaining(c))return;
+  remBusy=true;
+  safe(function(){
+    /* drop the long month-end essay */
+    qa('div,p,span',c).forEach(function(el){
+      if(el.children.length)return;
+      if(el.classList.contains('mm63-rem-note'))return;
+      var t=(el.textContent||'').trim();
+      if(t.length>70&&/month[- ]end/i.test(t))el.remove();
+    });
+    /* the small card that still reads zero */
+    var est=estMonthEnd();
+    qa('*',c).forEach(function(el){
+      if(el.children.length)return;
+      var t=(el.textContent||'').trim();
+      if(t.length>34||!/month[- ]?end/i.test(t))return;
+      var box=el.parentNode;if(!box)return;
+      var val=qa('*',box).filter(function(x){return !x.children.length&&x!==el})[0];
+      if(val&&/^[^0-9]*0([.,]0+)?$/.test((val.textContent||'').trim()))val.textContent=money(est);
+    });
+    /* one short line, then stop talking */
+    if(!c.querySelector('.mm63-rem-note')){
+      var d=D.createElement('div');d.className='mm63-rem-note';
+      d.textContent=est>0
+        ?('At today\u2019s pace you close the month with about '+money(est)+' spare. Leave it alone and it moves into next month.')
+        :('At today\u2019s pace this month closes about '+money(Math.abs(est))+' short. Easing off now is what turns it around.');
+      var btn=c.querySelector('.mm42-close')||c.querySelector('.btn-outline');
+      if(btn&&btn.parentNode)btn.parentNode.insertBefore(d,btn);else c.appendChild(d);
+    }
+  });
+  remBusy=false;
+}
+safe(function(){if(typeof W.renderRemaining45==='function'){var f=W.renderRemaining45;
+  W.renderRemaining45=function(){var r=f.apply(this,arguments);setTimeout(remClean,0);return r}}});
+obs('expandContent',remClean);
+
+/* ---------------- items 12 and 13: settings ---------------- */
+var SUB={
+ 'change pin':'Set or replace the four-digit code that opens Money Map.',
+ 'fingerprint':'Open with your fingerprint instead of typing the PIN.',
+ 'export report':'Save a readable summary of your records to share or print.',
+ 'back up data':'Create an encrypted copy of everything, locked with your PIN.',
+ 'restore data':'Bring your records back from a backup file on this phone.'
+};
+function settingsSubs(){
+  qa('#settingsDetail .mm-settings-choice').forEach(function(b){
+    var t=q('.mm-choice-title',b);if(!t)return;
+    var copy=q('.mm-choice-copy',b)||t.parentNode;
+    if(q('.mm-choice-sub',copy))return;
+    var s=SUB[(t.textContent||'').trim().toLowerCase()];if(!s)return;
+    var sp=D.createElement('span');sp.className='mm-choice-sub';sp.textContent=s;copy.appendChild(sp);
+  });
+}
+function groundAdd(){
+  qa('#settingsDetail button,#settingsDetail a,#settingsDetail .bgt-card').forEach(function(el){
+    var t=(el.textContent||'').trim().toLowerCase();
+    if(t.indexOf('add categor')<0&&t.indexOf('add income')<0&&t.indexOf('add holding')<0)return;
+    if(el.classList.contains('mm63-add-grounded'))return;
+    var cs=W.getComputedStyle(el);
+    if(cs.position==='fixed'||cs.position==='sticky')el.classList.add('mm63-add-grounded');
+  });
+}
+function settingsPass(){settingsSubs();groundAdd()}
+obs('settingsDetail',settingsPass);
+[300,900,1800].forEach(function(ms){setTimeout(function(){safe(settingsPass)},ms)});
+
+/* ---------------- item 14: asset history ---------------- */
+function ahist(k,id){
+  var d=db(),s=(d&&d.assetHistory)||{},arr=(s[k]&&s[k][id])||[];
+  return Array.isArray(arr)?arr.slice().sort(function(a,b){return String(a.period).localeCompare(String(b.period))}):[];
+}
+function valOf(k,r){return k==='investment'?(Number(r.interest)||0):(Number(r.value)||0)}
+function pen(){return '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg>'}
+function assetRows(){
+  var c=D.getElementById('assetModalContent');if(!c)return;
+  qa('.asset-history-edit',c).forEach(function(b){
+    if(b.classList.contains('mm63-pen'))return;
+    if((b.textContent||'').trim().toLowerCase()!=='edit')return;
+    b.classList.add('mm63-pen');b.setAttribute('aria-label','Edit this month');b.innerHTML=pen();
+  });
+  qa('.mm63-mgain',c).forEach(function(sp){
+    if(sp.getAttribute('data-done'))return;
+    sp.setAttribute('data-done','1');
+    var p=sp.getAttribute('data-p')||'';
+    var row=sp.closest?sp.closest('.asset-history-row'):(sp.parentNode&&sp.parentNode.parentNode);
+    var eb=row?q('.asset-history-edit',row):null;
+    var m=/openAssetMonth20323\('([^']+)','([^']+)'/.exec((eb&&eb.getAttribute('onclick'))||'');
+    if(!m)return;
+    var k=m[1],id=m[2],h=ahist(k,id),now=null,prev=null;
+    for(var i=0;i<h.length;i++){if(String(h[i].period)===p){now=h[i];prev=h[i-1]||null;break}}
+    if(!now)return;
+    if(!prev){sp.textContent='First record';return}
+    var d1=valOf(k,now)-valOf(k,prev),pm=Number(String(prev.period).slice(5,7))-1;
+    sp.textContent=(d1>0?'+':d1<0?'\u2212':'')+money(Math.abs(d1))+' on '+(MON[pm]||'last month');
+  });
+}
+obs('assetModalContent',assetRows);
+
+/* only completed months are updatable, so August is not offered while it runs */
+var assetPick=0;
+['openAssetUpdate20323','openAssetMonth20323'].forEach(function(n){
+  safe(function(){if(typeof W[n]==='function'){var f=W[n];
+    W[n]=function(){assetPick=Date.now();return f.apply(this,arguments)}}});
+});
+function capPicker(){
+  if(Date.now()-assetPick>2500)return;
+  var t=D.getElementById('periodPickerTitle');
+  if(!t||!/month/i.test(t.textContent||''))return;
+  var n=new Date(),cy=n.getFullYear(),cm=n.getMonth();
+  qa('#periodPickerList .picker-item').forEach(function(it){
+    var lab=(it.textContent||'').trim(),idx=-1;
+    MON.forEach(function(mm,i){if(lab.toLowerCase().indexOf(mm.toLowerCase())===0)idx=i});
+    if(idx<0)return;
+    var yr=/\d{4}/.exec(lab);
+    if(yr&&Number(yr[0])!==cy)return;
+    if(idx>=cm)it.remove();
+  });
+}
+obs('periodPickerList',capPicker);
+
+/* ---------------- receipts: preview and save out ---------------- */
+function dlBtn(src){
+  var m=D.getElementById('photoViewModal');if(!m)return;
+  var old=q('.mm63-dl',m);if(old)old.remove();
+  if(!src||m.classList.contains('pp-mode'))return;
+  var b=D.createElement('button');b.type='button';b.className='mm63-dl';
+  b.innerHTML='<svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 12l5 5 5-5"/><path d="M5 20h14"/></svg><span>Save image</span>';
+  b.onclick=function(e){
+    e.stopPropagation();
+    safe(function(){
+      var im=D.getElementById('pvImg'),real=(im&&im.src)||src;
+      if(!real||/^idb:/.test(real))return;
+      var a=D.createElement('a');a.href=real;a.download='receipt-'+Date.now()+'.jpg';
+      D.body.appendChild(a);a.click();setTimeout(function(){a.remove()},400);
+      if(typeof W.showSnackbar==='function')W.showSnackbar('Receipt saved to your phone','success',null,null,2400);
+    });
+  };
+  m.appendChild(b);
+}
+safe(function(){if(typeof W.viewImage==='function'){var f=W.viewImage;
+  W.viewImage=function(src){var r=f.apply(this,arguments);setTimeout(function(){dlBtn(src)},0);return r}}});
+safe(function(){if(typeof W.closePhotoView==='function'){var f=W.closePhotoView;
+  W.closePhotoView=function(){var b=q('.mm63-dl');if(b)b.remove();return f.apply(this,arguments)}}});
+
+W.__MM63B={welcome:paintWelcome,lines:lines,est:estMonthEnd,rem:remClean,settings:settingsPass,assets:assetRows,cap:capPicker,dl:dlBtn};
+})();
+</script>
+
 </body>
 </html>

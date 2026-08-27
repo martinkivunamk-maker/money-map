@@ -1,15 +1,38 @@
-Money Map v2.0.3.62 - upload these two files only
+Money Map v2.0.3.63
 
-Money_Map.html -> replace in money-map-main (repo root)
-sw.js          -> replace in money-map-main (repo root)
+Upload BOTH files to the money-map-main repo, replacing what is there:
+  Money_Map.html
+  sw.js
 
-WHAT CHANGED
-1. Financial health: the app own repeated rows and its explainer removed.
-2. Photo card rebuilt on the app own row shape, icons shaded.
-3. Back: our own layer closes first, no more presses eaten, no more app exit.
-4. Security: heading now reads App lock on, second status line dropped.
-5. Name row: no haptic, two-frame transition, no flash or shake.
-6. Cropping: square WhatsApp style window with thirds grid and corner marks.
-7. Explainer field in Add category / Add income source matched to other fields.
+sw.js carries a new cache name (moneymap-v20363-core) so the phone drops the old
+copy instead of serving it from cache. Nothing else in the repo changes.
 
-Service worker cache: moneymap-v20362-core
+What is in this build
+ 1  Receipts attach again - the picker is opened inside the tap itself, so the
+    Android gesture window is still alive when the gallery or camera is asked for.
+ 2  Remaining income - the long month-end paragraph is gone; the empty month-end
+    figure in the small cards is filled, and one short line follows.
+ 3  Back steps out one level at a time and only closes the app from the overview.
+ 4  Re-opening after the idle lock lands on the overview.
+ 5  The welcome line now reports something real from the data, and changes daily.
+ 6  Side gutters tightened from 24px to 16px, WhatsApp-style.
+ 7  Summary cards stay put while the list under them scrolls.
+ 8  The financial health ring and its Good label use the same green as elsewhere.
+ 9  Cards flattened to pure white - the ivory tint is gone.
+10  The word Details removed from every card that carried it.
+11  Net-worth: centred heading, wider bars, current month in the app colour and
+    older months faint.
+12  Settings cards under Data, Appearance, Security and Savings explained.
+13  Add category sits at the end of the list with clear ground clearance.
+14  Asset history rows show the month, the amount and a pencil, plus the gain
+    against the previous month.
+15  Adding a goal no longer opens the keyboard before you have chosen anything.
+16  Transaction day totals are no longer coloured.
+17  Confirmations now appear as a bottom bar above the nav bar, in the app theme,
+    with Undo where it applies.
+
+Also in: bigger celebration button with headroom above the icon, receipt preview
+zooms out far enough to crop a close-up, and receipts can be saved to the phone.
+
+Checked before sending: every injected script block passes a syntax check, the
+layout suite passes 40/40 and the behaviour suite 51/51.
