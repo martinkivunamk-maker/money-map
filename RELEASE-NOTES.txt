@@ -1,38 +1,39 @@
-Money Map v2.0.3.63
+Money Map v2.0.3.65 - web files only
 
-Upload BOTH files to the money-map-main repo, replacing what is there:
-  Money_Map.html
-  sw.js
+Replaces Money_Map.html and sw.js. No APK rebuild needed for these seven.
+The v2.0.3.64 Android source still needs its own upload and APK build for the
+launcher colour, icon size, live notifications and native back.
 
-sw.js carries a new cache name (moneymap-v20363-core) so the phone drops the old
-copy instead of serving it from cache. Nothing else in the repo changes.
+1. REMAINING INCOME - the line is gone and the amount now works.
+   Root cause: my helper called cur(v) expecting a money formatter, but the
+   app's global cur() takes no argument and returns only the currency CODE.
+   That is exactly why it read "about UGX spare" with no figure. It now uses
+   fmtShort, the app's real formatter, and a digit test makes it impossible
+   for a bare code to reach the screen again. What is left is one short line.
 
-What is in this build
- 1  Receipts attach again - the picker is opened inside the tap itself, so the
-    Android gesture window is still alive when the gallery or camera is asked for.
- 2  Remaining income - the long month-end paragraph is gone; the empty month-end
-    figure in the small cards is filled, and one short line follows.
- 3  Back steps out one level at a time and only closes the app from the overview.
- 4  Re-opening after the idle lock lands on the overview.
- 5  The welcome line now reports something real from the data, and changes daily.
- 6  Side gutters tightened from 24px to 16px, WhatsApp-style.
- 7  Summary cards stay put while the list under them scrolls.
- 8  The financial health ring and its Good label use the same green as elsewhere.
- 9  Cards flattened to pure white - the ivory tint is gone.
-10  The word Details removed from every card that carried it.
-11  Net-worth: centred heading, wider bars, current month in the app colour and
-    older months faint.
-12  Settings cards under Data, Appearance, Security and Savings explained.
-13  Add category sits at the end of the list with clear ground clearance.
-14  Asset history rows show the month, the amount and a pencil, plus the gain
-    against the previous month.
-15  Adding a goal no longer opens the keyboard before you have chosen anything.
-16  Transaction day totals are no longer coloured.
-17  Confirmations now appear as a bottom bar above the nav bar, in the app theme,
-    with Undo where it applies.
+2. SUMMARY CARD NOW ACTUALLY PINS.
+   Root cause: the summary was pinned at top:0, but the list sits below a
+   .sticky-head that is itself pinned at top:0 with a higher layer - so the
+   card was pinning underneath the header where you could never see it. The
+   header height is now measured live and the card pins just below it, on all
+   four tabs, with the list passing under it.
 
-Also in: bigger celebration button with headroom above the icon, receipt preview
-zooms out far enough to crop a close-up, and receipts can be saved to the phone.
+3. EXPANDED BUDGET CARD - the three boxes and the "On track - 93%" line are
+   gone. Both repeated the header and the ring. The transaction heading now
+   names the period: "Aug 2026", or just "2026" when a whole year is selected.
 
-Checked before sending: every injected script block passes a syntax check, the
-layout suite passes 40/40 and the behaviour suite 51/51.
+4. EXPANDED ASSET CARDS - the inner boxes are gone on all three kinds:
+   physical assets, cash accounts and investments. Each only restated the
+   figure already on the card header.
+
+5. SETTINGS - the app-lock paragraph is one line instead of four, and every
+   settings screen now carries a short one-line explainer.
+
+6. IMAGE PREVIEW - tapping the picture again no longer blanks the screen.
+   The full image opens first and the round preview retires underneath it,
+   instead of closing 180ms before the full view opened. Fixed on the shared
+   handler, so it applies from the overview and from settings.
+
+7. WELCOME LINE - "UGX still unspent within 4 days to go" is replaced with a
+   real reading, including what is left and roughly what that allows per day
+   for the days remaining, or a clear note when income is fully committed.
