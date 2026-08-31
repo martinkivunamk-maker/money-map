@@ -1,0 +1,55 @@
+MoneyMap v2.0.3.67 - changed files only
+
+Upload both files to the money-map repo, replacing the existing ones:
+  Money_Map.html
+  sw.js
+
+FIXED (5 of the 6), each one measured in a rendered page before shipping
+
+1. Completion bar: the missing UNDO.
+   The bar itself was already correct. The UNDO wiring targeted a function
+   called saveTransaction, but the real save path is saveTx(), so it never
+   fired. UNDO is now wired to the real save function.
+   Measured: tick in shaded square, bottom bar 388x52, UNDO button present.
+   Only a genuinely new row gets UNDO; edits keep the plain bar.
+
+2. Asset history: amount beside the month.
+   Two faults. The old two column grid right aligned it against Edit, and my
+   first flex attempt let the note (which sits between the two values in the
+   markup) break the line and push the amount down. Fixed by ordering.
+   Measured: month at x=13, amount at x=86, both on the same line, 8px from
+   the month and 88px from the Edit icon, note underneath.
+
+3. Celebration note, properly measured this time.
+   It was 70px. The apps own close button is 47px.
+   Measured now: 45px, padding 14px 16px, min-height 0, text centred both
+   ways, float animation removed (it was drifting the words off centre).
+   Applied to the savings and the income celebration.
+
+4. Welcome line: real balance, not budget headroom.
+   It quoted projected income minus projected spend, which counts unspent
+   budget as cash. That is where 1.4M came from against a 15k balance.
+   It now uses money actually available (income in, expenses and every
+   allocation out) measured against what an ordinary day costs, and never
+   claims more than the balance. If the balance is under a days spend it says
+   today will use it. The mid month notification was fed by the same figure
+   and is now capped by the same rule.
+
+5. Asset update: the month step opens.
+   Choosing the year rebuilds the whole modal, which was wiping the month
+   picker my timer opened. The month step is now chained off that rebuild.
+
+NOT FIXED - this one needs the APK
+
+6. Back closing the app from settings.
+   Measured this round: one hop into settings pushes THREE history entries
+   (the app itself plus two separate back coordinators), and in a rendered
+   test the web layer walks settings -> section -> overview correctly.
+   I tried three ways to collapse those owners. Each one broke page level
+   back in the test suite, because one of the coordinators owns page back.
+   All three were reverted, so nothing half finished is in this build.
+   The installed shell decides on webView.canGoBack() alone and never asks
+   the page, so this belongs to the APK round.
+
+Checks: gate ALL_OK, Suite L 40/40, Suite K 51/51, new block syntax checked,
+and items 1, 2, 3 verified by measuring the rendered page.
