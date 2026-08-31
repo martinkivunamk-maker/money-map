@@ -1,39 +1,33 @@
-Money Map v2.0.3.65 - web files only
+Money Map v2.0.3.66 - web files
+Upload to money-map-main (repo root), replacing the same two files.
+Files: Money_Map.html, sw.js
 
-Replaces Money_Map.html and sw.js. No APK rebuild needed for these seven.
-The v2.0.3.64 Android source still needs its own upload and APK build for the
-launcher colour, icon size, live notifications and native back.
+1. Remaining income. The closing sentence is gone completely. The month end
+   figure is now built from how you actually spend: average daily outflow over
+   the last 28 days with the recent fortnight weighted double, then blended
+   against budget still unspent, discounted by the share of budget that past
+   months show really gets spent. The old flat month-to-date average is what
+   produced the 1.2M claim against a 15k balance.
+2. Welcome quote may use the width of the screen instead of being squeezed
+   into short balanced lines.
+3. Settings keeps its scroll position. Open Data from the bottom of the list,
+   come back, and you are still at the bottom. Applied to page changes too.
+4. The approved bottom bar replaces the old top pill: app surface in light
+   mode, dark only in dark mode, tick centred in its shaded square, UNDO on
+   the right. A failed action shows a cross instead of the tick.
+6. Choosing camera or gallery no longer takes the photo card down with it.
+7. Welcome greeting now reports what needs attention: a category that jumped,
+   the week against last week, and what this pace carries into next month.
+8. Both celebration buttons match the app's own save and close buttons.
+9. Asset history shows the month and the amount on one line.
+10. One box titled Select the month, asking year first then month, the way
+    compare periods does.
+11. Financial health card face shows Loan load instead of Avg monthly surplus.
 
-1. REMAINING INCOME - the line is gone and the amount now works.
-   Root cause: my helper called cur(v) expecting a money formatter, but the
-   app's global cur() takes no argument and returns only the currency CODE.
-   That is exactly why it read "about UGX spare" with no figure. It now uses
-   fmtShort, the app's real formatter, and a digit test makes it impossible
-   for a bare code to reach the screen again. What is left is one short line.
+5. Back button. Page level back is improved here, but the shell installed on
+   your phone (versionCode 9, 2.0.3.41) decides back on its own and never asks
+   the page. Settings to overview and exit-on-overview need the new APK, whose
+   source you already have as v2.0.3.65. This is not fixable from the web
+   alone on the old shell.
 
-2. SUMMARY CARD NOW ACTUALLY PINS.
-   Root cause: the summary was pinned at top:0, but the list sits below a
-   .sticky-head that is itself pinned at top:0 with a higher layer - so the
-   card was pinning underneath the header where you could never see it. The
-   header height is now measured live and the card pins just below it, on all
-   four tabs, with the list passing under it.
-
-3. EXPANDED BUDGET CARD - the three boxes and the "On track - 93%" line are
-   gone. Both repeated the header and the ring. The transaction heading now
-   names the period: "Aug 2026", or just "2026" when a whole year is selected.
-
-4. EXPANDED ASSET CARDS - the inner boxes are gone on all three kinds:
-   physical assets, cash accounts and investments. Each only restated the
-   figure already on the card header.
-
-5. SETTINGS - the app-lock paragraph is one line instead of four, and every
-   settings screen now carries a short one-line explainer.
-
-6. IMAGE PREVIEW - tapping the picture again no longer blanks the screen.
-   The full image opens first and the round preview retires underneath it,
-   instead of closing 180ms before the full view opened. Fixed on the shared
-   handler, so it applies from the overview and from settings.
-
-7. WELCOME LINE - "UGX still unspent within 4 days to go" is replaced with a
-   real reading, including what is left and roughly what that allows per day
-   for the days remaining, or a clear note when income is fully committed.
+Checks: gate ALL_OK, suite L 40/40, suite K 51/51.
