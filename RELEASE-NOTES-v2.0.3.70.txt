@@ -1,0 +1,92 @@
+MONEY MAP v2.0.3.70 - WEB FILES TO UPLOAD
+=========================================
+
+Upload BOTH files, replacing what is in the money-map repo:
+
+  Money_Map.html
+  sw.js
+
+Then fully close the app and open it again once (the cache name changed to
+moneymap-v20370-core, so the old copy is dropped).
+
+DISCARD the v2.0.3.68 and v2.0.3.69 zips. Everything in them is inside this
+one.
+
+
+1. TYPING IN A BOX NO LONGER MOVES THE CARD (rewritten)
+------------------------------------------------------
+What v2.0.3.69 got wrong - both faults were mine:
+
+  a) While the keyboard was open I added real padding to the bottom of the
+     card, equal to the keyboard height. That is the large empty space you saw
+     below the fields.
+  b) I re-checked the focused field on EVERY keystroke. That is why the card
+     slid again the moment you started typing, and why phones that never had
+     the original fault suddenly did.
+
+The rule now is yours: the card is placed ONCE when you tap the box, and again
+only if the keyboard height itself changes. Typing never repositions anything.
+
+The original fault (field sliding up under the card heading) stays fixed by a
+different, passive means: each scrolling card now declares how tall its own
+sticky heading is, so the browser's own caret reveal stops BELOW the heading
+instead of behind it. That needs no scrolling from the app at all, and when the
+field is already visible the browser does nothing. Room for the last field
+comes only from shortening the card while the keyboard is open - never from
+padding.
+
+Measured on the real card CSS with the keyboard open at 320px:
+
+  card height with keyboard open .............. 592px (shortened, not padded)
+  scroll padding above the field ............... 53px (heading measured live)
+  padding added to the card .................... none  (was +320px in v69)
+  empty space below the fields ................. 0px
+  scroll position after tapping the notes box .. 304
+  scroll position after 8 keystrokes ........... 304  -> moved 0px
+  field movement on screen while typing ........ 0px
+  field vs sticky heading ...................... clear by 141px
+  field vs keyboard ............................ clear by 40px
+
+
+2. BACKUP NOW WORKS AGAIN (carried from v68)
+--------------------------------------------
+Since the encrypted-backup round, the plaintext PIN is stored as pinSec and the
+plain field is removed. With fingerprint-first login the PIN pad never runs, so
+every check for a stored PIN silently read empty - which killed backup, the
+login label, the inactivity re-lock and the security card. Backup now asks for
+your PIN in its own prompt and uses that key.
+
+
+3. WELCOME SCREEN BUTTON SAYS "LOG IN" (carried from v68)
+---------------------------------------------------------
+Same root cause as item 2. Returning users see "Log in", not "Set up account".
+
+
+4. WELCOME LINE MATHS (carried from v68)
+----------------------------------------
+Three different places were writing that line, so whichever ran last won -
+which is how you got "2.59M left, roughly 2 more days at my pace". One owner
+now, and it only speaks about real spending: it stays quiet when nothing has
+been logged, and never treats unspent budget as cash in hand.
+
+
+5. GOLD EDGE ON THE ACTIVE INPUT (carried from v68)
+---------------------------------------------------
+The focused box now shows a gold border plus a soft gold ring.
+
+
+STILL NEEDS THE APK ROUND (unchanged, being honest)
+---------------------------------------------------
+The back button/gesture in settings. The installed shell only asks the web page
+whether it can go back in the browser sense; it cannot see the app's own screen
+stack. No web change can fix that - it needs the shell rebuilt.
+
+
+CHECKS RUN ON THIS BUILD
+------------------------
+  build gate .................... ALL_OK
+  regression suite L ............ 40 / 40
+  regression suite K ............ 51 / 51
+  new code syntax ............... clean
+  typing probe .................. card moved 0px, no space below
+  in-zip audit .................. see below
