@@ -1578,11 +1578,16 @@ function bootGate(){
   showWelcome();
 }
 function initWelcome(){
-  const returning=!!DB.pin;
+  /* v2.0.3.69 - the PIN is hashed into pinSec and db.pin is wiped, so this
+     said 'new user' to every returning user and the button read Set up
+     account instead of Login. */
+  const returning=!!(DB.pin||DB.pinSec);
   const nm=document.getElementById('welName'); const hi=document.getElementById('welHi');
   if(DB.userName){ if(hi){ hi.textContent=returning?'Welcome back':'Welcome'; hi.style.display=''; } if(nm){ nm.textContent=DB.userName; nm.style.display=''; } }
   else { if(hi) hi.style.display='none'; if(nm){ nm.textContent='Welcome'; nm.style.display=''; } }
-  const sub=document.getElementById('welSub'); if(sub){ const h=new Date().getHours(); const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening'; const streak=_savingsStreakMonths(); sub.textContent=returning?(g+(streak>=1?" \u2014 you're on track this month":" \u2014 let's map your money")):"Let's get your money mapped"; }
+  /* v2.0.3.69 - paintWelcome owns this line now. Two writers meant the
+     data-driven message could be overwritten by generic copy. */
+  const sub=document.getElementById('welSub'); if(sub && !window.__MM68WEL){ const h=new Date().getHours(); const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening'; const streak=_savingsStreakMonths(); sub.textContent=returning?(g+(streak>=1?" \u2014 you're on track this month":" \u2014 let's map your money")):"Let's get your money mapped"; }
   const b=document.getElementById('welcomeBtn'); if(b){ if(returning){ b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-lock"/></svg>Log in'; } else { b.textContent='Set up account'; } }
   _welNwShown=false;
   var _up=document.getElementById('welUsePin'); if(_up) _up.style.display='none';
@@ -1591,7 +1596,7 @@ function initWelcome(){
 function enterFromWelcome(){
   hapticStrong();
   // No PIN yet -> first-time setup happens on the lock screen (create a PIN).
-  if(!DB.pin){ _leaveWelcomeThen(startAuth); return; }
+  if(!(DB.pin||DB.pinSec)){ _leaveWelcomeThen(startAuth); return; }
   // Fingerprint enrolled -> authenticate straight from the welcome screen (no intermediate lock window).
   if(_hasFingerprint()){ if(_native())_nativeBio('welcome'); else _fpFromWelcome(); return; }
   // PIN-only -> go to the lock screen PIN pad.
@@ -1612,7 +1617,7 @@ function _fpFromWelcome(){
   navigator.credentials.get({publicKey:{ challenge, timeout:60000, userVerification:'required', allowCredentials:[{type:'public-key',id:new Uint8Array(DB.fingerprintCredId)}] }})
     .then(function(){ _fpBusy=false; _restore(); _leaveWelcomeThen(unlockApp); })
     .catch(function(){ _fpBusy=false; clearTimeout(_authTimer); _authTimer=setTimeout(function(){_authInProgress=false;},1000); _restore();
-      var u=document.getElementById('welUsePin'); if(u && DB.pin) u.style.display='';
+      var u=document.getElementById('welUsePin'); if(u && (DB.pin||DB.pinSec)) u.style.display='';
       showToast("Couldn't verify \u2014 tap Log in to try again",'var(--text-dim)'); });
 }
 function _welcomeToPin(){
@@ -1629,7 +1634,7 @@ function startAuth(){
   document.getElementById('app').classList.add('hidden');
   var _ls=document.getElementById('lockScreen'); _ls.classList.remove('hidden');
   _ls.classList.remove('entering'); void _ls.offsetWidth; _ls.classList.add('entering'); setTimeout(function(){_ls.classList.remove('entering');},500);
-  if(!DB.pin){ isSettingPin=true; document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; showPinPad(); return; }
+  if(!(DB.pin||DB.pinSec)){ isSettingPin=true; document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; showPinPad(); return; }
   if(_hasFingerprint()){ showFpPrompt(); setTimeout(tryFingerprint,280); }
   else { showPinPad(); }
 }
@@ -1694,7 +1699,7 @@ function fmtShort(n){ n=Math.abs(Math.round(n)); if(n>=1000000){const v=parseFlo
 function genId(){ return '_'+Math.random().toString(36).substr(2,9); }
 function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function pct(a,b){ return b>0?Math.round((a/b)*100):0; }
-function showToast(m,c){ /* v2.0.3.67 - hand off to the approved bottom bar. This declaration is the one the save path resolves to, so the bar never appeared without it. */ if(window.mm63Bar){try{window.mm63Bar(m,(window._snKindFromColor?window._snKindFromColor(c):'info'),null,null,null,null);return;}catch(_e){}} const t=document.getElementById('toast'); t.textContent=m; t.style.color=c||'var(--text)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
+function showToast(m,c){ /* v2.0.3.69 - hand off to the approved bottom bar. This declaration is the one the save path resolves to, so the bar never appeared without it. */ if(window.mm63Bar){try{window.mm63Bar(m,(window._snKindFromColor?window._snKindFromColor(c):'info'),null,null,null,null);return;}catch(_e){}} const t=document.getElementById('toast'); t.textContent=m; t.style.color=c||'var(--text)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
 let _modalStack=[], _modalHistDepth=0, _resettingHistory=false;
 function _resetModalHist(){ if(_modalHistDepth>0){ const n=_modalHistDepth; _modalHistDepth=0; _resettingHistory=true; history.go(-n); } }
 var _modalUnmountTimers={};
@@ -1759,7 +1764,7 @@ function _keepNativePinFocused(stage){
 function _focusNativePin(){if(!_native())return;var n=document.getElementById('nativePinInput');if(n){n.value='';pinEntry='';updateDots();_keepNativePinFocused(pinFirst?'confirm':'first');}}
 function _nativePinChanged(el){var v=(el.value||'').replace(/\D/g,'').slice(0,4);el.value=v;pinEntry=v;updateDots();if(v.length===4)setTimeout(checkPin,100);}
 function initLock(){
-  if(!DB.pin){ document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; isSettingPin=true; return; }
+  if(!(DB.pin||DB.pinSec)){ document.getElementById('lockSubtitle').textContent='Create a 4-digit PIN'; isSettingPin=true; return; }
   document.getElementById('app').classList.add('hidden');
   document.getElementById('lockScreen').classList.remove('hidden');
   if(_hasFingerprint()){ showFpPrompt(); setTimeout(tryFingerprint,280); }
@@ -4159,14 +4164,14 @@ let _suppressLock=false, _suppressTimer=null, _justUnlocked=0, _fpBusy=false, _f
 function suppressNextLock(){ _suppressLock=true; clearTimeout(_suppressTimer); _suppressTimer=setTimeout(()=>{_suppressLock=false;},30000); }
 // Put up the lock screen (without triggering the biometric prompt).
 function _lockNow(){
-  if(!DB.pin) return;
+  if(!(DB.pin||DB.pinSec)) return;
   pinEntry='';pinFirst='';isSettingPin=false;var _ni=document.getElementById('nativePinInput');if(_ni)_ni.value='';updateDots();
   const le=document.getElementById('lockError'); if(le) le.textContent='';
   document.getElementById('app').classList.add('hidden');
   document.getElementById('lockScreen').classList.remove('hidden');
   if(_hasFingerprint()) showFpPrompt(); else showPinPad();
 }
-function relock(){ _lockNow(); if(DB.pin && _hasFingerprint()) setTimeout(tryFingerprint,280); }
+function relock(){ _lockNow(); if((DB.pin||DB.pinSec) && _hasFingerprint()) setTimeout(tryFingerprint,280); }
 // Standard finance-app locking: lock the MOMENT the app goes to the background, so however
 // Android brings it back (fresh load, frozen resume, or state restore) it is ALREADY locked —
 // no reliance on a "you returned" event firing. On return, (re)trigger the fingerprint prompt.
@@ -4177,7 +4182,7 @@ function _onAppLeave(){
 function _onAppReturn(){
   if(_suppressLock){ _suppressLock=false; clearTimeout(_suppressTimer); return; }
   if(_authInProgress) return;                                             // biometric sheet is up; ignore its focus/visibility churn
-  if(!DB.pin) return;                                                    // nothing to gate yet
+  if(!(DB.pin||DB.pinSec)) return;                                  // nothing to gate yet
   const bg=parseInt(localStorage.getItem('mm_bg')||'0',10);
   const away=bg?Date.now()-bg:Infinity;
   if(away >= 60000){                                                     // idle 1+ min -> re-gate through the welcome page (no auto prompt)
@@ -4198,7 +4203,7 @@ var _anResizeT; window.addEventListener('resize',function(){ clearTimeout(_anRes
 // ===== Money Map v2.0.3.16 TEST coordinated upgrade =====
 var MM_TEST_VERSION='2.0.3.35', _snTimer=null, _snAction=null, _pendingRecurringContext=null;
 function _snKindFromColor(c){c=String(c||'');return c.indexOf('danger')>-1?'error':c.indexOf('warning')>-1?'warning':c.indexOf('success')>-1?'success':'info';}
-function showSnackbar(message,kind,actionLabel,action,duration){ /* v2.0.3.67 - same hand-off for the older snackbar declaration. */ if(window.mm63Bar){try{window.mm63Bar(message,kind||'info',actionLabel||null,action||null,duration||null,null);return;}catch(_e){}}
+function showSnackbar(message,kind,actionLabel,action,duration){ /* v2.0.3.69 - same hand-off for the older snackbar declaration. */ if(window.mm63Bar){try{window.mm63Bar(message,kind||'info',actionLabel||null,action||null,duration||null,null);return;}catch(_e){}}
   var t=document.getElementById('toast');if(!t)return;clearTimeout(_snTimer);_snAction=typeof action==='function'?action:null;
   t.className=kind||'info';t.innerHTML='<span class="sn-dot"></span><span class="sn-text">'+esc(String(message))+'</span>'+(_snAction&&actionLabel?'<button class="sn-action" onclick="_runSnackbarAction()">'+esc(actionLabel)+'</button>':'');
   requestAnimationFrame(function(){t.classList.add('show');});_snTimer=setTimeout(function(){t.classList.remove('show');},duration||3000);
@@ -5817,7 +5822,7 @@ function smartPulse20340(d){
 window.MM_SMART_PULSE_20340=smartPulse20340;
 var initWelcomeBefore20340=initWelcome;
 window.initWelcome=function(){
-  initWelcomeBefore20340();renderWelcomeStats();var sub=document.getElementById('welSub');if(sub&&DB.pin){var h=new Date().getHours(),g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';sub.textContent=g+' — '+smartPulse20340().text;}
+  initWelcomeBefore20340();renderWelcomeStats();var sub=document.getElementById('welSub');if(sub&&(DB.pin||DB.pinSec)&&!window.__MM68WEL){var h=new Date().getHours(),g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';sub.textContent=g+' — '+smartPulse20340().text;}
 };
 var buildSmartInsightsBefore20340=buildSmartInsights;
 window.buildSmartInsights=function(d){var pulse=smartPulse20340(d),base=buildSmartInsightsBefore20340(d);window.MM_ANALYTICS_PULSE_20340=pulse.text;return [{score:999,tone:pulse.tone,text:'<b>Monthly pulse:</b> '+esc(pulse.text)}].concat(base).slice(0,5);};
@@ -7686,10 +7691,10 @@ function loanPolish(root){var db=mmDB();if(!db||!db.loans)return;
   var paid=reps.reduce(function(a,t){return a+(t.amount||0)},0);var rem=Math.max(0,(l.amount||0)-paid);
   var who=l.source?String(l.source):'', when=mLab(l.date);
   var sub=q('.bgt-sub',card);
-  /* v2.0.3.67 - the closed loan caption is written once, by the v20359 block */
+  /* v2.0.3.69 - the closed loan caption is written once, by the v20359 block */
   if(rem<=0){var head=q('.bgt-head',card);if(head){var ring=null;qa('div',head).forEach(function(d){if(!ring&&d.querySelector&&d.querySelector('svg circle'))ring=d});
    if(ring&&ring.parentNode){var pill=D.createElement('span');pill.className='mm54-paid';pill.textContent='Fully paid';ring.parentNode.replaceChild(pill,ring)}}}
-  /* v2.0.3.67 - removed: the duplicate From/Taken/Original row inside the open loan card */
+  /* v2.0.3.69 - removed: the duplicate From/Taken/Original row inside the open loan card */
  });}
 
 /* ---------- 5 - goals: started date, completion month ---------- */
@@ -7704,11 +7709,11 @@ function goalPolish(root){var db=mmDB();if(!db||!db.goals)return;
   var done=tgt>0&&(g.saved||0)>=tgt;var rem=Math.max(0,tgt-(g.saved||0));
   var sub=q('.bgt-sub',card);
   if(sub){var bits=[];if(when)bits.push('Started '+when);
-   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));/* v2.0.3.67 - what is left to go shows once the card is open, not before */
+   if(done)bits.push('Completed'+(doneAt?' '+mLab(doneAt):''));/* v2.0.3.69 - what is left to go shows once the card is open, not before */
    var badge=q('span',sub);sub.textContent=bits.join(' \u00b7 ');if(badge)sub.appendChild(badge)}
   var st=q('.budget-card-status',det)||q('.budget-card-status',card);
   if(st&&done){st.textContent='Completed'+(doneAt?' \u00b7 '+mLab(doneAt):'');st.style.color='var(--success)'}
-  /* v2.0.3.67 - removed: the duplicate Started/Target/Completed row inside the open goal card */
+  /* v2.0.3.69 - removed: the duplicate Started/Target/Completed row inside the open goal card */
  });}
 
 /* stamp new goals so the started date is exact going forward */
@@ -7774,7 +7779,7 @@ function lockCard(){
  var det=$('settingsDetail');if(!det)return;
  var t=q('.settings-detail-title',det);if(!t||!/security/i.test(t.textContent||''))return;
  if(q('.mm54-lock',det))return;
- var db=mmDB(),on=!!(db&&db.pin);
+ var db=mmDB(),on=!!(db&&(db.pin||db.pinSec));
  var card=D.createElement('div');card.className='mm54-lock'+(on?'':' off');
  card.innerHTML='<div class="mm54-lock-top"><div class="mm54-lock-ic"><svg viewBox="0 0 24 24"><rect x="4" y="10.5" width="16" height="10.5" rx="2.6"/><path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"/><circle cx="12" cy="15.7" r="1.5" fill="currentColor" stroke="none"/></svg></div>'+
   '<div><div class="mm54-lock-t">'+(on?'App lock on':'App lock off')+'</div></div></div>'+
@@ -7959,9 +7964,9 @@ function peSave(){
   if(inSettings&&!D.body.classList.contains('settings-section-open')){if(peOpen(true))return}
   return f.apply(this,arguments);
  };
- g.__mm54p=1;W.__mm54NameScreenLegacy=g;/* v2.0.3.67 - no longer claims openEditProfile */
+ g.__mm54p=1;W.__mm54NameScreenLegacy=g;/* v2.0.3.69 - no longer claims openEditProfile */
 })();
-/* v2.0.3.67 - removed: a v54 capture listener used to swallow every tap on the
+/* v2.0.3.69 - removed: a v54 capture listener used to swallow every tap on the
    settings photo (preventDefault+stopPropagation) and run its own popup. The
    profile flow now has one owner, in the v20359 block at the end of this file. */
 wrap('navTo',function(){peClose()});
@@ -8425,8 +8430,16 @@ W.__MM54={fcast:fcast54,polish:polishAll,navWant:navWant,peOpen:peOpen,peClose:p
       return _bd&&_bd.apply(this,arguments);
     }
     if(!db||!db.pin){
-      if(typeof W.askConfirm==='function')W.askConfirm('Unlock first','Backups are locked with your app PIN. Enter your PIN once, then back up.',function(){},'Got it');
-      else toast('Enter your PIN once, then back up','var(--warning)');
+      /* v2.0.3.69 - this is why nothing downloaded. The PIN now lives hashed in
+         pinSec and db.pin is only refilled by the PIN pad, which fingerprint
+         login never shows. The old branch put up a dialog whose only button did
+         nothing. Ask for the PIN, then run the backup for real. */
+      if(db&&db.pinSec&&typeof W.__MM68PIN==='function'){
+        W.__MM68PIN(db,function(){ safe(function(){W.backupData()}) });
+        return;
+      }
+      if(typeof W.askConfirm==='function')W.askConfirm('Set a PIN first','Backups are locked with your app PIN. Set one under Settings, Security, then back up.',function(){},'Got it');
+      else toast('Set a PIN first, then back up','var(--warning)');
       return;
     }
     var salt=rand(16),iv=rand(12);
@@ -8476,18 +8489,30 @@ W.__MM54={fcast:fcast54,polish:polishAll,navWant:navWant,peOpen:peOpen,peClose:p
       if(Number(obj.mmBackup)>=2&&obj.data){
         if(!M.available)return toast('This browser cannot open encrypted backups','var(--danger)');
         var db=dbo();
-        if(!db||!db.pin)return toast('Enter your PIN once, then restore','var(--warning)');
-        keyOf(db.pin,unb64(obj.salt),Number(obj.iter)||ITER,function(key){
-          if(!key)return toast('Could not open that backup','var(--danger)');
-          SUB.decrypt({name:'AES-GCM',iv:unb64(obj.iv)},key,unb64(obj.data)).then(function(pt){
-            var txt=W.TextDecoder?new W.TextDecoder().decode(pt):'';
-            var data=safe(function(){return JSON.parse(txt)});
-            if(!data||!data.transactions||!data.budgets)return toast('That backup is not valid','var(--danger)');
-            applyData(data,obj.device!==devId());
-          })['catch'](function(){
-            toast('Wrong PIN, or this backup belongs to another Money Map','var(--danger)');
+        /* v2.0.3.69 - define the open step first so the PIN prompt can call it */
+        M.openObj68=function(o){
+          var d2=dbo();
+          keyOf(d2&&d2.pin,unb64(o.salt),Number(o.iter)||ITER,function(key){
+            if(!key)return toast('Could not open that backup','var(--danger)');
+            SUB.decrypt({name:'AES-GCM',iv:unb64(o.iv)},key,unb64(o.data)).then(function(pt){
+              var txt=W.TextDecoder?new W.TextDecoder().decode(pt):'';
+              var data=safe(function(){return JSON.parse(txt)});
+              if(!data||!data.transactions||!data.budgets)return toast('That backup is not valid','var(--danger)');
+              applyData(data,o.device!==devId());
+            })['catch'](function(){
+              toast('Wrong PIN, or this backup belongs to another Money Map','var(--danger)');
+            });
           });
-        });
+        };
+        if(!db||!db.pin){
+          /* Same trap as backup: fingerprint login never refills db.pin. */
+          if(db&&db.pinSec&&typeof W.__MM68PIN==='function'){
+            W.__MM68PIN(db,function(){ safe(function(){ M.openObj68(obj) }) });
+            return;
+          }
+          return toast('Set a PIN first, then restore','var(--warning)');
+        }
+        M.openObj68(obj);
         return;
       }
       if(!obj.transactions||!obj.budgets)return toast('Invalid backup file','var(--danger)');
@@ -8900,7 +8925,7 @@ function sheet(title,rows){
 function closeSheet(){var el=$('mm56Ch');if(!el)return;el.classList.remove('on');W.__mm56sheet=false;}
 function sheetOpen(){var el=$('mm56Ch');return !!(el&&el.classList.contains('on'))}
 
-/* v2.0.3.67 - the year list now comes from real transactions, and the period
+/* v2.0.3.69 - the year list now comes from real transactions, and the period
    change is remembered so closing the card puts the top-of-screen filter back. */
 function healthYears(){
  var out=[],seen={};
@@ -8934,7 +8959,7 @@ function setYear(y){
  });
  setTimeout(function(){safe(function(){if(W.expandCard)W.expandCard('health')})},60);
 }
-/* v2.0.3.67 - the two score builders below were replaced by the single
+/* v2.0.3.69 - the two score builders below were replaced by the single
    health builder. The names stay so the block's own exports keep working. */
 function ptsRow(){return D.createElement('div')}
 function ptsBlock(){return D.createElement('div')}
@@ -8943,7 +8968,7 @@ function healthPolish(){
  var t=q('.modal-title',c);if(!t)return;
  if(!/financial health/i.test(t.textContent||''))return;
  t.textContent='Financial Health';
- /* v2.0.3.67 - the head, the year pill and the score rows have one owner
+ /* v2.0.3.69 - the head, the year pill and the score rows have one owner
     now: the v20359 block. This patch used to build its own, on a timer,
     and its year pill changed the real period at the top of the screen. */
 }
@@ -9048,7 +9073,7 @@ function closePhoto(){
  if(el.style&&el.style.display==='flex')el.style.display='';
  W.__mm56ph=false;
 }
-/* v2.0.3.67 - removed: the v56 chooser card ("Profile photo / Your name") and
+/* v2.0.3.69 - removed: the v56 chooser card ("Profile photo / Your name") and
    its two helpers. The pencil now opens the edit screen directly. */
 var nb0=W.__moneyMapHandleNativeBack;
 W.__moneyMapHandleNativeBack=function(){
@@ -9067,7 +9092,7 @@ D.addEventListener('keydown',function(e){if(e.key==='Escape'&&sheetOpen())closeS
 function polish56(){safe(lockPolish);safe(sumShade);}
 setTimeout(polish56,700);
 setInterval(polish56,900);
-/* v2.0.3.67 - the points block used to be injected on a timer, a few hundred
+/* v2.0.3.69 - the points block used to be injected on a timer, a few hundred
    ms after the modal had started animating, which is what made the card jump.
    Build it in the same tick as the expand instead. */
 safe(function(){
@@ -9427,7 +9452,7 @@ if(typeof _oar==='function'&&!_oar.__mm58){
 /* =========================================================
    5 - financial health: value and points on one line, no bars
    ========================================================= */
-function pts58(){/* v2.0.3.67 - superseded by the single health builder */}
+function pts58(){/* v2.0.3.69 - superseded by the single health builder */}
 
 /* =========================================================
    6 - loan summary shading, and the balance on the closed card
@@ -9462,7 +9487,7 @@ function loanSubs(){
    if(t.type==='loan_repay'&&String(t.loanId)===id)paid+=Number(t.amount)||0;
   });
   var rem=Math.max(0,(Number(l.amount)||0)-paid);
-  /* v2.0.3.67 - the closed card keeps only who it came from and when. The
+  /* v2.0.3.69 - the closed card keeps only who it came from and when. The
      balance still owed belongs in the expanded body, added by the v20359 block. */
   det.setAttribute('data-mm59-rem',String(rem));
   sub.setAttribute('data-mm58','1');
@@ -9513,7 +9538,7 @@ if(typeof _rss==='function'&&!_rss.__mm58){
  rss.__mm58=1;W.renderSettingsSection=rss;
 }
 
-/* v2.0.3.67 - removed: the v58 edit screen, its photo view and its back
+/* v2.0.3.69 - removed: the v58 edit screen, its photo view and its back
    handler. The name row called v54, which rendered the name screen inside the
    settings page - underneath this overlay - so the name never looked editable.
    Replaced wholesale by the v20359 block at the end of this file. */
@@ -9536,7 +9561,7 @@ setTimeout(polish58,600);
 setInterval(polish58,1100);
 
 W.__MM58={navShow:navShow,open:open58,pts:pts58,loanShade:loanShade,loanSubs:loanSubs,
- lockFix:lockFix,hasPin:hasPin};/* v2.0.3.67 - profile exports moved to __MM59 */
+ lockFix:lockFix,hasPin:hasPin};/* v2.0.3.69 - profile exports moved to __MM59 */
 })();
 </script>
 <style id="v20359-fix">
@@ -9709,7 +9734,7 @@ function closeTop(){
  return false;
 }
 /* =====================================================================
-   v2.0.3.67 - ONE owner for the back press, and ONE spare history entry.
+   v2.0.3.69 - ONE owner for the back press, and ONE spare history entry.
    The old build pushed an entry per screen, so six presses were needed to get
    out and the leftovers replayed screens in the wrong order. Now the screens
    he actually came through are remembered in a plain list, back retraces that
@@ -9736,7 +9761,7 @@ W.addEventListener('popstate',function(){
     is spent. Clear it FIRST, or a press the app handled leaves the flag stale
     and no new spare is ever pushed. */
  spare=0;
- /* v2.0.3.67 - ours first, always. */
+ /* v2.0.3.69 - ours first, always. */
  if(safe(closeTop)){chain=0;ensure();return}
  /* a layer is still up but nothing closed: keep the press rather than let it
     fall through to the phone and shut the app mid-edit */
@@ -9746,7 +9771,7 @@ W.addEventListener('popstate',function(){
  if(stack.length){chain=0;navBack(stack.pop());ensure();return}
  /* nothing of ours is left. If entries pushed earlier are still sitting above
     the first one, step past them rather than eat the press. */
- /* v2.0.3.67 - the old build stepped past leftover entries here, up to four
+ /* v2.0.3.69 - the old build stepped past leftover entries here, up to four
     times. That is exactly what made a press feel dead and needed six taps.
     Nothing of ours is left, so this press belongs to the phone: from the
     overview the app closes, which is what he asked for. */
@@ -9895,7 +9920,7 @@ function saveName(){
    camera / gallery / remove, as a card from the bottom
    ===================================================================== */
 function shRow(a,svg,title,sub,col,bg){
- /* v2.0.3.67 - same shape as the app's own choice rows (#photoChoiceModal),
+ /* v2.0.3.69 - same shape as the app's own choice rows (#photoChoiceModal),
     down to the shaded icon tile. Nothing invented here. */
  return '<button class="quick-action-btn" type="button" data-a="'+a+'">'+
   '<div class="qa-icon" style="color:'+col+';background:'+bg+'">'+svg+'</div>'+
@@ -9905,7 +9930,7 @@ function shRow(a,svg,title,sub,col,bg){
 function sheetEl(){
  var el=$('mm59Sheet');
  if(el)return el;
- /* v2.0.3.67 - built out of the app's OWN popup parts, so it reads exactly
+ /* v2.0.3.69 - built out of the app's OWN popup parts, so it reads exactly
     like every other card that rises from the bottom of this app. */
  el=D.createElement('div');el.id='mm59Sheet';el.className='modal-overlay';
  el.innerHTML='<div class="modal-sheet" style="max-height:60vh">'+
@@ -9962,7 +9987,7 @@ function act(a){
  hold(180000);
  safe(function(){if(W.suppressNextLock)W.suppressNextLock()});
  safe(function(){if('_photoTarget' in W)W._photoTarget='profile'});
- /* v2.0.3.67 - open the system picker inside this same gesture. Going through
+ /* v2.0.3.69 - open the system picker inside this same gesture. Going through
     mm50Pick added a timer, and by the time it fired the tap had expired, so
     nothing ever happened. */
  var inp=$(a==='camera'?'photoCameraInput':'photoInput');
@@ -10035,7 +10060,7 @@ D.addEventListener('click',function(e){
  if(anyOpen())return;
  if(t.closest('.settings-edit'))return;
  if(t.closest('#settingsAvatar')){
-  /* v2.0.3.67 - the app already buzzes for this tap; buzzing here as well was
+  /* v2.0.3.69 - the app already buzzes for this tap; buzzing here as well was
      the double vibration */
   safe(function(){var f=W.openProfilePhoto||W.viewProfilePhoto;if(typeof f==='function')f()});
  }
@@ -10045,7 +10070,7 @@ D.addEventListener('click',function(e){
  /* second tap, inside the round preview */
  if(!t.closest('#mm50Av'))return;
  var db=dbo();if(!(db&&db.userPhoto))return;
- /* v2.0.3.67 - open the full image first, then retire the round preview
+ /* v2.0.3.69 - open the full image first, then retire the round preview
     underneath it, so nothing blanks out between the two */
  openView();
  setTimeout(function(){safe(function(){if(W.mm50ClosePP)W.mm50ClosePP()})},280);
@@ -10153,7 +10178,7 @@ function healthYearList(){
 }
 var hYear=null;
 function healthData(year){
- /* v2.0.3.67 - read the app's own figures for one year WITHOUT touching the
+ /* v2.0.3.69 - read the app's own figures for one year WITHOUT touching the
     pickers at the top of the screen. The old way changed the real period,
     which is what flipped the month picker to All Months. */
  if(typeof W.anData!=='function')return null;
@@ -10197,7 +10222,7 @@ function health(){
  /* the app's own tiles say the same four things again, without the points -
     that is the repetition he sees. Only the scored rows stay. */
  qa('.an-tag,.an-tiles,.an-foot,.exp-row,.exp-divider',c).forEach(function(x){x.parentNode&&x.parentNode.removeChild(x)});
- /* v2.0.3.67 - the app's own explainer says the same thing as the note we put
+ /* v2.0.3.69 - the app's own explainer says the same thing as the note we put
     at the foot of the scored rows, so it goes too. The score itself and the
     'Good \u00b7 August 2026' line under it stay. */
  qa('.exp-sub',c).forEach(function(x){if(/score blends/i.test(x.textContent||''))x.parentNode&&x.parentNode.removeChild(x)});
@@ -10228,7 +10253,7 @@ function health(){
  c.setAttribute('data-mm60','1');
 }
 function openYears(){
- /* v2.0.3.67 - the app already HAS a year picker, the one savings rate uses.
+ /* v2.0.3.69 - the app already HAS a year picker, the one savings rate uses.
     Fill that one instead of inventing another sheet. */
  var years=healthYearList();
  var t=$('periodPickerTitle');if(t)t.textContent='Select Year';
@@ -10275,7 +10300,7 @@ function dedupe(det,head){
   if(/^(from|taken|started)\b/.test(t))kid.parentNode.removeChild(kid);
  });
 }
-/* v2.0.3.67 - removed: the balance line above the boxes. The boxes inside
+/* v2.0.3.69 - removed: the balance line above the boxes. The boxes inside
    the open card already carry the balance, which is what he was seeing twice. */
 var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function monthYear(d){
@@ -10309,7 +10334,7 @@ function loans(){
   }
   if(det.getAttribute('data-mm59')==='1')return;
   dedupe(det,sub?sub.textContent:'');
-  /* v2.0.3.67 - the boxes inside the open card already show the balance */
+  /* v2.0.3.69 - the boxes inside the open card already show the balance */
   det.setAttribute('data-mm59','1');
  });
 }
@@ -10491,7 +10516,7 @@ html[data-theme="dark"] #toast{background:#161616!important;border-color:#232323
     item 1 - receipts. pickPhotoSource clicked the receipt input inside a
     320ms timer. Android only opens a file picker while the tap is still
     live, so by the time the timer fired the gesture had expired and
-    nothing happened. The profile flow was fixed this way in v2.0.3.67;
+    nothing happened. The profile flow was fixed this way in v2.0.3.69;
     the receipt flow was left behind. Click it in the same gesture, and
     keep the idle gate quiet so the half-filled transaction survives the
     trip to the gallery.
@@ -10797,6 +10822,27 @@ function sums(y,m,maxDay){
 function catName(id){var d=db();var c=((d&&d.categories)||[]).filter(function(x){return String(x.id)===String(id)})[0];return c?(c.name||''):''}
 
 /* ---------------- item 5: welcome greeting that reads his data ---------------- */
+/* v2.0.3.69 - ONE source of truth for the greeting. This mirrors the app's own
+   month maths, including the trim that drops the single biggest spending day,
+   so the greeting can never disagree with the Remaining income card. The old
+   blend counted the recent fortnight double, so one large payment became "your
+   daily pace" - that is what claimed 1M a day and "2 days left". */
+function monthStats68(){
+  var n=new Date(),y=n.getFullYear(),m=n.getMonth(),el=n.getDate(),
+      dim=new Date(y,m+1,0).getDate(),inc=0,exp=0,alloc=0,day={},cnt=0,i,v;
+  txs().forEach(function(t){
+    var p=ymd(t);if(p.y!==y||p.m!==m)return;
+    var a=Number(t.amount)||0;cnt++;
+    if(t.type==='income')inc+=a;
+    else if(isOut(t)){exp+=a;day[p.d]=(day[p.d]||0)+a}
+    else alloc+=a;
+  });
+  var sum=0,mx=0;
+  for(i=1;i<=el;i++){v=day[i]||0;sum+=v;if(v>mx)mx=v}
+  var trim=el>=6,base=Math.max(0,sum-(trim?mx:0)),div=Math.max(1,el-(trim?1:0));
+  return {inc:inc,exp:exp,alloc:alloc,left:Math.max(0,inc-exp-alloc),
+          rate:base/div,rest:Math.max(0,dim-el),el:el,dim:dim,cnt:cnt,early:el<5};
+}
 function lines(){
   var out=[],wk=null,mo=null,M=W.__MM57;
   if(M){wk=safe(function(){return M.week()});mo=safe(function(){return M.month()});}
@@ -10813,27 +10859,36 @@ function lines(){
     else out.push('spending held steady last week, keep it there');
   }
   /* 3. then what this pace means for the month */
-  /* v2.0.3.67 - budget headroom is NOT money in hand. He had 15k left while
+  /* v2.0.3.69 - budget headroom is NOT money in hand. He had 15k left while
      the old line promised 1.4M, because unspent budget was being counted as
      carry. Speak from the balance that exists, against what an ordinary day
      actually costs. */
-  var _bal=avail66(),_now=new Date(),
-      _rate=Math.round(Number(safe(function(){return dailyRate(_now.getFullYear(),_now.getMonth(),_now.getDate())}))||0),
-      _dim=new Date(_now.getFullYear(),_now.getMonth()+1,0).getDate(),
-      _dleft=Math.max(0,_dim-_now.getDate());
-  if(_bal!==null){
-    var _spare=Math.round(_bal-_rate*_dleft);
-    if(_bal<=0)out.push('the month is fully committed, so hold off on anything new');
-    else if(_rate>0&&_bal<_rate)out.push('about '+money(_bal)+' is left and an ordinary day costs about '+money(_rate)+', so today will use it');
-    else if(_spare<=0)out.push('about '+money(_bal)+' is left, roughly '+Math.floor(_bal/(_rate||1))+' more days at your recent pace');
-    else out.push('about '+money(_bal)+' is left and roughly '+money(_spare)+' of it could carry into next month at this pace');
-  }else if(mo&&Number(mo.spent)>0){
-    out.push('no income recorded this month yet, so there is nothing to carry');
+  var S=monthStats68();
+  /* Nothing logged at all: no claims, just a reason to log something. */
+  if(S.cnt===0)return ['nothing is logged this month yet - add today\'s first spend and I will start tracking the month for you'];
+  if(S.inc<=0&&S.exp>0){
+    out.push('no income is logged this month yet, so there is nothing to measure the spending against');
+  }else if(S.left<=0){
+    out.push('this month is fully committed, so hold off on anything new');
+  }else if(S.early||!(S.rate>0)){
+    /* Too early in the month for a pace to mean anything - state the plain fact. */
+    out.push('about '+money(S.left)+' is left with '+S.rest+' days to go');
+  }else{
+    var days=Math.floor(S.left/S.rate),spare=Math.round(S.left-S.rate*S.rest);
+    if(days<=0)out.push('about '+money(S.left)+' is left, which is less than an ordinary day costs you');
+    else if(days<S.rest)out.push('about '+money(S.left)+' is left, roughly '+days+(days===1?' day':' days')+' at your usual pace with '+S.rest+' still to go');
+    else if(spare>0)out.push('about '+money(S.left)+' is left, and if the pace holds about '+money(spare)+' could carry into next month');
+    else out.push('about '+money(S.left)+' is left, just about enough for the '+S.rest+' days to go');
   }
-  var est=safe(function(){return estMonthEnd()});
-  if(typeof est==='number'&&isFinite(est)&&out.length<2){
-    if(est>0)out.push('on course to finish the month with about '+money(est)+' still in hand');
-    else out.push('spending is ahead of income this month, worth a look');
+  /* v2.0.3.69 - this fallback fired on a fresh install and announced that
+     spending was ahead of income with nothing logged at all. It now needs real
+     income, a few elapsed days, and spending that genuinely exceeds income. */
+  if(out.length<2&&S.inc>0&&!S.early){
+    var est=safe(function(){return estMonthEnd()});
+    if(typeof est==='number'&&isFinite(est)){
+      if(est>0)out.push('on course to finish the month with about '+money(est)+' still in hand');
+      else if(S.exp+S.alloc>S.inc)out.push('spending is ahead of income this month, worth a look');
+    }
   }
   if(!out.length)out.push('a fresh month to map');
   return out;
@@ -10841,8 +10896,15 @@ function lines(){
 function paintWelcome(){
   var el=D.getElementById('welSub');if(!el)return;
   var h=new Date().getHours(),g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  var L=lines(),i=(new Date()).getDate()%L.length;
+  /* v2.0.3.69 - the line was chosen by day-of-month modulo, so whichever
+     line that day's index happened to land on was shown, stale fallback
+     included. Lead with the most important line, and alternate daily between
+     the top two when there are two worth showing. */
+  var L=lines();
+  if(!L||!L.length)return;
+  var i=(L.length>1&&((new Date()).getDate()%2)===0)?1:0;
   el.textContent=g+' \u2014 '+L[i];
+  W.__MM68WEL=1;   /* claim it so the generic writers stand down */
 }
 safe(function(){if(typeof W.showWelcome==='function'){var f=W.showWelcome;
   W.showWelcome=function(){var r=f.apply(this,arguments);setTimeout(paintWelcome,0);setTimeout(paintWelcome,280);return r}}});
@@ -10913,7 +10975,7 @@ function estMonthEnd(){
   return a.inc-(a.out+proj);
 }
 
-/* v2.0.3.67 - the money that actually exists this month. Mirrors the app's own
+/* v2.0.3.69 - the money that actually exists this month. Mirrors the app's own
    calc(): income adds, and expenses plus every allocation (savings, emergency,
    goals, loans) take away. Budget headroom is deliberately not part of it. */
 function avail66(){
@@ -10962,7 +11024,7 @@ function remClean(){
       var val=qa('*',box).filter(function(x){return !x.children.length&&x!==el})[0];
       if(val&&/^[^0-9]*0([.,]0+)?$/.test((val.textContent||'').trim()))val.textContent=money(est);
     });
-    /* v2.0.3.67 - the small card carries the number, so nothing is said
+    /* v2.0.3.69 - the small card carries the number, so nothing is said
        twice. Any note left by an older build is swept out. */
     qa('.mm63-rem-note',c).forEach(function(el){if(el.parentNode)el.parentNode.removeChild(el)});
   });
@@ -11172,7 +11234,7 @@ W.__MM63B={welcome:paintWelcome,lines:lines,est:estMonthEnd,rem:remClean,setting
     /* where the month is heading at the current rate */
     var mo=M.month?S(M.month):null;
     if(mo){
-      /* v2.0.3.67 - cap the carry claim at the money that actually exists,
+      /* v2.0.3.69 - cap the carry claim at the money that actually exists,
          the same rule the welcome line now uses. Unspent budget is not cash. */
       var carry=Number(mo.carry)||0;
       var _av67=(window.__MM67AVAIL?window.__MM67AVAIL():null);
@@ -11653,6 +11715,199 @@ body.settings-section-open #toast{bottom:calc(var(--native-inset-bottom,0px) + 1
  setInterval(wrapSave,1500);
 
  W.__MM67={picker:wrapPickers,save:wrapSave};
+})();
+</script>
+<style id="v20368-ui">
+/* ---------------- item 4: gold edge on the active input ---------------- */
+input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+textarea:focus,select:focus,.form-input:focus,[contenteditable="true"]:focus{
+  border-color:var(--gold,#D4AF37)!important;
+  box-shadow:0 0 0 2.5px rgba(212,175,55,.20)!important;
+  outline:none!important}
+/* the PIN prompt used when a fingerprint unlock means the PIN was never typed */
+#mm68PinModal .modal-sheet{padding-bottom:22px}
+#mm68PinModal .mm68-pin-sub{font-size:13px;opacity:.72;margin:2px 0 14px;line-height:1.35}
+#mm68PinInput{width:100%;box-sizing:border-box;text-align:center;letter-spacing:12px;
+  font-size:22px;font-weight:800;padding:14px 16px;margin:0 0 6px}
+#mm68PinModal .mm68-pin-err{min-height:17px;font-size:12.5px;font-weight:700;
+  color:var(--danger,#e05555);margin:0 0 10px;text-align:center}
+</style>
+<script id="v20368-js">
+(function(){
+ var W=window,D=document;
+ function safe(f){try{return f()}catch(e){return null}}
+ function dbo68(){try{if(typeof DB!=='undefined'&&DB)return DB}catch(e){}return W.DB||null}
+ function say(m,k){safe(function(){if(W.mm63Bar)W.mm63Bar(m,k||'info',null,null,null,null)})}
+
+ /* Ask for the PIN once, verify it against the stored hash, hand it back in
+    memory. The v55 save layer strips it again on the next save, so nothing
+    plain is ever written to storage. */
+ /* dbIn is supplied by the caller. The app's store is `let DB`, which never
+    lands on window (see the note at the v59 block), so a separate script like
+    this one cannot look it up - assuming it could is what stopped this prompt
+    from ever opening. */
+ W.__MM68PIN=function(dbIn,onOk){
+  if(typeof dbIn==='function'){onOk=dbIn;dbIn=null}
+  var db=dbIn||dbo68(),M=W.__MM55;
+  if(!db){say('Could not read your data','error');return}
+  if(db.pin){safe(function(){onOk&&onOk()});return}
+  if(!db.pinSec||!M||!M.verifyPin){say('Set a PIN first under Settings, Security','warning');return}
+  var old=D.getElementById('mm68PinModal');
+  if(old&&old.parentNode)old.parentNode.removeChild(old);
+  var ov=D.createElement('div');
+  ov.className='modal-overlay';ov.id='mm68PinModal';
+  ov.innerHTML='<div class="modal-sheet"><div class="modal-handle"></div>'+
+   '<div class="modal-title">Enter your PIN</div>'+
+   '<div class="mm68-pin-sub">Your backup is locked with this PIN. You signed in with your fingerprint, so it is needed once here.</div>'+
+   '<input id="mm68PinInput" class="form-input" type="tel" inputmode="numeric" maxlength="4" placeholder="0000" autocomplete="off">'+
+   '<div class="mm68-pin-err" id="mm68PinErr"></div>'+
+   '<button class="btn-gold" id="mm68PinGo">Unlock</button>';
+  D.body.appendChild(ov);
+  var inp=D.getElementById('mm68PinInput'),err=D.getElementById('mm68PinErr'),go=D.getElementById('mm68PinGo'),done=0;
+  function shut(){ov.classList.remove('open');setTimeout(function(){if(ov.parentNode)ov.parentNode.removeChild(ov)},240)}
+  setTimeout(function(){ov.classList.add('open');safe(function(){inp.focus()})},10);
+  ov.addEventListener('click',function(e){if(e.target===ov&&!done)shut()});
+  inp.addEventListener('input',function(){
+   inp.value=(inp.value||'').replace(/[^0-9]/g,'').slice(0,4);
+   err.textContent='';
+   if(inp.value.length===4)setTimeout(submit,120);
+  });
+  function submit(){
+   if(done)return;
+   var v=(inp.value||'').replace(/[^0-9]/g,'');
+   if(v.length<4){err.textContent='Enter all four digits';return}
+   go.disabled=true;
+   M.verifyPin(v,db.pinSec,function(ok){
+    go.disabled=false;
+    if(!ok){err.textContent='That PIN does not match';safe(function(){inp.value='';inp.focus()});return}
+    done=1;db.pin=v;shut();
+    setTimeout(function(){safe(function(){onOk&&onOk()})},260);
+   });
+  }
+  go.addEventListener('click',submit);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')submit()});
+ };
+})();
+</script>
+<style id="v20369-ui">
+  /* v2.0.3.69 - keyboard and sticky-heading safety.
+     --mm69-kb is non-zero only when the shell does NOT shrink the web view,
+     so this can never double-subtract on phones that resize properly. */
+  :root{--mm69-kb:0px}
+  html.mm69-kb .modal-sheet{
+    max-height:calc(100dvh - var(--native-inset-top,0px) - var(--mm69-kb,0px) - 14px)!important}
+  .modal-sheet,.compact-editor-body,#settingsDetail,.settings-detail{
+    scroll-padding-bottom:calc(var(--mm69-kb,0px) + var(--native-ime-bottom,0px) + 28px)!important}
+</style>
+<script id="v20369-js">
+(function(){
+ var W=window,D=document,H=D.documentElement,RAF=W.requestAnimationFrame||function(f){return setTimeout(f,16)};
+ var HEADS='.modal-title,.txc-hdr,.settings-detail-head,.settings-sticky,.sticky-head,.set-hdr';
+ var padded=null,padWas='';
+ function px(v){return Math.max(0,Math.round(v||0))}
+ function ime(){return parseFloat(getComputedStyle(H).getPropertyValue('--native-ime-bottom'))||0}
+ function kb(){
+  var vv=W.visualViewport;
+  if(!vv)return 0;
+  return px(W.innerHeight-vv.height-vv.offsetTop);
+ }
+ function viewBottom(){
+  var vv=W.visualViewport,k=kb(),i=ime();
+  if(k>60)return vv.offsetTop+vv.height;
+  if(i>60)return W.innerHeight-i;
+  return vv?vv.offsetTop+vv.height:W.innerHeight;
+ }
+ function isField(el){
+  if(!el||!el.tagName)return false;
+  if(el.isContentEditable)return true;
+  var t=el.tagName;
+  if(t==='TEXTAREA'||t==='SELECT')return true;
+  if(t!=='INPUT')return false;
+  return !/^(checkbox|radio|range|file|button|submit|hidden)$/i.test(el.type||'text');
+ }
+ function field(){var a=D.activeElement;return isField(a)?a:null}
+ function scrollport(el){
+  var n=el&&el.parentNode,s,oy;
+  while(n&&n.nodeType===1&&n!==D.body){
+   s=getComputedStyle(n);oy=s.overflowY;
+   if((oy==='auto'||oy==='scroll')&&n.scrollHeight>n.clientHeight+2)return n;
+   n=n.parentNode;
+  }
+  return null;
+ }
+ function headHeight(sp){
+  var best=0,r=sp.getBoundingClientRect(),c=sp.querySelectorAll(HEADS),i,el,s,er;
+  for(i=0;i<c.length;i++){
+   el=c[i];s=getComputedStyle(el);
+   if(s.position!=='sticky'&&s.position!=='fixed')continue;
+   er=el.getBoundingClientRect();
+   if(er.height<=0)continue;
+   if(er.top-r.top<=3)best=Math.max(best,er.bottom-r.top);
+  }
+  return px(best);
+ }
+ function syncKb(){
+  var k=kb();
+  H.style.setProperty('--mm69-kb',k+'px');
+  H.classList.toggle('mm69-kb',k>60||ime()>60);
+ }
+ function prime(el){
+  var sp=scrollport(el);
+  if(!sp)return null;
+  var head=headHeight(sp),k=Math.max(kb(),ime());
+  sp.style.scrollPaddingTop=(head+10)+'px';
+  sp.style.scrollPaddingBottom=(k+28)+'px';
+  if(k>60){
+   if(padded&&padded!==sp){padded.style.paddingBottom=padWas;padded=null}
+   if(padded!==sp){padWas=sp.style.paddingBottom||'';padded=sp}
+   sp.style.paddingBottom='calc('+(padWas||'0px')+' + '+k+'px)';
+  }else if(padded){
+   padded.style.paddingBottom=padWas;padded=null;padWas='';
+  }
+  return sp;
+ }
+ function keep(el){
+  if(!isField(el))return;
+  var sp=prime(el);
+  if(!sp)return;
+  var spr=sp.getBoundingClientRect(),head=headHeight(sp);
+  var top=spr.top+head+8,bot=Math.min(spr.bottom,viewBottom())-12;
+  if(bot-top<40)return;
+  var r=el.getBoundingClientRect(),d=0;
+  if(r.top<top)d=r.top-top;
+  else if(r.bottom>bot)d=r.bottom-bot;
+  if(Math.abs(d)<2)return;
+  sp.scrollTop+=d;
+ }
+ var pending=0;
+ function soon(el){
+  if(pending)return;
+  pending=1;
+  RAF(function(){pending=0;keep(el||field())});
+ }
+ D.addEventListener('focusin',function(e){
+  if(!isField(e.target))return;
+  syncKb();
+  prime(e.target);
+  setTimeout(function(){keep(e.target)},60);
+  setTimeout(function(){keep(e.target)},340);
+ },true);
+ D.addEventListener('input',function(e){ if(isField(e.target))soon(e.target) },true);
+ D.addEventListener('keyup',function(e){ if(isField(e.target))soon(e.target) },true);
+ D.addEventListener('focusout',function(){
+  setTimeout(function(){
+   if(field())return;
+   syncKb();
+   if(padded){padded.style.paddingBottom=padWas;padded=null;padWas=''}
+  },120);
+ },true);
+ if(W.visualViewport){
+  W.visualViewport.addEventListener('resize',function(){syncKb();soon(null)},{passive:true});
+  W.visualViewport.addEventListener('scroll',function(){soon(null)},{passive:true});
+ }
+ W.addEventListener('resize',function(){syncKb();soon(null)},{passive:true});
+ syncKb();
+ W.__MM69={kb:kb,keep:keep,prime:prime,head:headHeight,port:scrollport};
 })();
 </script>
 </body>

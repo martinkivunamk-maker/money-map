@@ -1,0 +1,116 @@
+MONEY MAP v2.0.3.69 - WEB FILES TO UPLOAD
+=========================================
+
+This replaces the v2.0.3.68 zip. Do not upload that one - everything in it is
+included here, plus the typing fix.
+
+Upload both files to the money-map repo, replacing what is there:
+  Money_Map.html
+  sw.js
+
+Then close the app fully and reopen it once, so the service worker picks up the
+new cache name (moneymap-v20369-core).
+
+
+NEW IN THIS BUILD
+=================
+
+5. TYPING FIELD HID BEHIND THE CARD HEADING
+--------------------------------------------
+What you described: the card lifts for the keyboard, but the moment you type,
+the box you are typing in slides up behind the card heading, so you cannot see
+what you are entering. Scroll it back down, type again, same thing.
+
+Cause, read from the code:
+  - The card body (.modal-sheet) is the part that scrolls.
+  - The card heading (.modal-title) is position:sticky at top:0 INSIDE that
+    scrolling area, so it is painted over the top strip of it. Same shape for
+    the transaction card header, the settings detail header and the sticky
+    headers on the main screens.
+  - Those scroll areas declared scroll-padding-BOTTOM but never
+    scroll-padding-TOP.
+
+On every keystroke the browser re-reveals the caret by scrolling the field just
+inside the top edge of the scroll area. Nothing told it that the top strip is
+covered by the heading, so "just inside the top edge" means "behind the
+heading". The field really is in view - it is simply underneath the heading.
+That is why it repeats on every keystroke and why scrolling back never holds.
+
+Why only some phones: the app's existing helper (_revealFocusedField) only runs
+when the shell reports the keyboard height to the page. Shells that do not
+publish it leave the caret reveal completely uncorrected.
+
+Fix, three parts:
+  - Each scrolling card is now told how tall its own sticky heading is, so the
+    browser's own caret reveal stops BELOW the heading instead of behind it.
+    The height is measured live, so a taller or shorter heading still works.
+  - Keyboard height is now measured from the page itself, so it no longer
+    depends on the shell reporting it. When the shell does not shrink the web
+    view, the card is shortened by the keyboard height and given room to scroll
+    the last field clear of the keyboard.
+  - A guard re-checks the focused field after each keystroke and moves it only
+    if it is genuinely covered, by the smallest amount, with no animation. A
+    smooth scroll here would fight the engine on every keypress.
+
+Measured on the app's real card CSS, keyboard open at 320px:
+  heading height measured live         43px
+  scroll-padding applied               53px
+  card shortened when keyboard opens   898px -> 592px
+  OLD behaviour, field hidden by       42px  (behind the heading)
+  NEW behaviour, field clear by        11px  (below the heading)
+  after five keystrokes, still clear   yes, and 483px above the keyboard
+
+Note on my own testing: my first test scrolled the field up from below, which
+aligns it to the bottom edge and never reproduced your fault. Approaching it the
+way the engine actually does - aligning to the top edge - reproduced it exactly,
+and that is the measurement above.
+
+
+ALSO IN THIS BUILD (was the v2.0.3.68 zip)
+==========================================
+
+1. BACKUP NOW WORKS
+-------------------
+The encryption layer hashes your PIN into "pinSec" and DELETES the plain PIN.
+The plain PIN is only restored by the PIN pad, which fingerprint login never
+shows - so backup had no PIN to lock the file with, put up a dialog whose button
+did nothing, and stopped. Backup now asks for your PIN, checks it against the
+stored hash, then writes the file. Restore had the same fault and the same fix.
+
+2. LOGIN BUTTON SAID "SET UP ACCOUNT"
+-------------------------------------
+Same root cause - the label tested the deleted plain PIN, so the app treated you
+as a new user. Now reads "Log in". The same broken test also disabled the
+one-minute inactivity re-lock and made the security card report no PIN set;
+both are corrected.
+
+3. WELCOME MESSAGE
+------------------
+The pace was invented: my averaging counted the last fortnight twice, so one
+large payment became "your daily pace" - that produced 1M a day and "2 more
+days". It now uses the app's own trimmed month maths. The line was also picked
+by day-of-month, so a stale "spending is ahead of income" line could appear on
+an empty month; the greeting now leads with the most important line and that
+fallback needs real income and elapsed days. Two other writers that could
+overwrite the message were given a single owner.
+
+4. GOLD EDGE ON THE ACTIVE INPUT
+--------------------------------
+Every text, number and amount box shows a gold edge and a soft gold ring while
+it is active. Measured: border becomes rgb(212,175,55) on focus.
+
+
+STILL NOT FIXED - NEEDS THE APK
+===============================
+The back button in settings. The installed shell decides using only
+webView.canGoBack() and never asks the page, so no web change can correct it.
+Three web-side attempts each broke normal page back and were reverted.
+
+
+CHECKS RUN BEFORE PACKAGING
+===========================
+  build gate            ALL_OK
+  regression suite L    40 / 40
+  regression suite K    51 / 51
+  new code syntax       node --check clean
+  rendered measurement  all five items verified on screen
